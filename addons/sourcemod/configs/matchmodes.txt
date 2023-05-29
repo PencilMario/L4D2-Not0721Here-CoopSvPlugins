@@ -1,0 +1,10 @@
+"MatchModes"
+{
+	"战役配置"
+	{
+		"coop_base"
+		{
+			"name"		"基础战役"
+		}
+	}
+}

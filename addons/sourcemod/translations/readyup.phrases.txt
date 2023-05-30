@@ -1,0 +1,128 @@
+"Phrases"
+{
+	"Tag"
+	{
+		"en"		"[{green}!{default}]"
+	}
+	// readyup/action.inc
+	"LiveCountdownBegin"
+	{
+		"en"		"Going live!\nSay !unready / Press F2 to cancel"
+	}
+	"RoundIsLive"
+	{
+		"en"		"Round is live!"
+	}
+	"LiveCountdown"
+	{
+		"#format"	"{1:d}"
+		"en"		"Live in: {1}\nSay !unready / Press F2 to cancel"
+	}
+	"AutoStartNotEnoughPlayers"
+	{
+		"en"		"More players are required..."
+	}
+	"AutoStartWaiting"
+	{
+		"en"		"Waiting for loading players..."
+	}
+	"InitiateAutoStart"
+	{
+		"en"		"Game will automatically start!"
+	}
+	"AutoStartCountdown"
+	{
+		"#format"	"{1:d}"
+		"en"		"Game starts in: {1}"
+	}
+	"LiveCountdownCancelled"
+	{
+		"en"		"Countdown Cancelled!"
+	}
+	"CountUnReady"
+	{
+		"#format"	"{1:d}{2:d}"	// 1:GetUnReadyCount(client), 2:l4d_ready_unready_limit.IntValue
+		"en"		" [{green}{1}{default}/{green}{2}{default}]"
+	}
+	"UnReadyLimit"
+	{
+		"en"		"You have reached your {red}unready limit{default} [{green}%d{default}]"
+	}
+	// readyup/command.inc
+	"ForceStartAdmin"
+	{
+		"#format"	"{1:N}"
+		"en"		"{blue}Game{default} start is {green}forced{default} by {blue}Admin{default} ({olive}{1}{default})"
+	}
+	"PanelHide"
+	{
+		"en"		"Panel is now {red}off{default}"
+	}
+	"PanelShow"
+	{
+		"en"		"Panel is now {blue}on{default}"
+	}
+	// readyup/panel.inc
+	"HintReady"
+	{
+		"en"		"You are ready.\nSay !unready / Press F2 to unready."
+	}
+	"HintUnready"
+	{
+		"en"		"You are not ready.\nSay !ready / Press F1 to ready up."
+	}
+	"PanelSlots"
+	{
+		"#format"	"{1:s},{2:d},{3:d},{4:s}"	// 1:ServerName, 2:GetSeriousClientCount(), 3:FindConVar("sv_maxplayers").IntValue, 4:cfgName
+		"en"		"▸ Server: {1} \n▸ Slots: {2}/{3}\n▸ Config: {4}"
+	}
+	"PanelCommands"
+	{
+		"en"		"▸ Commands:"
+	}
+	"PanelSurvivors"
+	{
+		"#format"	"{1:d},{2:s}"	// 1:++textCount, 2:isTeamReadyMode ? teamReadySymbol[survivorReady] : ""
+		"en"		"->{1}. Survivors{2}"
+	}
+	"PanelInfected"
+	{
+		"#format"	"{1:d},{2:s}"	// 1:++textCount, 2:isTeamReadyMode ? teamReadySymbol[survivorReady] : ""
+		"en"		"->{1}. Infected{2}"
+	}
+	"PanelCaster"
+	{
+		"#format"	"{1:d},{2:s}"	// 1:++textCount, 2:casterCount > 1 ? "s" : ""
+		"en"		"->{1}. Caster{2}"
+	}
+	"PanelSpectator"
+	{
+		"#format"	"{1:d},{2:s}"	// 1:++textCount, 2:specCount > 1 ? "s" : ""
+		"en"		"->{1}. Spectator{2}"
+	}
+	"PanelMany"
+	{
+		"en"		"**Many** (%d)"
+	}
+	// g_sDisruptReason[]
+	"Player marked unready"
+	{
+		"#format"	"{1:N}"
+		"en"		"{green}Countdown Cancelled!{default} ({teamcolor}{1}{green} marked unready{default})"
+	}
+	"Player switched team"
+	{
+		"#format"	"{1:N}"
+		"en"		"{green}Countdown Cancelled!{default} ({teamcolor}{1}{olive} switched team{default})"
+	}
+	"Player disconnected"
+	{
+		"#format"	"{1:N}"
+		"en"		"{green}Countdown Cancelled!{default} ({teamcolor}{1}{green} disconnected{default})"
+	}
+	"Admin aborted"
+	{
+		"#format"	"{1:N}"
+		"en"		"{green}Force Start Aborted!{default} ({olive}{1}{green} issued{default})"
+	}
+}

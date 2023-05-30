@@ -1,0 +1,196 @@
+"Phrases"
+{
+	"Tag"
+	{
+		"en"		"[{green}!{default}]"
+	}
+	"ClientFullyLoaded"
+	{
+		"en"		"{olive}%N{default} has fully loaded."
+	}
+	"PauseCountFormat"
+	{
+		"#format"   "{1:d},{2:d}" // 1:PauseCount(client), 2:pauseLimitCvar.IntValue
+		"en"		" [{green}{1}{default}/{green}{2}{default}]."
+	}
+	"PauseCommand"
+	{
+		"#format"   "{1:N}" // 1:client, 2:sPauseCount
+		"en"		"{olive}{1}{default} {blue}Paused{default}"
+	}
+	// PauseDelay_Timer
+	"PauseAction"
+	{
+		"en"		"{red}PAUSED{default}"
+	}
+	"PauseDelay"
+	{
+		"en"		"{blue}Pausing in{default}: {olive}%d{default}."
+	}
+	// ForcePause_Cmd
+	"Crashed"
+	{
+		"en"		"{olive}Game{default} was {green}force paused{default} because a player has {blue}crashed{default}."
+	}
+	"ForcePause"
+	{
+		"en"		"A {green}force pause{default} is issued by {blue}Admin{default} ({olive}%N{default})"
+	}
+	// Unpause_Cmd
+	"UnpauseSurvivors"
+	{
+		"#format"   "{1:N},{2:s},{3:s}" // 1:client, :2(initiatorReady && client == initiator) ? AsInitiator() : "", 3:L4D2_TeamName[clientTeam]
+		"en"		"{olive}{1} {2}{default} marked {blue}{3}{default} ready."
+	}
+	"UnpauseInfected"
+	{
+		"#format"   "{1:N},{2:s},{3:s}" // 1:client, :2(initiatorReady && client == initiator) ? AsInitiator() : "", 3:L4D2_TeamName[clientTeam]
+		"en"		"{olive}{1} {2}{default} marked {red}{3}{default} ready."
+	}
+	"UnpauseInitiator"
+	{
+		"en"		"{olive}%N{default} marked {green}Initiator{default} ready."
+	}
+	"UnpauseAdminConfirm"
+	{
+		"en"		"{olive}Teams{default} are ready. Wait for {blue}Admin{default} to {green}confirm{default}."
+	}
+	// Unready_Cmd
+	"UnreadySurvivors"
+	{
+		"#format"   "{1:N},{2:s},{3:s}" // 1:client, 2:(initiatorReady && client == initiator) ? AsInitiator() : "", 3:L4D2_TeamName[clientTeam]
+		"en"		"{olive}{1} {2}{default} marked {blue}{3}{default} not ready."
+	}
+	"UnreadyInfected"
+	{
+		"#format"   "{1:N},{2:s},{3:s}" // 1:client, 2:(initiatorReady && client == initiator) ? AsInitiator() : "", 3:L4D2_TeamName[clientTeam]
+		"en"		"{olive}{1} {2}{default} marked {red}{3}{default} not ready."
+	}
+	"UnreadyInitiator"
+	{
+		"en"		"{olive}%N{default} marked {green}Initiator{default} not ready."
+	}
+	// void AsInitiator()
+	"AsInitiator"
+	{
+		"en"		"as {green}Initiator{default} "
+	}
+	// ForceUnpause_Cmd
+	"ForceUnpause"
+	{
+		"en"		"A {green}force unpause{default} is issued by {blue}Admin{default} ({olive}%N{default})"
+	}
+	// AddPauseCount
+	"PauseLimit"
+	{
+		"en"		"You have reached your {red}pause limit{default}."
+	}
+	// AttemptPause
+	"PauseDeferred"
+	{
+		"en"		"{red}Pause has been delayed due to a pick-up in progress!"
+	}
+	"PauseDeferredAttacking"
+	{
+		"en"	"{red}The pause will be delayed until the infected attack ends/attack exceeds 16s!!"
+	}
+	// Pause
+	"PausePreventSpawn"
+	{
+		"en"		"Your {red}Spawn{default} has been prevented because of the Pause."
+	}
+	// Show_Cmd
+	"PanelShow"
+	{
+		"en"		"Panel is now {blue}on{default}."
+	}
+	"PanelHide"
+	{
+		"en"		"Panel is now {red}off{default}."
+	}
+	// UpdatePanel
+	"PanelSlots"
+	{
+		"#format"   "{1:s},{2:d},{3:d}" // 1:info, 2:GetSeriousClientCount(), 3:FindConVar("sv_maxplayers").IntValue
+		"en"		"♞<[{1}] - [{2}/{3}]>"
+	}
+	"PanelTitle"
+	{
+		"en"		"♞<--Ready Status-->"
+	}
+	"RequireAdmin"
+	{
+		"en"		"<!!Require Admin to Unpause!!>"
+	}
+	"SurvivorUnPaused"
+	{
+		"en"		"->1. Survivors: ★"
+	}
+	"SurvivorPaused"
+	{
+		"en"		"->1. Survivors: ☆"
+	}
+	"InfectedUnPaused"
+	{
+		"en"		"->2. Infected: ★"
+	}
+	"InfectedPaused"
+	{
+		"en"		"->2. Infected: ☆"
+	}
+	"InitiatorUnPaused"
+	{
+		"en"		"->0. Initiator: ★"
+	}
+	"InitiatorPaused"
+	{
+		"en"		"->0. Initiator: ☆"
+	}
+	"AutoPauseCrash"
+	{
+		"en"		"♞<Forced AutoPause -> Crash>"
+	}
+	"ForcePauseAdmin"
+	{
+		"en"		"♞<Force Pause -> %s (Admin)>"
+	}
+	"InitiatorPause"
+	{
+		"en"		"♞<Initiator -> %s (%s)>"
+	}
+	"DurationPause"
+	{
+		"en"		"♞<Duration: %02d:%02d>"
+	}
+	// InitiateLiveCountdown
+	"CountdownCancelNotify"
+	{
+		"en"		"Say {olive}!unready{default} to cancel"
+	}
+	"GameisLive"
+	{
+		"en"		"Game is live!"
+	}
+	"CountdownReadyDelay"
+	{
+		"en"		"{blue}Live in{default}: {olive}%d{default}..."
+	}
+	// CancelFullReady
+	"CountdownCancelled"
+	{
+		"en"		"{olive}%N{default} cancelled the countdown!"
+	}
+	// Callvote_Callback
+	"CallvoteNoSpec"
+	{
+		"en"		"You're unable to call votes as a spectator."
+	}
+	"CallvoteNoExploit"
+	{
+		"en"		"You've just switched Teams, you are unable to vote for a few seconds."
+	}
+	"CallvoteCannotTargetAdmin"
+	{
+		"en"		"You may not kick Admins."
+	}
+}

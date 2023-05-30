@@ -1,0 +1,7 @@
+﻿"Phrases"
+{
+	"Print_Move_Spectator"
+	{
+		"chi"		"{teamcolor}%N{default} 移动到旁观者！"
+	}
+}

@@ -1,7 +1,7 @@
 #!/bin/bash
 
 echo "Get Plugin updates";
-cd /home/steam/L4D2-Competitive-Rework/;
+cd /home/steam/L4D2-Not0721Here-CoopSvPlugins/;
 git reset --hard;
 git pull --rebase;
 git status;

@@ -466,8 +466,6 @@ native void CreateNative(const char[] name, NativeCall func);
  * @param error         Error code to use.
  * @param fmt           Error message format.
  * @param ...           Format arguments.
- * @noreturn
- * @error               Always!
  */
 native int ThrowNativeError(int error, const char[] fmt, any ...);
 

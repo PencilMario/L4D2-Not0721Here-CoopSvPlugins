@@ -1,6 +1,6 @@
 "MatchModes"
 {
-	"战役配置"
+	"Coop Config"
 	{
 		"coop_base"
 		{

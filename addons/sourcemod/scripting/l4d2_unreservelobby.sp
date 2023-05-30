@@ -6,11 +6,20 @@
 #define PLUGIN_VERSION			"2.1.2"
 #define PLUGIN_URL				"http://forums.alliedmods.net/showthread.php?t=87759"
 
-ConVar g_cvUnreserve, g_cvGameMode, g_cvCookie, g_cvLobbyOnly, g_cvMaxPlayers;
+ConVar g_cvUnreserve, g_cvCookie, g_cvLobbyOnly, g_cvMaxPlayers;
 bool g_bUnreserve;
 
-int g_iLobbySlot, g_iMaxPlayerJoin, g_iResetCount;
+int g_iLobbySlot = 8;
 
+int g_iCheckTimeCount, g_iCheckTimeLast;
+
+enum LobbyType {
+	Lobby_AutoSloting = 0,
+	Lobby_4Slot = 4,
+	Lobby_8Slot = 8
+};
+
+LobbyType g_iLobbyType;
 public Plugin myinfo = {
 	name = PLUGIN_NAME,
 	author = PLUGIN_AUTHOR,
@@ -23,7 +32,6 @@ public void OnPluginStart() {
 	CreateConVar("l4d_unreserve_version", PLUGIN_VERSION, "Version of the Lobby Unreserve plugin.", FCVAR_NOTIFY|FCVAR_DONTRECORD);
 	g_cvUnreserve = CreateConVar("l4d_unreserve_full", "1", "Automatically unreserve server after a full lobby joins", FCVAR_SPONLY|FCVAR_NOTIFY);
 	g_cvUnreserve.AddChangeHook(CvarChanged);
-	g_cvGameMode = FindConVar("mp_gamemode");
 	g_cvCookie = FindConVar("sv_lobby_cookie");
 	g_cvLobbyOnly = FindConVar("sv_allow_lobby_connect_only");
 	g_cvMaxPlayers = FindConVar("sv_maxplayers");
@@ -31,6 +39,33 @@ public void OnPluginStart() {
 	HookEvent("player_disconnect", Event_PlayerDisconnect, EventHookMode_Pre);
 
 	RegAdminCmd("sm_unreserve", cmdUnreserve, ADMFLAG_BAN, "sm_unreserve - manually force removes the lobby reservation");
+}
+
+public void CheckSlotType()
+{
+	if (g_iLobbyType != Lobby_AutoSloting) return;
+	if (g_iCheckTimeCount > 3){
+		g_iLobbyType = Lobby_4Slot;
+		g_iLobbySlot = 4;
+		return;
+	}
+	if (g_iCheckTimeLast <= 0) g_iCheckTimeCount++;
+	g_iCheckTimeLast = 40;
+	CreateTimer(1.0,Timer_CheckType, _, TIMER_REPEAT|TIMER_FLAG_NO_MAPCHANGE)
+
+}
+public void OnMapEnd(){
+	if (g_iLobbyType != Lobby_8Slot){
+		g_iCheckTimeCount = 0;
+		g_iCheckTimeLast = 0;
+	}
+}
+public Action Timer_CheckType(Handle timer)
+{	
+	if (g_iLobbyType != Lobby_AutoSloting || g_iCheckTimeLast < 0) return Plugin_Stop;
+	if (GetConnectedPlayer(0)>4) g_iLobbyType = Lobby_8Slot;
+	g_iCheckTimeLast--;
+	return Plugin_Continue 
 }
 
 Action cmdUnreserve(int client, int args) {
@@ -57,7 +92,7 @@ public void OnClientAuthorized(int client, const char[] auth) {
 
 	if (IsFakeClient(client))
 		return;
-
+	if (GetConnectedPlayer(0) == 4 && g_iCheckTimeLast < 0) CheckSlotType();
 	if (!IsServerLobbyFull(-1))
 		return;
 
@@ -92,18 +127,6 @@ void Event_PlayerDisconnect(Event event, const char[] name, bool dontBroadcast) 
 		return;
 
 	ServerCommand("sv_cookie %s", sCookie);
-}
-
-void SetDefaultLobbySlot(){
-	int humans = GetConnectedPlayer(0);
-
-	char sGameMode[32];
-	g_cvGameMode.GetString(sGameMode, sizeof(sGameMode));
-	if (StrEqual(sGameMode, "versus") || StrEqual(sGameMode, "scavenge"))
-	{
-		g_iLobbySlot = 8;
-	}
-	g_iLobbySlot = 4;
 }
 
 bool IsServerLobbyFull(int client)

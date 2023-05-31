@@ -19,11 +19,11 @@ int g_iHealHealth[MAXPLAYERS + 1];
 int g_iNextHealTick[MAXPLAYERS + 1];
 
 public Plugin myinfo = {
-	name = "Heal me！",
-	author = "sp",
-	description = "随便写的回血插件",
-	version = "0.1",
-	url = ""
+    name = "Heal me！",
+    author = "sp",
+    description = "随便写的回血插件",
+    version = "0.1",
+    url = ""
 };
 
 public void OnPluginStart()
@@ -40,15 +40,22 @@ public void OnPluginStart()
     
 
     HookEvent("player_hurt", PlayerHure_Event);
-	HookEvent("player_death", PlayerDeath_Event);
-
+    HookEvent("player_death", PlayerDeath_Event);
+    HookEvent("round_end", RoundEnd_Event);
+    HookEvent("round_start", RoundStart_Event);
 }
 
-public void OnMapStart()
+public Action RoundStart_Event(Event event, const char[] name, bool dontBroadcast)
 {
     g_hHealingTimer = CreateTimer(0.1, Timer_Health, _,TIMER_REPEAT|TIMER_FLAG_NO_MAPCHANGE);
+    return Plugin_Continue;
 }
-
+public Action RoundEnd_Event(Event event, const char[] name, bool dontBroadcast)
+{
+    KillTimer(g_hHealingTimer);
+    g_hHealingTimer = INVALID_HANDLE;
+    return Plugin_Continue;
+}
 public Action Timer_Health(Handle timer)
 {
     if (g_cHealEnabled.IntValue)
@@ -76,29 +83,29 @@ public Action Timer_Health(Handle timer)
 }
 
 public int GetPlayerHealth(int player){
-	return GetClientHealth(player);
+    return GetClientHealth(player);
 }
 
 public void SetPlayerHealthRe(int player, int health){
-	if (health > g_cHealRec_MaxHealth.IntValue) health = g_cHealRec_MaxHealth.IntValue;
-	int h2 = L4D_GetPlayerTempHealth(player);
-	if(h2 + health < g_cHealRec_MaxHealth.IntValue){
-		SetEntityHealth(player, health);
-	}
-	else{
-		SetEntityHealth(player, g_cHealRec_MaxHealth.IntValue-h2);
-	}
+    if (health > g_cHealRec_MaxHealth.IntValue) health = g_cHealRec_MaxHealth.IntValue;
+    int h2 = L4D_GetPlayerTempHealth(player);
+    if(h2 + health < g_cHealRec_MaxHealth.IntValue){
+        SetEntityHealth(player, health);
+    }
+    else{
+        SetEntityHealth(player, g_cHealRec_MaxHealth.IntValue-h2);
+    }
 }
 
 public void SetPlayerHealth(int player, int health){
-	if (health > g_cHeal_MaxHealth.IntValue) health = g_cHeal_MaxHealth.IntValue;
-	int h2 = L4D_GetPlayerTempHealth(player);
-	if(h2 + health < g_cHeal_MaxHealth.IntValue){
-		SetEntityHealth(player, health);
-	}
-	else{
-		SetEntityHealth(player, g_cHeal_MaxHealth.IntValue-h2);
-	}
+    if (health > g_cHeal_MaxHealth.IntValue) health = g_cHeal_MaxHealth.IntValue;
+    int h2 = L4D_GetPlayerTempHealth(player);
+    if(h2 + health < g_cHeal_MaxHealth.IntValue){
+        SetEntityHealth(player, health);
+    }
+    else{
+        SetEntityHealth(player, g_cHeal_MaxHealth.IntValue-h2);
+    }
 }
 
 public void AddPlayerHealth(int player, int health)
@@ -111,19 +118,21 @@ public void AddPlayerHealth2(int player, int health)
     int h = GetPlayerHealth(player);
     SetPlayerHealth(player, h+health);
 }
-public Action PlayerHure_Event(Event event, const char name[], bool dontBroadcast){
-	int player = GetClientOfUserId(event.GetInt("userid"))
-	if (IsClientInGame(player) && GetClientTeam(player)==L4D_TEAM_SURVIVOR){
-		if (!IsIncapacitated(player))
-		{
-			g_iNextHealTick[player] = g_cHealRec_HealInjuredPause.IntValue;
-		}
-	}
+public Action PlayerHure_Event(Event event, const char[] name, bool dontBroadcast){
+    int player = GetClientOfUserId(event.GetInt("userid"));
+    if (IsClientInGame(player) && GetClientTeam(player)==L4D_TEAM_SURVIVOR){
+        if (!IsIncapacitated(player))
+        {
+            g_iNextHealTick[player] = g_cHealRec_HealInjuredPause.IntValue;
+        }
+    }
+    return Plugin_Continue;
 }
-public Action PlayerDeath_Event(Event event, const char name[], bool dontBroadcast){
-	//if (event.GetBool("headshot") == false) return;
-	int client = GetClientOfUserId(event.GetInt("attacker"));
-	if (GetClientTeam(client)==L4D_TEAM_SURVIVOR){ 
+public Action PlayerDeath_Event(Event event, const char[] name, bool dontBroadcast){
+    //if (event.GetBool("headshot") == false) return;
+    int client = GetClientOfUserId(event.GetInt("attacker"));
+    if (GetClientTeam(client)==L4D_TEAM_SURVIVOR){ 
         if (g_cHealEnabled.IntValue) g_iHealHealth[client] += g_cHealKill_PerTick.IntValue;
-	}
+    }
+    return Plugin_Continue;
 }

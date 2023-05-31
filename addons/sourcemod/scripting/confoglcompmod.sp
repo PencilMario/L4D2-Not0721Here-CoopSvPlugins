@@ -21,7 +21,7 @@
 #define MODULE_FINALESPAWN			0 //FinaleSpawn
 #define MODULE_BOSSSPAWNING			0 //BossSpawning
 #define MODULE_CLIENTSETTINGS		1 //ClientSettings
-#define MODULE_ITEMTRACKING			1 //ItemTracking
+#define MODULE_ITEMTRACKING			0 //ItemTracking
 #define MODULE_WATERSLOWDOWN		1 //WaterSlowdown (config 'pmelite' uses it)
 #define MODULE_UNPROHIBITBOSSES		0 //UnprohibitBosses (duplicate code, plugin 'bossspawningfix' does the same).
 #define MODULE_ENTITYREMOVER		0 //EntityRemover (the same can be done with the extension 'stripper').

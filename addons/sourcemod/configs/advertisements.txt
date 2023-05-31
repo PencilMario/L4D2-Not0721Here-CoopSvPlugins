@@ -19,12 +19,11 @@
 {
     "1"
     {
-        "center"		"www.domain.com"
+        "chat"		"{green}你好喵~"
     }
     "2"
     {
-        "center"		"contact@domain.com"
-        "hint"			"contact@domain.com"
+        "chat"		"{green}当前刷特速率：{sss_1P}特/{SS_Time}秒"
     }
     "3"
     {

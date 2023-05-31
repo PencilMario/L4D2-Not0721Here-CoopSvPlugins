@@ -8,8 +8,8 @@
 // Using these macros, you can disable unnecessary modules,
 // and they will not be included in the plugin at compile time,
 // to disable, specify 0 for the required module.
-#define MODULE_MAPINFO				1 //MapInfo
-#define MODULE_WEAPONINFORMATION	1 //WeaponInformation
+#define MODULE_MAPINFO				0 //MapInfo
+#define MODULE_WEAPONINFORMATION	0 //WeaponInformation
 #define MODULE_REQMATCH				1 //ReqMatch
 #define MODULE_CVARSETTINGS			1 //CvarSettings
 #define MODULE_GHOSTTANK			0 //GhostTank

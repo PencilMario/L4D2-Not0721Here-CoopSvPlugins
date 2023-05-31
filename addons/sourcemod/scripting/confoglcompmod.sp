@@ -12,14 +12,14 @@
 #define MODULE_WEAPONINFORMATION	1 //WeaponInformation
 #define MODULE_REQMATCH				1 //ReqMatch
 #define MODULE_CVARSETTINGS			1 //CvarSettings
-#define MODULE_GHOSTTANK			1 //GhostTank
-#define MODULE_UNRESERVELOBBY		1 //UnreserveLobby
+#define MODULE_GHOSTTANK			0 //GhostTank
+#define MODULE_UNRESERVELOBBY		0 //UnreserveLobby
 #define MODULE_GHOSTWARP			0 //GhostWarp (plugin l4d2_ghost_warp replaces this functionality)
 #define MODULE_PASSWORDSYSTEM		1 //PasswordSystem
-#define MODULE_BOTKICK				1 //BotKick
-#define MODULE_SCOREMOD				1 //ScoreMod
-#define MODULE_FINALESPAWN			1 //FinaleSpawn
-#define MODULE_BOSSSPAWNING			1 //BossSpawning
+#define MODULE_BOTKICK				0 //BotKick
+#define MODULE_SCOREMOD				0 //ScoreMod
+#define MODULE_FINALESPAWN			0 //FinaleSpawn
+#define MODULE_BOSSSPAWNING			0 //BossSpawning
 #define MODULE_CLIENTSETTINGS		1 //ClientSettings
 #define MODULE_ITEMTRACKING			1 //ItemTracking
 #define MODULE_WATERSLOWDOWN		1 //WaterSlowdown (config 'pmelite' uses it)

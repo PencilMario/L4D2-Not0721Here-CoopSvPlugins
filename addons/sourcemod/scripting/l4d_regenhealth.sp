@@ -64,11 +64,11 @@ public Action Timer_Health(Handle timer)
         {
             if (IsClientInGame(i) && GetClientTeam(i) == L4D2Team_Survivor){
                 g_iNextHealTick[i]--;
-                if (g_iHealHealth[i]){
+                if (g_iHealHealth[i]>0){
                     AddPlayerHealth2(i, g_iHealHealth[i]);
                     g_iHealHealth[i] = 0;
                 } 
-                if (!g_iNextHealTick[i])
+                if (g_iNextHealTick[i]<=0)
                 {
                     AddPlayerHealth(i, g_cHealRec_PerTick.IntValue);
                     int h = GetPlayerHealth(i);

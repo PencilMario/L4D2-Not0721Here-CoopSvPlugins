@@ -18,7 +18,6 @@
 #include <sourcemod>
 #include <sdktools>
 #include <sdkhooks>
-#include <readyup>
 #undef REQUIRE_PLUGIN
 #include <adminmenu>
 #include <l4d2util_constants>

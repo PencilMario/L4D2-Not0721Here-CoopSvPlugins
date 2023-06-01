@@ -68,10 +68,10 @@ public Action Timer_Health(Handle timer)
                     AddPlayerHealth2(i, g_iHealHealth[i]);
                     g_iHealHealth[i] = 0;
                 } 
-                if (g_iNextHealTick[i]<=0)
+                int h = GetPlayerHealth(i);
+                if (g_iNextHealTick[i]<=0 && h < g_cHealRec_MaxHealth.IntValue)
                 {
                     AddPlayerHealth(i, g_cHealRec_PerTick.IntValue);
-                    int h = GetPlayerHealth(i);
                     if (h<g_cHealRec_MaxHealth.IntValue) g_iNextHealTick[i] = g_cHealRec_HealSpeedGreen.IntValue;
                     if (h<40 && h<g_cHealRec_MaxHealth.IntValue) g_iNextHealTick[i] = g_cHealRec_HealSpeedYellow.IntValue;
                     if (h<25 && h<g_cHealRec_MaxHealth.IntValue) g_iNextHealTick[i] = g_cHealRec_HealSpeedRed.IntValue;
@@ -93,7 +93,7 @@ public void SetPlayerHealthRe(int player, int health){
         SetEntityHealth(player, health);
     }
     else{
-        SetEntityHealth(player, g_cHealRec_MaxHealth.IntValue-h2);
+        SetEntityHealth(player, g_cHealRec_MaxHealth.IntValue);
     }
 }
 

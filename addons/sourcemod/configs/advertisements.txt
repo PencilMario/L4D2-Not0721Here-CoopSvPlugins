@@ -23,21 +23,10 @@
     }
     "2"
     {
-        "chat"		"{green}当前刷特速率：{sss_1P}特/{SS_Time}秒"
+        "chat"		"[{green}!{default}]当前刷特速率：{olive}{sss_1P}特/{SS_Time}秒"
     }
     "3"
     {
-        "menu"			"Next map is {nextmap} in {timeleft} minutes."
-        "flags"			"cft"
-    }
-    "4"
-    {
-        "chat"			"{green}Current {lightgreen}Map: {default}{currentmap}"
-        "flags"			"z"
-    }
-    "5"
-    {
-        "top"				"{orange}Admins: friendly fire is {mp_friendlyfire}."
-        "flags"			""
+        "chat"      "{green}服务器才刚起步，所以还没什么插件~"
     }
 }

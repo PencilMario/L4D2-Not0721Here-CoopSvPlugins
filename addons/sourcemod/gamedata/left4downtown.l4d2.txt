@@ -1,0 +1,373 @@
+"Games"
+{
+	"left4dead2"
+	{
+		"Offsets"
+		{
+			/* Offset into CDirectorMusicBanks::OnRoundStart */
+			"TheDirector"
+			{
+				"windows"	"8"
+			}
+
+			/* Offset into CDirector::AreWanderersAllowed */
+			"CDirectorScavengeMode"
+			{
+				"windows"	"8"   /* mov ecx, [esi+568h] */
+				"linux"		"18"  /* mov eax, [ebx+578h] */
+			}
+			
+			/* Offset from ConnectClientLobbyCheck to cmp with max players check
+			   
+			   string #Valve_Reject_Server_Full
+			 */
+			"ValveRejectServerFullFirst"
+			{
+				"windows"	"31"  /* cmp eax, [esi+180h] -> cmp eax, imm32 */ 
+				"linux"		"35"  /* cmp edx, [ebp+180h] -> cmp edx, imm32 */
+			}
+		}
+		
+		"Signatures"
+		{
+
+			/* 
+			* CTerrorGameRules::GetTeamScore(int,bool)
+			*/
+			"GetTeamScore"
+			{
+					"library"    "server"
+					"linux"    "@_ZN16CTerrorGameRules12GetTeamScoreEib"
+				"windows" "\x8B\x2A\x2A\x2A\x85\xC0\x2A\x2A\x33\xC0\xC2" // found by psychonic
+				/* 8B ? ? ? 85 C0 ? ? 33 C0 C2 */
+			}
+
+			/*
+			 * CTerrorGameRules::SetCampaignScores(int,int)
+			 */
+			"SetCampaignScores" 
+			{
+				"library"	"server"
+				"linux"		"@_ZN16CTerrorGameRules17SetCampaignScoresEii"
+				"windows" "\x56\x8D\x44\x2A\x2A\x8D\xB1\x2A\x2A\x2A\x2A\x50\x6A\x00\x8B\xCE\xE8\x2A\x2A\x2A\x2A\x8D\x4C\x2A\x2A\x51\x6A\x01\x8B\xCE\xE8\x2A\x2A\x2A\x2A\x5E\xC2\x08\x00"
+					/* 56 8D 44 ? ? 8D B1 ? ? ? ? 50 6A 00 8B CE E8 ? ? ? ? 8D 4C ? ? 51 6A 01 8B CE E8 ? ? ? ? 5E C2 08 00 */
+			}
+			
+			/*
+			 * CTerrorGameRules::ClearTeamScores(bool)
+			 */
+			"ClearTeamScores"
+			{
+				"library"	"server"
+				"linux"		"@_ZN16CTerrorGameRules15ClearTeamScoresEb"
+				"windows" "\x51\x53\x55\x56\x8B\xE9\x57\x33\xDB\x33\xF6**********\x50\x56"
+			}
+
+			/*
+			 * CBaseServer::SetReservationCookie(uint64_t, char*, va_list)
+                         *  - clear the reservation by setting a cookie of 0
+			 */
+			"SetReservationCookie" 
+			{
+				"library"	"engine"
+				"linux"		"@_ZN11CBaseServer20SetReservationCookieEyPKcz"
+				"windows" "\x81\xEC\x2A\x2A\x2A\x2A\x55\x8B\xAC\x24\x2A\x2A\x2A\x2A\x56\x8B\xB4\x24\x2A\x2A\x2A\x2A\x57\x8B\xBC\x24\x2A\x2A\x2A\x2A\x3B\xBE\x2A\x2A\x2A\x2A\x75\x08\x3B\xAE\x2A\x2A\x2A\x2A\x74\x63"
+				/* 81 EC ? ? ? ? 55 8B AC 24 ? ? ? ? 56 8B B4 24 ? ? ? ? 57 8B BC 24 ? ? ? ? 3B BE ? ? ? ? 75 08 3B AE ? ? ? ? 74 63 */
+			}
+			
+			/*
+			 * CTerrorPlayer::TakeOverBot
+			 */
+			"TakeOverBot"
+			{
+                		"library"    "server"
+                		"linux"    "@_ZN13CTerrorPlayer11TakeOverBotEb"
+                		"windows" "\x81*****\x53\x55\x56\x8D***\x57\x8B\xF1\x33\xDB"
+			}
+			
+			/* 
+			 * SurvivorBot::SetHumanSpectator(CTerrorPlayer*) 
+			 */
+			"SetHumanSpec"
+			{
+                		"library"    "server"
+               			"linux" "@_ZN11SurvivorBot17SetHumanSpectatorEP13CTerrorPlayer"
+                		"windows" "\x53\x56\x8B\xF1\x33\xDB\x39*******\x5E\x32\xC0\x5B"
+			}
+
+			/* CDirectorScavengeMode::OnBeginRoundSetupTime
+		        *  used to reset the setup timer during scavenge mode
+ 			*/
+			"CDirectorScavengeMode_OnBeginRoundSetupTime"
+			{
+				"library" 	"server"
+				"linux"		"@_ZN21CDirectorScavengeMode21OnBeginRoundSetupTimeEv"
+				"windows" 	"\x83\xEC\x10\x56\x8B\xF1\xE8\x2A\x2A\x2A\x2A\x84\xC0\x74\x2A\xA1\x2A\x2A\x2A\x2A\xD9\x40\x2A\x51"
+				/* 83 EC 10 56 8B F1 E8 ? ? ? ? 84 C0 74 ? A1 ? ? ? ? D9 40 ? 51 */
+			}
+			/* CTerrorGameRules::ResetRoundNumber
+		        *  used to reset the round number during scavenge mode
+ 			*/
+			"CTerrorGameRules_ResetRoundNumber"
+			{
+				"library" 	"server"
+				"linux"		"@_ZN16CTerrorGameRules16ResetRoundNumberEv"
+				"windows" 	"\x56\x8B\xF1\x83\xBE\x2A\x2A\x2A\x2A\x00\x74\x2A\xE8\x2A\x2A\x2A\x2A\xC7\x86\x2A\x2A\x2A\x2A\x00\x00\x00\x00\x5E\xC3"
+				/* 56 8B F1 83 BE ? ? ? ? 00 74 ? E8 ? ? ? ? C7 86 ? ? ? ? 00 00 00 00 5E C3 */
+			}
+			
+			/* CTerrorGameRules::SetRoundEndTime(float)
+		        *  used to freeze the scavenge game clock
+ 			*/
+			"CTerrorGameRules_SetRoundEndTime"
+			{
+				"library" 	"server"
+				"linux"		"@_ZN16CTerrorGameRules15SetRoundEndTimeEf"
+				"windows" 	"\xD9\x44\x24\x04\x56\x8B\xF1\xD8\x9E\x2A\x2A\x2A\x2A\x57\xDF\xE0\xF6\xC4\x2A\x7B\x2A\xE8"
+				/* D9 44 24 04 56 8B F1 D8 9E ? ? ? ? 57 DF E0 F6 C4 ? 7B ? E8 */
+			}
+			
+
+			/* Used to get offset for CDirectorScavengeMode 
+				*(director + offset) == ptr to CDirectorScavengeMode
+ 			*/
+			"CDirector_AreWanderersAllowed"
+			{
+				"library" 	"server"
+				"linux"		"@_ZNK9CDirector19AreWanderersAllowedEv"
+				"windows" 	"\x83\xEC\x0C\x56\x8B\xF1\x8B\x8E\x2A\x2A\x2A\x2A\x8D\x2A\x2A\x2A\x50\xE8\x2A\x2A\x2A\x2A\x84\xC0"
+				/* 83 EC 0C 56 8B F1 8B 8E ? ? ? ? 8D ? ? ? 50 E8 ? ? ? ? 84 C0 */
+			}
+			
+			/* Used solely to get the offset for TheDirector */
+			"DirectorMusicBanks_OnRoundStart"
+			{
+				"library"	"server"
+				"windows"       "\x83\xEC\x14\x57\x8B\xF9\x8B\x0D\x2A\x2A\x2A\x2A\xE8\x2A\x2A\x2A\x2A\x84\xC0\x0F\x2A\x2A\x2A\x2A\x2A\x53\x55\x6A\x24\xE8"
+				/* 83 EC 14 57 8B F9 8B 0D ? ? ? ? E8 ? ? ? ? 84 C0 0F ? ? ? ? ? 53 55 6A 24 E8 */
+			}
+
+			/* Find the Director/ZombieManager singleton classes */
+			
+			"TheDirector"
+			{
+				"library"	"server"
+				"linux"		"@TheDirector"
+			}
+
+			/*
+			 * CDirector::RestartScenarioFromVote(const char*)
+			 */
+			"RestartScenarioFromVote"
+			{
+				"library"	"server"
+				"linux"	"@_ZN9CDirector23RestartScenarioFromVoteEPKc"
+				"windows" "\x56\x8B\xF1\x8B\x0D\x2A\x2A\x2A\x2A\x85\xC9\x57\x74\x2A\x6A\x01\xE8\x2A\x2A\x2A\x2A\x8B\x0D\x2A\x2A\x2A\x2A\x85\xC9"
+					/* 56 8B F1 8B 0D ? ? ? ? 85 C9 57 74 ? 6A 01 E8 ? ? ? ? 8B 0D ? ? ? ? 85 C9 */
+			}
+
+			/* 
+			 * CDirector::Rematch() 
+                         * - unused by anything
+                         */
+			"Rematch"
+			{
+				"library"	"server"
+				"linux"	"@_ZN9CDirector7RematchEv"
+				"windows" "\xA1\x2A\x2A\x2A\x2A\x8B\x40\x2A\x85\xC0\x56\x57\x8B\xF1\x75\x2A\xB8\x2A\x2A\x2A\x2A\x8B\x7C\x24\x0C\x85\xFF\x75\x2A\x8B\xF8"
+					/* broken on windows after a patch - but we're not using it anyhow*/
+					/* A1 ? ? ? ? 8B 40 ? 85 C0 56 57 8B F1 75 ? B8 ? ? ? ? 8B 7C 24 0C 85 FF 75 ? 8B F8 */
+			}
+			
+			/*
+			* ZombieManager::SpawnTank(Vector  const&, QAngle  const&)
+			*/
+			"SpawnTank"
+			{ 
+				"library" "server"
+				"linux" "@_ZN13ZombieManager9SpawnTankERK6VectorRK6QAngle"
+				"windows" "\x57\x8B\xF9\x8B\x0D\x2A\x2A\x2A\x2A\xE8\x2A\x2A\x2A\x2A\x85\xC0\x7C\x14\x8B\x0D\x2A\x2A\x2A\x2A\x39\x81\x2A\x2A\x2A\x2A\x7C\x06"
+				/* 57 8B F9 8B 0D ? ? ? ? E8 ? ? ? ? 85 C0 7C 14 8B 0D ? ? ? ? 39 81 ? ? ? ? 7C 06 */
+			}
+			
+			/*
+			* ZombieManager::SpawnWitch(Vector  const&, QAngle  const&)
+			*/
+			"SpawnWitch"
+			{ 
+				"library" "server"
+				"linux" "@_ZN13ZombieManager10SpawnWitchERK6VectorRK6QAngle"
+				"windows" "\x8B\x0D\x2A\x2A\x2A\x2A\x6A\xFF\x68\x2A\x2A\x2A\x2A\xE8\x2A\x2A\x2A\x2A\x85\xC0\x7C\x2A\x8B\x0D\x2A\x2A\x2A\x2A\x39\x81\x2A\x2A\x2A\x2A\x7C\x2A\x33\xC0\xC2"
+					/* 8B 0D ? ? ? ? 6A FF 68 ? ? ? ? E8 ? ? ? ? 85 C0 7C ? 8B 0D ? ? ? ? 39 81 ? ? ? ? 7C ? 33 C0 C2 */
+			}
+			
+			
+			/*
+			* CDirectorVersusMode::OnVersusRoundStarted()
+			*/
+			"OnVersusRoundStarted"
+			{ 
+				"library" "server"
+				"linux" "@_ZN19CDirectorVersusMode20OnVersusRoundStartedEv"
+				"windows" "\x8B\x0D\x2A\x2A\x2A\x2A\x85\xC9\x74\x11\xA1\x2A\x2A\x2A\x2A\xD9\x40\x2A\x51\xD9\x1C\x24"
+					/* 8B 0D ? ? ? ? 85 C9 74 11 A1 ? ? ? ? D9 40 ? 51 D9 1C 24 */
+			}
+			
+			/*
+			 * CDirector::OnFirstSurvivorLeftSafeArea(CTerrorPlayer *)
+			 */
+			"OnFirstSurvivorLeftSafeArea"
+			{ 
+				"library" "server"
+				"linux" "@_ZN9CDirector27OnFirstSurvivorLeftSafeAreaEP13CTerrorPlayer"
+				"windows" "\x83\xEC\x10\x55\x8B\x6C\x24\x18\x56\x8B\xF1\x8B\x8E\x2A\x2A\x2A\x2A\x55\xE8\x2A\x2A\x2A\x2A\x84\xC0"
+					/* 83 EC 10 55 8B 6C 24 18 56 8B F1 8B 8E ? ? ? ? 55 E8 ? ? ? ? 84 C0 */
+			}
+			
+			/*
+			 * CDirector::GetScriptValue(const char*, int)
+			 */
+			"CDirector_GetScriptValueInt"
+			{
+				"library" "server"
+				"linux" "@_ZN9CDirector14GetScriptValueEPKci"
+				"windows" "\x8B\x81\x2A\x2A\x2A\x2A\x83\xEC\x08\x83\xF8\xFF\x74\x55\x8B\x0D\x2A\x2A\x2A\x2A\x33\xD2\x3B\xCA\x74\x49\x56\x8D\x74\x24\x04\x56\x8B\x74\x24\x14\x66\x89\x54\x24\x0C\x66\x89\x54\x24\x0E\x89\x54\x24\x08\x8B\x11\x56\x50\x8B\x42\x2A\xFF\xD0\x84\xC0\x5E\x74\x23\x8D\x4C\x24\x10\x51\x8D\x4C\x24\x04\xE8\x2A\x2A\x2A\x2A\x84\xC0\x75\x11\x8B\x0D\x2A\x2A\x2A\x2A\x8B\x11\x8B\x52\x2A\x8D\x04\x24\x50\xFF\xD2\x8B\x44\x24\x10\x83\xC4\x08\xC2\x08\x00"
+					 /* 8B 81 ? ? ? ? 83 EC 08 83 F8 FF 74 55 8B 0D ? ? ? ? 33 D2 3B CA 74 49 56 8D 74 24 04 56 8B 74 24 14 66 89 54 24 0C 66 89 54 24 0E 89 54 24 08 8B 11 56 50 8B 42 ? FF D0 84 C0 5E 74 23 8D 4C 24 10 51 8D 4C 24 04 E8 ? ? ? ? 84 C0 75 11 8B 0D ? ? ? ? 8B 11 8B 52 ? 8D 04 24 50 FF D2 8B 44 24 10 83 C4 08 C2 08 00 */
+			}
+			
+			/*
+			 * CDirector::IsFinaleEscapeInProgress(void)
+			 */
+			"CDirector_IsFinaleEscapeInProgress"
+			{
+				"library" "server"
+				"linux" "@_ZNK9CDirector24IsFinaleEscapeInProgressEv"
+				"windows" "\x8B\x81\x2A\x2A\x2A\x2A\x83\x38\x2A\x75\x03\x32\xC0\xC3\x33\xC0\x83\xB9\x2A\x2A\x2A\x2A\x02\x0F\x94\xC0\xC3"
+					 /* 8B 81 ? ? ? ? 83 38 ? 75 03 32 C0 C3 33 C0 83 B9 ? ? ? ? 02 0F 94 C0 C3 */
+			}
+			
+			/*
+			 * CTerrorPlayer::CanBecomeGhost(bool areSpawnsDisabled)
+			 */
+			"CTerrorPlayer_CanBecomeGhost"
+			{
+				"library" "server"
+				"linux" "@_ZN13CTerrorPlayer14CanBecomeGhostEb"
+				"windows" "\x83\xEC\x2A\x56\x57\x8B\xF1\xE8\x2A\x2A\x2A\x2A\x83\xF8\x2A\x74\x2A\x33\xFF\x39\xBE\x2A\x2A\x2A\x2A\x74\x2A\x80\x2A\x2A\x2A\x0F"
+					 /* 83 EC ? 56 57 8B F1 E8 ? ? ? ? 83 F8 ? 74 ? 33 FF 39 BE ? ? ? ? 74 ? 80 ? ? ? 0F */
+			}
+			
+			/*
+			 * CTerrorPlayer::OnEnterGhostState()
+			 */
+
+			"CTerrorPlayer_OnEnterGhostState"
+			{
+            	"library"	"server"
+				"linux"     "@_ZN13CTerrorPlayer17OnEnterGhostStateEv"
+            	"windows"	"\x53\x55\x56\x8B\xF1\x8B\x86\xB0\x3A\x00\x00\x8B\x50\x0C\x8D\x8E" //found by V10
+			}
+			
+			/*
+			 * CDirector::IsFinale(void)const
+			 */
+			"CDirector_IsFinale"
+			{
+				"library"	"server"
+				"linux"	"@_ZNK9CDirector8IsFinaleEv"
+				"windows" "\x8B\x81****\x33\xC9\x83\x38*\x0F\x95\xC1\x8A\xC1\xC3"
+				/* 8B 81 ? ? ? ? 33 C9 83 38 ? 0F 95 C1 8A C1 C3 */
+			}
+
+/*********************************************************************
+****************** PLAYER SLOTS PATCHING *****************************
+*********************************************************************/
+
+			/*
+			* CTerrorGameRules::GetMaxHumanPlayers(void)
+			* We just override the return value to our own
+			* 
+			* This method is called for max players when viewing server info
+                        * Overriding this on Linux changes the server browser maxplayers
+                        *
+                        * On Windows overriding it doesn't fix the server browser,
+                        * but it does break scavenge mode (like the map doesn't support scavenge)
+			*/
+			"GetMaxHumanPlayers"
+			{
+				"library" "server"
+				"linux" "@_ZNK16CTerrorGameRules18GetMaxHumanPlayersEv"
+				"windows" "\xF7\x05\x2A\x2A\x2A\x2A\x2A\x2A\x2A\x2A\x74\x07\xB8\x2A\x2A\x2A\x2A\xEB\x11\xA1\x2A\x2A\x2A\x2A\x8B\x40\x2A\x85\xC0\x75\x05\xB8\x2A\x2A\x2A\x2A\x68\x2A\x2A\x2A\x2A\x50\xE8\x2A\x2A\x2A\x2A\x83\x2A\x2A\x85\xC0\x74\x2A\xF7\x2A\x2A\x2A\x2A\x2A\x2A\x2A\x2A\x2A\x74\x2A\xB8\x2A\x2A\x2A\x2A\xEB\x2A"
+
+					/* F7 05 ?  ?  ?  ?  ?  ?  ?  ?  74 07 B8 ?  ?  ?  ?  EB 11 A1 ?  ?  ?  ?   8B 40 ?  85 C0 75 05 B8 ?  ?  ?  ?  68 ?  ?  ?  ?  50 E8 ?  ?  ?  ?  83 ?  ?  85 C0 74 ? F7 ? ? ? ? ? ? ? ? ? 74 ? B8 ? ? ? ? EB ? */
+			}
+
+			/*
+			* Total Number of Players Supported (Steam Group/Lobby)
+			* Currently disabled - SourceMod unable to look up other libraries.
+			*
+                        "GetTotalNumPlayersSupported"
+                        {
+                                "library"       "matchmaking_ds"
+                                "linux"         "@_ZN11CMatchTitle27GetTotalNumPlayersSupportedEv"
+                        }
+			*/
+
+			/* CServerGameClients::GetPlayerLimits(int& , int&, int&) */
+
+			"GetPlayerLimits"
+			{
+				"library"	"server"
+				"linux"		"@_ZNK18CServerGameClients15GetPlayerLimitsERiS0_S0_"
+				"windows"    "\x8B\x44\x24\x04\x8B\x4C\x24\x08\xC7\x00\x2A\x2A\x2A\x2A\xC7\x01\x2A\x2A\x2A\x2A\x8B\x10"
+					/* 8B 44 24 04 8B 4C 24 08 C7 00 ? ? ? ? C7 01 ? ? ? ? 8B 10 */
+			}
+                        
+			/*
+			* int CBaseServer::GetMasterServerPlayerCounts(int &, int &, int &)
+			* 
+			* Used to override server browser maxplayers reporting (Windows)
+			*/
+			"GetMasterServerPlayerCounts"
+			{
+				"library" "engine"
+				"linux" "@_ZN11CBaseServer27GetMasterServerPlayerCountsERiS0_S0_"
+				"windows" "\x56\x8B\xF1\xE8\x2A\x2A\x2A\x2A\x8B\x4C\x24\x08\x89\x01\x8B\x0D\x2A\x2A\x2A\x2A\x85\xC9\x74\x2A\x8B\x11\x8B\x42\x48"
+
+				/* 
+56 8B F1 E8 ? ? ? ? 8B 4C 24 08 89 01 8B 0D ? ? ? ? 85 C9 74 ? 8B 11 8B 42 48
+				*/
+
+			}
+			
+			/* Not an actual function,
+			   this is inside CBaseServer::ConnectClient (a jz instruction)
+			   
+			   use it to remove skippable code when sv_allow_lobby_connect 0
+			   */
+			"ConnectClientLobbyCheck"
+			{
+				"library"	"engine"
+				"linux"		"\x8B\x2A\x2A\x2A\x2A\x2A\x2A\x8B\x45\x2A\x8B\x79\x2A\x89\x2A\x2A\xFF\x2A\x2A\x8B\x5D\x00\x89\x2A\x2A\x89\xC6\xFF\x53\x2A\x8D\x14\x3E\x29\xC2\x3B\x95"
+
+				"windows" 	"\x74\x2A\x8B\x54\x2A\x2A\x8B\x06\x8B\x7A\x2A\x8B\x50\x2A\x8B\xCE\xFF\xD2\x2B\xF8\x8B\x06\x8B\x50\x2A\x8B\xCE\xFF\xD2\x03\xC7"
+					/* 74 ?  8B 54 ?  ?  8B 06 8B 7A ?  8B 50 ?  8B CE FF D2 2B F8 8B 06 8B 50 ?  8B CE FF D2 03 C7 */			
+			}
+			
+			
+			/* Not an actual function,
+			   This rejects players when there are all full human players
+			   
+			   string "Human player limit reached (%d/%d)"
+			   */
+			"HumanPlayerLimitReached"
+			{
+				"library"	"server"
+				"linux"		"\x7E\x35\x8B\x74\x24\x2A\x89\x6C\x24\x2A\x8B\x44\x24\x2A\x8B\x6C\x24\x2A\x8B\x4C\x24\x2A\x89\x74\x24\x2A\x89\x7C\x24\x2A\x89\x6C\x24\x2A\x89\x44\x24\x2A\x89\x4C\x24\x2A"
+
+				"windows" "\x7C\x2A\x8B\x2A\x2A\x2A\x8B\x2A\x2A\x2A\x50\x57\x68\x2A\x2A\x2A\x2A\x51\x52\xE8\x2A\x2A\x2A\x2A\x83\xC4\x2A\x5F\x5E\x32\xC0\x5B"
+				          /* 7C ?  8B ?  ?  ?  8B  ? ?  ?  50 57 68 ?  ?  ?  ? 51 52 E8 ? ?  ? ? 83 C4 ? 5F 5E 32 C0 5B */			
+			}
+		}	
+	}
+}

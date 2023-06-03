@@ -37,11 +37,11 @@ public void OnPluginStart()
 }
 
 public Action RoundStart_Event(Event event, const String:name[], bool:dontBroadcast){
-	FakeClientCommand(1, "sm_reloadscript");
+	CheatCommand("sm_reloadscript", "");
 	return Plugin_Continue;
 }
 public reload_script(Handle:convar, const String:oldValue[], const String:newValue[]){
-	FakeClientCommand(1, "sm_reloadscript");
+	CheatCommand("sm_reloadscript", "");
 }
 public void OnClientConnected(int client)
 {
@@ -109,7 +109,7 @@ public Action Cmd_SetAiTime(int client, int args)
 	SS_Time.IntValue = time;
 	CPrintToChatAll("{green}[{lightgreen}!{green}] {olive}%N{default}修改了特感刷新配置", client);
 	CPrintToChatAll("{green}[{lightgreen}!{green}] {default}刷新配置：最高同屏{olive}%d{default} ，单类至少{olive}%d{default}只，单SlotCD{olive}%ds{default}",	SS_1_SiNum.IntValue, SILimit(SS_1_SiNum.IntValue), SS_Time.IntValue);
-	FakeClientCommand(client, "sm_reloadscript");
+	CheatCommand("sm_reloadscript", "");
 	return Plugin_Continue;
 }
 
@@ -129,6 +129,21 @@ public Action Cmd_SetAiSpawns(int client, int args)
 	GetClientName(client, name, sizeof(name));
 	CPrintToChatAll("{green}[{lightgreen}!{green}] {olive}%s{default}修改了特感刷新配置", name);
 	CPrintToChatAll("{green}[{lightgreen}!{green}] {default}刷新配置：最高同屏{olive}%d{default} ，单类至少{olive}%d{default}只，单SlotCD{olive}%ds{default}",	SS_1_SiNum.IntValue, SILimit(SS_1_SiNum.IntValue), SS_Time.IntValue);
-	FakeClientCommand(client, "sm_reloadscript");
+	CheatCommand("sm_reloadscript", "");
 	return Plugin_Continue;
+}
+
+public void CheatCommand(char[] strCommand, char[] strParam1)
+{
+	for (int client = 1; client <= MaxClients; ++client)
+	{
+		if (IsClientInGame(client))
+		{
+			int flags = GetCommandFlags(strCommand);
+			SetCommandFlags(strCommand, flags & ~FCVAR_CHEAT);
+			FakeClientCommand(client, "%s %s", strCommand, strParam1);
+			SetCommandFlags(strCommand, flags);
+			return;
+		}
+	}
 }

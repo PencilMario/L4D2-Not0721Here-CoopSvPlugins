@@ -96,7 +96,7 @@ public void OnPluginStart()
 	g_cvNFFBlockGuns = CreateConVar("nff_blockguns", "1", "Block bullet damage?\n0: OFF\n1: ON", FCVAR_NOTIFY, true, 0.0, true, 1.0);
 	g_cvNFFBlockMelee = CreateConVar("nff_blockmelee", "1", "Block melee damage?\n0: OFF\n1: ON", FCVAR_NOTIFY, true, 0.0, true, 1.0);
 	g_cvNFFDisabledGameModes = CreateConVar("nff_disabledgamemodes", "", "Disable the No Friendly-Fire in these game modes.\nGame mode limit: 16\nCharacter limit for each game mode: 32\nEmpty: None\nNot empty: Disabled in these game modes.", FCVAR_NOTIFY);
-	g_cvNFFEnable = CreateConVar("nff_enable", "1", "Enable the plugin?\n0: OFF\n1: ON", FCVAR_NOTIFY, true, 0.0, true, 1.0);
+	g_cvNFFEnable = CreateConVar("nff_enable", "0", "Enable the plugin?\n0: OFF\n1: ON", FCVAR_NOTIFY, true, 0.0, true, 1.0);
 	g_cvNFFEnabledGameModes = CreateConVar("nff_enabledgamemodes", "", "Enable the No Friendly-Fire in these game modes.\nGame mode limit: 16\nCharacter limit for each game mode: 32\nEmpty: None\nNot empty: Enabled in these game modes.", FCVAR_NOTIFY);
 	g_cvNFFGameModeTypes = CreateConVar("nff_gamemodetypes", "0", "Enable the No Friendly-Fire in these game mode types.\n0 OR 15: ALL\n1: Co-op\n2: Versus\n3: Survival\n4: Scavenge", FCVAR_NOTIFY, true, 0.0, true, 15.0);
 	g_cvNFFInfected = CreateConVar("nff_infected", "1", "Disable Infected team friendly-fire?\n0: OFF\n1: ON", FCVAR_NOTIFY, true, 0.0, true, 1.0);

@@ -22,5 +22,12 @@
 | *plugins/fix*       | 多人问题修复                            |
 | script_reloader     | 脚本重载器，强制重载一遍插件            |
 | Si_SpawnSetting     | 自用辅助脚本刷特插件                    |
-| l4d_regenhealth     | 回血插件（该模式禁用）                  |
-
+| no_friendly-fire     | 禁止友伤（TODO: 超额友伤踢出）                 |
+|transition_restore_fix|防多人装备错乱|
+|MultiSlots|4+人支持|
+|sm_l4dvs_mapchanger|自动切图插件|
+|l4d2_tank_hp|tank 4+人增加血量|
+|l4d2_kickloading|加载超时踢出|
+|l4d2_skill_detect|技巧检测|
+|survivor_mvp|mvp|
+|show_mic|显示谁在开麦|

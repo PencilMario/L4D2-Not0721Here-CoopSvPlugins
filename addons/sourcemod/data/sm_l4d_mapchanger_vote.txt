@@ -1,0 +1,8 @@
+c1m4_atrium<>死亡中心(普通)
+c6m3_port<>短暂时刻(普通)
+c2m5_concert<>黑色狂欢节(普通)
+c3m4_plantation<>沼澤激战(普通)
+c4m5_milltown_escape<>暴风骤雨(普通)
+c5m5_bridge<>教區(普通)
+c8m5_rooftop<>毫不留情(普通)
+c7m3_port<>犧牲(困難)

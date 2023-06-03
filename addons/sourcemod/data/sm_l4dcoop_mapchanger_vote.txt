@@ -1,0 +1,13 @@
+c1m1_hotel<>死亡中心
+c2m1_highway<>黑色狂欢节
+c3m1_plankcountry<>沼泽激战
+c4m1_milltown_a<>暴风骤雨
+c5m1_waterfront<>教區
+c6m1_riverbank<>短暂時刻
+c7m1_docks<>犧牲
+c8m1_apartment<>毫不留情
+c9m1_alleys<>坠机危险
+c10m1_caves<>死亡丧钟
+c11m1_greenhouse<>静寂时分
+c12m1_hilltop<>血腥收获
+c13m1_alpinecreek<>刺骨寒溪

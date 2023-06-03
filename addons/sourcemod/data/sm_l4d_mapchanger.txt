@@ -1,0 +1,44 @@
+"ForceMissionChangerSettings"
+{
+	"c1m4_atrium"
+	{
+		"下一章地圖" "c6m3_port"
+                "下一章地圖名稱" "The Passing - Port"
+	}
+        "c6m3_port"
+	{
+		"下一章地圖" "c2m5_concert"
+                "下一章地圖名稱" "Dark Carnival - Concert"
+	}
+	"c2m5_concert"
+	{
+		"下一章地圖" "c3m4_plantation"
+                "下一章地圖名稱" "Swamp Fever - Plantation"
+	}
+	"c3m4_plantation"
+	{
+		"下一章地圖" "c4m5_milltown_escape"
+                "下一章地圖名稱" "Hard Rain - Milltown Escape"
+	}
+	"c4m5_milltown_escape"
+	{
+		"下一章地圖" "c5m5_bridge"
+                "下一章地圖名稱" "The Parish - Bridge"
+	}
+        "c5m5_bridge"
+	{
+		"下一章地圖" "c7m3_port"
+                "下一章地圖名稱" "犧牲(困難)"
+        }
+        "c7m3_port"
+	{
+		"下一章地圖" "c8m5_rooftop"
+                "下一章地圖名稱" "毫不留情"
+        }
+        "c8m5_rooftop"
+	{
+		"下一章地圖" "c1m4_atrium"
+                "下一章地圖名稱" "毫不留情"
+        }
+}
+

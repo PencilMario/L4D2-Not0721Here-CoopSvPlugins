@@ -1,10 +1,10 @@
-"Phrases"
+﻿"Phrases"
 {
 	"Players Speaking:"
 	{
 		"en"		"Players Speaking:"
-        "es"		"Jugadores Hablando:"
-        "pt"		"Jogadores Falando:"
+                "es"		"Jugadores Hablando:"
+                "pt"		"Jogadores Falando:"
 		"ru"		"Игроки говорят:"
 		"zho"		"玩家MIC:"
 		"chi"		"玩家语音:"

@@ -1,0 +1,149 @@
+"Games"
+{
+	"left4dead2"
+	{
+		"Offsets"
+		{
+			"CNavArea::m_damagingTickCount"
+			{
+				"windows"	"112"
+				"linux"		"112"
+			}
+			"CNavArea::m_center"
+			{
+				"windows"	"44"
+				"linux"		"44"
+			}
+			"CNavArea::m_parent"
+			{
+				"windows"	"120"
+				"linux"		"120"
+			}
+			"CNavArea::m_nwCorner"
+			{
+				"windows"	"4"
+				"linux"		"4"
+			}			
+			"CNavArea::m_seCorner"
+			{
+				"windows"	"16"
+				"linux"		"16"
+			}
+			"CNavArea::m_invDxCorners"
+			{
+				"windows"	"28"
+				"linux"		"28"
+			}			
+			"CNavArea::m_invDyCorners"
+			{
+				"windows"	"32"
+				"linux"		"32"
+			}
+
+			"CBaseCombatWeapon::GetMaxClip1"
+			{
+				"windows"	"323"
+				"linux"		"324"
+			}
+		}
+
+		"Signatures"
+		{
+			"CBaseEntity::CalcAbsolutePosition"
+			{
+				"library"	"server"
+				"linux"		"@_ZN11CBaseEntity20CalcAbsolutePositionEv"
+				"mac"		"@_ZN11CBaseEntity20CalcAbsolutePositionEv"
+				"windows"	"\x53\x8B\xDC\x83\xEC\x08\x83\xE4\xF0\x83\xC4\x04\x55\x8B\x6B\x04\x89\x6C\x24\x04\x8B\xEC\x83\xEC\x78\xA1\x2A\x2A\x2A\x2A\x33\xC5\x89\x45\xFC\x56"
+			}
+
+			"CBaseAnimating::LookupBone"
+			{
+				"library"	"server"
+				"linux"		"@_ZN14CBaseAnimating10LookupBoneEPKc"
+				"mac"		"@_ZN14CBaseAnimating10LookupBoneEPKc"
+				"windows"	"\x2A\x2A\x2A\x2A\x8B\x2A\x83\x2A\x2A\x2A\x2A\x2A\x2A\x75\x2A\xE8\x8C\xFA"
+			}
+
+			"CBaseAnimating::GetBonePosition"
+			{
+				"library"	"server"
+				"linux"		"@_ZN14CBaseAnimating15GetBonePositionEiR6VectorR6QAngle"
+				"mac"		"@_ZN14CBaseAnimating15GetBonePositionEiR6VectorR6QAngle"
+				"windows"	"\x2A\x2A\x2A\x2A\x2A\x2A\xA1\x2A\x2A\x2A\x2A\x33\x2A\x89\x2A\x2A\x53\x8B\x2A\x2A\x56\x8B\x2A\x83\x2A\x2A\x2A\x2A\x2A\x2A\x57"
+			}
+
+			"CPhysicsProp::GetMass"
+			{
+				"library"	"server"
+				"linux"		"@_ZNK12CPhysicsProp7GetMassEv"
+				"mac"		"@_ZNK12CPhysicsProp7GetMassEv"
+				"windows"	"\x55\x8B\xEC\x51\x8B\x89\x24\x02\x00\x00"
+			}
+
+			"CTerrorPlayer::FindUseEntity"
+			{
+				"library"	"server"
+				"linux"		"@_ZN13CTerrorPlayer13FindUseEntityEfffPbb"
+				"mac"		"@_ZN13CTerrorPlayer13FindUseEntityEfffPbb"
+				"windows"	"\x2A\x2A\x2A\x2A\x2A\x2A\x2A\x2A\xE8\x2A\x2A\x2A\x2A\xA1\x2A\x2A\x2A\x2A\x33\x2A\x89\x2A\x2A\x0F"
+			}
+
+			"CTerrorPlayer::IsInCombat"
+			{
+				"library"	"server"
+				"linux"		"@_ZNK13CTerrorPlayer10IsInCombatEb"
+				"mac"		"@_ZNK13CTerrorPlayer10IsInCombatEb"
+				"windows"	"\x55\x8B\xEC\x56\x8B\xF1\x8B\x86\xF4\x3E\x00\x00"
+			}
+
+			"SurvivorBot::IsReachable<CNavArea>"
+			{
+				"library"	"server"
+				"linux"		"@_ZNK11SurvivorBot11IsReachableEP8CNavAreaS1_"
+				"mac"		"@_ZNK11SurvivorBot11IsReachableEP8CNavAreaS1_"
+				"windows"	"\x2A\x2A\x2A\x2A\x2A\x2A\x53\x8B\x2A\x2A\x56\x57\x8B\x2A\x2A\x53\x57\x8B\x2A\xE8\x2A\x2A\x2A\x2A\x83"
+			}
+			
+			"SurvivorBot::IsAvailable"
+			{
+				"library"	"server"
+				"linux"		"@_ZNK11SurvivorBot11IsAvailableEv"
+				"mac"		"@_ZNK11SurvivorBot11IsAvailableEv"
+				"windows"	"\x53\x8B\xD9\xE8\x2A\x2A\x2A\x2A\xD9\xE8"
+			}
+			
+			"SurvivorBot::GetAvoidRange"
+			{
+				"library"	"server"
+				"linux"		"@_ZNK11SurvivorBot13GetAvoidRangeEP11CBaseEntity"
+				"mac"		"@_ZNK11SurvivorBot13GetAvoidRangeEP11CBaseEntity"
+				"windows"	"\x55\x8B\xEC\x56\x8B\x75\x08\x57\x8B\xF9\x85\xF6\x0F\x84\x2A\x2A\x2A\x2A\x56"
+			}
+			
+			"CInferno::IsTouching<CNavArea>"
+			{
+				"library"	"server"
+				"linux"		"@_ZNK8CInferno10IsTouchingEPK8CNavArea"
+				"mac"		"@_ZNK8CInferno10IsTouchingEPK8CNavArea"
+				"windows"	"\x55\x8B\xEC\x83\xEC\x10\x83\x7D\x08\x00"
+			}
+			
+			"CNavArea::MarkAsBlocked"
+			{
+				"library"	"server"
+				"linux"		"@_ZN8CNavArea13MarkAsBlockedEiP11CBaseEntityb"
+				"mac"		"@_ZN8CNavArea13MarkAsBlockedEiP11CBaseEntityb"
+				"windows"	"\x55\x8B\xEC\x51\xF6\x05\x2A\x2A\x2A\x2A\x01"
+			}
+
+			"SurvivorLegsRetreat::SurvivorLegsRetreat"
+			{
+				"library"	"server"
+				"linux"		"@_ZN19SurvivorLegsRetreatC2EP11CBaseEntity"
+				"mac"		"@_ZN19SurvivorLegsRetreatC2EP11CBaseEntity"
+				"windows"	"\x55\x8B\xEC\x53\x56\x8B\xF1\xC7\x46\x04\x2A\x2A\x2A\x2A\xC7\x46\x2C\x01\x00\x00\x00\x33\xDB\x33\xC0\x33\xC9\x89\x46\x20\x89\x4E\x24\x57\x33\xD2\x33\xFF\x89\x56\x28\x8D\x4E\x34\x89\x5E\x0C\x89\x5E\x10\x89\x5E\x14\x89\x5E\x18\x89\x5E\x1C\x89\x5E\x08\x66\x89\x5E\x30\x89\x7E\x2C\xC7\x06\x2A\x2A\x2A\x2A\xC7\x46\x04\x2A\x2A\x2A\x2A\xE8\x2A\x2A\x2A\x2A\xF3\x0F\x10\x05\x2A\x2A\x2A\x2A"
+			}
+		}
+	}
+}

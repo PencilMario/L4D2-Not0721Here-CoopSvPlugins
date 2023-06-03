@@ -1,0 +1,22 @@
+"Games"
+{
+	"left4dead2"
+	{
+		"Signatures"
+		{
+			"TheNextBots"
+			{
+				"library" "server"
+				"windows" "\xB8\x01\x00\x00\x00\x84\x05\x2A\x2A\x2A\x2A\x0F\x85\x2A\x2A\x2A\x2A\x09\x05\x2A\x2A\x2A\x2A\x33\xC0"
+				"linux" "@_Z11TheNextBotsv"
+			}
+			
+			"INextBot::Reset"
+			{
+				"library" "server"
+				"windows" "\xF3\x0F\x10\x05\x2A\x2A\x2A\x2A\x56\x8B\xF1\x57"
+				"linux" "@_ZN8INextBot5ResetEv"
+			}
+		}
+	}
+}

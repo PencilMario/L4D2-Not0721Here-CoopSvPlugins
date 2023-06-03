@@ -80,13 +80,19 @@ function update_diff()
     local Si1p = (Convars.GetFloat("sss_1P")).tointeger()
 	local SpecialLimits = [0,0,0,0,0,0];
 	local index = 0;
-	for(local a = 0; a <= Si1p; a+=1){
+	local Sifix = Si1p;
+	if (Si1p < 6){
+		Sifix = 6
+	}
+	for(local a = 0; a <= Sifix; a+=1){
 		SpecialLimits[index] += 1;
 		index += 1;
 		if (index > 5){
 			index = 0;
 		}
 	}
+
+
 
     DirectorOptions.cm_SpecialRespawnInterval = timer
     DirectorOptions.cm_SpecialSlotCountdownTime = timer

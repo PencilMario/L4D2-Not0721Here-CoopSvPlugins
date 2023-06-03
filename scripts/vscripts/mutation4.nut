@@ -43,7 +43,11 @@ function update_diff()
     local Si1p = (Convars.GetFloat("sss_1P")).tointeger()
 	local SpecialLimits = [0,0,0,0,0,0];
 	local index = 0;
-	for(local a = 0; a <= Si1p; a+=1){
+	local Sifix = Si1p;
+	if (Si1p < 6){
+		Sifix = 6
+	}
+	for(local a = 0; a <= Sifix; a+=1){
 		SpecialLimits[index] += 1;
 		index += 1;
 		if (index > 5){
@@ -61,11 +65,11 @@ function update_diff()
     DirectorOptions.ChargerLimit = SpecialLimits[3]
     DirectorOptions.SpitterLimit = SpecialLimits[4]
 	DirectorOptions.BoomerLimit = SpecialLimits[5]
-    MapData.g_nSI = Si1p + 2
+    MapData.g_nSI = Si1p
     
-    DirectorOptions.cm_BaseSpecialLimit = MapData.g_nSI + 2
-    DirectorOptions.cm_MaxSpecials      = MapData.g_nSI + 2
-    DirectorOptions.DominatorLimit      = MapData.g_nSI + 2
+    DirectorOptions.cm_BaseSpecialLimit = MapData.g_nSI
+    DirectorOptions.cm_MaxSpecials      = MapData.g_nSI
+    DirectorOptions.DominatorLimit      = MapData.g_nSI
 }
 
 update_diff();

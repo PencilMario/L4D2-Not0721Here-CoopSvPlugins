@@ -33,6 +33,7 @@ public void OnPluginStart()
 
 	HookConVarChange(SS_1_SiNum, reload_script);
 	HookConVarChange(SS_Time, reload_script);
+	HookConVarChange(g_cAutoMode, reload_script);
 }
 
 public Action RoundStart_Event(Event event, const String:name[], bool:dontBroadcast){

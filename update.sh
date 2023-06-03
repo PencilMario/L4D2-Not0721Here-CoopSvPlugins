@@ -10,7 +10,7 @@ git reset --hard
 git pull --rebase;
 git status;
 
-directories=("/home/steam/Steam/steamapps/common/l4d2versus/left4dead2" "/home/steam/Steam/steamapps/common/l4d2/left4dead2")
+directories=("/home/steam/Steam/steamapps/common/l4d2coop/left4dead2")
 
 for dir in "${directories[@]}"; do
     if [ -d "$dir" ]; then

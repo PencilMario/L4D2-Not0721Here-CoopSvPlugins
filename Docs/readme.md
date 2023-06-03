@@ -14,7 +14,7 @@
 | sbpp_*              | SP服Sourcebans，用于op管理，ban人和举报 |
 | chatlogex           | 聊天log记录                             |
 | advertisements      | 广告插件                                |
-| cannounce           | 链接公告插件/记录至聊天log              |
+| cannounce           | 连接公告插件/记录至聊天log              |
 | customvotes         | 自定义投票插件 !votemenu                |
 | fortnite_l4d1_2     | 跳舞插件                                |
 | l4d2_unreservelobby | 动态大厅插件                            |

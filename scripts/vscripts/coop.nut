@@ -38,9 +38,9 @@ MapData <-{
 }
 
 function update_diff()
-{
-    local timer = (Convars.GetFloat("SS_Time")).tointeger()
-    local Si1p = (Convars.GetFloat("sss_1P")).tointeger()
+{	
+    local timer = Convars.GetInt("SS_Time");
+    local Si1p = Convars.GetInt("sss_1P");
 	local SpecialLimits = [0,0,0,0,0,0];
 	local index = 0;
 	local Sifix = Si1p;

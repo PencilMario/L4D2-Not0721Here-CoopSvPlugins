@@ -41,6 +41,7 @@ public Action RoundStart_Event(Event event, const String:name[], bool:dontBroadc
 	return Plugin_Continue;
 }
 public reload_script(Handle:convar, const String:oldValue[], const String:newValue[]){
+	if (g_cAutoMode.IntValue == 0) AutoSetSi();
 	CheatCommand("sm_reloadscript", "");
 }
 public void OnClientConnected(int client)

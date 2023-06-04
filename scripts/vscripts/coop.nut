@@ -56,7 +56,6 @@ function update_diff()
 	}
 
 
-
     DirectorOptions.cm_SpecialRespawnInterval = timer
     DirectorOptions.cm_SpecialSlotCountdownTime = timer
     DirectorOptions.HunterLimit = SpecialLimits[0]
@@ -73,3 +72,4 @@ function update_diff()
 }
 
 update_diff();
+g_ModeScript.update_diff();

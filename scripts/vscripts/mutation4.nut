@@ -73,3 +73,4 @@ function update_diff()
 }
 
 update_diff();
+g_ModeScript.update_diff();

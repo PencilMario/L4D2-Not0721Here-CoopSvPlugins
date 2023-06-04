@@ -64,11 +64,13 @@ void AutoSetSi()
 		SS_1_SiNum.IntValue = g_cAutoSiLim.IntValue;
 		SS_Time.IntValue = g_cAutoTime.IntValue;
 		isLegalSetting();
+		CheatCommand("sm_reloadscript", "");
 		return;
 	}
 	SS_1_SiNum.IntValue = g_cAutoSiLim.IntValue + g_cAutoSiPIn.IntValue * (players - 4);
 	SS_Time.IntValue = g_cAutoTime.IntValue - g_cAutoPerPTimeDe.IntValue * (players - 4);
 	isLegalSetting();
+	CheatCommand("sm_reloadscript", "");
 	return;
 }
 

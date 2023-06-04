@@ -486,7 +486,7 @@ public void OnPluginStart()
 	// cvars: config
 	g_cvarReport			= CreateConVar("sm_skill_report_enable", "0", "Whether to report in chat.", FCVAR_NONE, true, 0.0, true, 1.0);
 	g_cvarRepSkeet			= CreateConVar("sm_skill_report_skeet", "1", "Enable skeet reporting.", FCVAR_NONE, true, 0.0, true, 1.0);
-	g_cvarRepHurtSkeet		= CreateConVar("sm_skill_report_hurtskeet", "1", "Enable hurt-skeet reporting.", FCVAR_NONE, true, 0.0, true, 1.0);
+	g_cvarRepHurtSkeet		= CreateConVar("sm_skill_report_hurtskeet", "0", "Enable hurt-skeet reporting.", FCVAR_NONE, true, 0.0, true, 1.0);
 	g_cvarRepLevel			= CreateConVar("sm_skill_report_level", "1", "Enable level reporting.", FCVAR_NONE, true, 0.0, true, 1.0);
 	g_cvarRepHurtLevel		= CreateConVar("sm_skill_report_hurtlevel", "1", "Enable hurt-level reporting.", FCVAR_NONE, true, 0.0, true, 1.0);
 	g_cvarRepCrow			= CreateConVar("sm_skill_report_crow", "1", "Enable crow reporting.", FCVAR_NONE, true, 0.0, true, 1.0);

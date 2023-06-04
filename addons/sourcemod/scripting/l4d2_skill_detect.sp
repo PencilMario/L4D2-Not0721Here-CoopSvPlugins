@@ -495,10 +495,10 @@ public void OnPluginStart()
 	g_cvarRepSelfClear		= CreateConVar("sm_skill_report_sc", "1", "Enable self clear reporting.", FCVAR_NONE, true, 0.0, true, 1.0);
 	g_cvarRepSelfClearShove = CreateConVar("sm_skill_report_scs", "1", "Enable self clear Shove reporting.", FCVAR_NONE, true, 0.0, true, 1.0);
 	g_cvarRepRockSkeet		= CreateConVar("sm_skill_report_rockskeet", "1", "Enable rock-skeet reporting.", FCVAR_NONE, true, 0.0, true, 1.0);
-	g_cvarRepRockName		= CreateConVar("sm_skill_report_rockname", "0", "Enable Tank name reporting.", FCVAR_NONE, true, 0.0, true, 1.0);
-	g_cvarRepDeadStop		= CreateConVar("sm_skill_report_deadstop", "0", "Enable deadstop reporting.", FCVAR_NONE, true, 0.0, true, 1.0);
-	g_cvarRepPop			= CreateConVar("sm_skill_report_pop", "1", "Enable pop reporting.", FCVAR_NONE, true, 0.0, true, 1.0);
-	g_cvarRepShove			= CreateConVar("sm_skill_report_shove", "0", "Enable shove reporting.", FCVAR_NONE, true, 0.0, true, 1.0);
+	g_cvarRepRockName		= CreateConVar("sm_skill_report_rockname", "1", "Enable Tank name reporting.", FCVAR_NONE, true, 0.0, true, 1.0);
+	g_cvarRepDeadStop		= CreateConVar("sm_skill_report_deadstop", "1", "Enable deadstop reporting.", FCVAR_NONE, true, 0.0, true, 1.0);
+	g_cvarRepPop			= CreateConVar("sm_skill_report_pop", "0", "Enable pop reporting.", FCVAR_NONE, true, 0.0, true, 1.0);
+	g_cvarRepShove			= CreateConVar("sm_skill_report_shove", "1", "Enable shove reporting.", FCVAR_NONE, true, 0.0, true, 1.0);
 	g_cvarRepHunterDP		= CreateConVar("sm_skill_report_hunterdp", "1", "Enable hunter DP reporting.", FCVAR_NONE, true, 0.0, true, 1.0);
 	g_cvarRepJockeyDP		= CreateConVar("sm_skill_report_jockeydp", "1", "Enable jockey DP reporting.", FCVAR_NONE, true, 0.0, true, 1.0);
 	g_cvarRepDeathCharge	= CreateConVar("sm_skill_report_deadcharger", "1", "Enable deadcharger reporting.", FCVAR_NONE, true, 0.0, true, 1.0);

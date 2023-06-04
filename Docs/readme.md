@@ -31,3 +31,7 @@
 |l4d2_skill_detect|技巧检测|
 |survivor_mvp|mvp|
 |show_mic|显示谁在开麦|
+|l4d_*_damage_announce|显示对Tank/witch的伤害|
+|sm_RestartEmpty|空服重启|
+|vote_block|阻止部分投票|
+|l4d2_list_missions|列出地图列表（主要为三方图）|

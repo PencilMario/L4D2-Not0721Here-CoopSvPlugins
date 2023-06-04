@@ -17,7 +17,7 @@ public Plugin myinfo = {
 };
 
 public void OnPluginStart(){
-    config = CreateConVar("l4d_config_name", "", "配置名称");
+    config = CreateConVar("l4d_ready_cfg_name", "", "配置名称");
 }
 
 public void OnMapStart()

@@ -485,26 +485,26 @@ public void OnPluginStart()
 
 	// cvars: config
 	g_cvarReport			= CreateConVar("sm_skill_report_enable", "0", "Whether to report in chat.", FCVAR_NONE, true, 0.0, true, 1.0);
-	g_cvarRepSkeet			= CreateConVar("sm_skill_report_skeet", "0", "Enable skeet reporting.", FCVAR_NONE, true, 0.0, true, 1.0);
+	g_cvarRepSkeet			= CreateConVar("sm_skill_report_skeet", "1", "Enable skeet reporting.", FCVAR_NONE, true, 0.0, true, 1.0);
 	g_cvarRepHurtSkeet		= CreateConVar("sm_skill_report_hurtskeet", "0", "Enable hurt-skeet reporting.", FCVAR_NONE, true, 0.0, true, 1.0);
 	g_cvarRepLevel			= CreateConVar("sm_skill_report_level", "1", "Enable level reporting.", FCVAR_NONE, true, 0.0, true, 1.0);
 	g_cvarRepHurtLevel		= CreateConVar("sm_skill_report_hurtlevel", "1", "Enable hurt-level reporting.", FCVAR_NONE, true, 0.0, true, 1.0);
-	g_cvarRepCrow			= CreateConVar("sm_skill_report_crow", "0", "Enable crow reporting.", FCVAR_NONE, true, 0.0, true, 1.0);
-	g_cvarRepDrawCrow		= CreateConVar("sm_skill_report_drawcrow", "0", "Enable draw-crow reporting.", FCVAR_NONE, true, 0.0, true, 1.0);
+	g_cvarRepCrow			= CreateConVar("sm_skill_report_crow", "1", "Enable crow reporting.", FCVAR_NONE, true, 0.0, true, 1.0);
+	g_cvarRepDrawCrow		= CreateConVar("sm_skill_report_drawcrow", "1", "Enable draw-crow reporting.", FCVAR_NONE, true, 0.0, true, 1.0);
 	g_cvarRepTongueCut		= CreateConVar("sm_skill_report_tonguecut", "1", "Enable tongue-cut reporting.", FCVAR_NONE, true, 0.0, true, 1.0);
 	g_cvarRepSelfClear		= CreateConVar("sm_skill_report_sc", "1", "Enable self clear reporting.", FCVAR_NONE, true, 0.0, true, 1.0);
 	g_cvarRepSelfClearShove = CreateConVar("sm_skill_report_scs", "1", "Enable self clear Shove reporting.", FCVAR_NONE, true, 0.0, true, 1.0);
 	g_cvarRepRockSkeet		= CreateConVar("sm_skill_report_rockskeet", "1", "Enable rock-skeet reporting.", FCVAR_NONE, true, 0.0, true, 1.0);
 	g_cvarRepRockName		= CreateConVar("sm_skill_report_rockname", "0", "Enable Tank name reporting.", FCVAR_NONE, true, 0.0, true, 1.0);
 	g_cvarRepDeadStop		= CreateConVar("sm_skill_report_deadstop", "0", "Enable deadstop reporting.", FCVAR_NONE, true, 0.0, true, 1.0);
-	g_cvarRepPop			= CreateConVar("sm_skill_report_pop", "0", "Enable pop reporting.", FCVAR_NONE, true, 0.0, true, 1.0);
+	g_cvarRepPop			= CreateConVar("sm_skill_report_pop", "1", "Enable pop reporting.", FCVAR_NONE, true, 0.0, true, 1.0);
 	g_cvarRepShove			= CreateConVar("sm_skill_report_shove", "0", "Enable shove reporting.", FCVAR_NONE, true, 0.0, true, 1.0);
 	g_cvarRepHunterDP		= CreateConVar("sm_skill_report_hunterdp", "1", "Enable hunter DP reporting.", FCVAR_NONE, true, 0.0, true, 1.0);
 	g_cvarRepJockeyDP		= CreateConVar("sm_skill_report_jockeydp", "1", "Enable jockey DP reporting.", FCVAR_NONE, true, 0.0, true, 1.0);
 	g_cvarRepDeathCharge	= CreateConVar("sm_skill_report_deadcharger", "1", "Enable deadcharger reporting.", FCVAR_NONE, true, 0.0, true, 1.0);
 	g_cvarRepInstanClear	= CreateConVar("sm_skill_report_instanclear", "1", "Enable instan-clear reporting.", FCVAR_NONE, true, 0.0, true, 1.0);
 	g_cvarRepBhopStreak		= CreateConVar("sm_skill_report_bhop", "1", "Enable bhop streak reporting.", FCVAR_NONE, true, 0.0, true, 1.0);
-	g_cvarRepCarAlarm		= CreateConVar("sm_skill_report_caralarm", "0", "Enable car alarm reporting.", FCVAR_NONE, true, 0.0, true, 1.0);
+	g_cvarRepCarAlarm		= CreateConVar("sm_skill_report_caralarm", "1", "Enable car alarm reporting.", FCVAR_NONE, true, 0.0, true, 1.0);
 
 	g_cvarAllowMelee		= CreateConVar("sm_skill_skeet_allowmelee", "1", "Whether to count/forward melee skeets.", FCVAR_NONE, true, 0.0, true, 1.0);
 	g_cvarAllowSniper		= CreateConVar("sm_skill_skeet_allowsniper", "1", "Whether to count/forward sniper/magnum headshots as skeets.", FCVAR_NONE, true, 0.0, true, 1.0);

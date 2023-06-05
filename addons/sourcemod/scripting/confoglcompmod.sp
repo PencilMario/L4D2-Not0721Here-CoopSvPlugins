@@ -15,14 +15,14 @@
 #define MODULE_GHOSTTANK			0 //GhostTank
 #define MODULE_UNRESERVELOBBY		0 //UnreserveLobby
 #define MODULE_GHOSTWARP			0 //GhostWarp (plugin l4d2_ghost_warp replaces this functionality)
-#define MODULE_PASSWORDSYSTEM		1 //PasswordSystem
+#define MODULE_PASSWORDSYSTEM		0 //PasswordSystem
 #define MODULE_BOTKICK				0 //BotKick
 #define MODULE_SCOREMOD				0 //ScoreMod
 #define MODULE_FINALESPAWN			0 //FinaleSpawn
 #define MODULE_BOSSSPAWNING			0 //BossSpawning
-#define MODULE_CLIENTSETTINGS		1 //ClientSettings
+#define MODULE_CLIENTSETTINGS		0 //ClientSettings
 #define MODULE_ITEMTRACKING			0 //ItemTracking
-#define MODULE_WATERSLOWDOWN		1 //WaterSlowdown (config 'pmelite' uses it)
+#define MODULE_WATERSLOWDOWN		0 //WaterSlowdown (config 'pmelite' uses it)
 #define MODULE_UNPROHIBITBOSSES		0 //UnprohibitBosses (duplicate code, plugin 'bossspawningfix' does the same).
 #define MODULE_ENTITYREMOVER		0 //EntityRemover (the same can be done with the extension 'stripper').
 #define MODULE_WEAPONCUSTOMIZATION	0 //WeaponCustomization (this is deprecated and disabled, plugin 'l4d_weapon_limits' does the same).

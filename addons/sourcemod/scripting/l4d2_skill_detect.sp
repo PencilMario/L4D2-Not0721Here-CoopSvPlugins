@@ -486,7 +486,7 @@ public void OnPluginStart()
 	// cvars: config
 	g_cvarReport			= CreateConVar("sm_skill_report_enable", "0", "Whether to report in chat.", FCVAR_NONE, true, 0.0, true, 1.0);
 	g_cvarRepSkeet			= CreateConVar("sm_skill_report_skeet", "1", "Enable skeet reporting.", FCVAR_NONE, true, 0.0, true, 1.0);
-	g_cvarRepHurtSkeet		= CreateConVar("sm_skill_report_hurtskeet", "0", "Enable hurt-skeet reporting.", FCVAR_NONE, true, 0.0, true, 1.0);
+	g_cvarRepHurtSkeet		= CreateConVar("sm_skill_report_hurtskeet", "1", "Enable hurt-skeet reporting.", FCVAR_NONE, true, 0.0, true, 1.0);
 	g_cvarRepLevel			= CreateConVar("sm_skill_report_level", "1", "Enable level reporting.", FCVAR_NONE, true, 0.0, true, 1.0);
 	g_cvarRepHurtLevel		= CreateConVar("sm_skill_report_hurtlevel", "1", "Enable hurt-level reporting.", FCVAR_NONE, true, 0.0, true, 1.0);
 	g_cvarRepCrow			= CreateConVar("sm_skill_report_crow", "1", "Enable crow reporting.", FCVAR_NONE, true, 0.0, true, 1.0);
@@ -498,7 +498,7 @@ public void OnPluginStart()
 	g_cvarRepRockName		= CreateConVar("sm_skill_report_rockname", "1", "Enable Tank name reporting.", FCVAR_NONE, true, 0.0, true, 1.0);
 	g_cvarRepDeadStop		= CreateConVar("sm_skill_report_deadstop", "1", "Enable deadstop reporting.", FCVAR_NONE, true, 0.0, true, 1.0);
 	g_cvarRepPop			= CreateConVar("sm_skill_report_pop", "0", "Enable pop reporting.", FCVAR_NONE, true, 0.0, true, 1.0);
-	g_cvarRepShove			= CreateConVar("sm_skill_report_shove", "1", "Enable shove reporting.", FCVAR_NONE, true, 0.0, true, 1.0);
+	g_cvarRepShove			= CreateConVar("sm_skill_report_shove", "0", "Enable shove reporting.", FCVAR_NONE, true, 0.0, true, 1.0);
 	g_cvarRepHunterDP		= CreateConVar("sm_skill_report_hunterdp", "1", "Enable hunter DP reporting.", FCVAR_NONE, true, 0.0, true, 1.0);
 	g_cvarRepJockeyDP		= CreateConVar("sm_skill_report_jockeydp", "1", "Enable jockey DP reporting.", FCVAR_NONE, true, 0.0, true, 1.0);
 	g_cvarRepDeathCharge	= CreateConVar("sm_skill_report_deadcharger", "1", "Enable deadcharger reporting.", FCVAR_NONE, true, 0.0, true, 1.0);

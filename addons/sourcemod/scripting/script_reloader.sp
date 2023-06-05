@@ -27,5 +27,16 @@ public Action Cmd_Reload(int client, int args)
 
 public void CheatCommand(char[] strCommand, char[] strParam1)
 {
+	int flags = GetCommandFlags(strCommand);
+	SetCommandFlags(strCommand, flags & ~FCVAR_CHEAT);
 	ServerCommand("%s %s", strCommand, strParam1);
+	//SetCommandFlags(strCommand, flags);
+	CreateTimer(0.5, RestoreCheatFlag);
+}
+
+public Action RestoreCheatFlag(Handle timer)
+{
+	int flags = GetCommandFlags("script_reload_code");
+	SetCommandFlags("script_reload_code", flags | FCVAR_CHEAT);
+	return Plugin_Stop;
 }

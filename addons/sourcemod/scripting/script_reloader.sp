@@ -27,18 +27,8 @@ public Action Cmd_Reload(int client, int args)
 
 public void CheatCommand(char[] strCommand, char[] strParam1)
 {
-	for (int client = 1; client <= MaxClients; ++client)
-	{
-		if (IsClientInGame(client))
-		{
-			int flags = GetCommandFlags(strCommand);
-			int admindata = GetUserFlagBits(client);
-			SetUserFlagBits(client, ADMFLAG_ROOT);
-			SetCommandFlags(strCommand, flags & ~FCVAR_CHEAT);
-			FakeClientCommand(client, "%s %s", strCommand, strParam1);
-			SetCommandFlags(strCommand, flags);
-			SetUserFlagBits(client, admindata);
-			return;
-		}
-	}
+	int flags = GetCommandFlags(strCommand);
+	SetCommandFlags(strCommand, flags & ~FCVAR_CHEAT);
+	ServerCommand(strCommand, strParam1);
+	SetCommandFlags(strCommand, flags);
 }

@@ -20,8 +20,8 @@ public void OnPluginStart()
 {
 	RegConsoleCmd("sm_SetAiSpawns", Cmd_SetAiSpawns);
 	RegConsoleCmd("sm_SetAiTime", Cmd_SetAiTime);
-	SS_1_SiNum = CreateConVar("sss_1P", "18", "特感数量");
-	SS_Time = CreateConVar("SS_Time", "15", "刷新间隔");
+	SS_1_SiNum = CreateConVar("sss_1P", "3", "特感数量");
+	SS_Time = CreateConVar("SS_Time", "35", "刷新间隔");
 	SS_EnableRelax = CreateConVar("SS_Relax", "1", "倒地是否停刷");
 	g_cAutoMode = CreateConVar("sm_ss_automode", "1", "自动调整刷特模式（4+生还玩家）");
 	g_cAutoPerPTimeDe = CreateConVar("sm_ss_autoperdetime", "1", "每多一名生还，特感的复活时间减少多少s");

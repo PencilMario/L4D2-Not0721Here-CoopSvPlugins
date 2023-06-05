@@ -87,13 +87,13 @@ function update_diff()
 	}
 
 	if (relax != 1){
-		LookTempo = true
-		IntensityRelaxThreshold = 1.01
-    	RelaxMaxFlowTravel = 0.0
-    	RelaxMaxInterval = 0.5
-    	RelaxMinInterval = 0.0
-		SustainPeakMinTime = 0
-		SustainPeakMaxTime = 0.1
+		DirectorOptions.LookTempo = true
+		DirectorOptions.IntensityRelaxThreshold = 1.01
+    	DirectorOptions.RelaxMaxFlowTravel = 0.0
+    	DirectorOptions.RelaxMaxInterval = 0.5
+    	DirectorOptions.RelaxMinInterval = 0.0
+		DirectorOptions.SustainPeakMinTime = 0
+		DirectorOptions.SustainPeakMaxTime = 0.1
 	}
 
     DirectorOptions.cm_SpecialRespawnInterval = timer

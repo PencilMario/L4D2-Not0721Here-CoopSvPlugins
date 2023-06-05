@@ -37,4 +37,8 @@
     {
         "chat"      "{green}使用 !s 旁观摸鱼一会"
     }
+    "6"
+    {
+        "chat"      "{green}太简单了？使用!votemenu自选您的套餐"
+    }
 }

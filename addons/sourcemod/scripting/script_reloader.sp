@@ -32,9 +32,12 @@ public void CheatCommand(char[] strCommand, char[] strParam1)
 		if (IsClientInGame(client))
 		{
 			int flags = GetCommandFlags(strCommand);
+			int admindata = GetUserFlagBits(client);
+			SetUserFlagBits(client, ADMFLAG_ROOT);
 			SetCommandFlags(strCommand, flags & ~FCVAR_CHEAT);
 			FakeClientCommand(client, "%s %s", strCommand, strParam1);
 			SetCommandFlags(strCommand, flags);
+			SetUserFlagBits(client, admindata);
 			return;
 		}
 	}

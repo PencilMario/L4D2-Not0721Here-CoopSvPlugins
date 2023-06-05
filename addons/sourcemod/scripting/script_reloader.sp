@@ -28,7 +28,7 @@ public Action Cmd_Reload(int client, int args)
 public void CheatCommand(char[] strCommand, char[] strParam1)
 {
 	int flags = GetCommandFlags(strCommand);
-	SetCommandFlags(strCommand, flags & ~FCVAR_CHEAT);
+	SetCommandFlags(strCommand, FCVAR_SERVER_CAN_EXECUTE);
 	ServerCommand(strCommand, strParam1);
 	SetCommandFlags(strCommand, flags);
 }

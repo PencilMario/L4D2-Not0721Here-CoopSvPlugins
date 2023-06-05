@@ -41,6 +41,8 @@ function update_diff()
 {
     local timer = (Convars.GetFloat("SS_Time")).tointeger()
     local Si1p = (Convars.GetFloat("sss_1P")).tointeger()
+	local relax = (Convars.GetFloat("SS_Relax")).tointeger()
+
 	local SpecialLimits = [0,0,0,0,0,0];
 	local index = 0;
 	local Sifix = Si1p;
@@ -54,7 +56,15 @@ function update_diff()
 			index = 0;
 		}
 	}
-
+	if (relax != 1){
+		LookTempo = true
+		IntensityRelaxThreshold = 1.01
+    	RelaxMaxFlowTravel = 0.0
+    	RelaxMaxInterval = 0.5
+    	RelaxMinInterval = 0.0
+		SustainPeakMinTime = 0
+		SustainPeakMaxTime = 0.1
+	}
 
     DirectorOptions.cm_SpecialRespawnInterval = timer
     DirectorOptions.cm_SpecialSlotCountdownTime = timer

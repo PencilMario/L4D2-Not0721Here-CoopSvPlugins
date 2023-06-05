@@ -23,7 +23,7 @@
     }
     "2"
     {
-        "chat"		"[{green}!{default}]当前刷特速率：{lightgreen}{sss_1P}特/{SS_Time}秒"
+        "chat"		"[{green}!{default}] 当前刷特速率：{lightgreen}{sss_1P}特/{SS_Time}秒"
     }
     "3"
     {

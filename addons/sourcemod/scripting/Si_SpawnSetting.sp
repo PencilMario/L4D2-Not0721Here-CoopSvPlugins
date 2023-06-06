@@ -44,17 +44,15 @@ public reload_script(Handle:convar, const String:oldValue[], const String:newVal
 	if (g_cAutoMode.IntValue == 1) AutoSetSi();
 	CheatCommand("sm_reloadscript", "");
 }
-public void OnClientConnected(int client)
+public void OnClientPutInServer(int client)
 {
-	if (IsFakeClient(client)) return;
 	if (g_cAutoMode.IntValue != 1) return;
 	AutoSetSi();
 	CPrintToChatAll("{green}[{lightgreen}!{green}] {default}刷新配置：最高同屏{olive}%d{default} ，单类至少{olive}%d{default}只，单SlotCD{olive}%ds{default}",	SS_1_SiNum.IntValue, SILimit(SS_1_SiNum.IntValue), SS_Time.IntValue);
-
 }
 public void OnClientDisconnect(int client)
 {
-	OnClientConnected(client);
+	OnClientPutInServer(client);
 }
 void AutoSetSi()
 {

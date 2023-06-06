@@ -11,8 +11,8 @@ directories=("/home/steam/Steam/steamapps/common/l4d2coop/left4dead2")
 for dir in "${directories[@]}"; do
     if [ -d "$dir" ]; then
         find "$dir/addons/sourcemod/" \
-            ! -path "$dir/addons/sourcemod/logs*" \
-            ! -path "$dir/addons/sourcemod/configs/sourcebans*" \
+            ! -path "$dir/addons/sourcemod/logs/*" \
+            ! -path "$dir/addons/sourcemod/configs/sourcebans/*" \
             ! -path "$dir/addons/sourcemod/configs/databases.cfg" \
             -type f -delete        
 

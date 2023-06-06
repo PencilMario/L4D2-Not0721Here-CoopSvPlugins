@@ -1,0 +1,63 @@
+"Phrases"
+{
+	"MENU_PREPARE"
+	{
+		"en"			"[FC] Data preparing, please try again later"
+		"chi"			"[FC] 数据载入中，请稍后再试"
+	}
+	"ERROR_TITLE"
+	{
+		"en"			"Failed to load title"
+		"chi"			"加载菜单失败"
+	}
+	"AUTO_TITLE"
+	{
+		"en"			"Unlock camera when dancing"
+		"chi"			"跳舞解锁视角"
+	}
+	"HINT_TITLE"
+	{
+		"en"			"Print hint when actived"
+		"chi"			"菜单指令提示"
+	}
+	"SPEED_TITLE"
+	{
+		"en"			"Camera move speed"
+		"chi"			"自由视角移速"
+	}
+	"ITEM_ON"
+	{
+		"en"			"On"
+		"chi"			"开"
+	}
+	"ITEM_OFF"
+	{
+		"en"			"Off"
+		"chi"			"关"
+	}
+	"AUTO_HINT"
+	{
+		"en"			"[FC] Unlock camera when dancing has been set to"
+		"chi"			"[FC] 跳舞解锁视角设置为"
+	}
+	"HINT_HINT"
+	{
+		"en"			"[FC] Print hint when actived has been set to"
+		"chi"			"[FC] 菜单指令提示设置为"
+	}
+	"SPEED_HINT"
+	{
+		"en"			"[FC] Input an int to chat"
+		"chi"			"[FC] 请在聊天框输入整数"
+	}
+	"SPEED_INVALID"
+	{
+		"en"			"[FC] Speed must greater than 0, please re-input"
+		"chi"			"[FC] 速度应大于零，请重新输入"
+	}
+	"SPEED_SET_FINISH"
+	{
+		"en"			"[FC] Speed has been set to"
+		"chi"			"[FC] 速度被设置为"
+	}
+}

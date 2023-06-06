@@ -47,6 +47,7 @@ public void CheckSlotType()
 	if (g_iCheckTimeCount > 3){
 		g_iLobbyType = Lobby_4Slot;
 		g_iLobbySlot = 4;
+		PrintToChatAll("检测到长期少于5人，切换为4人大厅");
 		return;
 	}
 	if (g_iCheckTimeLast <= 0) g_iCheckTimeCount++;

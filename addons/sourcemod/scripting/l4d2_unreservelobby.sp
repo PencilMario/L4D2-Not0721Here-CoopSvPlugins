@@ -90,10 +90,10 @@ void GetCvars() {
 public void OnClientAuthorized(int client, const char[] auth) {
 	if (!g_bUnreserve || g_cvMaxPlayers.IntValue == -1)
 		return;
+	if (GetConnectedPlayer(0) == 4 && g_iCheckTimeLast < 0 && g_iLobbyType == Lobby_AutoSloting) CheckSlotType();
 
 	if (IsFakeClient(client))
 		return;
-	if (GetConnectedPlayer(0) == 4 && g_iCheckTimeLast < 0) CheckSlotType();
 	if (!IsServerLobbyFull(-1))
 		return;
 

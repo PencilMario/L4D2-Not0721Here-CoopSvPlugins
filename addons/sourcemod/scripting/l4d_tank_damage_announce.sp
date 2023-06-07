@@ -8,6 +8,7 @@
 #include <sdktools>
 #include <colors>
 
+
 new     const           TEAM_SURVIVOR               = 2;
 new     const           TEAM_INFECTED               = 3;
 new     const           ZOMBIECLASS_TANK            = 8;                // Zombie class of the tank, used to find tank after he have been passed to another player
@@ -20,14 +21,15 @@ new                     g_iWasTankAI                = 0;
 new                     g_iOffset_Incapacitated     = 0;                // Used to check if tank is dying
 new                     g_iTankClient               = 0;                // Which client is currently playing as tank
 new                     g_iLastTankHealth           = 0;                // Used to award the killing blow the exact right amount of damage
-new                     g_iSurvivorLimit            = 4;                // For survivor array in damage print
+new                     g_iSurvivorLimit            = 8;                // For survivor array in damage print
 new                     g_iDamage[MAXPLAYERS + 1];
 new             Float:  g_fMaxTankHealth            = 6000.0;
 new             Handle: g_hCvarEnabled              = INVALID_HANDLE;
 new             Handle: g_hCvarTankHealth           = INVALID_HANDLE;
-new             Handle: g_hCvarDifficulty           = INVALID_HANDLE;
-new             Handle: g_hCvarSurvivorLimit        = INVALID_HANDLE;
 new Handle:fwdOnTankDeath                = INVALID_HANDLE;
+new 					iTankRock[MAXPLAYERS+1]  	= {0, ...};
+new 					iTankClaw[MAXPLAYERS+1]  	= {0, ...};
+#define IsValidAliveClient(%1)	(1 <= %1 <= MaxClients && IsClientInGame(%1) && IsPlayerAlive(%1))
 
 /*
 * Version 0.6.6
@@ -64,15 +66,10 @@ public OnPluginStart()
 	HookEvent("player_hurt", Event_PlayerHurt);
 	
 	g_hCvarEnabled = CreateConVar("l4d_tankdamage_enabled", "1", "Announce damage done to tanks when enabled", FCVAR_NONE|FCVAR_SPONLY|FCVAR_NOTIFY, true, 0.0, true, 1.0);
-	g_hCvarSurvivorLimit = FindConVar("survivor_limit");
 	g_hCvarTankHealth = FindConVar("z_tank_health");
-	g_hCvarDifficulty = FindConVar("z_difficulty");
 	
 	HookConVarChange(g_hCvarEnabled, Cvar_Enabled);
-	HookConVarChange(g_hCvarSurvivorLimit, Cvar_SurvivorLimit);
 	HookConVarChange(g_hCvarTankHealth, Cvar_TankHealth);
-	HookConVarChange(g_hCvarDifficulty, Cvar_TankHealth);
-	HookConVarChange(FindConVar("mp_gamemode"), Cvar_TankHealth);
 	g_bEnabled = GetConVarBool(g_hCvarEnabled);
 	CalculateTankHealth();
 	
@@ -99,10 +96,6 @@ public Cvar_Enabled(Handle:convar, const String:oldValue[], const String:newValu
 	g_bEnabled = StringToInt(newValue) > 0 ? true:false;
 }
 
-public Cvar_SurvivorLimit(Handle:convar, const String:oldValue[], const String:newValue[])
-{
-	g_iSurvivorLimit = StringToInt(newValue);
-}
 
 public Cvar_TankHealth(Handle:convar, const String:oldValue[], const String:newValue[])
 {
@@ -111,28 +104,8 @@ public Cvar_TankHealth(Handle:convar, const String:oldValue[], const String:newV
 
 CalculateTankHealth()
 {
-	new String:sGameMode[32];
-	GetConVarString(FindConVar("mp_gamemode"), sGameMode, sizeof(sGameMode));
-
 	g_fMaxTankHealth = GetConVarFloat(g_hCvarTankHealth);
 	if (g_fMaxTankHealth <= 0.0) g_fMaxTankHealth = 1.0;
-
-	// Versus or Realism Versus
-	if (StrEqual(sGameMode, "versus") || StrEqual(sGameMode, "mutation12"))
-		g_fMaxTankHealth *= 1.5;
-
-	// Anything else (should be fine...?)
-	else 
-	{
-		g_fMaxTankHealth = GetConVarFloat(g_hCvarTankHealth);
-
-		char sDifficulty[16];
-		GetConVarString(g_hCvarDifficulty, sDifficulty, sizeof(sDifficulty));
-
-		if (sDifficulty[0] == 'E') g_fMaxTankHealth *= 0.75;     // Easy
-		else if (sDifficulty[0] == 'H'
-		|| sDifficulty[0] == 'I') g_fMaxTankHealth *= 2.0; // Advanced or Expert
-	}
 }
 
 public Event_PlayerHurt(Handle:event, const String:name[], bool:dontBroadcast)
@@ -140,10 +113,23 @@ public Event_PlayerHurt(Handle:event, const String:name[], bool:dontBroadcast)
 	if (!g_bIsTankInPlay) return; // No tank in play; no damage to record
 	
 	new victim = GetClientOfUserId(GetEventInt(event, "userid"));
+	if (IsValidAliveClient(victim) && GetClientTeam(victim) == 2)
+	{
+        decl String:WeaponUsed[256];
+        GetEventString(event, "weapon", WeaponUsed, sizeof(WeaponUsed));
+
+        if (StrEqual(WeaponUsed,"tank_claw"))
+        {
+            iTankClaw[victim]++;
+        }
+        else if (StrEqual(WeaponUsed,"tank_rock"))
+        {
+            iTankRock[victim]++;
+        }
+	}
 	if (victim != GetTankClient() ||        // Victim isn't tank; no damage to record
 	IsTankDying()                                   // Something buggy happens when tank is dying with regards to damage
 	) return;
-	
 	new attacker = GetClientOfUserId(GetEventInt(event, "attacker"));
 	// We only care about damage dealt by survivors, though it can be funny to see
 	// claw/self inflicted hittable damage, so maybe in the future we'll do that
@@ -176,15 +162,42 @@ public Event_PlayerKilled(Handle:event, const String:name[], bool:dontBroadcast)
 	CreateTimer(0.1, Timer_CheckTank, victim); // Use a delayed timer due to bugs where the tank passes to another player
 }
 
+stock int GetTeamPlayer(int team)
+{
+	int playerCount=0;
+	for(int i = 1; i <= MaxClients; i++)
+	{
+		if(IsClientConnected(i) && IsClientInGame(i) && GetClientTeam(i) == team)
+			playerCount++;
+	}
+	return playerCount;
+}
+
 public Event_TankSpawn(Handle:event, const String:name[], bool:dontBroadcast)
 {
+	new MaxTankHealth = GetConVarInt(g_hCvarTankHealth);
 	new client = GetClientOfUserId(GetEventInt(event, "userid"));
 	g_iTankClient = client;
-	
+	for(int i=1; i <= MaxClients; i++){
+		iTankRock[i]=0;
+		iTankClaw[i]=0;
+	}
 	if (g_bIsTankInPlay) return; // Tank passed
-	
+	if(GetTeamPlayer(2) == 2 || GetTeamPlayer(2) == 3)
+		MaxTankHealth = 1000+(GetTeamPlayer(2)-1)*1500;
+	else if(GetTeamPlayer(2) > 4)
+	{
+		MaxTankHealth = 6000+(GetTeamPlayer(2)-4)*2000;
+		if(GetTeamPlayer(2) > 6)
+			MaxTankHealth += (GetTeamPlayer(2)-6)*500;
+	}
+		
+	//g_fMaxTankHealth = view_as<float>MaxTankHealth;
 	EmitSoundToAll("ui/pickup_secret01.wav", _, SNDCHAN_AUTO, SNDLEVEL_NORMAL, SND_NOFLAGS, 0.8);
 	// New tank, damage has not been announced
+	//PrintToChatAll("Tank血量：%d",MaxTankHealth);
+	SetEntProp(client, Prop_Send, "m_iMaxHealth", MaxTankHealth);
+	SetEntProp(client, Prop_Send, "m_iHealth", MaxTankHealth);
 	g_bAnnounceTankDamage = true;
 	g_bIsTankInPlay = true;
 	// Set health for damage print in case it doesn't get set by player_hurt (aka no one shoots the tank)
@@ -248,7 +261,7 @@ PrintRemainingHealth()
 	decl String:name[MAX_NAME_LENGTH];
 	if (IsFakeClient(tankclient)) name = "AI";
 	else GetClientName(tankclient, name, sizeof(name));
-	CPrintToChatAll("{default}[{green}!{default}] {blue}Tank {default}({olive}%s{default}) had {green}%d {default}health remaining", name, g_iLastTankHealth);
+	CPrintToChatAll("{default}[{blue}!{default}] {blue}Tank {default}({olive}%s{default}) 还有 {green}%d {default} 血量", name, g_iLastTankHealth);
 }
 
 PrintTankDamage()
@@ -263,11 +276,11 @@ PrintTankDamage()
 			{
 				decl String:name[MAX_NAME_LENGTH];
 				GetClientName(i, name, sizeof(name));
-				CPrintToChatAll("{default}[{green}!{default}] {blue}Damage {default}dealt to {blue}Tank {default}({olive}%s{default})", name);
+				CPrintToChatAll("{default}[{blue}!{default}] {blue}生还者 {default}对 {blue}Tank {default}({olive}%s{default}) {default}伤害：", name);
 				g_iWasTank[i] = 0;
 			}
 			else if(g_iWasTankAI > 0) 
-				CPrintToChatAll("{default}[{green}!{default}] {blue}Damage {default}dealt to {blue}Tank {default}({olive}AI{default})");
+				CPrintToChatAll("{default}[{blue}!{default}] {blue}生还者 {default}对 {blue}Tank {default}({olive}AI{default}) {default}伤害：");
 			g_iWasTankAI = 0;
 		}
 	}
@@ -323,7 +336,7 @@ PrintTankDamage()
 		{
     		if (IsClientInGame(i))
     		{
-				CPrintToChat(i, "{blue}[{default}%d{blue}] ({default}%i%%{blue}) {olive}%N", damage, percent_damage, client);
+				CPrintToChat(i, "{blue}[{default}%d{blue}] ({default}%i%%{blue}) [{blue}拳{default}:{green}%d{default}] [{blue}石{default}:{green}%d{default}] {olive}%N", damage, percent_damage, iTankClaw[client], iTankRock[client], client);
 			}
 		}
 	}

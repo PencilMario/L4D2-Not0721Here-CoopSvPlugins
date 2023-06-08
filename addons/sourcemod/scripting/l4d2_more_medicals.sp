@@ -25,7 +25,7 @@ public Action Cmd_SetMult(int client, int args){
 		PrintToChatAll("\x04[提示]\x05多倍医疗包\x04关闭");
 	}
 	else{
-		PrintToChatAll("\x04[提示]\x05多倍医疗包\x04开启 \x05更改为\x03%d\x05倍",mult);
+		PrintToChatAll("\x04[提示]\x05多倍医疗包\x04开启 \x05更改为\x03%s\x05倍",tmp);
 	}
 	return Plugin_Handled;
 }
@@ -39,7 +39,7 @@ public Action Cmd_SetMultY(int client, int args){
 		PrintToChatAll("\x04[提示]\x05多倍止痛药和肾上腺素\x04关闭");
 	}
 	else{
-		PrintToChatAll("\x04[提示]\x05多倍止痛药和肾上腺素\x04开启 \x05更改为\x03%d\x05倍",mult);
+		PrintToChatAll("\x04[提示]\x05多倍止痛药和肾上腺素\x04开启 \x05更改为\x03%s\x05倍",tmp);
 	}
 	return Plugin_Handled;
 }

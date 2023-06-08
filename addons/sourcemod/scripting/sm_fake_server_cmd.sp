@@ -7,7 +7,7 @@ char g_cCurrentCmd[64];
 
 public void OnPluginStart()
 {
-    RegServerCmd("sm_svcmd", Cmd_ServerCommand, "服务端执行作弊指令");
+    RegServerCmd("sm_svcmd", Cmd_ServerCommand, "服务端绕过sv_cheats执行作弊指令");
 }
 
 public Action Cmd_ServerCommand(int args)

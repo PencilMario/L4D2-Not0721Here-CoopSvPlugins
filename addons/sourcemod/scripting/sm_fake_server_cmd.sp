@@ -3,7 +3,6 @@
 
 #include <sourcemod>
 #include <sdktools>
-
 char g_cCurrentCmd[64];
 
 public void OnPluginStart()
@@ -20,17 +19,29 @@ public Action Cmd_ServerCommand(int args)
 
 public void CheatCommand(char[] strCommand)
 {
-    int flags = GetCommandFlags(strCommand);
-    SetCommandFlags(strCommand, flags & ~FCVAR_CHEAT);
-    ServerCommand("%s", strCommand);
-    Format(g_cCurrentCmd, 64, "%s", strCommand);
-    //SetCommandFlags(strCommand, flags);
-    CreateTimer(0.5, RestoreCheatFlag);
+    if (view_as<bool>(GetCommandFlags(strCommand) & FCVAR_CHEAT))
+    {
+        int flags = GetCommandFlags(strCommand);
+        SetCommandFlags(strCommand, flags & ~FCVAR_CHEAT);
+        ServerCommand("%s", strCommand);
+        Format(g_cCurrentCmd, 64, "%s", strCommand);
+        DataPack pack;
+        CreateDataTimer(0.5, RestoreCheatFlag, pack, TIMER_DATA_HNDL_CLOSE);
+        pack.WriteString(strCommand);
+    }
+    else
+    {
+        ServerCommand("%s", strCommand);
+    }
+
 }
 
-public Action RestoreCheatFlag(Handle timer)
+public Action RestoreCheatFlag(Handle timer, DataPack pack)
 {
-    int flags = GetCommandFlags(g_cCurrentCmd);
-    SetCommandFlags(g_cCurrentCmd, flags | FCVAR_CHEAT);
+    char cmd[64];
+    pack.Reset();
+    pack.ReadString(cmd, sizeof(cmd));
+    int flags = GetCommandFlags(cmd);
+    SetCommandFlags(cmd, flags | FCVAR_CHEAT);
     return Plugin_Stop;
 }

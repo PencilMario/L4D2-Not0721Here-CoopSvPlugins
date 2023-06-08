@@ -94,6 +94,21 @@ function update_diff()
     	DirectorOptions.RelaxMinInterval <- 0.0
 		DirectorOptions.SustainPeakMinTime <- 0
 		DirectorOptions.SustainPeakMaxTime <- 0.1
+		Convars.SetValue("director_special_battlefield_respawn_interval",2)
+		Convars.SetValue("director_special_initial_spawn_delay_max", 1)
+		Convars.SetValue("director_special_initial_spawn_delay_max_extra", 2)
+		Convars.SetValue("director_special_initial_spawn_delay_min", 0)
+		Convars.SetValue("director_special_finale_offer_length", 1)
+		Convars.SetValue("director_special_original_offer_length", 1)
+	}
+	else
+	{
+		Convars.SetValue("director_special_battlefield_respawn_interval",10)
+		Convars.SetValue("director_special_initial_spawn_delay_max", 60)
+		Convars.SetValue("director_special_initial_spawn_delay_max_extra", 180)
+		Convars.SetValue("director_special_initial_spawn_delay_min", 30)
+		Convars.SetValue("director_special_finale_offer_length", 10)
+		Convars.SetValue("director_special_original_offer_length", 30)
 	}
 
     DirectorOptions.cm_SpecialRespawnInterval = timer

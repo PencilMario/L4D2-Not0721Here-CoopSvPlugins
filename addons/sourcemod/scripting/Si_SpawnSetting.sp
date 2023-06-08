@@ -6,7 +6,7 @@ ConVar SS_1_SiNum;
 ConVar SS_Time;
 ConVar SS_EnableRelax;
 ConVar g_cAutoMode, g_cAutoTime, g_cAutoPerPTimeDe, g_cAutoSiLim, g_cAutoSiPIn;
-
+int g_iAutoMode; g_iSiNum, g_iSiTime, g_iSiEnableRelax;
 public Plugin myinfo =
 {
 	name = "Ast SI Spawn Set Plugin",
@@ -34,8 +34,11 @@ public void OnPluginStart()
 	HookConVarChange(SS_1_SiNum, reload_script);
 	HookConVarChange(SS_Time, reload_script);
 	HookConVarChange(g_cAutoMode, reload_script);
+	SaveSetting();
 }
-
+public void OnMapStart(){
+	LoadSetting();
+}
 public Action RoundStart_Event(Event event, const String:name[], bool:dontBroadcast){
 	CheatCommand("sm_reloadscript", "");
 	return Plugin_Continue;
@@ -50,6 +53,20 @@ public void OnClientConnected(int client)
 	if (g_cAutoMode.IntValue != 1) return;
 	AutoSetSi();
 	CPrintToChatAll("{green}[{lightgreen}!{green}] {default}刷新配置：最高同屏{olive}%d{default} ，单类至少{olive}%d{default}只，单SlotCD{olive}%ds{default}",	SS_1_SiNum.IntValue, SILimit(SS_1_SiNum.IntValue), SS_Time.IntValue);
+}
+
+public void SaveSetting(){
+	g_iAutoMode = g_cAutoMode.IntValue;
+	g_iSiNum = SS_1_SiNum.IntValue;
+	g_iSiTime = SS_Time.IntValue;
+	g_iSiEnableRelax = SS_EnableRelax.IntValue;
+}
+public void LoadSetting()
+{
+	g_cAutoMode.IntValue = g_iAutoMode;
+	SS_1_SiNum.IntValue	= g_iSiNum;
+	SS_Time.IntValue = g_iSiTime;
+	SS_EnableRelax.IntValue = g_iSiEnableRelax;
 }
 public void OnClientDisconnect(int client)
 {
@@ -150,4 +167,5 @@ public void CheatCommand(char[] strCommand, char[] strParam1)
 			return;
 		}
 	}
+	SaveSetting();
 }

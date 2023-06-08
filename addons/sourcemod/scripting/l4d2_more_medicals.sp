@@ -21,7 +21,7 @@ public Action Cmd_SetMult(int client, int args){
 	GetCmdArg(1, tmp, sizeof(tmp));
 	float mult = StringToFloat(tmp);
 	SetMultMed(mult);
-	if(mult == 1){
+	if(mult == 1.0){
 		PrintToChatAll("\x04[提示]\x05多倍医疗包\x04关闭");
 	}
 	else{

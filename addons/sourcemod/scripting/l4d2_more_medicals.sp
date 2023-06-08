@@ -19,7 +19,7 @@ public void OnPluginStart(){
 public Action Cmd_SetMult(int client, int args){
 	char tmp[3];
 	GetCmdArg(1, tmp, sizeof(tmp));
-	int mult = StringToInt(tmp);
+	float mult = StringToFloat(tmp);
 	SetMultMed(mult);
 	if(mult == 1){
 		PrintToChatAll("\x04[提示]\x05多倍医疗包\x04关闭");
@@ -33,9 +33,9 @@ public Action Cmd_SetMult(int client, int args){
 public Action Cmd_SetMultY(int client, int args){
 	char tmp[3];
 	GetCmdArg(1, tmp, sizeof(tmp));
-	int mult = StringToInt(tmp);
+	float mult = StringToFloat(tmp);
 	SetMultMedY(mult);
-	if(mult == 1){
+	if(mult == 1.0){
 		PrintToChatAll("\x04[提示]\x05多倍止痛药和肾上腺素\x04关闭");
 	}
 	else{
@@ -44,15 +44,15 @@ public Action Cmd_SetMultY(int client, int args){
 	return Plugin_Handled;
 }
 
-void SetEntCount(const char[] ent, int count){
+void SetEntCount(const char[] ent, float count){
 	int idx = FindEntityByClassname(-1, ent);
 	while(idx != -1){
-		DispatchKeyValueInt(idx, "count", count);
+		DispatchKeyValueFloat(idx, "count", count);
 		idx = FindEntityByClassname(idx, ent);
 	}
 }
 
-void SetMultMed(int mult){
+void SetMultMed(float mult){
 	//SetEntCount("weapon_defibrillator_spawn", mult);	// 电击器
 	SetEntCount("weapon_first_aid_kit_spawn", mult);	// 医疗包
 	//SetEntCount("weapon_pain_pills_spawn", mult);		// 止痛药
@@ -62,7 +62,7 @@ void SetMultMed(int mult){
 	//SetEntCount("weapon_pipe_bomb_spawn", mult);		// 土制炸弹
 }
 
-void SetMultMedY(int mult){
+void SetMultMedY(float mult){
 	//SetEntCount("weapon_defibrillator_spawn", mult);	// 电击器
 	//SetEntCount("weapon_first_aid_kit_spawn", mult);	// 医疗包
 	SetEntCount("weapon_pain_pills_spawn", mult);		// 止痛药

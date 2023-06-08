@@ -6,9 +6,5 @@
 		{
 			"name"		"基础战役"
 		}
-		"coop_base_fixed"
-		{
-			"name"		"基础战役"
-		}
 	}
 }

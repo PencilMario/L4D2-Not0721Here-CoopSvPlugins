@@ -338,9 +338,9 @@ public Action MissionsMenu(int client)
 	if (client)
 	{
 		Menu menu = new Menu(MissionsMenuHandler);
-		menu.SetTitle("List of Missions");
-		menu.AddItem("1", "Missions (Valve)");
-		menu.AddItem("2", "DLC: Missions (Workshop)");
+		menu.SetTitle("地图列表");
+		menu.AddItem("1", "官方地图");
+		menu.AddItem("2", "第三方地图");
 		menu.ExitButton = false;
 		menu.Display(client, 30);
 	}
@@ -631,7 +631,7 @@ public int YesNoHandler(NativeVote vote, MenuAction action, int param1, int para
 					{
 						case 0:
 						{
-							ServerCommand("sm_map %s", sBuffer);
+							ServerCommand("changelevel %s", sBuffer);
 						}
 						case 1: {
 							int client;

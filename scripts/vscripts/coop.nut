@@ -49,7 +49,7 @@ function update_diff()
 	if (Si1p < 6){
 		Sifix = 6
 	}
-	for(local a = 0; a <= Sifix; a+=1){
+	for(local a = 1; a <= Sifix; a+=1){
 		SpecialLimits[index] += 1;
 		index += 1;
 		if (index > 5){

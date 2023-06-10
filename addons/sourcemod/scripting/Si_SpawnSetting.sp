@@ -41,13 +41,14 @@ public void OnMapStart(){
 }
 public Action RoundStart_Event(Event event, const String:name[], bool:dontBroadcast){
 	CheatCommand("sm_reloadscript", "");
+	AutoSetSi();
 	return Plugin_Continue;
 }
 public reload_script(Handle:convar, const String:oldValue[], const String:newValue[]){
 	if (g_cAutoMode.IntValue == 1) AutoSetSi();
 	CheatCommand("sm_reloadscript", "");
 }
-public void OnClientConnected(int client)
+public void OnClientPutInServer(int client)
 {
 	if (IsFakeClient(client)) return;
 	if (g_cAutoMode.IntValue != 1) return;
@@ -70,7 +71,7 @@ public void LoadSetting()
 }
 public void OnClientDisconnect(int client)
 {
-	OnClientConnected(client);
+	OnClientPutInServer(client);
 }
 void AutoSetSi()
 {

@@ -126,7 +126,7 @@ public Action Cmd_SetDpsLim(int client, int args)
 
 	if (args < 1)
 	{
-		ReplyToCommand(client, "[SM] 使用方式: sm_SetAiSpawns <特感数量>");
+		ReplyToCommand(client, "[SM] 使用方式: sm_SetDpsLim <特感数量>");
 		return Plugin_Handled;
 	}
 	SiNum = GetCmdArgInt(1);

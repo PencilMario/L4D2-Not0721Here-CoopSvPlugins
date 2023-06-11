@@ -118,7 +118,7 @@ public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max
 
 public void OnPluginStart()
 {
-	g_hEnable = CreateConVar("teleport_enable", "1", "是否开启特感传送插件", CVAR_FLAG, true, 0.0, true, 1.0);
+	g_hEnable = CreateConVar("teleport_enable", "0", "是否开启特感传送插件", CVAR_FLAG, true, 0.0, true, 1.0);
 	g_hCheckTime = CreateConVar("teleport_check_time", "8.0", "特感多少秒看不见生还者就会传送", CVAR_FLAG, true, 0.0);
 	g_hCheckInterval = CreateConVar("teleport_check_interval", "1.0", "每隔多少秒检测一次在场特感的可视状态", CVAR_FLAG, true, 0.0);
 	g_hAllowInfetedClass = CreateConVar("teleport_infected_class", "1,2,3,4,5,6", "哪种特感允许被传送", CVAR_FLAG);

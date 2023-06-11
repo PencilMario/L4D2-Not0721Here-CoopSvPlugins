@@ -30,7 +30,9 @@ static char query_list[][] = {
 	"r_showenvcubemap",
 	"r_drawrenderboxes",
 	"r_modelwireframedecal",
-	"z_gun_vertical_punch"
+	"z_gun_vertical_punch",
+	"cl_jiggle_bone_debug",
+	"enable_skeleton_draw"
 };
 
 static int query_index[MAXPLAYERS + 1];

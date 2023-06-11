@@ -1,10 +1,14 @@
 "MatchModes"
 {
-	"Coop Config"
+	"战役配置"
 	{
 		"coop_base"
 		{
 			"name"		"基础战役"
+		}
+		"coop_hard"
+		{
+			"name"		"逛街多特"
 		}
 	}
 }

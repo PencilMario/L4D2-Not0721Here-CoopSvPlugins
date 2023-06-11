@@ -147,7 +147,7 @@ public OnPluginStart()
 	l4d_loot_item = CreateConVar("l4d_loot_item", "35.0", "probability of loot items %", FCVAR_PLUGIN);
 
 	l4d_kill_addhp_enabled = CreateConVar("l4d_kill_addhp_enabled", "0", "0: disable health recover, 1:eanble", FCVAR_PLUGIN);
-	l4d_kill_addhp_mult = CreateConVar("l4d_kill_addhp_mult", "0.15", "health recover factor", FCVAR_PLUGIN);
+	l4d_kill_addhp_mult = CreateConVar("l4d_kill_addhp_mult", "0.1", "health recover factor", FCVAR_PLUGIN);
 	l4d_kill_addhp_lt50_mult = CreateConVar("l4d_kill_addhp_lt50_mult", "3.0", "health recover factor when health < 50", FCVAR_PLUGIN);
 	l4d_kill_addhp_healthlimit = CreateConVar("l4d_kill_addhp_healthlimit", "200.0", "health limit", FCVAR_PLUGIN);
 
@@ -160,8 +160,8 @@ public OnPluginStart()
 	l4d_kill_addhp_weapon_pistol_1 = CreateConVar("l4d_kill_addhp_weapon_pistol_1", "8.0", "health recover factor of pistol killing", FCVAR_PLUGIN);
 	l4d_kill_addhp_weapon_msg_1 = CreateConVar("l4d_kill_addhp_weapon_msg_1", "4.0", "health recover factor of smg", FCVAR_PLUGIN);
 	l4d_kill_addhp_weapon_rifle_1 = CreateConVar("l4d_kill_addhp_weapon_rifle_1", "3.0", "health recover factor of rifle killing", FCVAR_PLUGIN);
-	l4d_kill_addhp_weapon_sniper_1 = CreateConVar("l4d_kill_addhp_weapon_sniper_1", "4.0", "health recover factor of sniper killing", FCVAR_PLUGIN);
-	l4d_kill_addhp_weapon_shotgun_1 = CreateConVar("l4d_kill_addhp_weapon_shotgun_1", "2.0", "health recover factor of shotgun killing", FCVAR_PLUGIN);
+	l4d_kill_addhp_weapon_sniper_1 = CreateConVar("l4d_kill_addhp_weapon_sniper_1", "2.0", "health recover factor of sniper killing", FCVAR_PLUGIN);
+	l4d_kill_addhp_weapon_shotgun_1 = CreateConVar("l4d_kill_addhp_weapon_shotgun_1", "4.0", "health recover factor of shotgun killing", FCVAR_PLUGIN);
 	l4d_kill_addhp_weapon_melee = CreateConVar("l4d_kill_addhp_weapon_melee", "30.0", "health recover factor of melee killing", FCVAR_PLUGIN);
 	l4d_kill_addhp_weapon_other = CreateConVar("l4d_kill_addhp_weapon_other", "1.0", "health recover factor of ohter weapon killing", FCVAR_PLUGIN);
   

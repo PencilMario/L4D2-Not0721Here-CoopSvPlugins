@@ -35,9 +35,8 @@ public void OnPluginStart()
 	HookConVarChange(g_cAutoMode, reload_script);
 }
 public Action RoundStart_Event(Event event, const String:name[], bool:dontBroadcast){
-	CheatCommand("sm_reloadscript", "");
 	if (g_cAutoMode.IntValue == 1) AutoSetSi();
-	
+	CheatCommand("sm_reloadscript", "");
 	return Plugin_Continue;
 }
 public reload_script(Handle:convar, const String:oldValue[], const String:newValue[]){

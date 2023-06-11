@@ -5,6 +5,7 @@
 ConVar SS_1_SiNum;
 ConVar SS_Time;
 ConVar SS_EnableRelax;
+ConVar SS_DPSLimit;
 ConVar g_cAutoMode, g_cAutoTime, g_cAutoPerPTimeDe, g_cAutoSiLim, g_cAutoSiPIn;
 public Plugin myinfo =
 {
@@ -22,6 +23,7 @@ public void OnPluginStart()
 	SS_1_SiNum = CreateConVar("sss_1P", "3", "特感数量");
 	SS_Time = CreateConVar("SS_Time", "35", "刷新间隔");
 	SS_EnableRelax = CreateConVar("SS_Relax", "1", "倒地是否停刷");
+	SS_DPSLimit = CreateConVar("SS_DPSSiLimit", "10", "DPS特感数量限制");
 	g_cAutoMode = CreateConVar("sm_ss_automode", "1", "自动调整刷特模式（4+生还玩家）");
 	g_cAutoPerPTimeDe = CreateConVar("sm_ss_autoperdetime", "1", "每多一名生还，特感的复活时间减少多少s");
 	g_cAutoTime = CreateConVar("sm_ss_autotime", "35", "一只特感的基础复活时间");
@@ -33,6 +35,7 @@ public void OnPluginStart()
 	HookConVarChange(SS_1_SiNum, reload_script);
 	HookConVarChange(SS_Time, reload_script);
 	HookConVarChange(g_cAutoMode, reload_script);
+	HookConVarChange(SS_DPSLimit, reload_script);
 }
 public Action RoundStart_Event(Event event, const String:name[], bool:dontBroadcast){
 	if (g_cAutoMode.IntValue == 1) AutoSetSi();

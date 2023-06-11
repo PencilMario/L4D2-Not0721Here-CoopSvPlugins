@@ -42,6 +42,7 @@ function update_diff()
     local timer = (Convars.GetFloat("SS_Time")).tointeger()
     local Si1p = (Convars.GetFloat("sss_1P")).tointeger()
 	local relax = (Convars.GetFloat("SS_Relax")).tointeger()
+	local dpslim = (Convars.GetFloat("SS_DPSSiLimit")).tointeger()
 
 	local SpecialLimits = [0,0,0,0,0,0];
 	local index = 0;
@@ -52,6 +53,11 @@ function update_diff()
 	for(local a = 1; a <= Sifix; a+=1){
 		SpecialLimits[index] += 1;
 		index += 1;
+		if (SpecialLimits[4]+SpecialLimits[5] >= dpslim){
+			if (index > 3){
+				index = 0;
+			}
+		}
 		if (index > 5){
 			index = 0;
 		}

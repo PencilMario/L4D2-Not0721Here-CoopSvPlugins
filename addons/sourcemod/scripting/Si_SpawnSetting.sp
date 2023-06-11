@@ -20,6 +20,7 @@ public void OnPluginStart()
 {
 	RegConsoleCmd("sm_SetAiSpawns", Cmd_SetAiSpawns);
 	RegConsoleCmd("sm_SetAiTime", Cmd_SetAiTime);
+	RegConsoleCmd("sm_SetDpsLim", Cmd_SetDpsLim);
 	SS_1_SiNum = CreateConVar("sss_1P", "3", "特感数量");
 	SS_Time = CreateConVar("SS_Time", "35", "刷新间隔");
 	SS_EnableRelax = CreateConVar("SS_Relax", "1", "倒地是否停刷");
@@ -51,7 +52,7 @@ public void OnClientPutInServer(int client)
 	if (IsFakeClient(client)) return;
 	if (g_cAutoMode.IntValue != 1) return;
 	AutoSetSi();
-	CPrintToChatAll("{green}[{lightgreen}!{green}] {default}刷新配置：最高同屏{olive}%d{default} ，单类至少{olive}%d{default}只，单SlotCD{olive}%ds{default}，DPS特感限制{olive}%d{default}只",	SS_1_SiNum.IntValue, SILimit(SS_1_SiNum.IntValue), SS_Time.IntValue, SS_DPSLimit.IntValue);
+	CPrintToChatAll("{green}[{lightgreen}!{green}] {default}刷新配置：最高同屏{olive}%d{default} ，单类至少{olive}%d{default}只，单SlotCD{olive}%ds{default}，DPS特感限制{olive}%d{default}只，Relax阶段：{olive}%d{default}",	SS_1_SiNum.IntValue, SILimit(SS_1_SiNum.IntValue), SS_Time.IntValue, SS_DPSLimit.IntValue, SS_EnableRelax.IntValue);
 }
 
 public void OnClientDisconnect(int client)
@@ -115,11 +116,29 @@ public Action Cmd_SetAiTime(int client, int args)
 	char name[64];
 	GetClientName(client, name, sizeof(name));
 	CPrintToChatAll("{green}[{lightgreen}!{green}] {olive}%s{default}修改了特感刷新配置", name);
-	CPrintToChatAll("{green}[{lightgreen}!{green}] {default}刷新配置：最高同屏{olive}%d{default} ，单类至少{olive}%d{default}只，单SlotCD{olive}%ds{default}，DPS特感限制{olive}%d{default}只",	SS_1_SiNum.IntValue, SILimit(SS_1_SiNum.IntValue), SS_Time.IntValue, SS_DPSLimit.IntValue);
+	CPrintToChatAll("{green}[{lightgreen}!{green}] {default}刷新配置：最高同屏{olive}%d{default} ，单类至少{olive}%d{default}只，单SlotCD{olive}%ds{default}，DPS特感限制{olive}%d{default}只，Relax阶段：{olive}%d{default}",	SS_1_SiNum.IntValue, SILimit(SS_1_SiNum.IntValue), SS_Time.IntValue, SS_DPSLimit.IntValue, SS_EnableRelax.IntValue);
 	CheatCommand("sm_reloadscript", "");
 	return Plugin_Continue;
 }
+public Action Cmd_SetDpsLim(int client, int args)
+{
+	int SiNum;
 
+	if (args < 1)
+	{
+		ReplyToCommand(client, "[SM] 使用方式: sm_SetAiSpawns <特感数量>");
+		return Plugin_Handled;
+	}
+	SiNum = GetCmdArgInt(1);
+	SS_DPSLimit.IntValue = SiNum;
+	
+	char name[64];
+	GetClientName(client, name, sizeof(name));
+	CPrintToChatAll("{green}[{lightgreen}!{green}] {olive}%s{default}修改了特感刷新配置", name);
+	CPrintToChatAll("{green}[{lightgreen}!{green}] {default}刷新配置：最高同屏{olive}%d{default} ，单类至少{olive}%d{default}只，单SlotCD{olive}%ds{default}，DPS特感限制{olive}%d{default}只，Relax阶段：{olive}%d{default}",	SS_1_SiNum.IntValue, SILimit(SS_1_SiNum.IntValue), SS_Time.IntValue, SS_DPSLimit.IntValue, SS_EnableRelax.IntValue);
+	CheatCommand("sm_reloadscript", "");
+	return Plugin_Continue;
+}
 public Action Cmd_SetAiSpawns(int client, int args)
 {
 	int SiNum;
@@ -135,7 +154,7 @@ public Action Cmd_SetAiSpawns(int client, int args)
 	char name[64];
 	GetClientName(client, name, sizeof(name));
 	CPrintToChatAll("{green}[{lightgreen}!{green}] {olive}%s{default}修改了特感刷新配置", name);
-	CPrintToChatAll("{green}[{lightgreen}!{green}] {default}刷新配置：最高同屏{olive}%d{default} ，单类至少{olive}%d{default}只，单SlotCD{olive}%ds{default}，DPS特感限制{olive}%d{default}只",	SS_1_SiNum.IntValue, SILimit(SS_1_SiNum.IntValue), SS_Time.IntValue, SS_DPSLimit.IntValue);
+	CPrintToChatAll("{green}[{lightgreen}!{green}] {default}刷新配置：最高同屏{olive}%d{default} ，单类至少{olive}%d{default}只，单SlotCD{olive}%ds{default}，DPS特感限制{olive}%d{default}只，Relax阶段：{olive}%d{default}",	SS_1_SiNum.IntValue, SILimit(SS_1_SiNum.IntValue), SS_Time.IntValue, SS_DPSLimit.IntValue, SS_EnableRelax.IntValue);
 	CheatCommand("sm_reloadscript", "");
 	return Plugin_Continue;
 }

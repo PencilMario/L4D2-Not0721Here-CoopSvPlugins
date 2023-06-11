@@ -13,6 +13,10 @@
 	}
 	"绝境配置"
 	{
+		"mutation4"
+		{
+			"name"		"绝境14特"
+		}
 		"mutation4_except"
 		{
 			"name"		"绝境28特6控"

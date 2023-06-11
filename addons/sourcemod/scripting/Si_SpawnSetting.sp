@@ -51,7 +51,7 @@ public void OnClientPutInServer(int client)
 	if (IsFakeClient(client)) return;
 	if (g_cAutoMode.IntValue != 1) return;
 	AutoSetSi();
-	CPrintToChatAll("{green}[{lightgreen}!{green}] {default}刷新配置：最高同屏{olive}%d{default} ，单类至少{olive}%d{default}只，单SlotCD{olive}%ds{default}",	SS_1_SiNum.IntValue, SILimit(SS_1_SiNum.IntValue), SS_Time.IntValue);
+	CPrintToChatAll("{green}[{lightgreen}!{green}] {default}刷新配置：最高同屏{olive}%d{default} ，单类至少{olive}%d{default}只，单SlotCD{olive}%ds{default}，DPS特感限制{olive}%d{default}只",	SS_1_SiNum.IntValue, SILimit(SS_1_SiNum.IntValue), SS_Time.IntValue, SS_DPSLimit.IntValue);
 }
 
 public void OnClientDisconnect(int client)
@@ -115,7 +115,7 @@ public Action Cmd_SetAiTime(int client, int args)
 	char name[64];
 	GetClientName(client, name, sizeof(name));
 	CPrintToChatAll("{green}[{lightgreen}!{green}] {olive}%s{default}修改了特感刷新配置", name);
-	CPrintToChatAll("{green}[{lightgreen}!{green}] {default}刷新配置：最高同屏{olive}%d{default} ，单类至少{olive}%d{default}只，单SlotCD{olive}%ds{default}",	SS_1_SiNum.IntValue, SILimit(SS_1_SiNum.IntValue), SS_Time.IntValue);
+	CPrintToChatAll("{green}[{lightgreen}!{green}] {default}刷新配置：最高同屏{olive}%d{default} ，单类至少{olive}%d{default}只，单SlotCD{olive}%ds{default}，DPS特感限制{olive}%d{default}只",	SS_1_SiNum.IntValue, SILimit(SS_1_SiNum.IntValue), SS_Time.IntValue, SS_DPSLimit.IntValue);
 	CheatCommand("sm_reloadscript", "");
 	return Plugin_Continue;
 }
@@ -135,7 +135,7 @@ public Action Cmd_SetAiSpawns(int client, int args)
 	char name[64];
 	GetClientName(client, name, sizeof(name));
 	CPrintToChatAll("{green}[{lightgreen}!{green}] {olive}%s{default}修改了特感刷新配置", name);
-	CPrintToChatAll("{green}[{lightgreen}!{green}] {default}刷新配置：最高同屏{olive}%d{default} ，单类至少{olive}%d{default}只，单SlotCD{olive}%ds{default}",	SS_1_SiNum.IntValue, SILimit(SS_1_SiNum.IntValue), SS_Time.IntValue);
+	CPrintToChatAll("{green}[{lightgreen}!{green}] {default}刷新配置：最高同屏{olive}%d{default} ，单类至少{olive}%d{default}只，单SlotCD{olive}%ds{default}，DPS特感限制{olive}%d{default}只",	SS_1_SiNum.IntValue, SILimit(SS_1_SiNum.IntValue), SS_Time.IntValue, SS_DPSLimit.IntValue);
 	CheatCommand("sm_reloadscript", "");
 	return Plugin_Continue;
 }

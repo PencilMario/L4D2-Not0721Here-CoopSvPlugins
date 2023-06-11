@@ -1,4 +1,4 @@
-#define PLUGIN_VERSION	"3.4 Simplified"
+#define PLUGIN_VERSION	"3.5 Simplified"
 #define PLUGIN_NAME		"Automatic Healing"
 #define PLUGIN_PREFIX	"automatic_healing"
 
@@ -17,14 +17,6 @@ public Plugin myinfo =
 	url = "https://forums.alliedmods.net/showthread.php?t=336073"
 };
 
-enum AutomaticHealing_FixType
-{
-	AutomaticHealing_FixType_None = 0,
-	AutomaticHealing_FixType_Always,
-	AutomaticHealing_FixType_ShouldHeal,
-	AutomaticHealing_FixType_Healing
-}
-
 ConVar C_buffer_decay_rate;
 float O_buffer_decay_rate;
 ConVar C_interrupt_on_hurt;
@@ -39,8 +31,6 @@ ConVar C_repeat_interval;
 float O_repeat_interval;
 ConVar C_fix;
 float O_fix;
-ConVar C_fix_type;
-AutomaticHealing_FixType O_fix_type;
 
 float O_max_round_to_floor;
 
@@ -97,36 +87,24 @@ void wait_to_heal(int client)
 	Next_heal_time[client] = GetEngineTime() + O_wait_time;
 }
 
-void fix_health(int client, float& buffer)
-{
-	if(O_fix <= 0.0)
-	{
-		return;
-	}
-	float before_decimal_point = float(RoundToFloor(buffer));
-	if(buffer - before_decimal_point < O_fix)
-	{
-		buffer = before_decimal_point + O_fix;
-		set_temp_health(client, buffer);
-	}	
-}
-
 public void OnPlayerRunCmdPost(int client, int buttons, int impulse, const float vel[3], const float angles[3], int weapon, int subtype, int cmdnum, int tickcount, int seed, const int mouse[2])
 {
 	if(GetClientTeam(client) == 2 && IsPlayerAlive(client) && is_survivor_alright(client))
 	{
 		float health = float(GetClientHealth(client));
 		float buffer = get_temp_health(client);
-		if(O_fix_type == AutomaticHealing_FixType_Always)
-		{
-			fix_health(client, buffer);
-		}
 		float all = health + buffer;
 		if(all < O_max_round_to_floor)
 		{
-			if(O_fix_type == AutomaticHealing_FixType_ShouldHeal)
+			if(O_fix > 0.0)
 			{
-				fix_health(client, buffer);
+				float before_decimal_point = float(RoundToFloor(buffer));
+				if(buffer - before_decimal_point < O_fix)
+				{
+					buffer = before_decimal_point + O_fix;
+					all = health + buffer;
+					set_temp_health(client, buffer);
+				}
 			}
 			if(Next_heal_time[client] < 0.0)
 			{
@@ -136,10 +114,6 @@ public void OnPlayerRunCmdPost(int client, int buttons, int impulse, const float
 			{
 				if(all + O_health < O_max_round_to_floor)
 				{
-					if(O_fix_type == AutomaticHealing_FixType_Healing)
-					{
-						fix_health(client, buffer);
-					}
 					set_temp_health(client, buffer + O_health);
 					Next_heal_time[client] += O_repeat_interval;
 				}
@@ -233,7 +207,7 @@ void event_player_incapacitated(Event event, const char[] name, bool dontBroadca
 void event_player_bot_replace(Event event, const char[] name, bool dontBroadcast)
 {
 	int client = GetClientOfUserId(event.GetInt("bot"));
-	if(client != 0 && IsClientInGame(client) && GetClientTeam(client) == 2)
+	if(client != 0)
 	{
 		int prev = GetClientOfUserId(event.GetInt("player"));
 		if(prev != 0)
@@ -246,7 +220,7 @@ void event_player_bot_replace(Event event, const char[] name, bool dontBroadcast
 void event_bot_player_replace(Event event, const char[] name, bool dontBroadcast)
 {
 	int client = GetClientOfUserId(event.GetInt("player"));
-	if(client != 0 && IsClientInGame(client) && GetClientTeam(client) == 2)
+	if(client != 0)
 	{
 		int prev = GetClientOfUserId(event.GetInt("bot"));
 		if(prev != 0)
@@ -265,7 +239,6 @@ void get_cvars()
 	O_max = C_max.FloatValue;
 	O_repeat_interval = C_repeat_interval.FloatValue;
 	O_fix = C_fix.FloatValue;
-	O_fix_type = view_as<AutomaticHealing_FixType>(C_fix_type.IntValue);
 
 	O_max_round_to_floor = float(RoundToFloor(O_max));
 }
@@ -329,16 +302,14 @@ public void OnPluginStart()
 	C_interrupt_on_hurt.AddChangeHook(convar_changed);
 	C_wait_time = CreateConVar(PLUGIN_PREFIX ... "_wait_time", "5.0", "how long time need to wait after the interruption to start healing", _, true, 0.0);
 	C_wait_time.AddChangeHook(convar_changed);
-	C_health = CreateConVar(PLUGIN_PREFIX ... "_health", "2.0", "how many health buffer heal once", _, true, 0.1);
+	C_health = CreateConVar(PLUGIN_PREFIX ... "_health", "0.0", "how many health buffer heal once", _, true, 0.1);
 	C_health.AddChangeHook(convar_changed);
 	C_repeat_interval = CreateConVar(PLUGIN_PREFIX ... "_repeat_interval", "1.0", "repeat interval after healing start", _, true, 0.0);
 	C_repeat_interval.AddChangeHook(convar_changed);
 	C_max = CreateConVar(PLUGIN_PREFIX ... "_max", "30.2", "max health of healing", _, true, 1.1);
 	C_max.AddChangeHook(convar_changed);	
-	C_fix = CreateConVar(PLUGIN_PREFIX ... "_fix", "0.2", "works with \""... PLUGIN_PREFIX ... "_fix_type\". behind the decimal point, how many health buffer will increase to, if it lower than the value. 0.0 or lower = no effect", _, _, _, true, 0.99);
+	C_fix = CreateConVar(PLUGIN_PREFIX ... "_fix", "0.2", "when need healing, behind the decimal point, how many health buffer will increase to, if it lower than the value. 0.0 or lower = disable", _, _, _, true, 0.99);
 	C_fix.AddChangeHook(convar_changed);
-	C_fix_type = CreateConVar(PLUGIN_PREFIX ... "_fix_type", "0", "health fix type, 0 = disable, 1 = always, 2 = should heal, 3 = healing only.", _, true, 0.0, true, 3.0);
-	C_fix_type.AddChangeHook(convar_changed);
 	CreateConVar(PLUGIN_PREFIX ... "_version", PLUGIN_VERSION, "version of " ... PLUGIN_NAME, FCVAR_NOTIFY | FCVAR_DONTRECORD);
-	AutoExecConfig(true, PLUGIN_PREFIX);
+	//AutoExecConfig(true, PLUGIN_PREFIX);
 }

@@ -49,4 +49,8 @@
     {
         "chat"		"[{green}!{default}] 当前刷特速率：{lightgreen}{sss_1P}特/{SS_Time}秒{default}，DPS特感限制{lightgreen}{SS_DPSSiLimit}只"
     }
+    "9"
+    {
+        "chat"      "{green}冷知识，本服可以!dance跳舞，不过前提是服务器内容要开全部"
+    }
 }

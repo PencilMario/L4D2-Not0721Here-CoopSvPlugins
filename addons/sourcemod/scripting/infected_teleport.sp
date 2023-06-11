@@ -25,7 +25,7 @@
 #define FIND_POS_DELAY 5.0
 #define EXPAND_COUNT_PRE_FRAME 3
 #define ALPHA_TRANSPARENT 0
-#define DEBUG_ALL 1
+#define DEBUG_ALL 0
 
 public Plugin myinfo = 
 {

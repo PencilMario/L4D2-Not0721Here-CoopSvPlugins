@@ -192,7 +192,7 @@ public BuildPrintPanel(client)
 	
 	
 	//Draw Spectators count line
-	Format(text, sizeof(text), "-> 臭ob的 (%d)", sumspec);
+	Format(text, sizeof(text), "->臭ob的 (%d)", sumspec);
 	
 	//Slectable Spectators or not
 	DrawPanelItem(TeamPanel, text);
@@ -254,7 +254,7 @@ public BuildPrintPanel(client)
 	//
 	//Gamemode is Versus
 	//Draw Infected count line
-	Format(text, sizeof(text), "->特殊感染者 \x03(%d/%d)", suminf, g_cMaxSpecials.IntValue);
+	Format(text, sizeof(text), "->特殊感染者 (%d/%d)", suminf, g_cMaxSpecials.IntValue);
 	DrawPanelItem(TeamPanel, text);
 	DrawPanelText(TeamPanel, "");
 	count = 0;
@@ -306,7 +306,7 @@ public BuildPrintPanel(client)
 
 	//Draw Total connected Players & Draw Final
 	DrawPanelText(TeamPanel, "");
-	Format(text, sizeof(text), "\n>> 玩家总计: %d/%d <<", sumall, maxcl);
+	Format(text, sizeof(text), ">> 玩家总计: %d/%d <<", sumall, maxcl);
 	DrawPanelText(TeamPanel, text);
 
 

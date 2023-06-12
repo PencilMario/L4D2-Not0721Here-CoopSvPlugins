@@ -90,17 +90,17 @@ public OnPluginStart()
 	RegConsoleCmd("sm_panel", PrintTeamsToClient);
 	//Reg Cvars
 	CreateConVar("l4d_plp_version", PLUGIN_VERSION, "Playerlist Panel Display Version", FCVAR_REPLICATED|FCVAR_PLUGIN|FCVAR_NOTIFY|FCVAR_DONTRECORD);
-	cc_plpOnConnect = CreateConVar("l4d_plp_onconnect", "1", "Show Playerlist Panel on connect?");
+	cc_plpOnConnect = CreateConVar("l4d_plp_onconnect", "0", "Show Playerlist Panel on connect?");
 	cc_plpTimer = CreateConVar("l4d_plp_timer", "20", "How long, in seconds, the Playerlist Panel stay before it close automatic");
-	cc_plpAutoRefreshPanel = CreateConVar("l4d_plp_autorefreshpanel", "0", "Should the Panel be static & refresh itself every second?");
+	cc_plpAutoRefreshPanel = CreateConVar("l4d_plp_autorefreshpanel", "1", "Should the Panel be static & refresh itself every second?");
 	cc_plpPaShowscores = CreateConVar("l4d_plp_pashowscores", "0", "Show Playerlist Panel after Showscores? NO REFRESH!");
 	cc_plpPaSTimer = CreateConVar("l4d_plp_pastimer", "5", "How long, in seconds, the Playerlist Panel stay after Showscores \nIf l4d_plp_pashowscores is = 1");
-	cc_plpAnnounce = CreateConVar("l4d_plp_announce", "1", "Show Hint-Message about the command to players on Spectator?");
-	cc_plpSelectTeam = CreateConVar ("l4d_plp_select_team", "1", "Should the user be able to select a team on Playerlist Panel?");
+	cc_plpAnnounce = CreateConVar("l4d_plp_announce", "0", "Show Hint-Message about the command to players on Spectator?");
+	cc_plpSelectTeam = CreateConVar ("l4d_plp_select_team", "0", "Should the user be able to select a team on Playerlist Panel?");
 	cc_plpHintStatic = CreateConVar ("l4d_plp_hint_static", "0", "Should the Hint for Panel options be Static?");
-	cc_plpSpectatorSelect = CreateConVar ("l4d_plp_select_team_spectator", "1", "If l4d_plp_select_team = 1 \nShould the Spectator selection be functional?");
-	cc_plpSurvivorSelect = CreateConVar ("l4d_plp_select_team_survivor", "1", "If l4d_plp_select_team = 1 \nShould the Survivor selection be functional?");
-	cc_plpInfectedSelect = CreateConVar ("l4d_plp_select_team_infected", "1", "If l4d_plp_select_team = 1 \nShould the Infected selection be functional?");
+	cc_plpSpectatorSelect = CreateConVar ("l4d_plp_select_team_spectator", "0", "If l4d_plp_select_team = 1 \nShould the Spectator selection be functional?");
+	cc_plpSurvivorSelect = CreateConVar ("l4d_plp_select_team_survivor", "0", "If l4d_plp_select_team = 1 \nShould the Survivor selection be functional?");
+	cc_plpInfectedSelect = CreateConVar ("l4d_plp_select_team_infected", "0", "If l4d_plp_select_team = 1 \nShould the Infected selection be functional?");
 	cc_plpShowBots = CreateConVar ("l4d_plp_show_bots", "1", "Should bots be listed in Panel?");
 
 	g_cMaxSpecials = FindConVar("sss_1P");
@@ -206,8 +206,15 @@ public BuildPrintPanel(client)
 
 	//Get & Draw Spectator Player Names
 	count = 1;
+	bool skip = false;
 	for (i=1;i<=MaxClients;i++)
 	{
+		if (skip) continue;
+		if (sumspec > 4){
+			Format(text, sizeof(text), "一万个旁观，不干了！");
+			DrawPanelText(TeamPanel, text);
+			skip = true;
+		}
 		if (IsValidPlayer(i) && GetClientTeam(i) == 1)
 		{
 			Format(text, sizeof(text), "%d. %N", count, i);
@@ -303,7 +310,7 @@ public BuildPrintPanel(client)
 		count = 1;
 		for (int i = 1; i <= MaxClients; i++){
 			if (GetInfectedClass(i) == ZC_TANK){
-				Format(text, sizeof(text), "Tank%i - %iHP", count++, GetClientHealth(i));
+				Format(text, sizeof(text), "Tank%d - %dHP", count++, GetClientHealth(i));
 			}
 		}
 	}
@@ -314,13 +321,10 @@ public BuildPrintPanel(client)
 	//DrawPanelText(TeamPanel, text);
 	
 
-	//Gamemode is Coop
-	if (GameModeCheck() == 1)
-	{
-		//Draw Total connected Players & Draw Final
-		Format(text, sizeof(text), "\x04已连接: %d/%d", sumsurv, maxcl);
-		DrawPanelText(TeamPanel, text);
-	}
+	//Draw Total connected Players & Draw Final
+	Format(text, sizeof(text), "\n>>玩家总计: %d/%d<<", sumsurv, maxcl);
+	DrawPanelText(TeamPanel, text);
+
 
 	//Send Panel to client
 	if (plpSelectTeam == 1)

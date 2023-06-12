@@ -17,6 +17,10 @@
 	}
 	"绝境配置"
 	{
+		"mutation4_ez"
+		{
+			"name"		"逛街14特"
+		}
 		"mutation4"
 		{
 			"name"		"绝境14特"
@@ -28,6 +32,10 @@
 	}
 	"死门配置"
 	{
+		"community5_ez"
+		{
+			"name"		"逛街死门12特0秒全控"
+		}
 		"community5"
 		{
 			"name"		"死门10特0秒全控"

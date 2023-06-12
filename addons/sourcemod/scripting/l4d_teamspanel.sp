@@ -105,7 +105,7 @@ public OnPluginStart()
 
 	g_cMaxSpecials = FindConVar("sss_1P");
 	//Execute the config file
-	AutoExecConfig(true, "l4d_teamspanel");
+	//AutoExecConfig(true, "l4d_teamspanel");
 
 	//Hook Cvars
 	HookConVarChange(cc_plpOnConnect, ConVarChanged);

@@ -325,7 +325,7 @@ public BuildPrintPanel(client)
 	
 
 	//Draw Total connected Players & Draw Final
-	Format(text, sizeof(text), "\n>>玩家总计: %d/%d<<", sumsurv, maxcl);
+	Format(text, sizeof(text), "\n>>玩家总计: %d/%d<<", sumall, maxcl);
 	DrawPanelText(TeamPanel, text);
 
 
@@ -852,7 +852,7 @@ public CountAllHumanPlayers()
 
 
 //Count Players Team
-public CountPlayersTeam(team)
+public CountPlayersTeam(int team)
 {
 	new Count = 0;
 	for (new i=1;i<=MaxClients;i++)

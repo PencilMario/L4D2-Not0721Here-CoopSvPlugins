@@ -195,14 +195,8 @@ public BuildPrintPanel(client)
 	Format(text, sizeof(text), "-> 臭ob的 (%d)\n", sumspec);
 	
 	//Slectable Spectators or not
-	if (plpSelectTeam == 1)
-	{
-		DrawPanelItem(TeamPanel, text);
-	}
-	if (plpSelectTeam == 0)
-	{
-		DrawPanelText(TeamPanel, text);
-	}
+	DrawPanelItem(TeamPanel, text);
+	DrawPanelText(TeamPanel, "");
 
 	//Get & Draw Spectator Player Names
 	count = 1;
@@ -226,16 +220,8 @@ public BuildPrintPanel(client)
 	
 	//Draw Survivors count line
 	Format(text, sizeof(text), "->生还者 \x03(%d) \x01\n", sumsurv);
-
-	//Selectable Survivors or not
-	if (plpSelectTeam == 1)
-	{
-		DrawPanelItem(TeamPanel, text);
-	}
-	if (plpSelectTeam == 0)
-	{
-		DrawPanelText(TeamPanel, text);
-	}
+	DrawPanelItem(TeamPanel, text);
+	DrawPanelText(TeamPanel, "");
 
 	//Get & Draw Survivor Player Names
 	count = 1;
@@ -268,17 +254,9 @@ public BuildPrintPanel(client)
 	//
 	//Gamemode is Versus
 	//Draw Infected count line
-	Format(text, sizeof(text), "->特殊感染者 \x03(%d/%d) \x01\n", suminf, g_cMaxSpecials.IntValue);
-
-	//Get & Draw Infected Player Names
-	if (plpSelectTeam == 1)
-	{
-		DrawPanelItem(TeamPanel, text);
-	}
-	if (plpSelectTeam == 0)
-	{
-		DrawPanelText(TeamPanel, text);
-	}
+	Format(text, sizeof(text), "->特殊感染者 \x03(%d/%d) \x01", suminf, g_cMaxSpecials.IntValue);
+	DrawPanelItem(TeamPanel, text);
+	DrawPanelText(TeamPanel, "");
 	count = 0;
 	int i_SiTypeCount[9] = {0,0,0,0,0,0,0,0,0};
 	for (i=1;i<=MaxClients;i++)
@@ -305,10 +283,11 @@ public BuildPrintPanel(client)
 	if (i_SiTypeCount[ZC_JOCKEY] > 0) DrawPanelText(TeamPanel, text);
 	Format(text, sizeof(text), "Charger: %i\n", i_SiTypeCount[ZC_CHARGER]);
 	if (i_SiTypeCount[ZC_CHARGER] > 0) DrawPanelText(TeamPanel, text);
-
+	DrawPanelText(TeamPanel, "");
 	if (i_SiTypeCount[ZC_TANK] > 0){
-		Format(text, sizeof(text), "->坦克 \x03(%d) \x01\n", i_SiTypeCount[ZC_TANK]);
-		DrawPanelText(TeamPanel, text);
+		Format(text, sizeof(text), "->坦克 \x03(%d) \x01", i_SiTypeCount[ZC_TANK]);
+		DrawPanelItem(TeamPanel, text);
+		DrawPanelText(TeamPanel, "");
 		count = 1;
 		for (int i = 1; i <= MaxClients; i++){
 			if (GetInfectedClass(i) == ZC_TANK){
@@ -326,6 +305,7 @@ public BuildPrintPanel(client)
 	
 
 	//Draw Total connected Players & Draw Final
+	DrawPanelText(TeamPanel, "");
 	Format(text, sizeof(text), "\n>>玩家总计: %d/%d<<", sumall, maxcl);
 	DrawPanelText(TeamPanel, text);
 

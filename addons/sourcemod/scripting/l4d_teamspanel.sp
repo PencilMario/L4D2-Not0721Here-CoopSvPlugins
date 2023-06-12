@@ -192,7 +192,7 @@ public BuildPrintPanel(client)
 	
 	
 	//Draw Spectators count line
-	Format(text, sizeof(text), "<- 臭ob的 (%d)\n", sumspec);
+	Format(text, sizeof(text), "-> 臭ob的 (%d)\n", sumspec);
 	
 	//Slectable Spectators or not
 	if (plpSelectTeam == 1)
@@ -225,7 +225,7 @@ public BuildPrintPanel(client)
 	DrawPanelText(TeamPanel, " \n");
 	
 	//Draw Survivors count line
-	Format(text, sizeof(text), "<-生还者 \x03(%d) \x01\n", sumsurv);
+	Format(text, sizeof(text), "->生还者 \x03(%d) \x01\n", sumsurv);
 
 	//Selectable Survivors or not
 	if (plpSelectTeam == 1)
@@ -268,7 +268,7 @@ public BuildPrintPanel(client)
 	//
 	//Gamemode is Versus
 	//Draw Infected count line
-	Format(text, sizeof(text), "<-特殊感染者 \x03(%d/%d) \x01\n", suminf, g_cMaxSpecials.IntValue);
+	Format(text, sizeof(text), "->特殊感染者 \x03(%d/%d) \x01\n", suminf, g_cMaxSpecials.IntValue);
 
 	//Get & Draw Infected Player Names
 	if (plpSelectTeam == 1)
@@ -303,17 +303,18 @@ public BuildPrintPanel(client)
 	if (i_SiTypeCount[ZC_SPITTER] > 0) DrawPanelText(TeamPanel, text);
 	Format(text, sizeof(text), "Jockey: %i", i_SiTypeCount[ZC_JOCKEY]);
 	if (i_SiTypeCount[ZC_JOCKEY] > 0) DrawPanelText(TeamPanel, text);
-	Format(text, sizeof(text), "Charger: %i", i_SiTypeCount[ZC_CHARGER]);
+	Format(text, sizeof(text), "Charger: %i\n", i_SiTypeCount[ZC_CHARGER]);
 	if (i_SiTypeCount[ZC_CHARGER] > 0) DrawPanelText(TeamPanel, text);
 
 	if (i_SiTypeCount[ZC_TANK] > 0){
-		Format(text, sizeof(text), "<-坦克 \x03(%d) \x01\n", i_SiTypeCount[ZC_TANK]);
+		Format(text, sizeof(text), "->坦克 \x03(%d) \x01\n", i_SiTypeCount[ZC_TANK]);
 		DrawPanelText(TeamPanel, text);
 		count = 1;
 		for (int i = 1; i <= MaxClients; i++){
 			if (GetInfectedClass(i) == ZC_TANK){
 				GetClientHealthStatus(i, hpstatus, sizeof(hpstatus));
 				Format(text, sizeof(text), "Tank%d - %s", count++, hpstatus);
+				DrawPanelText(TeamPanel, text);
 			}
 		}
 	}
@@ -366,7 +367,7 @@ public TeamPanelHandler(Handle:TeamPanel, MenuAction:action, param1, param2)
 
 public void GetClientHealthStatus(int client, char[] buffer, int len){
 	if (IsPlayerAlive(client)){
-		int health = GetPermanentHealth(client) + GetClientTeam(client) == 2 ? GetSurvivorTempHealth(client) : 0;
+		int health = GetPermanentHealth(client) + (GetClientTeam(client) == 2 ? GetSurvivorTempHealth(client) : 0);
 		Format(buffer, len, "%dHP", health)
 	}else{
 		Format(buffer, len, "死亡")
@@ -456,7 +457,7 @@ public Action:PrintTeamsToClient(client, args)
 		}
 		BuildPrintPanel(client);
 	}
-	
+	return Plugin_Handled;
 }
 
 

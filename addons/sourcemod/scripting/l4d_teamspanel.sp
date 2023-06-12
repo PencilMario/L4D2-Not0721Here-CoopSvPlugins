@@ -89,7 +89,7 @@ public OnPluginStart()
 	RegConsoleCmd("sm_teams", PrintTeamsToClient);
 	RegConsoleCmd("sm_panel", PrintTeamsToClient);
 	//Reg Cvars
-	CreateConVar("l4d_plp_version", PLUGIN_VERSION, "Playerlist Panel Display Version", FCVAR_REPLICATED|FCVAR_PLUGIN|FCVAR_NOTIFY|FCVAR_DONTRECORD);
+	CreateConVar("l4d_plp_version", PLUGIN_VERSION, "Playerlist Panel Display Version", FCVAR_REPLICATED|FCVAR_NOTIFY|FCVAR_DONTRECORD);
 	cc_plpOnConnect = CreateConVar("l4d_plp_onconnect", "0", "Show Playerlist Panel on connect?");
 	cc_plpTimer = CreateConVar("l4d_plp_timer", "20", "How long, in seconds, the Playerlist Panel stay before it close automatic");
 	cc_plpAutoRefreshPanel = CreateConVar("l4d_plp_autorefreshpanel", "1", "Should the Panel be static & refresh itself every second?");
@@ -221,7 +221,7 @@ public BuildPrintPanel(client)
 	//Draw Survivors count line
 	Format(text, sizeof(text), "->生还者 (%d) ", sumsurv);
 	DrawPanelItem(TeamPanel, text);
-	DrawPanelText(TeamPanel, "");
+	DrawPanelText(TeamPanel, "\n");
 
 	//Get & Draw Survivor Player Names
 	count = 1;
@@ -256,12 +256,13 @@ public BuildPrintPanel(client)
 	//Draw Infected count line
 	Format(text, sizeof(text), "->特殊感染者 (%d/%d)", suminf, g_cMaxSpecials.IntValue);
 	DrawPanelItem(TeamPanel, text);
-	DrawPanelText(TeamPanel, "");
+	DrawPanelText(TeamPanel, "\n");
 	count = 0;
 	int i_SiTypeCount[9] = {0,0,0,0,0,0,0,0,0};
 	for (i=1;i<=MaxClients;i++)
 	{
 		if (IsClientInGame(i)){
+			if (!IsPlayerAlive(i)) continue;
 			int type = GetInfectedClass(i);
 			if (type != -1) {
 				i_SiTypeCount[type]++;
@@ -281,15 +282,15 @@ public BuildPrintPanel(client)
 	if (i_SiTypeCount[ZC_SPITTER] > 0) DrawPanelText(TeamPanel, text);
 	Format(text, sizeof(text), "Jockey: %i", i_SiTypeCount[ZC_JOCKEY]);
 	if (i_SiTypeCount[ZC_JOCKEY] > 0) DrawPanelText(TeamPanel, text);
-	Format(text, sizeof(text), "Charger: %i\n", i_SiTypeCount[ZC_CHARGER]);
+	Format(text, sizeof(text), "Charger: %i", i_SiTypeCount[ZC_CHARGER]);
 	if (i_SiTypeCount[ZC_CHARGER] > 0) DrawPanelText(TeamPanel, text);
-	DrawPanelText(TeamPanel, "");
+	DrawPanelText(TeamPanel, "\n");
 	if (i_SiTypeCount[ZC_TANK] > 0){
 		Format(text, sizeof(text), "->坦克 (%d) ", i_SiTypeCount[ZC_TANK]);
 		DrawPanelItem(TeamPanel, text);
-		DrawPanelText(TeamPanel, "");
+		DrawPanelText(TeamPanel, "\n");
 		count = 1;
-		for (int i = 1; i <= MaxClients; i++){
+		for (i = 1; i <= MaxClients; i++){
 			if (GetInfectedClass(i) == ZC_TANK){
 				GetClientHealthStatus(i, hpstatus, sizeof(hpstatus));
 				Format(text, sizeof(text), "Tank%d - %s", count++, hpstatus);
@@ -305,7 +306,7 @@ public BuildPrintPanel(client)
 	
 
 	//Draw Total connected Players & Draw Final
-	DrawPanelText(TeamPanel, "");
+	DrawPanelText(TeamPanel, "\n");
 	Format(text, sizeof(text), ">> 玩家总计: %d/%d <<", sumall, maxcl);
 	DrawPanelText(TeamPanel, text);
 
@@ -351,6 +352,26 @@ public void GetClientHealthStatus(int client, char[] buffer, int len){
 		Format(buffer, len, "%dHP", health)
 	}else{
 		Format(buffer, len, "死亡")
+	}
+	if (GetClientTeam(client) == TEAM_SURVIVOR){
+		if (GetSurvivorTempHealth(client) > 0) Format(buffer, len, "#%s", buffer);
+		if (IsClientHanging(client)) Format(buffer, len, "%s[挂边]", buffer);
+		if (IsClientIncapped(client)) Format(buffer, len, "%s[倒地#%d]", buffer, GetClientIncappedCount(client));
+		if (GetClientPinnedInfectedType(client) != -1){
+			switch (GetClientPinnedInfectedType(client)){
+				case ZC_HUNTER:
+					Format(buffer, len, "%s[被HT控]", buffer);
+				case ZC_SMOKER:
+					Format(buffer, len, "%s[被舌头控]", buffer);
+				case ZC_JOCKEY:
+					Format(buffer, len, "%s[被猴子控]", buffer);
+				case ZC_CHARGER:
+					Format(buffer, len, "%s[被牛控]", buffer);
+			}
+		}
+	}
+	if (GetClientTeam(client) == TEAM_INFECTED){
+		if (IsEntityOnFire(client)) Format(buffer, len, "%s[点燃]", buffer);
 	}
 }
 
@@ -407,7 +428,7 @@ public Action:PrintTeamsToClient(client, args)
 			hintstatic[client] = 1;
 			CreateTimer(3.0, HintStaticTimer, client, TIMER_REPEAT);
 		}
-		CreateTimer(3.0, RefreshPanel, client, TIMER_REPEAT);
+		CreateTimer(1.0, RefreshPanel, client, TIMER_REPEAT);
 	}
 	if (plpAutoRefreshPanel == 0)	
 	{
@@ -565,25 +586,6 @@ public OnClientDisconnect(client)
 }
 
 
-//Gamemode Check
-GameModeCheck()
-{
-	new GameMode = 0;
-	new String:gamemodecvar[16];
-	GetConVarString(FindConVar("mp_gamemode"), gamemodecvar, sizeof(gamemodecvar));
-	if (StrContains(gamemodecvar, "versus", false) != -1 || StrContains(gamemodecvar, "mutation12", false) != -1 || StrContains(gamemodecvar, "scavenge", false) != -1)
-	{
-		GameMode = 2;
-		return GameMode;
-	}
-	if (StrContains(gamemodecvar, "coop", false) != -1 || StrContains(gamemodecvar, "survival", false) != -1)
-	{
-		GameMode = 1;
-		return GameMode;
-	}
-	return GameMode;
-}
-
 
 //Cvar changed check
 public ConVarChanged(Handle:convar, const String:oldValue[], const String:newValue[])
@@ -615,7 +617,7 @@ public ReadCvars()
 public Action:OnPlayerRunCmd(client, &buttons, &impulse, Float:vel[3], Float:angles[3])
 {
 	//Check if its a valid player
-	if (!IsValidPlayer(client)) return;
+	if (!IsValidPlayer(client)) return Plugin_Continue;
 	if (plpPaShowscores == 1)
 	{
 		if (buttons & IN_SCORE)
@@ -637,6 +639,7 @@ public Action:OnPlayerRunCmd(client, &buttons, &impulse, Float:vel[3], Float:ang
 			}
 		}
 	}  
+	return Plugin_Continue;
 }  
 
 
@@ -656,7 +659,7 @@ bool:IsTeamFull (team)
 	{
 		max = MAX_SURVIVORS;
 		count = 0;
-		for (i=1;i<=GetMaxClients();i++)
+		for (i=1;i<=MaxClients;i++)
 			if (IsValidPlayer(i) && GetClientTeam(i)==2)
 				count++;
 		}
@@ -664,7 +667,7 @@ bool:IsTeamFull (team)
 	{
 		max = MAX_INFECTED;
 		count = 0;
-		for (i=1;i<=GetMaxClients();i++)
+		for (i=1;i<=MaxClients;i++)
 			if (IsValidPlayer(i) && GetClientTeam(i)==3)
 				count++;
 		}
@@ -846,5 +849,8 @@ public CountPlayersTeam(int team)
 	return Count;
 }
 
-
+stock bool IsEntityOnFire(int iEntity)
+{
+	return (GetEntityFlags(iEntity) & FL_ONFIRE) != 0;
+}
 //End of Plugin

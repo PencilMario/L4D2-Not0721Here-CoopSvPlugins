@@ -183,7 +183,7 @@ public BuildPrintPanel(client)
 	new count;
 	new i, sumall, sumspec, sumsurv, suminf;
 	new String:text[64];
-
+	char hpstatus[16];
 	//Counting
 	sumall = CountAllHumanPlayers();
 	sumspec = CountPlayersTeam(1);
@@ -245,7 +245,8 @@ public BuildPrintPanel(client)
 		{
 			if (IsClientConnected(i) && IsClientInGame(i) && GetClientTeam(i) == 2)
 			{
-				Format(text, sizeof(text), "%d. %N", count, i);
+				GetClientHealthStatus(i, hpstatus, sizeof(hpstatus));
+				Format(text, sizeof(text), "%N - %s", i, hpstatus);
 				DrawPanelText(TeamPanel, text);
 				count++;
 			}
@@ -254,7 +255,8 @@ public BuildPrintPanel(client)
 		{
 			if (IsValidPlayer(i) && GetClientTeam(i) == 2)
 			{
-				Format(text, sizeof(text), "%d. %N", count, i);
+				GetClientHealthStatus(i, hpstatus, sizeof(hpstatus));
+				Format(text, sizeof(text), "%N - %s", i, hpstatus);
 				DrawPanelText(TeamPanel, text);
 				count++;
 			}
@@ -266,7 +268,7 @@ public BuildPrintPanel(client)
 	//
 	//Gamemode is Versus
 	//Draw Infected count line
-	Format(text, sizeof(text), "<-特殊感染者 \x03(%d / %d) \x01\n", suminf, g_cMaxSpecials.IntValue);
+	Format(text, sizeof(text), "<-特殊感染者 \x03(%d/%d) \x01\n", suminf, g_cMaxSpecials.IntValue);
 
 	//Get & Draw Infected Player Names
 	if (plpSelectTeam == 1)
@@ -310,7 +312,8 @@ public BuildPrintPanel(client)
 		count = 1;
 		for (int i = 1; i <= MaxClients; i++){
 			if (GetInfectedClass(i) == ZC_TANK){
-				Format(text, sizeof(text), "Tank%d - %dHP", count++, GetClientHealth(i));
+				GetClientHealthStatus(i, hpstatus, sizeof(hpstatus));
+				Format(text, sizeof(text), "Tank%d - %s", count++, hpstatus);
 			}
 		}
 	}
@@ -361,6 +364,14 @@ public TeamPanelHandler(Handle:TeamPanel, MenuAction:action, param1, param2)
 	}
 }
 
+public void GetClientHealthStatus(int client, char[] buffer, int len){
+	if (IsPlayerAlive(client)){
+		int health = GetPermanentHealth(client) + GetClientTeam(client) == 2 ? GetSurvivorTempHealth(client) : 0;
+		Format(buffer, len, "%dHP", health)
+	}else{
+		Format(buffer, len, "死亡")
+	}
+}
 
 //TeamPanelHandlerB
 public TeamPanelHandlerB(Handle:TeamPanel, MenuAction:action, param1, param2)

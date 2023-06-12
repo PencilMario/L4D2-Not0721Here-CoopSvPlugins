@@ -1,12 +1,14 @@
 #include <sourcemod>
 #include <sdktools>
-
+#include <treeutil/treeutil.sp>
 
 //Define CVARS
 #define MAX_SURVIVORS GetConVarInt(FindConVar("survivor_limit"))
 #define MAX_INFECTED GetConVarInt(FindConVar("z_max_player_zombies"))
 #define PLUGIN_VERSION "1.6"
 
+// 最大特感数
+ConVar g_cMaxSpecials;
 
 // Sdk calls
 new Handle:gConf = INVALID_HANDLE;
@@ -85,7 +87,7 @@ public OnPluginStart()
 
 	//Reg Commands
 	RegConsoleCmd("sm_teams", PrintTeamsToClient);
-
+	RegConsoleCmd("sm_panel", PrintTeamsToClient);
 	//Reg Cvars
 	CreateConVar("l4d_plp_version", PLUGIN_VERSION, "Playerlist Panel Display Version", FCVAR_REPLICATED|FCVAR_PLUGIN|FCVAR_NOTIFY|FCVAR_DONTRECORD);
 	cc_plpOnConnect = CreateConVar("l4d_plp_onconnect", "1", "Show Playerlist Panel on connect?");
@@ -100,7 +102,8 @@ public OnPluginStart()
 	cc_plpSurvivorSelect = CreateConVar ("l4d_plp_select_team_survivor", "1", "If l4d_plp_select_team = 1 \nShould the Survivor selection be functional?");
 	cc_plpInfectedSelect = CreateConVar ("l4d_plp_select_team_infected", "1", "If l4d_plp_select_team = 1 \nShould the Infected selection be functional?");
 	cc_plpShowBots = CreateConVar ("l4d_plp_show_bots", "1", "Should bots be listed in Panel?");
-	
+
+	g_cMaxSpecials = FindConVar("sss_1P");
 	//Execute the config file
 	AutoExecConfig(true, "l4d_teamspanel");
 
@@ -175,7 +178,7 @@ public BuildPrintPanel(client)
 
 	//Build panel
 	new Handle:TeamPanel = CreatePanel();
-	SetPanelTitle(TeamPanel, "\x04Playerlist Panel");
+	SetPanelTitle(TeamPanel, "\x04>>玩家列表菜单<<");
 	DrawPanelText(TeamPanel, " \n");
 	new count;
 	new i, sumall, sumspec, sumsurv, suminf;
@@ -189,7 +192,7 @@ public BuildPrintPanel(client)
 	
 	
 	//Draw Spectators count line
-	Format(text, sizeof(text), "\x04Spectators \x03(%d of %d) \x01\n", sumspec, sumall);
+	Format(text, sizeof(text), "<- 臭ob的 (%d)\n", sumspec);
 	
 	//Slectable Spectators or not
 	if (plpSelectTeam == 1)
@@ -215,7 +218,7 @@ public BuildPrintPanel(client)
 	DrawPanelText(TeamPanel, " \n");
 	
 	//Draw Survivors count line
-	Format(text, sizeof(text), "\x04Survivors \x03(%d of %d) \x01\n", sumsurv, MAX_SURVIVORS);
+	Format(text, sizeof(text), "<-生还者 \x03(%d) \x01\n", sumsurv);
 
 	//Selectable Survivors or not
 	if (plpSelectTeam == 1)
@@ -255,53 +258,67 @@ public BuildPrintPanel(client)
 	//Draw Infected part depending on gamemode
 	//
 	//Gamemode is Versus
-	if (GameModeCheck() == 2)
-	{
-		//Draw Infected count line
-		Format(text, sizeof(text), "\x04Infected \x03(%d of %d) \x01\n", suminf, MAX_INFECTED);
+	//Draw Infected count line
+	Format(text, sizeof(text), "<-特殊感染者 \x03(%d / %d) \x01\n", suminf, g_cMaxSpecials.IntValue);
 
-		//Get & Draw Infected Player Names
-		if (plpSelectTeam == 1)
-		{
-			DrawPanelItem(TeamPanel, text);
-		}
-		if (plpSelectTeam == 0)
-		{
-			DrawPanelText(TeamPanel, text);
-		}
-		count = 1;
-		for (i=1;i<=MaxClients;i++)
-		{
-			if (plpShowBots > 0)
-			{
-				if (IsClientConnected(i) && IsClientInGame(i) && GetClientTeam(i) == 3)
-				{
-					Format(text, sizeof(text), "%d. %N", count, i);
-					DrawPanelText(TeamPanel, text);
-					count++;
-				}
-			}
-			else
-			{
-				if (IsValidPlayer(i) && GetClientTeam(i) == 3)
-				{
-					Format(text, sizeof(text), "%d. %N", count, i);
-					DrawPanelText(TeamPanel, text);
-					count++;
-				}
-			}
-		}
-		//Draw Total connected Players & Draw Final
-		DrawPanelText(TeamPanel, " \n");
-		Format(text, sizeof(text), "\x04Connected: %d/%d", sumall, maxcl);
+	//Get & Draw Infected Player Names
+	if (plpSelectTeam == 1)
+	{
+		DrawPanelItem(TeamPanel, text);
+	}
+	if (plpSelectTeam == 0)
+	{
 		DrawPanelText(TeamPanel, text);
 	}
+	count = 0;
+	int i_SiTypeCount[9] = {0,0,0,0,0,0,0,0,0};
+	for (i=1;i<=MaxClients;i++)
+	{
+		if (IsClientInGame(i)){
+			int type = GetInfectedClass(i);
+			if (type != -1) {
+				i_SiTypeCount[type]++;
+				count++
+			}
+		}
+	}
+	//Format(text, sizeof(text), "总计: %i\n", count);
+	//DrawPanelText(TeamPanel, text);
+	Format(text, sizeof(text), "Smoker: %i", i_SiTypeCount[ZC_SMOKER]);
+	if (i_SiTypeCount[ZC_SMOKER] > 0) DrawPanelText(TeamPanel, text);
+	Format(text, sizeof(text), "Boomer: %i", i_SiTypeCount[ZC_BOOMER]);
+	if (i_SiTypeCount[ZC_BOOMER] > 0) DrawPanelText(TeamPanel, text);
+	Format(text, sizeof(text), "Hunter: %i", i_SiTypeCount[ZC_HUNTER]);
+	if (i_SiTypeCount[ZC_HUNTER] > 0) DrawPanelText(TeamPanel, text);
+	Format(text, sizeof(text), "Spitter: %i", i_SiTypeCount[ZC_SPITTER]);
+	if (i_SiTypeCount[ZC_SPITTER] > 0) DrawPanelText(TeamPanel, text);
+	Format(text, sizeof(text), "Jockey: %i", i_SiTypeCount[ZC_JOCKEY]);
+	if (i_SiTypeCount[ZC_JOCKEY] > 0) DrawPanelText(TeamPanel, text);
+	Format(text, sizeof(text), "Charger: %i", i_SiTypeCount[ZC_CHARGER]);
+	if (i_SiTypeCount[ZC_CHARGER] > 0) DrawPanelText(TeamPanel, text);
+
+	if (i_SiTypeCount[ZC_TANK] > 0){
+		Format(text, sizeof(text), "<-坦克 \x03(%d) \x01\n", i_SiTypeCount[ZC_TANK]);
+		DrawPanelText(TeamPanel, text);
+		count = 1;
+		for (int i = 1; i <= MaxClients; i++){
+			if (GetInfectedClass(i) == ZC_TANK){
+				Format(text, sizeof(text), "Tank%i - %iHP", count++, GetClientHealth(i));
+			}
+		}
+	}
+
+	//Draw Total connected Players & Draw Final
+	//DrawPanelText(TeamPanel, " \n");
+	//Format(text, sizeof(text), "\x04已连接: %d/%d", sumall, maxcl);
+	//DrawPanelText(TeamPanel, text);
+	
 
 	//Gamemode is Coop
 	if (GameModeCheck() == 1)
 	{
 		//Draw Total connected Players & Draw Final
-		Format(text, sizeof(text), "\x04Connected: %d/%d", sumsurv, maxcl);
+		Format(text, sizeof(text), "\x04已连接: %d/%d", sumsurv, maxcl);
 		DrawPanelText(TeamPanel, text);
 	}
 
@@ -825,7 +842,7 @@ public CountPlayersTeam(team)
 	new Count = 0;
 	for (new i=1;i<=MaxClients;i++)
 	{
-		if (IsClientConnected(i) && IsClientInGame(i) && !IsFakeClient(i) && GetClientTeam(i) == team)
+		if (IsClientConnected(i) && IsClientInGame(i) && GetClientTeam(i) == team)
 		{
 			Count++;
 		}

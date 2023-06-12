@@ -356,7 +356,7 @@ public void GetClientHealthStatus(int client, char[] buffer, int len){
 	if (GetClientTeam(client) == TEAM_SURVIVOR){
 		if (GetSurvivorTempHealth(client) > 0) Format(buffer, len, "#%s", buffer);
 		if (IsClientHanging(client)) Format(buffer, len, "%s[挂边]", buffer);
-		if (IsClientIncapped(client) && IsPlayerAlive(client)) Format(buffer, len, "%s[倒地#%d]", buffer, IsClientIncapped(client) ? GetClientIncappedCount(client) + 1 : GetClientIncappedCount(client));
+		if ((IsClientIncapped(client) || GetClientIncappedCount(client) > 0) && IsPlayerAlive(client)) Format(buffer, len, "%s[倒地#%d]", buffer, IsClientIncapped(client) ? GetClientIncappedCount(client) + 1 : GetClientIncappedCount(client));
 		if (GetClientPinnedInfectedType(client) != -1){
 			switch (GetClientPinnedInfectedType(client)){
 				case ZC_HUNTER:

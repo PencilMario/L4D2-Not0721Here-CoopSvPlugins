@@ -106,7 +106,7 @@ public void OnPluginStart()
 #endif
 	g_cvNFFSurvivors = CreateConVar("nff_survivors", "1", "Disable Survivors team friendly-fire?\n0: OFF\n1: ON", FCVAR_NOTIFY, true, 0.0, true, 1.0);
 	CreateConVar("nff_pluginversion", NFF_VERSION, "No Friendly Fire version", FCVAR_DONTRECORD|FCVAR_NOTIFY|FCVAR_REPLICATED|FCVAR_SPONLY);
-	AutoExecConfig(true, "no_friendly-fire");
+	//AutoExecConfig(true, "no_friendly-fire");
 
 	g_cvNFFDisabledGameModes.AddChangeHook(vPluginStatusCvar);
 	g_cvNFFEnabledGameModes.AddChangeHook(vPluginStatusCvar);

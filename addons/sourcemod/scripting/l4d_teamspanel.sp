@@ -178,7 +178,7 @@ public BuildPrintPanel(client)
 
 	//Build panel
 	new Handle:TeamPanel = CreatePanel();
-	SetPanelTitle(TeamPanel, "\x04>>玩家列表菜单<<");
+	SetPanelTitle(TeamPanel, ">> 玩家列表菜单 <<");
 	DrawPanelText(TeamPanel, " \n");
 	new count;
 	new i, sumall, sumspec, sumsurv, suminf;
@@ -192,7 +192,7 @@ public BuildPrintPanel(client)
 	
 	
 	//Draw Spectators count line
-	Format(text, sizeof(text), "-> 臭ob的 (%d)\n", sumspec);
+	Format(text, sizeof(text), "-> 臭ob的 (%d)", sumspec);
 	
 	//Slectable Spectators or not
 	DrawPanelItem(TeamPanel, text);
@@ -219,7 +219,7 @@ public BuildPrintPanel(client)
 	DrawPanelText(TeamPanel, " \n");
 	
 	//Draw Survivors count line
-	Format(text, sizeof(text), "->生还者 \x03(%d) \x01\n", sumsurv);
+	Format(text, sizeof(text), "->生还者 (%d) ", sumsurv);
 	DrawPanelItem(TeamPanel, text);
 	DrawPanelText(TeamPanel, "");
 
@@ -254,7 +254,7 @@ public BuildPrintPanel(client)
 	//
 	//Gamemode is Versus
 	//Draw Infected count line
-	Format(text, sizeof(text), "->特殊感染者 \x03(%d/%d) \x01", suminf, g_cMaxSpecials.IntValue);
+	Format(text, sizeof(text), "->特殊感染者 \x03(%d/%d)", suminf, g_cMaxSpecials.IntValue);
 	DrawPanelItem(TeamPanel, text);
 	DrawPanelText(TeamPanel, "");
 	count = 0;
@@ -285,7 +285,7 @@ public BuildPrintPanel(client)
 	if (i_SiTypeCount[ZC_CHARGER] > 0) DrawPanelText(TeamPanel, text);
 	DrawPanelText(TeamPanel, "");
 	if (i_SiTypeCount[ZC_TANK] > 0){
-		Format(text, sizeof(text), "->坦克 \x03(%d) \x01", i_SiTypeCount[ZC_TANK]);
+		Format(text, sizeof(text), "->坦克 (%d) ", i_SiTypeCount[ZC_TANK]);
 		DrawPanelItem(TeamPanel, text);
 		DrawPanelText(TeamPanel, "");
 		count = 1;
@@ -306,7 +306,7 @@ public BuildPrintPanel(client)
 
 	//Draw Total connected Players & Draw Final
 	DrawPanelText(TeamPanel, "");
-	Format(text, sizeof(text), "\n>>玩家总计: %d/%d<<", sumall, maxcl);
+	Format(text, sizeof(text), "\n>> 玩家总计: %d/%d <<", sumall, maxcl);
 	DrawPanelText(TeamPanel, text);
 
 

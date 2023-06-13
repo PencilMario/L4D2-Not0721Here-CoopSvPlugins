@@ -302,6 +302,7 @@ public BuildPrintPanel(client)
 		//DrawPanelText(TeamPanel, "\n");
 		count = 1;
 		for (i = 1; i <= MaxClients; i++){
+			if (!IsClientInGame(i)) continue;
 			if (GetInfectedClass(i) == L4D2Infected_Tank){
 				GetClientHealthStatus(i, hpstatus, sizeof(hpstatus));
 				Format(text, sizeof(text), "Tank%d - %s", count++, hpstatus);

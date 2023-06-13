@@ -367,7 +367,7 @@ public void GetClientHealthStatus(int client, char[] buffer, int len){
 		if (GetSurvivorTemporaryHealth(client) > 0) Format(buffer, len, "#%s", buffer);
 		if (IsPlayerAlive(client)){
 			GetWeaponInfo(client, info, sizeof(info));
-			Format(buffer, len, "%s[%s]", buffer, info);
+			Format(buffer, len, "%s [%s]", buffer, info);
 		}
 		if (IsHangingFromLedge(client)) Format(buffer, len, "%s[挂边]", buffer);
 		if ((IsIncapacitated(client) || GetSurvivorIncapCount(client) > 0) && IsPlayerAlive(client)) Format(buffer, len, "%s[倒地#%d]", buffer, IsIncapacitated(client) ? GetSurvivorIncapCount(client) + 1 : GetSurvivorIncapCount(client));

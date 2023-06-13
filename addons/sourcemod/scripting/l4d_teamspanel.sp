@@ -1,11 +1,20 @@
 #include <sourcemod>
 #include <sdktools>
-#include <treeutil/treeutil.sp>
-
+//#include <treeutil/treeutil.sp>
+#define L4D2UTIL_STOCKS_ONLY 1
+#include <l4d2util>
 //Define CVARS
 #define MAX_SURVIVORS GetConVarInt(FindConVar("survivor_limit"))
 #define MAX_INFECTED GetConVarInt(FindConVar("z_max_player_zombies"))
 #define PLUGIN_VERSION "1.6"
+
+#define	ASSAULT_RIFLE_OFFSET_IAMMO		12;
+#define	SMG_OFFSET_IAMMO				20;
+#define	PUMPSHOTGUN_OFFSET_IAMMO		28;
+#define	AUTO_SHOTGUN_OFFSET_IAMMO		32;
+#define	HUNTING_RIFLE_OFFSET_IAMMO		36;
+#define	MILITARY_SNIPER_OFFSET_IAMMO	40;
+#define	GRENADE_LAUNCHER_OFFSET_IAMMO	68;
 
 // 最大特感数
 ConVar g_cMaxSpecials;
@@ -182,8 +191,8 @@ public BuildPrintPanel(client)
 	DrawPanelText(TeamPanel, " \n");
 	new count;
 	new i, sumall, sumspec, sumsurv, suminf;
-	new String:text[128];
-	char hpstatus[64];
+	new String:text[256];
+	char hpstatus[150];
 	//Counting
 	sumall = CountAllHumanPlayers();
 	sumspec = CountPlayersTeam(1);
@@ -221,7 +230,7 @@ public BuildPrintPanel(client)
 	//Draw Survivors count line
 	Format(text, sizeof(text), "->生还者 (%d) ", sumsurv);
 	DrawPanelItem(TeamPanel, text);
-	DrawPanelText(TeamPanel, "\n");
+	DrawPanelText(TeamPanel, " \n");
 
 	//Get & Draw Survivor Player Names
 	count = 1;
@@ -256,7 +265,7 @@ public BuildPrintPanel(client)
 	//Draw Infected count line
 	Format(text, sizeof(text), "->特殊感染者 (%d/%d)", suminf, g_cMaxSpecials.IntValue);
 	DrawPanelItem(TeamPanel, text);
-	DrawPanelText(TeamPanel, "\n");
+	DrawPanelText(TeamPanel, " \n");
 	count = 0;
 	int i_SiTypeCount[9] = {0,0,0,0,0,0,0,0,0};
 	for (i=1;i<=MaxClients;i++)
@@ -272,26 +281,26 @@ public BuildPrintPanel(client)
 	}
 	//Format(text, sizeof(text), "总计: %i\n", count);
 	//DrawPanelText(TeamPanel, text);
-	Format(text, sizeof(text), "Smoker: %i", i_SiTypeCount[ZC_SMOKER]);
-	if (i_SiTypeCount[ZC_SMOKER] > 0) DrawPanelText(TeamPanel, text);
-	Format(text, sizeof(text), "Boomer: %i", i_SiTypeCount[ZC_BOOMER]);
-	if (i_SiTypeCount[ZC_BOOMER] > 0) DrawPanelText(TeamPanel, text);
-	Format(text, sizeof(text), "Hunter: %i", i_SiTypeCount[ZC_HUNTER]);
-	if (i_SiTypeCount[ZC_HUNTER] > 0) DrawPanelText(TeamPanel, text);
-	Format(text, sizeof(text), "Spitter: %i", i_SiTypeCount[ZC_SPITTER]);
-	if (i_SiTypeCount[ZC_SPITTER] > 0) DrawPanelText(TeamPanel, text);
-	Format(text, sizeof(text), "Jockey: %i", i_SiTypeCount[ZC_JOCKEY]);
-	if (i_SiTypeCount[ZC_JOCKEY] > 0) DrawPanelText(TeamPanel, text);
-	Format(text, sizeof(text), "Charger: %i", i_SiTypeCount[ZC_CHARGER]);
-	if (i_SiTypeCount[ZC_CHARGER] > 0) DrawPanelText(TeamPanel, text);
+	Format(text, sizeof(text), "Smoker: %i", i_SiTypeCount[L4D2Infected_Smoker]);
+	if (i_SiTypeCount[L4D2Infected_Smoker] > 0) DrawPanelText(TeamPanel, text);
+	Format(text, sizeof(text), "Boomer: %i", i_SiTypeCount[L4D2Infected_Boomer]);
+	if (i_SiTypeCount[L4D2Infected_Boomer] > 0) DrawPanelText(TeamPanel, text);
+	Format(text, sizeof(text), "Hunter: %i", i_SiTypeCount[L4D2Infected_Hunter]);
+	if (i_SiTypeCount[L4D2Infected_Hunter] > 0) DrawPanelText(TeamPanel, text);
+	Format(text, sizeof(text), "Spitter: %i", i_SiTypeCount[L4D2Infected_Spitter]);
+	if (i_SiTypeCount[L4D2Infected_Spitter] > 0) DrawPanelText(TeamPanel, text);
+	Format(text, sizeof(text), "Jockey: %i", i_SiTypeCount[L4D2Infected_Jockey]);
+	if (i_SiTypeCount[L4D2Infected_Jockey] > 0) DrawPanelText(TeamPanel, text);
+	Format(text, sizeof(text), "Charger: %i", i_SiTypeCount[L4D2Infected_Charger]);
+	if (i_SiTypeCount[L4D2Infected_Charger] > 0) DrawPanelText(TeamPanel, text);
 	DrawPanelText(TeamPanel, "\n");
-	if (i_SiTypeCount[ZC_TANK] > 0){
-		Format(text, sizeof(text), "->坦克 (%d) ", i_SiTypeCount[ZC_TANK]);
+	if (i_SiTypeCount[L4D2Infected_Tank] > 0){
+		Format(text, sizeof(text), "->坦克 (%d) ", i_SiTypeCount[L4D2Infected_Tank]);
 		DrawPanelItem(TeamPanel, text);
 		DrawPanelText(TeamPanel, "\n");
 		count = 1;
 		for (i = 1; i <= MaxClients; i++){
-			if (GetInfectedClass(i) == ZC_TANK){
+			if (GetInfectedClass(i) == L4D2Infected_Tank){
 				GetClientHealthStatus(i, hpstatus, sizeof(hpstatus));
 				Format(text, sizeof(text), "Tank%d - %s", count++, hpstatus);
 				DrawPanelText(TeamPanel, text);
@@ -306,7 +315,7 @@ public BuildPrintPanel(client)
 	
 
 	//Draw Total connected Players & Draw Final
-	DrawPanelText(TeamPanel, "\n");
+	DrawPanelText(TeamPanel, " \n");
 	Format(text, sizeof(text), ">> 玩家总计: %d/%d <<", sumall, maxcl);
 	DrawPanelText(TeamPanel, text);
 
@@ -345,32 +354,37 @@ public TeamPanelHandler(Handle:TeamPanel, MenuAction:action, param1, param2)
 		}
 	}
 }
-
 public void GetClientHealthStatus(int client, char[] buffer, int len){
+	char info[100];
 	if (IsPlayerAlive(client)){
-		int health = GetPermanentHealth(client) + (GetClientTeam(client) == 2 ? GetSurvivorTempHealth(client) : 0);
+		int health = GetSurvivorPermanentHealth(client) + (GetClientTeam(client) == 2 ? GetSurvivorTemporaryHealth(client) : 0);
 		Format(buffer, len, "%dHP", health)
 	}else{
 		Format(buffer, len, "死亡")
 	}
+	
 	if (GetClientTeam(client) == TEAM_SURVIVOR){
-		if (GetSurvivorTempHealth(client) > 0) Format(buffer, len, "#%s", buffer);
-		if (IsClientHanging(client)) Format(buffer, len, "%s[挂边]", buffer);
-		if ((IsClientIncapped(client) || GetClientIncappedCount(client) > 0) && IsPlayerAlive(client)) Format(buffer, len, "%s[倒地#%d]", buffer, IsClientIncapped(client) ? GetClientIncappedCount(client) + 1 : GetClientIncappedCount(client));
+		if (GetSurvivorTemporaryHealth(client) > 0) Format(buffer, len, "#%s", buffer);
+		if (IsPlayerAlive(client)){
+			GetWeaponInfo(client, info, sizeof(info));
+			Format(buffer, len, "%s[%s]", buffer, info);
+		}
+		if (IsHangingFromLedge(client)) Format(buffer, len, "%s[挂边]", buffer);
+		if ((IsIncapacitated(client) || GetSurvivorIncapCount(client) > 0) && IsPlayerAlive(client)) Format(buffer, len, "%s[倒地#%d]", buffer, IsIncapacitated(client) ? GetSurvivorIncapCount(client) + 1 : GetSurvivorIncapCount(client));
 		if (GetClientPinnedInfectedType(client) != -1){
 			switch (GetClientPinnedInfectedType(client)){
-				case ZC_HUNTER:
+				case L4D2Infected_Hunter:
 					Format(buffer, len, "%s[被HT控]", buffer);
-				case ZC_SMOKER:
+				case L4D2Infected_Smoker:
 					Format(buffer, len, "%s[被舌头控]", buffer);
-				case ZC_JOCKEY:
+				case L4D2Infected_Jockey:
 					Format(buffer, len, "%s[被猴子控]", buffer);
-				case ZC_CHARGER:
+				case L4D2Infected_Charger:
 					Format(buffer, len, "%s[被牛控]", buffer);
 			}
 		}
 	}
-	if (GetClientTeam(client) == TEAM_INFECTED){
+	if (GetClientTeam(client) == L4D2Team_Infected){
 		if (IsEntityOnFire(client)) Format(buffer, len, "%s[点燃]", buffer);
 	}
 }
@@ -849,8 +863,130 @@ public CountPlayersTeam(int team)
 	return Count;
 }
 
-stock bool IsEntityOnFire(int iEntity)
+
+void GetWeaponInfo(int client, char[] info, int length)
 {
-	return (GetEntityFlags(iEntity) & FL_ONFIRE) != 0;
+	static char buffer[32];
+	
+	int activeWep = GetEntPropEnt(client, Prop_Send, "m_hActiveWeapon");
+	int primaryWep = GetPlayerWeaponSlot(client, L4D2WeaponSlot_Primary);
+	int activeWepId = IdentifyWeapon(activeWep);
+	int primaryWepId = IdentifyWeapon(primaryWep);
+	
+	// Let's begin with what player is holding,
+	// but cares only pistols if holding secondary.
+	switch (activeWepId)
+	{
+		case WEPID_PISTOL, WEPID_PISTOL_MAGNUM:
+		{
+			if (activeWepId == WEPID_PISTOL && !!GetEntProp(activeWep, Prop_Send, "m_isDualWielding"))
+			{
+				// Dual Pistols Scenario
+				// Straight use the prefix since full name is a bit long.
+				Format(buffer, sizeof(buffer), "DP");
+			}
+			else GetLongWeaponName(activeWepId, buffer, sizeof(buffer));
+			
+			FormatEx(info, length, "%s %i", buffer, GetWeaponClipAmmo(activeWep));
+		}
+		default:
+		{
+			GetLongWeaponName(primaryWepId, buffer, sizeof(buffer));
+			FormatEx(info, length, "%s %i/%i", buffer, GetWeaponClipAmmo(primaryWep), GetWeaponExtraAmmo(client, primaryWepId));
+		}
+	}
+	
+	// Format our result info
+	if (primaryWep == -1)
+	{
+		// In case with no primary,
+		// show the melee full name.
+		if (activeWepId == WEPID_MELEE || activeWepId == WEPID_CHAINSAW)
+		{
+			int meleeWepId = IdentifyMeleeWeapon(activeWep);
+			GetLongMeleeWeaponName(meleeWepId, info, length);
+		}
+	}
+	else
+	{
+		// Default display -> [Primary <In Detail> | Secondary <Prefix>]
+		// Holding melee included in this way
+		// i.e. [Chrome 8/56 | M]
+		if (GetSlotFromWeaponId(activeWepId) != L4D2WeaponSlot_Secondary || activeWepId == WEPID_MELEE || activeWepId == WEPID_CHAINSAW)
+		{
+			GetMeleePrefix(client, buffer, sizeof(buffer));
+			Format(info, length, "%s | %s", info, buffer);
+		}
+
+		// Secondary active -> [Secondary <In Detail> | Primary <Ammo Sum>]
+		// i.e. [Deagle 8 | Mac 700]
+		else
+		{
+			GetLongWeaponName(primaryWepId, buffer, sizeof(buffer));
+			Format(info, length, "%s | %s %i", info, buffer, GetWeaponClipAmmo(primaryWep) + GetWeaponExtraAmmo(client, primaryWepId));
+		}
+	}
+}
+
+stock int GetWeaponExtraAmmo(int client, int wepid)
+{
+	static int ammoOffset;
+	if (!ammoOffset) ammoOffset = FindSendPropInfo("CCSPlayer", "m_iAmmo");
+	
+	int offset;
+	switch (wepid)
+	{
+		case WEPID_RIFLE, WEPID_RIFLE_AK47, WEPID_RIFLE_DESERT, WEPID_RIFLE_SG552:
+			offset = ASSAULT_RIFLE_OFFSET_IAMMO
+		case WEPID_SMG, WEPID_SMG_SILENCED:
+			offset = SMG_OFFSET_IAMMO
+		case WEPID_PUMPSHOTGUN, WEPID_SHOTGUN_CHROME:
+			offset = PUMPSHOTGUN_OFFSET_IAMMO
+		case WEPID_AUTOSHOTGUN, WEPID_SHOTGUN_SPAS:
+			offset = AUTO_SHOTGUN_OFFSET_IAMMO
+		case WEPID_HUNTING_RIFLE:
+			offset = HUNTING_RIFLE_OFFSET_IAMMO
+		case WEPID_SNIPER_MILITARY, WEPID_SNIPER_AWP, WEPID_SNIPER_SCOUT:
+			offset = MILITARY_SNIPER_OFFSET_IAMMO
+		case WEPID_GRENADE_LAUNCHER:
+			offset = GRENADE_LAUNCHER_OFFSET_IAMMO
+		default:
+			return -1;
+	}
+	return GetEntData(client, ammoOffset + offset);
+} 
+
+stock int GetClientPinnedInfectedType(int client)
+{
+	if (!IsClientInGame(client)) { return -1; }
+	else if (GetEntPropEnt(client, Prop_Send, "m_tongueOwner") > 0) { return L4D2Infected_Smoker; }
+	else if (GetEntPropEnt(client, Prop_Send, "m_pounceAttacker") > 0) { return L4D2Infected_Hunter; }
+	else if (GetEntPropEnt(client, Prop_Send, "m_carryAttacker") > 0 || GetEntPropEnt(client, Prop_Send, "m_pummelAttacker") > 0) { return L4D2Infected_Charger; }
+	else if (GetEntPropEnt(client, Prop_Send, "m_jockeyAttacker") > 0) { return L4D2Infected_Jockey; }
+	return -1;
+}
+
+stock int GetWeaponClipAmmo(int weapon)
+{
+	return (weapon > 0 ? GetEntProp(weapon, Prop_Send, "m_iClip1") : -1);
+}
+
+void GetMeleePrefix(int client, char[] prefix, int length)
+{
+	int secondary = GetPlayerWeaponSlot(client, L4D2WeaponSlot_Secondary);
+	if (secondary == -1)
+		return;
+	
+	static char buf[4];
+	switch (IdentifyWeapon(secondary))
+	{
+		case WEPID_NONE: buf = "N";
+		case WEPID_PISTOL: buf = (GetEntProp(secondary, Prop_Send, "m_isDualWielding") ? "DP" : "P");
+		case WEPID_PISTOL_MAGNUM: buf = "DE";
+		case WEPID_MELEE: buf = "M";
+		default: buf = "?";
+	}
+
+	strcopy(prefix, length, buf);
 }
 //End of Plugin

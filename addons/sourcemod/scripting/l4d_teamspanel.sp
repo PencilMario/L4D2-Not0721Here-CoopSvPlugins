@@ -197,7 +197,7 @@ public BuildPrintPanel(client)
 	sumall = CountAllHumanPlayers();
 	sumspec = CountPlayersTeam(1);
 	sumsurv = CountPlayersTeam(2);
-	suminf = CountPlayersTeam(3)
+	suminf = CountPlayersTeamAlive(3)
 	
 	
 	//Draw Spectators count line
@@ -205,7 +205,7 @@ public BuildPrintPanel(client)
 	
 	//Slectable Spectators or not
 	DrawPanelItem(TeamPanel, text);
-	DrawPanelText(TeamPanel, "");
+	//DrawPanelText(TeamPanel, "");
 
 	//Get & Draw Spectator Player Names
 	count = 1;
@@ -230,7 +230,7 @@ public BuildPrintPanel(client)
 	//Draw Survivors count line
 	Format(text, sizeof(text), "->生还者 (%d) ", sumsurv);
 	DrawPanelItem(TeamPanel, text);
-	DrawPanelText(TeamPanel, " \n");
+	//DrawPanelText(TeamPanel, " \n");
 
 	//Get & Draw Survivor Player Names
 	count = 1;
@@ -265,7 +265,7 @@ public BuildPrintPanel(client)
 	//Draw Infected count line
 	Format(text, sizeof(text), "->特殊感染者 (%d/%d)", suminf, g_cMaxSpecials.IntValue);
 	DrawPanelItem(TeamPanel, text);
-	DrawPanelText(TeamPanel, " \n");
+	//DrawPanelText(TeamPanel, " \n");
 	count = 0;
 	int i_SiTypeCount[L4D2Infected_Size];
 	for (i=1;i<=MaxClients;i++)
@@ -862,7 +862,18 @@ public CountPlayersTeam(int team)
 	}
 	return Count;
 }
-
+public CountPlayersTeamAlive(int team)
+{
+	new Count = 0;
+	for (new i=1;i<=MaxClients;i++)
+	{
+		if (IsClientConnected(i) && IsClientInGame(i) && GetClientTeam(i) == team && IsPlayerAlive(i))
+		{
+			Count++;
+		}
+	}
+	return Count;
+}
 
 void GetWeaponInfo(int client, char[] info, int length)
 {

@@ -293,11 +293,12 @@ public BuildPrintPanel(client)
 	if (i_SiTypeCount[L4D2Infected_Jockey] > 0) DrawPanelText(TeamPanel, text);
 	Format(text, sizeof(text), "Charger: %i", i_SiTypeCount[L4D2Infected_Charger]);
 	if (i_SiTypeCount[L4D2Infected_Charger] > 0) DrawPanelText(TeamPanel, text);
-	DrawPanelText(TeamPanel, "\n");
+	
 	if (i_SiTypeCount[L4D2Infected_Tank] > 0){
+		DrawPanelText(TeamPanel, "\n");
 		Format(text, sizeof(text), "->坦克 (%d) ", i_SiTypeCount[L4D2Infected_Tank]);
 		DrawPanelItem(TeamPanel, text);
-		DrawPanelText(TeamPanel, "\n");
+		//DrawPanelText(TeamPanel, "\n");
 		count = 1;
 		for (i = 1; i <= MaxClients; i++){
 			if (GetInfectedClass(i) == L4D2Infected_Tank){

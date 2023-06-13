@@ -267,7 +267,7 @@ public BuildPrintPanel(client)
 	DrawPanelItem(TeamPanel, text);
 	DrawPanelText(TeamPanel, " \n");
 	count = 0;
-	int i_SiTypeCount[9] = {0,0,0,0,0,0,0,0,0};
+	int i_SiTypeCount[L4D2Infected_Size];
 	for (i=1;i<=MaxClients;i++)
 	{
 		if (IsClientInGame(i)){

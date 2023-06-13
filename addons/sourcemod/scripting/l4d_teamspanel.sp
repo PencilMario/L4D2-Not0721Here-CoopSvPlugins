@@ -97,6 +97,7 @@ public OnPluginStart()
 	//Reg Commands
 	RegConsoleCmd("sm_teams", PrintTeamsToClient);
 	RegConsoleCmd("sm_panel", PrintTeamsToClient);
+	RegConsoleCmd("sm_spechud", PrintTeamsToClient);
 	//Reg Cvars
 	CreateConVar("l4d_plp_version", PLUGIN_VERSION, "Playerlist Panel Display Version", FCVAR_REPLICATED|FCVAR_NOTIFY|FCVAR_DONTRECORD);
 	cc_plpOnConnect = CreateConVar("l4d_plp_onconnect", "0", "Show Playerlist Panel on connect?");

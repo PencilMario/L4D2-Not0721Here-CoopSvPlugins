@@ -183,7 +183,7 @@ public BuildPrintPanel(client)
 	new count;
 	new i, sumall, sumspec, sumsurv, suminf;
 	new String:text[128];
-	char hpstatus[16];
+	char hpstatus[64];
 	//Counting
 	sumall = CountAllHumanPlayers();
 	sumspec = CountPlayersTeam(1);

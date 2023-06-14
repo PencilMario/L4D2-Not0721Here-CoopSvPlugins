@@ -18,7 +18,7 @@ char g_sDifficultyCode[iArray][32] = {"Easy", "Normal", "Hard", "Impossible"};
 
 bool TankSpawnFinaleVehicleLeaving;
 ConVar g_hMultiples;
-int    g_iTankSwitch, g_iTankPrompt, g_iTankHealth, g_iWitchSwitch, g_iWitchHealth;
+int    g_iTankSwitch, g_iTankPrompt, g_iTankHealth;//, g_iWitchSwitch, g_iWitchHealth;
 ConVar g_hTankSwitch, g_hTankPrompt, g_hTankHealth, g_hWitchSwitch, g_hWitchHealth;
 
 public Plugin myinfo = 
@@ -73,8 +73,8 @@ void iHealthCvars()
 	g_iTankSwitch	= g_hTankSwitch.IntValue;
 	g_iTankPrompt	= g_hTankPrompt.IntValue;
 	g_iTankHealth	= g_hTankHealth.IntValue;
-	g_iWitchSwitch	= g_hWitchSwitch.IntValue;
-	g_iWitchHealth	= g_hWitchHealth.IntValue;
+	//g_iWitchSwitch	= g_hWitchSwitch.IntValue;
+	//g_iWitchHealth	= g_hWitchHealth.IntValue;
 
 	char sCmds[512], g_sMultiples[iArray][32];
 	g_hMultiples.GetString(sCmds, sizeof(sCmds));

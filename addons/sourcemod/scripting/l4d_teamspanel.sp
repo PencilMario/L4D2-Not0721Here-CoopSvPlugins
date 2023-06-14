@@ -378,7 +378,7 @@ public void GetClientHealthStatus(int client, char[] buffer, int len){
 			if (GetClientAvgChoke(client, NetFlow_Both) > 0.05) Format(buffer, len, "%s[Choke]", buffer);
 		}
 		if (IsHangingFromLedge(client)) Format(buffer, len, "%s[挂边]", buffer);
-		if ((IsIncapacitated(client) || GetSurvivorIncapCount(client) > 0) && IsPlayerAlive(client)) Format(buffer, len, "%s[倒地#%d]", buffer, IsIncapacitated(client) ? GetSurvivorIncapCount(client) + 1 : GetSurvivorIncapCount(client));
+		if ((IsIncapacitated(client) || GetSurvivorIncapCount(client) > 0) && IsPlayerAlive(client) && !IsHangingFromLedge(client)) Format(buffer, len, "%s[倒地#%d]", buffer, IsIncapacitated(client) ? GetSurvivorIncapCount(client) + 1 : GetSurvivorIncapCount(client));
 		if (GetClientPinnedInfectedType(client) != -1){
 			switch (GetClientPinnedInfectedType(client)){
 				case L4D2Infected_Hunter:

@@ -372,6 +372,11 @@ public void GetClientHealthStatus(int client, char[] buffer, int len){
 			GetWeaponInfo(client, info, sizeof(info));
 			Format(buffer, len, "%s [%s]", buffer, info);
 		}
+		if (!IsFakeClient(client)){
+			if (GetClientAvgLatency(client, NetFlow_Both)*1000 > 125.0) Format(buffer, len, "%s[Ping:%.0f]", buffer, GetClientAvgLatency(client, NetFlow_Both)*1000);
+			if (GetClientAvgLoss(client, NetFlow_Both) > 0.05) Format(buffer, len, "%s[Loss]", buffer);
+			if (GetClientAvgChoke(client, NetFlow_Both) > 0.05) Format(buffer, len, "%s[Choke]", buffer);
+		}
 		if (IsHangingFromLedge(client)) Format(buffer, len, "%s[挂边]", buffer);
 		if ((IsIncapacitated(client) || GetSurvivorIncapCount(client) > 0) && IsPlayerAlive(client)) Format(buffer, len, "%s[倒地#%d]", buffer, IsIncapacitated(client) ? GetSurvivorIncapCount(client) + 1 : GetSurvivorIncapCount(client));
 		if (GetClientPinnedInfectedType(client) != -1){

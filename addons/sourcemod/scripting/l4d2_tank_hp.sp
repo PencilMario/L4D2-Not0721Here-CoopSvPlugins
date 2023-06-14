@@ -11,7 +11,7 @@
 #define TankSound	"ui/pickup_secret01.wav"
 
 int g_iMultiplesCount;
-float g_fMultiples[iArray];
+float g_fMultiples[iArray] = {0.75, 1.0, 1.5, 2.0};
 char g_sDifficultyName[iArray][32] = {"简单", "普通", "高级", "专家"};
 char g_sDifficultyCode[iArray][32] = {"Easy", "Normal", "Hard", "Impossible"};
 
@@ -81,8 +81,8 @@ void iHealthCvars()
 	g_iMultiplesCount = ReplaceString(sCmds, sizeof(sCmds), ";", ";", false);
 	ExplodeString(sCmds, ";", g_sMultiples, g_iMultiplesCount + 1, 32);
 	
-	for (int i = 0; i < iArray; i++)
-		g_fMultiples[i] = sCmds[0] == '\0' || IsCharSpace(sCmds[0]) || g_sMultiples[i][0] == '\0' || IsCharSpace(g_sMultiples[i][0]) || !IsCharNumeric(g_sMultiples[i][0]) ? 1.0 : StringToFloat(g_sMultiples[i]);
+	//for (int i = 0; i < iArray; i++)
+	//	g_fMultiples[i] = sCmds[0] == '\0' || IsCharSpace(sCmds[0]) || g_sMultiples[i][0] == '\0' || IsCharSpace(g_sMultiples[i][0]) || !IsCharNumeric(g_sMultiples[i][0]) ? 1.0 : StringToFloat(g_sMultiples[i]);
 }
 //地图结束.
 public void OnMapEnd()

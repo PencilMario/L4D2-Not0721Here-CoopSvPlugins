@@ -16,7 +16,7 @@ public Plugin myinfo =
 	name 		= "[L4D2] Survivor Bot AI Improver",
 	author 		= "Emana202",
 	description = "Attempt at improving survivor bots' AI and behaviour as much as possible.",
-	version 	= "1.4",
+	version 	= "1.4b",
 	url 		= "https://forums.alliedmods.net/showthread.php?t=342872"
 }
 
@@ -5439,6 +5439,8 @@ bool LBI_IsPositionInsideCheckpoint(const float fPos[3])
 
 float GetClientTravelDistance(int iClient, float fGoalPos[3], bool bSquared = false)
 {
+	if( !g_bMapStarted ) return -1.0;
+
 	int iStartArea = g_iClientNavArea[iClient];
 	if (!iStartArea)return -1.0;
 
@@ -5470,6 +5472,8 @@ float GetClientTravelDistance(int iClient, float fGoalPos[3], bool bSquared = fa
 
 float GetEntityTravelDistance(int iClient, int iEntity, bool bSquared = false)
 {
+	if( !g_bMapStarted ) return -1.0;
+
 	int iStartArea, iTeam; float fEntityPos[3];
 	if (IsValidClient(iClient))
 	{
@@ -5522,6 +5526,8 @@ float GetEntityTravelDistance(int iClient, int iEntity, bool bSquared = false)
 
 float GetVectorTravelDistance(float fStartPos[3], float fGoalPos[3], bool bSquared = false, float fMaxLength = 2048.0, int iTeam = 2)
 {
+	if( !g_bMapStarted ) return -1.0;
+
 	int iStartArea = L4D_GetNearestNavArea(fStartPos, _, true, true, true, iTeam);
 	if (!iStartArea)return -1.0;
 	
@@ -5696,6 +5702,8 @@ MRESReturn DTR_OnFindUseEntity(int iClient, Handle hReturn, Handle hParams)
 
 int LBI_IsPathToPositionDangerous(int iClient, float fGoalPos[3])
 {
+	if( !g_bMapStarted ) return -1;
+
 	if (L4D2_IsTankInPlay())
 	{
 		ArrayList hTankList = new ArrayList();

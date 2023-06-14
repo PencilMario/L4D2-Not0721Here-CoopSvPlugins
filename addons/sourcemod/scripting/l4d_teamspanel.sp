@@ -373,7 +373,7 @@ public void GetClientHealthStatus(int client, char[] buffer, int len){
 			Format(buffer, len, "%s [%s]", buffer, info);
 		}
 		if (!IsFakeClient(client)){
-			if (GetClientAvgLatency(client, NetFlow_Both)*1000 > 125.0) Format(buffer, len, "%s[Ping:%.0f]", buffer, GetClientAvgLatency(client, NetFlow_Both)*1000);
+			if (GetClientAvgLatency(client, NetFlow_Both) > 0.125) Format(buffer, len, "%s[Ping:%.0f]", buffer, GetClientAvgLatency(client, NetFlow_Both)*1000);
 			if (GetClientAvgLoss(client, NetFlow_Both) > 0.05) Format(buffer, len, "%s[Loss]", buffer);
 			if (GetClientAvgChoke(client, NetFlow_Both) > 0.05) Format(buffer, len, "%s[Choke]", buffer);
 		}

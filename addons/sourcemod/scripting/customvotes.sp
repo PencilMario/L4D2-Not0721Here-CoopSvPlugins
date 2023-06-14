@@ -1553,8 +1553,8 @@ public VoteHandler_Simple(Handle:hMenu, MenuAction:iAction, iVoter, iParam2)
 
 				FormatVoteString(g_iCurrentVoteIndex, _, strNotification, sizeof(strNotification));
 				FormatVoterString(g_iCurrentVoteIndex, iVoter, strNotification, sizeof(strNotification));
-
-				if(GetConVarBool(FindConVar(g_strVoteConVar[g_iCurrentVoteIndex])))
+				ConVar t_VoteConVar = FindConVar(g_strVoteConVar[g_iCurrentVoteIndex]);
+				if(t_VoteConVar != null && GetConVarBool(t_VoteConVar))
 				{
 					ReplaceString(strNotification, sizeof(strNotification), "{On|Off}", "Off", true);
 					ReplaceString(strNotification, sizeof(strNotification), "{on|off}", "off", true);
@@ -1582,7 +1582,8 @@ public VoteHandler_Simple(Handle:hMenu, MenuAction:iAction, iVoter, iParam2)
 				FormatVoteString(g_iCurrentVoteIndex, _, strNotification, sizeof(strNotification));
 				FormatVoterString(g_iCurrentVoteIndex, iVoter, strNotification, sizeof(strNotification));
 
-				if(GetConVarBool(FindConVar(g_strVoteConVar[g_iCurrentVoteIndex])))
+				ConVar t_VoteConVar = FindConVar(g_strVoteConVar[g_iCurrentVoteIndex]);
+				if(t_VoteConVar != null && GetConVarBool(t_VoteConVar))
 				{
 					ReplaceString(strNotification, sizeof(strNotification), "{On|Off}", "Off", true);
 					ReplaceString(strNotification, sizeof(strNotification), "{on|off}", "off", true);

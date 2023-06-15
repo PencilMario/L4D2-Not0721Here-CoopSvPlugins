@@ -49,7 +49,7 @@ public void OnPluginStart()
 	HookEvent("round_start", Event_RoundStart);//回合开始.
 	HookEvent("round_end", Event_RoundEnd);//回合结束.
 	HookEvent("witch_spawn", Event_WitchSpawn);
-	HookEvent("tank_spawn", Event_TankSpawn, EventHookMode_Pre);
+	HookEvent("tank_spawn", Event_TankSpawn);
 	HookEvent("finale_vehicle_leaving", Event_FinaleVehicleLeaving);//救援离开.
 	
 	//AutoExecConfig(true, "l4d2_tank_hp");//生成指定文件名的CFG.
@@ -148,10 +148,8 @@ void SetTankHealth(int client, float Multiples, char[] sName)
 	DataPack hPack = new DataPack();
 	hPack.WriteCell(client);
 	hPack.WriteString(sName);
-	ConVar h_TankHealth = FindConVar("z_tank_health");
-	h_TankHealth.IntValue = (IsCountPlayersTeam() * g_iTankHealth);
-	//SetClientHealth(client, RoundFloat(Multiples * (IsCountPlayersTeam() * g_iTankHealth)));
 	RequestFrame(IsClientPrint, hPack);
+	SetClientHealth(client, RoundFloat(Multiples * (IsCountPlayersTeam() * g_iTankHealth)));
 }
 
 void SetClientHealth(int client, int iHealth)

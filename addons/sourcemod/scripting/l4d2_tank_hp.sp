@@ -144,25 +144,24 @@ public void Event_TankSpawn(Event event, const char[] name, bool dontBroadcast)
 
 void SetTankHealth(int client, float Multiples, char[] sName)
 {
-	//这里使用下一帧显示提示.
 	DataPack hPack = new DataPack();
+	DataPack hPack2 = new DataPack();
+	CreateDataTimer(0.1, Timer_SetTankHealth, hPack2);
+	CreateDataTimer(0.2, Timer_IsClientPrint, hPack);
 	hPack.WriteCell(client);
+	hPack2.WriteCell(client);
 	hPack.WriteString(sName);
-	hPack.WriteCell(RoundFloat(Multiples * (IsCountPlayersTeam() * g_iTankHealth)));
-	CreateDataTimer(0.1, Timer_SetTankHealth, hPack);
-	//SetClientHealth(client, RoundFloat(Multiples * (IsCountPlayersTeam() * g_iTankHealth)));
+	hPack2.WriteCell(RoundFloat(Multiples * (IsCountPlayersTeam() * g_iTankHealth))); // write the missing value
 }
 public Action Timer_SetTankHealth(Handle Timer, DataPack hPack){
 	hPack.Reset();
 	int client = hPack.ReadCell();
-	SetPackPosition(hPack, view_as<DataPackPos>(2));
-	int health = hPack.ReadCell();
+	int health = hPack.ReadCell(); // read the value
 	SetClientHealth(client,health);
-	CreateDataTimer(0.1, Timer_IsClientPrint, hPack);
 	return Plugin_Stop;
-}
-void SetClientHealth(int client, int iHealth)
+}void SetClientHealth(int client, int iHealth)
 {
+	PrintToConsoleAll("SetClientHealth() <- %i", iHealth);
 	SetEntProp(client, Prop_Data, "m_iHealth", iHealth);
 	SetEntProp(client, Prop_Data, "m_iMaxHealth", iHealth);
 }

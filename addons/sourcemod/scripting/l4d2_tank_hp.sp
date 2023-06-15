@@ -148,17 +148,26 @@ void SetTankHealth(int client, float Multiples, char[] sName)
 	DataPack hPack = new DataPack();
 	hPack.WriteCell(client);
 	hPack.WriteString(sName);
-	RequestFrame(IsClientPrint, hPack);
-	SetClientHealth(client, RoundFloat(Multiples * (IsCountPlayersTeam() * g_iTankHealth)));
+	hPack.WriteCell(RoundFloat(Multiples * (IsCountPlayersTeam() * g_iTankHealth)));
+	CreateDataTimer(0.1, Timer_SetTankHealth, hPack);
+	//SetClientHealth(client, RoundFloat(Multiples * (IsCountPlayersTeam() * g_iTankHealth)));
 }
-
+public Action Timer_SetTankHealth(Handle Timer, DataPack hPack){
+	hPack.Reset();
+	int client = hPack.ReadCell();
+	SetPackPosition(hPack, view_as<DataPackPos>(2));
+	int health = hPack.ReadCell();
+	SetClientHealth(client,health);
+	CreateDataTimer(0.1, Timer_IsClientPrint, hPack);
+	return Plugin_Stop;
+}
 void SetClientHealth(int client, int iHealth)
 {
 	SetEntProp(client, Prop_Data, "m_iHealth", iHealth);
 	SetEntProp(client, Prop_Data, "m_iMaxHealth", iHealth);
 }
 
-void IsClientPrint(DataPack hPack)
+public Action Timer_IsClientPrint(Handle Timer, DataPack hPack)
 {
 	hPack.Reset();
 	char sName[64];
@@ -172,6 +181,7 @@ void IsClientPrint(DataPack hPack)
 			PrintHintTextToAll("坦克%s出现！难度:%s 存活生还:%d 血量:%d", GetSurvivorName(client), sName, IsCountPlayersTeam(), GetClientHealth(client));//屏幕中下提示.
 	}
 	delete hPack;
+	return Plugin_Stop;
 }
 
 //char[] GetWitchName(int iWitchid)

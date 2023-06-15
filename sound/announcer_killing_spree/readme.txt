@@ -1,0 +1,1 @@
+Note for developers: Dota 2 sounds have had *.vsnd_c extension. We renamed it to mp3(only renamed) for them to be played in our mod. Engine refuses to play and to cache *.vsnd_c files. Then these files were converted to WAV and amplified, because their volume was too low.

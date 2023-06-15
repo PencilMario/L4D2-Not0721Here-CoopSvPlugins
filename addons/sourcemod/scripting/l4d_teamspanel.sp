@@ -392,11 +392,25 @@ public void GetClientHealthStatus(int client, char[] buffer, int len){
 			}
 		}
 	}
+	// 代码设计中，只有tank会检查血量状态
 	if (GetClientTeam(client) == L4D2Team_Infected){
-		if (IsEntityOnFire(client)) Format(buffer, len, "%s[点燃]", buffer);
+		int health = GetClientHealth(client);
+		int maxhealth = GetEntProp(client, Prop_Send, "m_iMaxHealth");
+		float healthPercent = L4D2Util_IntToPercentFloat(health, maxhealth);
+		int timeleft = RoundToCeil(healthPercent / 100.0 * GetTankBurnTime());
+		if (IsEntityOnFire(client)) Format(buffer, len, "%s[点燃: %ds]", buffer, timeleft);
 	}
 }
-
+//int timeleft = RoundToCeil(healthPercent / 100.0 * fTankBurnDuration);
+public float GetTankBurnTime(){
+	char diff[16];
+	ConVar Burntime;
+	GetConVarString(FindConVar("z_difficulty"), diff, sizeof(diff));
+	if (StrEqual(diff, "Impossible")) Burntime = FindConVar("tank_burn_duration_expert");
+	else if (StrEqual(diff, "Hard")) Burntime = FindConVar("tank_burn_duration_hard");
+	else Burntime = FindConVar("tank_burn_duration");
+	return Burntime.FloatValue;
+}
 //TeamPanelHandlerB
 public TeamPanelHandlerB(Handle:TeamPanel, MenuAction:action, param1, param2)
 {

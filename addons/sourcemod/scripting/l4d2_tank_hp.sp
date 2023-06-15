@@ -159,7 +159,8 @@ public Action Timer_SetTankHealth(Handle Timer, DataPack hPack){
 	int health = hPack.ReadCell(); // read the value
 	SetClientHealth(client,health);
 	return Plugin_Stop;
-}void SetClientHealth(int client, int iHealth)
+}
+void SetClientHealth(int client, int iHealth)
 {
 	PrintToConsoleAll("SetClientHealth() <- %i", iHealth);
 	SetEntProp(client, Prop_Data, "m_iHealth", iHealth);

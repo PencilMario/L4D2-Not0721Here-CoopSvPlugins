@@ -57,7 +57,16 @@ public void OnClientPutInServer(int client)
 
 public void OnClientDisconnect(int client)
 {
-	OnClientPutInServer(client);
+	if (IsFakeClient(client)) return;
+	if (g_cAutoMode.IntValue != 1) return;
+	CreateTimer(2.0, SetSi,client);
+}
+
+public Action SetSi(Handle timer, int client)
+{
+	AutoSetSi();
+	CPrintToChatAll("{green}[{lightgreen}!{green}] {default}刷新配置：最高同屏{olive}%d{default} ，单类至少{olive}%d{default}只，单SlotCD{olive}%ds{default}，DPS特感限制{olive}%d{default}只，Relax阶段：{olive}%d{default}",	SS_1_SiNum.IntValue, SILimit(SS_1_SiNum.IntValue), SS_Time.IntValue, SS_DPSLimit.IntValue, SS_EnableRelax.IntValue);
+	return Plugin_Stop;
 }
 void AutoSetSi()
 {

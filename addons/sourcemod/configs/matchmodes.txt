@@ -17,6 +17,10 @@
 	}
 	"绝境配置"
 	{
+		"mutation4_solo"
+		{
+			"name"		"绝境单通"
+		}
 		"mutation4_ez"
 		{
 			"name"		"逛街14特"

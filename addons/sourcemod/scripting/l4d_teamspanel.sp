@@ -3,6 +3,7 @@
 //#include <treeutil/treeutil.sp>
 #define L4D2UTIL_STOCKS_ONLY 1
 #include <l4d2util>
+#include <left4dhooks>
 //Define CVARS
 #define MAX_SURVIVORS GetConVarInt(FindConVar("survivor_limit"))
 #define MAX_INFECTED GetConVarInt(FindConVar("z_max_player_zombies"))
@@ -189,7 +190,6 @@ public BuildPrintPanel(client)
 	//Build panel
 	new Handle:TeamPanel = CreatePanel();
 	SetPanelTitle(TeamPanel, ">> 玩家列表菜单 <<");
-	DrawPanelText(TeamPanel, " \n");
 	new count;
 	new i, sumall, sumspec, sumsurv, suminf;
 	new String:text[256];
@@ -199,7 +199,21 @@ public BuildPrintPanel(client)
 	sumspec = CountPlayersTeam(1);
 	sumsurv = CountPlayersTeam(2);
 	suminf = CountPlayersTeamAlive(3)
-	
+	float mobtimer = L4D2_CTimerGetRemainingTime(L4D2CT_MobSpawnTimer)
+	if (mobtimer >= 0.0) Format(text, sizeof(text), ">尸潮: %.0fs", mobtimer);
+	else Format(text, sizeof(text), ">尸潮: 无");
+	DrawPanelText(TeamPanel, text);
+	float minspawntime = 999.0;
+	for (i = 1; i < 7; i++){
+		CountdownTimer at = L4D2Direct_GetSIClassSpawnTimer(i);
+		if (at == CTimer_Null) continue;
+		float t = CTimer_GetRemainingTime(at);
+		minspawntime = minspawntime > t ? t : minspawntime;
+	}
+	if (minspawntime >= 0.0) Format(text, sizeof(text), ">下批特感: %.0fs", minspawntime);
+	else Format(text, sizeof(text), ">下批特感: 当前不会刷特");
+	DrawPanelText(TeamPanel, text);
+	DrawPanelText(TeamPanel, " \n");
 	
 	//Draw Spectators count line
 	Format(text, sizeof(text), "->臭ob的 (%d)", sumspec);
@@ -282,6 +296,7 @@ public BuildPrintPanel(client)
 	}
 	//Format(text, sizeof(text), "总计: %i\n", count);
 	//DrawPanelText(TeamPanel, text);
+
 	Format(text, sizeof(text), "Smoker: %i", i_SiTypeCount[L4D2Infected_Smoker]);
 	if (i_SiTypeCount[L4D2Infected_Smoker] > 0) DrawPanelText(TeamPanel, text);
 	Format(text, sizeof(text), "Boomer: %i", i_SiTypeCount[L4D2Infected_Boomer]);
@@ -293,8 +308,7 @@ public BuildPrintPanel(client)
 	Format(text, sizeof(text), "Jockey: %i", i_SiTypeCount[L4D2Infected_Jockey]);
 	if (i_SiTypeCount[L4D2Infected_Jockey] > 0) DrawPanelText(TeamPanel, text);
 	Format(text, sizeof(text), "Charger: %i", i_SiTypeCount[L4D2Infected_Charger]);
-	if (i_SiTypeCount[L4D2Infected_Charger] > 0) DrawPanelText(TeamPanel, text);
-	
+	if (i_SiTypeCount[L4D2Infected_Charger] > 0) DrawPanelText(TeamPanel, text);	
 	if (i_SiTypeCount[L4D2Infected_Tank] > 0){
 		DrawPanelText(TeamPanel, "\n");
 		Format(text, sizeof(text), "->坦克 (%d) ", i_SiTypeCount[L4D2Infected_Tank]);

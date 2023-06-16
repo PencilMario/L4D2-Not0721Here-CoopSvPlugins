@@ -15,6 +15,13 @@
 			"name"		"秘密子能带飞"
 		}
 	}
+	"写实配置"
+	{
+		"realism_solo"
+		{
+			"name"		"写专单通"
+		}
+	}
 	"绝境配置"
 	{
 		"mutation4_solo"

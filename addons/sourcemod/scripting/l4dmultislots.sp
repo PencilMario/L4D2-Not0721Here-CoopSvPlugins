@@ -152,8 +152,8 @@ public void OnPluginStart()
 
 	BufferHP = FindSendPropInfo( "CTerrorPlayer", "m_healthBuffer" );
 	
-	g_hSurvivorsLimit	= CreateConVar(			"l4d_multislots_limit_survivors", 				"10", 	"Total survivors allowed on the server. If numbers of survivors reached limit, no any new bots would be created.\nMust be greater then or equal to 'l4d_multislots_max_survivors'", CVAR_FLAGS, true, 4.0, true, 32.0);
-	g_hMaxSurvivors	= CreateConVar(				"l4d_multislots_max_survivors", 				"4", 	"Kick AI Survivor bots if numbers of survivors has exceeded the certain value. (does not kick real player, minimum is 4)", CVAR_FLAGS, true, 4.0, true, 32.0);
+	g_hSurvivorsLimit	= CreateConVar(			"l4d_multislots_limit_survivors", 				"10", 	"Total survivors allowed on the server. If numbers of survivors reached limit, no any new bots would be created.\nMust be greater then or equal to 'l4d_multislots_max_survivors'", CVAR_FLAGS, true, 1.0, true, 32.0);
+	g_hMaxSurvivors	= CreateConVar(				"l4d_multislots_max_survivors", 				"4", 	"Kick AI Survivor bots if numbers of survivors has exceeded the certain value. (does not kick real player, minimum is 4)", CVAR_FLAGS, true, 1.0, true, 32.0);
 	hStripBotWeapons = CreateConVar(			"l4d_multislots_bot_items_delete", 				"1", 	"Delete all items form survivor bots when they got kicked by this plugin. (0=off)", CVAR_FLAGS, true, 0.0, true, 1.0);
 	hDeadBotTime = CreateConVar(				"l4d_multislots_alive_bot_time", 				"0", 	"When 5+ new player joins the server but no any bot can be taken over, the player will appear as a dead survivor if survivors have left start safe area for at least X seconds. (0=Always spawn alive bot for new player)", CVAR_FLAGS, true, 0.0);
 	hSpecCheckInterval = CreateConVar(			"l4d_multislots_spec_message_interval", 		"25", 	"Setup time interval the instruction message to spectator.(0=off)", CVAR_FLAGS, true, 0.0);

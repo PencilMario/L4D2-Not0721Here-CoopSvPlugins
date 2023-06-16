@@ -211,7 +211,7 @@ public BuildPrintPanel(client)
 		minspawntime = minspawntime > t ? t : minspawntime;
 	}
 	if (minspawntime >= 0.0) Format(text, sizeof(text), ">下批特感: %.0fs", minspawntime);
-	else Format(text, sizeof(text), ">下批特感: 当前不会刷特");
+	else Format(text, sizeof(text), ">下批特感: 已可生成，但不符合刷特条件");
 	DrawPanelText(TeamPanel, text);
 	DrawPanelText(TeamPanel, " \n");
 	

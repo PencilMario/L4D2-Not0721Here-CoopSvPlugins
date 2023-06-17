@@ -22,12 +22,12 @@ float g_flTime[MAXPLAYERS + 1];
 
 static const char g_szText[][] =
 {
-	"Go here",
-	"Be carefull",
-	"Here items",
-	"Dangerous",
-	"No",
-	"Button"
+	"走这里",
+	"保持警惕",
+	"这里有东西",
+	"危险！",
+	"别去",
+	"按钮"
 };
 
 public void OnPluginStart()
@@ -87,7 +87,7 @@ public int VMainHandler(Menu menu, MenuAction action, int client, int index)
 		
 		if (GetGameTime() - g_flTime[client] < cCooldown.FloatValue)
 		{
-			PrintToChat(client, "\x04Cooldown \x03%.2f", cCooldown.FloatValue - (GetGameTime() - g_flTime[client]));
+			PrintToChat(client, "\x04冷却时间 \x03%.2f", cCooldown.FloatValue - (GetGameTime() - g_flTime[client]));
 			return;
 		}
 		

@@ -204,19 +204,14 @@ public BuildPrintPanel(client)
 	else Format(text, sizeof(text), ">尸潮: 无");
 	DrawPanelText(TeamPanel, text);
 	float minspawntime = 999.0;
-	float minspawninterval = 999.0;
 	for (i = 1; i < 7; i++){
 		CountdownTimer at = L4D2Direct_GetSIClassSpawnTimer(i);
-		IntervalTimer it = L4D2Direct_GetSIClassDeathTimer(i);
-		if (at == CTimer_Null || it == ITimer_Null) continue;
+		if (at == CTimer_Null) continue;
 		float t = CTimer_GetRemainingTime(at);
-		float t2 = ITimer_GetElapsedTime(it)
 		minspawntime = minspawntime > t ? t : minspawntime;
-		minspawninterval = minspawninterval > t2 ? t2 : minspawninterval;
 	}
-	minspawninterval = g_cMaxSpecials.FloatValue - minspawninterval;
-	Format(text, sizeof(text), ">下批特感: %.0fs + %.0fs", minspawntime, minspawninterval);
-	//else Format(text, sizeof(text), ">下批特感: 已可生成，但不符合刷特条件");
+	if (minspawntime >= 0.0) Format(text, sizeof(text), ">下批特感: %.0fs", minspawntime);
+	else Format(text, sizeof(text), ">下批特感: 已可生成，但不符合刷特条件");
 	DrawPanelText(TeamPanel, text);
 	DrawPanelText(TeamPanel, " \n");
 	

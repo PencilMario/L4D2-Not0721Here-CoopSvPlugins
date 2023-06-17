@@ -293,7 +293,7 @@ int g_iOff_NavAreaID;
 
 // l4d2timers.inc
 int L4D2CountdownTimer_Offsets[9];
-int L4D2IntervalTimer_Offsets[6];
+int L4D2IntervalTimer_Offsets[7];
 
 // l4d2weapons.inc
 int L4D2IntWeapon_Offsets[6];

@@ -2128,12 +2128,12 @@ void LoadGameData()
 		L4D2CountdownTimer_Offsets[6] = hGameData.GetOffset("L4D2CountdownTimer_ChargerSpawnTimer") + view_as<int>(g_pDirector);
 		L4D2CountdownTimer_Offsets[7] = hGameData.GetOffset("L4D2CountdownTimer_VersusStartTimer") + g_pVersusMode;
 		L4D2CountdownTimer_Offsets[8] = hGameData.GetOffset("L4D2CountdownTimer_UpdateMarkersTimer") + view_as<int>(g_pDirector);
-		L4D2IntervalTimer_Offsets[0] = hGameData.GetOffset("L4D2IntervalTimer_SmokerDeathTimer") + view_as<int>(g_pDirector);
-		L4D2IntervalTimer_Offsets[1] = hGameData.GetOffset("L4D2IntervalTimer_BoomerDeathTimer") + view_as<int>(g_pDirector);
-		L4D2IntervalTimer_Offsets[2] = hGameData.GetOffset("L4D2IntervalTimer_HunterDeathTimer") + view_as<int>(g_pDirector);
-		L4D2IntervalTimer_Offsets[3] = hGameData.GetOffset("L4D2IntervalTimer_SpitterDeathTimer") + view_as<int>(g_pDirector);
-		L4D2IntervalTimer_Offsets[4] = hGameData.GetOffset("L4D2IntervalTimer_JockeyDeathTimer") + view_as<int>(g_pDirector);
-		L4D2IntervalTimer_Offsets[5] = hGameData.GetOffset("L4D2IntervalTimer_ChargerDeathTimer") + view_as<int>(g_pDirector);
+		L4D2IntervalTimer_Offsets[1] = hGameData.GetOffset("L4D2IntervalTimer_SmokerDeathTimer") + view_as<int>(g_pDirector);
+		L4D2IntervalTimer_Offsets[2] = hGameData.GetOffset("L4D2IntervalTimer_BoomerDeathTimer") + view_as<int>(g_pDirector);
+		L4D2IntervalTimer_Offsets[3] = hGameData.GetOffset("L4D2IntervalTimer_HunterDeathTimer") + view_as<int>(g_pDirector);
+		L4D2IntervalTimer_Offsets[4] = hGameData.GetOffset("L4D2IntervalTimer_SpitterDeathTimer") + view_as<int>(g_pDirector);
+		L4D2IntervalTimer_Offsets[5] = hGameData.GetOffset("L4D2IntervalTimer_JockeyDeathTimer") + view_as<int>(g_pDirector);
+		L4D2IntervalTimer_Offsets[6] = hGameData.GetOffset("L4D2IntervalTimer_ChargerDeathTimer") + view_as<int>(g_pDirector);
 
 		// l4d2weapons.inc offsets
 		L4D2BoolMeleeWeapon_Offsets[0] = hGameData.GetOffset("L4D2BoolMeleeWeapon_Decapitates");

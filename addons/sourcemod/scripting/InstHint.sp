@@ -87,7 +87,7 @@ public int VMainHandler(Menu menu, MenuAction action, int client, int index)
 {
 	if( action == MenuAction_Select )
 	{
-		g_hMain.Display(client, MENU_TIME_FOREVER);
+		//g_hMain.Display(client, MENU_TIME_FOREVER);
 		
 		if (GetGameTime() - g_flTime[client] < cCooldown.FloatValue)
 		{

@@ -25,9 +25,11 @@ static const char g_szText[][] =
 	"走这里",
 	"保持警惕",
 	"这里有东西",
+	"在这里防御",
 	"危险！",
 	"别去",
-	"按钮"
+	"这里有机关",
+	"我们有人太分散了"
 };
 
 public void OnPluginStart()
@@ -36,9 +38,11 @@ public void OnPluginStart()
 	g_hMain.AddItem("icon_door", "走这里");
 	g_hMain.AddItem("icon_alert_red", "保持警惕");
 	g_hMain.AddItem("icon_info", "这里有东西");
+	g_hMain.AddItem("icon_shield", "在这里防御");
 	g_hMain.AddItem("icon_skull", "危险！");
 	g_hMain.AddItem("icon_no", "别去");
-	g_hMain.AddItem("icon_button", "按钮");
+	g_hMain.AddItem("icon_button", "这里有机关");
+	g_hMain.AddItem("icon_alert_red", "我们有人太分散了");
 	g_hMain.SetTitle("提示：主菜单");
 	AddCommandListener(Vocalize_Listener, "vocalize");
 

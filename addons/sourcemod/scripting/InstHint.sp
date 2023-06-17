@@ -5,7 +5,7 @@
 #include <sdktools>
 #include <sdkhooks>
 
-#define DeathTime 6.5
+#define DeathTime 10.0
 
 public Plugin myinfo = 
 {
@@ -46,7 +46,7 @@ public void OnPluginStart()
 	g_hMain.SetTitle("提示：主菜单");
 	AddCommandListener(Vocalize_Listener, "vocalize");
 
-	cCooldown = CreateConVar("sm_hint_cooldown", "5.0", "Cooldown", 0);
+	cCooldown = CreateConVar("sm_hint_cooldown", "10.0", "Cooldown", 0);
 	//AutoExecConfig(true, "l4d2_hint");
 	RegConsoleCmd("sm_hint", cHint);
 }
@@ -151,7 +151,7 @@ int CreateTarget(float vOrigin[3], const char[] name, const char[] parent)
 int CreateInstructorHint(float vOrigin[3], const char[] target, const char[] icon_name, const char[] text)
 {
 	int entity = CreateEntityByName("env_instructor_hint");
-	DispatchKeyValue(entity, "hint_timeout", "12");
+	DispatchKeyValue(entity, "hint_timeout", "10");
 	DispatchKeyValue(entity, "hint_allow_nodraw_target", "1");
 	DispatchKeyValue(entity, "hint_target", target);
 	DispatchKeyValue(entity, "hint_auto_start", "1");

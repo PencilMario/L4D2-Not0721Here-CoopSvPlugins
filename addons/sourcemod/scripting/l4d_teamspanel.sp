@@ -204,14 +204,16 @@ public BuildPrintPanel(client)
 	else Format(text, sizeof(text), ">尸潮: 无");
 	DrawPanelText(TeamPanel, text);
 	float minspawntime = 999.0;
+	int readyspawnclass;
 	for (i = 1; i < 7; i++){
 		CountdownTimer at = L4D2Direct_GetSIClassSpawnTimer(i);
 		if (at == CTimer_Null) continue;
 		float t = CTimer_GetRemainingTime(at);
+		if (t <= 0.0) readyspawnclass++;
 		minspawntime = minspawntime > t ? t : minspawntime;
 	}
 	if (minspawntime >= 0.0) Format(text, sizeof(text), ">下批特感: %.0fs", minspawntime);
-	else Format(text, sizeof(text), ">下批特感: 已可生成，但不符合刷特条件");
+	else Format(text, sizeof(text), ">下批特感: %i/6类已可生成, 但当前无法刷特", readyspawnclass);
 	DrawPanelText(TeamPanel, text);
 	DrawPanelText(TeamPanel, " \n");
 	

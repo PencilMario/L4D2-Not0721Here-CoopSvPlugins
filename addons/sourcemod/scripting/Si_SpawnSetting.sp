@@ -95,7 +95,7 @@ public Action Timer_ResetSpecialsCountdownTime(Handle Timer)
 	for (int i = 1; i < 7; i++)
 	{
 		CountdownTimer SiTimer = L4D2Direct_GetSIClassSpawnTimer(i);
-		if (CTimer_GetCountdownDuration(SiTimer) > 2.0) CTimer_Start(SiTimer, 0.5);
+		if (CTimer_GetCountdownDuration(SiTimer) > 5.0) CTimer_Start(SiTimer, 0.5);
 	}
 	return Plugin_Continue;
 }

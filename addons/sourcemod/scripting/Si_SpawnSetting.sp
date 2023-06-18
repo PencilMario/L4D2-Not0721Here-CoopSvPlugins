@@ -1,12 +1,15 @@
 #include <sourcemod>
 #include <sdktools>
 #include <multicolors>
+#include <left4dhooks>
 
 ConVar SS_1_SiNum;
 ConVar SS_Time;
 ConVar SS_EnableRelax;
 ConVar SS_DPSLimit;
 ConVar g_cAutoMode, g_cAutoTime, g_cAutoPerPTimeDe, g_cAutoSiLim, g_cAutoSiPIn;
+
+Handle g_TResetSpecialsTimer;
 public Plugin myinfo =
 {
 	name = "Ast SI Spawn Set Plugin",
@@ -37,10 +40,19 @@ public void OnPluginStart()
 	HookConVarChange(SS_Time, reload_script);
 	HookConVarChange(g_cAutoMode, reload_script);
 	HookConVarChange(SS_DPSLimit, reload_script);
+	HookConVarChange(SS_EnableRelax, OnRelaxChanged);
 }
 public Action RoundStart_Event(Event event, const String:name[], bool:dontBroadcast){
 	if (g_cAutoMode.IntValue == 1) AutoSetSi();
 	CheatCommand("sm_reloadscript", "");
+	if (SS_EnableRelax.IntValue == 1){
+		if (g_TResetSpecialsTimer != INVALID_HANDLE){
+			KillTimer(g_TResetSpecialsTimer);
+			g_TResetSpecialsTimer = INVALID_HANDLE;
+		}
+	}else{
+		g_TResetSpecialsTimer = CreateTimer(1.0, Timer_ResetSpecialsCountdownTime, _, TIMER_REPEAT);
+	}
 	return Plugin_Continue;
 }
 public reload_script(Handle:convar, const String:oldValue[], const String:newValue[]){
@@ -67,6 +79,25 @@ public Action SetSi(Handle timer, int client)
 	AutoSetSi();
 	CPrintToChatAll("{green}[{lightgreen}!{green}] {default}刷新配置：最高同屏{olive}%d{default} ，单类至少{olive}%d{default}只，单SlotCD{olive}%ds{default}，DPS特感限制{olive}%d{default}只，Relax阶段：{olive}%d{default}",	SS_1_SiNum.IntValue, SILimit(SS_1_SiNum.IntValue), SS_Time.IntValue, SS_DPSLimit.IntValue, SS_EnableRelax.IntValue);
 	return Plugin_Stop;
+}
+public OnRelaxChanged(Handle:convar, const String:oldValue[], const String:newValue[]){
+	if (SS_EnableRelax.IntValue == 1){
+		if (g_TResetSpecialsTimer != INVALID_HANDLE){
+			KillTimer(g_TResetSpecialsTimer);
+			g_TResetSpecialsTimer = INVALID_HANDLE;
+		}
+	}else{
+		g_TResetSpecialsTimer = CreateTimer(1.0, Timer_ResetSpecialsCountdownTime, _, TIMER_REPEAT);
+	}
+}
+public Action Timer_ResetSpecialsCountdownTime(Handle Timer)
+{
+	for (int i = 1; i < 7; i++)
+	{
+		CountdownTimer SiTimer = L4D2Direct_GetSIClassSpawnTimer(i);
+		if (CTimer_GetCountdownDuration(SiTimer) > 2.0) CTimer_Start(SiTimer, 0.5);
+	}
+	return Plugin_Continue;
 }
 void AutoSetSi()
 {

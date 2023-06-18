@@ -79,6 +79,20 @@ function update_diff()
 	}
 	else
 	{
+		try 
+		{
+			delete DirectorOptions.LookTempo
+			delete DirectorOptions.IntensityRelaxThreshold 
+    		delete DirectorOptions.RelaxMaxFlowTravel 
+    		delete DirectorOptions.RelaxMaxInterval 
+    		delete DirectorOptions.RelaxMinInterval 
+			delete DirectorOptions.SustainPeakMinTim
+			delete DirectorOptions.SustainPeakMaxTime 
+		}
+		catch (e)
+		{	
+			
+		}
 		Convars.SetValue("director_special_battlefield_respawn_interval",10)
 		Convars.SetValue("director_special_initial_spawn_delay_max", 60)
 		Convars.SetValue("director_special_initial_spawn_delay_max_extra", 180)

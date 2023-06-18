@@ -1,0 +1,85 @@
+"Games"
+{
+	/*
+	 * Many signatures were found or updated by "Silvers".
+	 * Many detours were created by "Silvers".
+	 * Some signatures and detours were created by "Psyk0tik" from: https://github.com/Psykotikism/L4D1-2_Signatures
+	 * Please credit when using them.
+	 */
+	"left4dead2"
+	{
+		// ====================================================================================================
+		// DETOURS
+		// ====================================================================================================
+		"Functions"
+		{
+		}
+
+
+
+		// ====================================================================================================
+		// ADDRESSES
+		// ====================================================================================================
+		"Addresses"
+		{
+			"CDirector"
+			{
+				"windows"
+				{
+					"signature" "CDirectorMusicBanks::OnRoundStart"
+					"read" "12"
+				}
+				"linux"
+				{
+					"signature" "TheDirector"
+				}
+				"read" "0"
+			}
+
+		}
+
+
+
+		// ====================================================================================================
+		// OFFSETS
+		// ====================================================================================================
+		"Offsets"
+		{
+			"CDirector::m_iTempoState"
+			{
+				"linux"		"404"
+				"windows"	"404"
+			}
+			"CDirector::m_ChangeTempoTimer"
+			{
+				"linux"		"408"
+				"windows"	"408"
+			}
+			"CDirector::m_fMobSpawnSize"
+			{
+				"linux"		"900"
+				"windows"	"900"
+			}
+			"CDirector::m_flEndFadeFlowDistance"
+			{
+				"linux"		"420"
+				"windows"	"420"
+			}
+		}
+		"Signatures"
+		{
+			"TheDirector"
+			{
+				"library"	"server"
+				"linux"		"@TheDirector"
+			}
+
+			"CDirectorMusicBanks::OnRoundStart"
+			{
+				"library"	"server"
+				"windows"	"\x55\x8B\xEC\x83\xEC\x2A\x56\x57\x8B\xF9\x8B\x0D\x2A\x2A\x2A\x2A\xE8\x2A\x2A\x2A\x2A\x84\xC0\x0F"
+				/* 55 8B EC 83 EC ? 56 57 8B F9 8B 0D ? ? ? ? E8 ? ? ? ? 84 C0 0F */
+			}
+		}
+	}
+}

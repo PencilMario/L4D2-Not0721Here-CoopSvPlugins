@@ -4,6 +4,7 @@
 #define L4D2UTIL_STOCKS_ONLY 1
 #include <l4d2util>
 #include <left4dhooks>
+#include <sirputil/director_tempo.sp>
 //Define CVARS
 #define MAX_SURVIVORS GetConVarInt(FindConVar("survivor_limit"))
 #define MAX_INFECTED GetConVarInt(FindConVar("z_max_player_zombies"))
@@ -80,7 +81,7 @@ public OnPluginStart()
 {
 	//Load Translation file
 	LoadTranslations("l4d_teamspanel.phrases");
-	
+	LoadSPDirectorData();
 	//SDK Calls (copied, credits to L4DSwitchPlayers)
 	gConf = LoadGameConfigFile("l4dteamspanel");
 	
@@ -200,11 +201,13 @@ public BuildPrintPanel(client)
 	sumsurv = CountPlayersTeam(2);
 	suminf = CountPlayersTeamAlive(3)
 	float mobtimer = L4D2_CTimerGetRemainingTime(L4D2CT_MobSpawnTimer)
-	if (mobtimer >= 0.0) Format(text, sizeof(text), ">尸潮: %.0fs", mobtimer);
+	float mobnum = Direct_GetMobSize();
+	if (mobtimer >= 0.0) Format(text, sizeof(text), ">尸潮: %.0fs (%.0f只)", mobtimer, mobnum);
 	else Format(text, sizeof(text), ">尸潮: 无");
 	DrawPanelText(TeamPanel, text);
 	float minspawntime = 999.0;
 	int readyspawnclass;
+	
 	for (i = 1; i < 7; i++){
 		CountdownTimer at = L4D2Direct_GetSIClassSpawnTimer(i);
 		if (at == CTimer_Null) continue;
@@ -214,6 +217,27 @@ public BuildPrintPanel(client)
 	}
 	if (minspawntime >= 0.0) Format(text, sizeof(text), ">下批特感: %.0fs", minspawntime);
 	else Format(text, sizeof(text), ">下批特感: %i/6类已可生成, 但当前无法刷特", readyspawnclass);
+	DrawPanelText(TeamPanel, text);
+
+	// 导演阶段
+	DirectorTempoState currstat = Direct_GetCurrentState();
+	CountdownTimer ct = Direct_GetChangeTempoTimer();
+	float ctt = CTimer_GetRemainingTime(ct);
+	float fd = Direct_GetEndFadeFlowDistance();
+	float cd = L4D2_GetFurthestSurvivorFlow();
+	ConVar maxflow = FindConVar("director_relax_max_flow_travel")
+	if (ctt <= 0.0) ctt = 0.0;
+	switch (currstat){
+		case TEMPO_BUILDUP:
+			Format(text, sizeof(text), ">导演阶段: %s (至少持续%.0fs)", "Build Up", ctt);
+		case TEMPO_SUSTAIN_PEAK:
+			Format(text, sizeof(text), ">导演阶段: %s (剩余%.0fs)", "Sustain Peak", ctt);
+		case TEMPO_PEAK_FADE:
+			Format(text, sizeof(text), ">导演阶段: %s", "Peak Fade");
+		case TEMPO_RELAX:
+			Format(text, sizeof(text), ">导演阶段: %s (剩余%.0fs/%.0fFlow)", "Relax", ctt, maxflow.FloatValue - (cd-fd));
+	}
+
 	DrawPanelText(TeamPanel, text);
 	DrawPanelText(TeamPanel, " \n");
 	

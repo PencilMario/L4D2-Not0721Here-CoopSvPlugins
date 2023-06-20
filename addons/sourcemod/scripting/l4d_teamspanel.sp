@@ -41,7 +41,7 @@ new Handle:cc_plpSpectatorSelect = INVALID_HANDLE;
 new Handle:cc_plpSurvivorSelect = INVALID_HANDLE;
 new Handle:cc_plpInfectedSelect = INVALID_HANDLE;
 new Handle:cc_plpShowBots = INVALID_HANDLE;
-
+ConVar cc_EnableForNoSpec;
 
 //Strings
 new String:hintText[2048];
@@ -103,6 +103,7 @@ public OnPluginStart()
 	RegConsoleCmd("sm_spechud", PrintTeamsToClient);
 	//Reg Cvars
 	CreateConVar("l4d_plp_version", PLUGIN_VERSION, "Playerlist Panel Display Version", FCVAR_REPLICATED|FCVAR_NOTIFY|FCVAR_DONTRECORD);
+	cc_EnableForNoSpec = CreateConVar("l4d_plp_cannonspecuse", "1", "非旁观者是否允许使用？");
 	cc_plpOnConnect = CreateConVar("l4d_plp_onconnect", "0", "Show Playerlist Panel on connect?");
 	cc_plpTimer = CreateConVar("l4d_plp_timer", "20", "How long, in seconds, the Playerlist Panel stay before it close automatic");
 	cc_plpAutoRefreshPanel = CreateConVar("l4d_plp_autorefreshpanel", "1", "Should the Panel be static & refresh itself every second?");
@@ -496,6 +497,10 @@ public TeamPanelHandlerB(Handle:TeamPanel, MenuAction:action, param1, param2)
 //Send the Panel to the Client
 public Action:PrintTeamsToClient(client, args)
 {
+	if (cc_EnableForNoSpec.IntValue != 1){
+		if (GetClientTeam(client) != L4D2Team_Spectator)
+			ReplyToCommand(client, "当前不允许非旁观者使用!panel")
+	}
 	if (plpAutoRefreshPanel == 1 && plpSelectTeam == 0)
 	{
 		wantedrefresh[client] = 1;

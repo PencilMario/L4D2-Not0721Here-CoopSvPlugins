@@ -7,7 +7,7 @@
 #define CVAR_FLAGS FCVAR_NOTIFY
 
 #define IsValidClient(%1)		(1 <= %1 <= MaxClients && IsClientInGame(%1))
-
+#define SOUND_VOL 0.6
 
 ConVar plugin_enable;
 
@@ -107,7 +107,7 @@ public Action:Event_PlayerDeath(Handle:event, const String:name[], bool:dontBroa
 			char sound1[64]; 
 			GetConVarString(sound_1, sound1, sizeof(sound1));
 			PrecacheSound(sound1, true);
-			EmitSoundToClient(attacker, sound1, SOUND_FROM_PLAYER, SNDCHAN_STATIC, SNDLEVEL_NORMAL, SND_NOFLAGS, SNDVOL_NORMAL, SNDPITCH_NORMAL, -1, NULL_VECTOR, NULL_VECTOR, true, 0.0);
+			EmitSoundToClient(attacker, sound1, SOUND_FROM_PLAYER, SNDCHAN_STATIC, SNDLEVEL_NORMAL, SND_NOFLAGS, SOUND_VOL, SNDPITCH_NORMAL, -1, NULL_VECTOR, NULL_VECTOR, true, 0.0);
 	
 	if(g_taskClean[attacker] != INVALID_HANDLE)
 	{
@@ -132,7 +132,7 @@ public Action:Event_PlayerDeath(Handle:event, const String:name[], bool:dontBroa
 	char sound3[64];
 	GetConVarString(sound_3, sound3, sizeof(sound3));
 	PrecacheSound(sound3, true);
-	EmitSoundToClient(attacker,sound3, SOUND_FROM_PLAYER, SNDCHAN_STATIC, SNDLEVEL_NORMAL, SND_NOFLAGS, SNDVOL_NORMAL, SNDPITCH_NORMAL, -1, NULL_VECTOR, NULL_VECTOR, true, 0.0);
+	EmitSoundToClient(attacker,sound3, SOUND_FROM_PLAYER, SNDCHAN_STATIC, SNDLEVEL_NORMAL, SND_NOFLAGS, SOUND_VOL, SNDPITCH_NORMAL, -1, NULL_VECTOR, NULL_VECTOR, true, 0.0);
 					}
 					}
 				}
@@ -172,7 +172,7 @@ public Action:Event_PlayerHurt(Handle:event, const String:name[], bool:dontBroad
 					char sound2[64];
 					GetConVarString(sound_2, sound2, sizeof(sound2));
 					PrecacheSound(sound2, true);
-			EmitSoundToClient(attacker, sound2, SOUND_FROM_PLAYER, SNDCHAN_STATIC, SNDLEVEL_NORMAL, SND_NOFLAGS, SNDVOL_NORMAL, SNDPITCH_NORMAL, -1, NULL_VECTOR, NULL_VECTOR, true, 0.0);
+			EmitSoundToClient(attacker, sound2, SOUND_FROM_PLAYER, SNDCHAN_STATIC, SNDLEVEL_NORMAL, SND_NOFLAGS, SOUND_VOL, SNDPITCH_NORMAL, -1, NULL_VECTOR, NULL_VECTOR, true, 0.0);
 	
 	if(g_taskClean[attacker] != INVALID_HANDLE)
 	{
@@ -215,7 +215,7 @@ public Action:Event_InfectedDeath(Handle:event, const String:name[], bool:dontBr
 			char sound1[64];
 			GetConVarString(sound_1, sound1, sizeof(sound1));
 			PrecacheSound(sound1, true);
-			EmitSoundToClient(attacker, sound1, SOUND_FROM_PLAYER, SNDCHAN_STATIC, SNDLEVEL_NORMAL, SND_NOFLAGS, SNDVOL_NORMAL, SNDPITCH_NORMAL, -1, NULL_VECTOR, NULL_VECTOR, true, 0.0);
+			EmitSoundToClient(attacker, sound1, SOUND_FROM_PLAYER, SNDCHAN_STATIC, SNDLEVEL_NORMAL, SND_NOFLAGS, SOUND_VOL, SNDPITCH_NORMAL, -1, NULL_VECTOR, NULL_VECTOR, true, 0.0);
 	
 	if(g_taskClean[attacker] != INVALID_HANDLE)
 	{
@@ -237,7 +237,7 @@ public Action:Event_InfectedDeath(Handle:event, const String:name[], bool:dontBr
 			char sound3[64];
 			GetConVarString(sound_3, sound3, sizeof(sound3));
 			PrecacheSound(sound3, true);
-			EmitSoundToClient(attacker, sound3, SOUND_FROM_PLAYER, SNDCHAN_STATIC, SNDLEVEL_NORMAL, SND_NOFLAGS, SNDVOL_NORMAL, SNDPITCH_NORMAL, -1, NULL_VECTOR, NULL_VECTOR, true, 0.0);
+			EmitSoundToClient(attacker, sound3, SOUND_FROM_PLAYER, SNDCHAN_STATIC, SNDLEVEL_NORMAL, SND_NOFLAGS, SOUND_VOL, SNDPITCH_NORMAL, -1, NULL_VECTOR, NULL_VECTOR, true, 0.0);
 	
 	if(g_taskClean[attacker] != INVALID_HANDLE)
 	{
@@ -315,7 +315,7 @@ public Action:Event_InfectedHurt(Handle:event, String:event_name[], bool:dontBro
 		char sound2[64];
 		GetConVarString(sound_2, sound2, sizeof(sound2));
 		PrecacheSound(sound2, true);
-		EmitSoundToClient(attacker, sound2, SOUND_FROM_PLAYER, SNDCHAN_STATIC, SNDLEVEL_NORMAL, SND_NOFLAGS, SNDVOL_NORMAL, SNDPITCH_NORMAL, -1, NULL_VECTOR, NULL_VECTOR, true, 0.0);
+		EmitSoundToClient(attacker, sound2, SOUND_FROM_PLAYER, SNDCHAN_STATIC, SNDLEVEL_NORMAL, SND_NOFLAGS, SOUND_VOL, SNDPITCH_NORMAL, -1, NULL_VECTOR, NULL_VECTOR, true, 0.0);
 	
 	if(g_taskClean[attacker] != INVALID_HANDLE)
 	{
@@ -331,7 +331,7 @@ public Action:Event_InfectedHurt(Handle:event, String:event_name[], bool:dontBro
 		char sound2[64];
 		GetConVarString(sound_2, sound2, sizeof(sound2));
 		PrecacheSound(sound2, true);
-		EmitSoundToClient(attacker, sound2, SOUND_FROM_PLAYER, SNDCHAN_STATIC, SNDLEVEL_NORMAL, SND_NOFLAGS, SNDVOL_NORMAL, SNDPITCH_NORMAL, -1, NULL_VECTOR, NULL_VECTOR, true, 0.0);
+		EmitSoundToClient(attacker, sound2, SOUND_FROM_PLAYER, SNDCHAN_STATIC, SNDLEVEL_NORMAL, SND_NOFLAGS, SOUND_VOL, SNDPITCH_NORMAL, -1, NULL_VECTOR, NULL_VECTOR, true, 0.0);
 	
 	if(g_taskClean[attacker] != INVALID_HANDLE)
 	{

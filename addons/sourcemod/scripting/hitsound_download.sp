@@ -291,6 +291,7 @@ public OnMapStart()
 
 public Action:Event_InfectedHurt(Handle:event, String:event_name[], bool:dontBroadcast)
 {
+	if (plugin_enable.IntValue != 1) return Plugin_Continue;	
 	new victim = GetEventInt(event, "entityid");
 	decl String:sname[32];
 	new attacker = GetClientOfUserId(GetEventInt(event, "attacker"));

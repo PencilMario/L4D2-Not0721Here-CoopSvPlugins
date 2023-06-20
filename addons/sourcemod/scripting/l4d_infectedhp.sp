@@ -106,7 +106,7 @@ public OnPluginStart(){
 
 	hShowNum = CreateConVar(
 		"l4d_infectedhp_num",
-		"0",
+		"1",
 		"health value display (def:0 / hidden:0 / visible:1)",
 		CVAR_FLAGS,
 		true,
@@ -293,7 +293,7 @@ public Action:OnInfectedDeath(Handle:event, const String:name[], bool:dontBroadc
 		GetClientName(client, clName, sizeof(clName));
 		prevMAX[client] = -1;
 		prevHP[client] = -1;
-		if(nShowTank && StrContains(clName, "Tank", false) != -1){
+		/*if(nShowTank && StrContains(clName, "Tank", false) != -1){
 			new max = GetMaxClients();
 			for(new i=1; i<=max; i++){
 				if(IsClientConnected(i)
@@ -303,7 +303,7 @@ public Action:OnInfectedDeath(Handle:event, const String:name[], bool:dontBroadc
 					PrintHintText(i, "++ %s is DEAD ++", clName);
 				}
 			}
-		}
+		}*/
 	}
 	return Plugin_Continue;
 }

@@ -1,0 +1,7 @@
+"UnlitGeneric"
+{
+	"$basetexture" "overlays/head"
+	"$refracttint" "{255 255 255}"
+	"$additive" "1"
+	"$basetexturetransform" "center .5 .5 scale 1.5 1.5 rotate 0 translate 0 0"
+}

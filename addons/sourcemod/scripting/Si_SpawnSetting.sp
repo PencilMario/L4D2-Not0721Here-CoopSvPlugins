@@ -2,7 +2,7 @@
 #include <sdktools>
 #include <multicolors>
 #include <left4dhooks>
-
+#include <sirputil/better_mutations4.sp>
 ConVar SS_1_SiNum;
 ConVar SS_Time;
 ConVar SS_EnableRelax;

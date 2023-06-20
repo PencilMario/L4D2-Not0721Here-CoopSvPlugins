@@ -10,26 +10,28 @@ void CheckValues()
     if (StrEqual("mutations4", mode)) g_bFixUnlimitSpawnsEnable = true;
 }
 
-public Action L4D2_OnGetScriptValueFloat(const char[] key, float &retVal, int hScope)
+/*public Action L4D2_OnGetScriptValueFloat(const char[] key, float &retVal, int hScope)
 {
     //PrintToConsoleAll("L4D2_OnGetScriptValueFloat: %s", key);
     if (!g_bFixUnlimitSpawnsEnable) return Plugin_Continue;
 
     return Plugin_Continue;
-}
+}*/
 
 public Action L4D2_OnGetScriptValueInt(const char[] key, int &retVal, int hScope)
 {   
     if (!g_bFixUnlimitSpawnsEnable) return Plugin_Continue;
     if (StrEqual("ShouldAllowSpecialsWithTank", key)){
-        PrintToConsoleAll("L4D2_OnGetScriptValueInt: %s set to 0", key);
         if (retVal != 0) { retVal = 0; return Plugin_Handled;}
     }
     if (StrEqual("RelaxMaxInterval", key)){
         if (retVal != 45) {retVal = 45; return Plugin_Handled;}
     }
     if (StrEqual("RelaxMinInterval", key)){
-        if (retVal != 30) {retVal = 30; return Plugin_Handled;}
+        if (retVal < 15) {retVal = 15; return Plugin_Handled;}
+    }
+    if (StrEqual("LockTempo", key)){
+        if (retVal != 0) {retVal = 0; return Plugin_Handled;}
     }
     return Plugin_Continue;
 }

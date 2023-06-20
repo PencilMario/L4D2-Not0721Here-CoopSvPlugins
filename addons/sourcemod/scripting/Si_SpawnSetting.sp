@@ -26,7 +26,7 @@ public void OnPluginStart()
 	RegConsoleCmd("sm_SetDpsLim", Cmd_SetDpsLim);
 	SS_1_SiNum = CreateConVar("sss_1P", "3", "特感数量");
 	SS_Time = CreateConVar("SS_Time", "35", "刷新间隔");
-	SS_EnableRelax = CreateConVar("SS_Relax", "1", "倒地是否停刷");
+	SS_EnableRelax = CreateConVar("SS_Relax", "1", "允许relax");
 	SS_DPSLimit = CreateConVar("SS_DPSSiLimit", "10", "DPS特感数量限制");
 	g_cAutoMode = CreateConVar("sm_ss_automode", "1", "自动调整刷特模式（4+生还玩家）");
 	g_cAutoPerPTimeDe = CreateConVar("sm_ss_autoperdetime", "1", "每多一名生还，特感的复活时间减少多少s");
@@ -41,6 +41,10 @@ public void OnPluginStart()
 	HookConVarChange(g_cAutoMode, reload_script);
 	HookConVarChange(SS_DPSLimit, reload_script);
 	HookConVarChange(SS_EnableRelax, OnRelaxChanged);
+}
+public void OnMapInit()
+{
+	if (SS_EnableRelax.IntValue != 1) CheckValues();
 }
 public Action RoundStart_Event(Event event, const String:name[], bool:dontBroadcast){
 	if (g_cAutoMode.IntValue == 1) AutoSetSi();
@@ -85,9 +89,11 @@ public OnRelaxChanged(Handle:convar, const String:oldValue[], const String:newVa
 		if (g_TResetSpecialsTimer != INVALID_HANDLE){
 			KillTimer(g_TResetSpecialsTimer);
 			g_TResetSpecialsTimer = INVALID_HANDLE;
+			g_bFixUnlimitSpawnsEnable = false;
 		}
 	}else{
 		g_TResetSpecialsTimer = CreateTimer(1.0, Timer_ResetSpecialsCountdownTime, _, TIMER_REPEAT);
+		CheckValues();
 	}
 }
 public Action Timer_ResetSpecialsCountdownTime(Handle Timer)

@@ -163,19 +163,19 @@ static void RM_Match_Load()
 	IsPluginEnabled(true, true);
 
 	//PrintToChatAll("\x01[\x05Confogl\x01] Match mode loaded!");
-	CPrintToChatAll("{blue}[{default}Confogl{blue}]{default} Match mode loaded!");
+	CPrintToChatAll("{blue}[{default}Confogl{blue}]{default} 配置文件已加载!");
 
 	if (!RM_bIsMapRestarted && RM_hDoRestart.BoolValue) {
 		char sMap[PLATFORM_MAX_PATH];
 		RM_hChangeMap.GetString(sMap, sizeof(sMap));
 
 		if (strlen(sMap) > 0) {
-			CPrintToChatAll("{blue}[{default}Confogl{blue}]{default} Changing map to {green}%s{default}!", sMap);
+			CPrintToChatAll("{blue}[{default}Confogl{blue}]{default} 切换地图至 {green}%s{default}!", sMap);
 		} else {
 			GetCurrentMap(sMap, sizeof(sMap));
 
 			//PrintToChatAll("\x01[\x05Confogl\x01] Restarting map!");
-			CPrintToChatAll("{blue}[{default}Confogl{blue}]{default} Restarting map!");
+			CPrintToChatAll("{blue}[{default}Confogl{blue}]{default} 准备重启地图!");
 		}
 
 		DataPack hDp;
@@ -222,7 +222,7 @@ static void RM_Match_Unload(bool bForced = false)
 	Call_Finish();
 
 	//PrintToChatAll("\x01[\x05Confogl\x01] Match mode unloaded!");
-	CPrintToChatAll("{blue}[{default}Confogl{blue}]{default} Match mode unloaded!");
+	CPrintToChatAll("{blue}[{default}Confogl{blue}]{default} 配置已卸载!");
 
 	RM_hConfigFile_Off.GetString(sBuffer, sizeof(sBuffer));
 	ExecuteCfg(sBuffer);
@@ -255,7 +255,7 @@ static bool RM_UpdateCfgOn(const char[] cfgfile, bool bIsPrint = true)
 {
 	if (SetCustomCfg(cfgfile)) {
 		//PrintToChatAll("\x01[\x05Confogl\x01] Using \"\x04%s\x01\" config.", cfgfile);
-		CPrintToChatAll("{blue}[{default}Confogl{blue}]{default} Loading '{olive}%s{default}'.", cfgfile);
+		CPrintToChatAll("{blue}[{default}Confogl{blue}]{default} 正在加载 '{olive}%s{default}'.", cfgfile);
 
 		if (RM_DEBUG || IsDebugEnabled()) {
 			LogMessage("[%s] Starting match on config %s", RM_MODULE_NAME, cfgfile);
@@ -266,7 +266,7 @@ static bool RM_UpdateCfgOn(const char[] cfgfile, bool bIsPrint = true)
 
 	if (bIsPrint) {
 		//PrintToChatAll("\x01[\x05Confogl\x01] Config \"\x04%s\x01\" not found, using default config!", cfgfile);
-		CPrintToChatAll("{blue}[{default}Confogl{blue}]{default} Config '{olive}%s{default}' not found, using default config!", cfgfile);
+		CPrintToChatAll("{blue}[{default}Confogl{blue}]{default} 配置文件 '{olive}%s{default}' 未找到, 将使用默认配置!", cfgfile);
 	}
 
 	return false;

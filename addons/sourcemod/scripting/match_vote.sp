@@ -151,7 +151,7 @@ bool FindConfigName(const char[] sConfig, char[] sName, const int iMaxLength)
 void MatchModeMenu(int iClient)
 {
 	Menu hMenu = new Menu(MatchModeMenuHandler);
-	hMenu.SetTitle("Select match mode:");
+	hMenu.SetTitle("选择配置文件:");
 
 	char sBuffer[64];
 	g_hModesKV.Rewind();
@@ -179,7 +179,7 @@ public int MatchModeMenuHandler(Menu menu, MenuAction action, int param1, int pa
 		if (g_hModesKV.JumpToKey(sInfo) && g_hModesKV.GotoFirstSubKey()) {
 			Menu hMenu = new Menu(ConfigsMenuHandler);
 
-			FormatEx(sBuffer, sizeof(sBuffer), "Select %s config:", sInfo);
+			FormatEx(sBuffer, sizeof(sBuffer), "选择 %s 配置:", sInfo);
 			hMenu.SetTitle(sBuffer);
 
 			do {
@@ -191,7 +191,7 @@ public int MatchModeMenuHandler(Menu menu, MenuAction action, int param1, int pa
 
 			hMenu.Display(param1, 20);
 		} else {
-			CPrintToChat(param1, "{blue}[{default}Match{blue}] {default}No configs for such mode were found.");
+			CPrintToChat(param1, "{blue}[{default}Match{blue}] {default}未找到该模式的配置.");
 			MatchModeMenu(param1);
 		}
 	}
@@ -224,12 +224,12 @@ public int ConfigsMenuHandler(Menu menu, MenuAction action, int param1, int para
 bool StartMatchVote(int iClient, const char[] sCfgName)
 {
 	if (GetClientTeam(iClient) <= TEAM_SPECTATE) {
-		CPrintToChat(iClient, "{blue}[{default}Match{blue}] {default}Match voting isn't allowed for spectators.");
+		CPrintToChat(iClient, "{blue}[{default}Match{blue}] {default}旁观者不允许投票配置.");
 		return false;
 	}
 
 	if (LGO_IsMatchModeLoaded()) {
-		CPrintToChat(iClient, "{blue}[{default}Match{blue}] {default}Matchmode already loaded!");
+		CPrintToChat(iClient, "{blue}[{default}Match{blue}] {default}已经加载了一个配置文件!");
 		return false;
 	}
 
@@ -247,12 +247,12 @@ bool StartMatchVote(int iClient, const char[] sCfgName)
 		}
 
 		if (iNumPlayers < g_hCvarPlayerLimit.IntValue) {
-			CPrintToChat(iClient, "{blue}[{default}Match{blue}] {default}Match vote cannot be started. Not enough players.");
+			CPrintToChat(iClient, "{blue}[{default}Match{blue}] {default}配置投票无法开始, 玩家不足.");
 			return false;
 		}
 
 		char sBuffer[64];
-		FormatEx(sBuffer, sizeof(sBuffer), "Load confogl '%s' config?", sCfgName);
+		FormatEx(sBuffer, sizeof(sBuffer), "加载配置文件 '%s'?", sCfgName);
 
 		g_hVote = CreateBuiltinVote(VoteActionHandler, BuiltinVoteType_Custom_YesNo, BuiltinVoteAction_Cancel | BuiltinVoteAction_VoteEnd | BuiltinVoteAction_End);
 		SetBuiltinVoteArgument(g_hVote, sBuffer);
@@ -263,7 +263,7 @@ bool StartMatchVote(int iClient, const char[] sCfgName)
 		return true;
 	}
 
-	CPrintToChat(iClient, "{blue}[{default}Match{blue}] {default}Match vote cannot be started now.");
+	CPrintToChat(iClient, "{blue}[{default}Match{blue}] {default}现在无法开始投票.");
 	return false;
 }
 
@@ -286,7 +286,7 @@ public void MatchVoteResultHandler(Handle vote, int num_votes, int num_clients, 
 	for (int i = 0; i < num_items; i++) {
 		if (item_info[i][BUILTINVOTEINFO_ITEM_INDEX] == BUILTINVOTES_VOTE_YES) {
 			if (item_info[i][BUILTINVOTEINFO_ITEM_VOTES] > (num_votes / 2)) {
-				DisplayBuiltinVotePass(vote, "Matchmode Loaded");
+				DisplayBuiltinVotePass(vote, "配置文件加载中");
 				ServerCommand("sm_forcematch %s", g_sCfg);
 
 				return;
@@ -315,12 +315,12 @@ public Action MatchReset(int iClient, int iArgs)
 bool StartResetMatchVote(int iClient)
 {
 	if (GetClientTeam(iClient) <= TEAM_SPECTATE) {
-		CPrintToChat(iClient, "{blue}[{default}Match{blue}] {default}Resetmatch voting isn't allowed for spectators.");
+		CPrintToChat(iClient, "{blue}[{default}Match{blue}] {default}旁观者不允许发起卸载配置投票.");
 		return false;
 	}
 
 	if (!LGO_IsMatchModeLoaded()) {
-		CPrintToChat(iClient, "{blue}[{default}Match{blue}] {default}No matchmode loaded.");
+		CPrintToChat(iClient, "{blue}[{default}Match{blue}] {default}现在未载入一个配置.");
 		return false;
 	}
 
@@ -341,7 +341,7 @@ bool StartResetMatchVote(int iClient)
 		}
 
 		if (iConnectedCount > 0) {
-			CPrintToChat(iClient, "{blue}[{default}Match{blue}] {default}Resetmatch vote cannot be started. Players are connecting");
+			CPrintToChat(iClient, "{blue}[{default}Match{blue}] {default}现在不能卸载配置，有玩家正在连接");
 			return false;
 		}
 
@@ -355,7 +355,7 @@ bool StartResetMatchVote(int iClient)
 		return true;
 	}
 
-	CPrintToChat(iClient, "{blue}[{default}Match{blue}] {default}Resetmatch vote cannot be started now.");
+	CPrintToChat(iClient, "{blue}[{default}Match{blue}] {default}现在不能卸载配置.");
 	return false;
 }
 

@@ -3,7 +3,7 @@
 
 #include <sourcemod>
 #include <sdktools>
-#include <colors>
+#include <multicolors>
 #define PLUGIN_VERSION "1.0"
 
 public Plugin myinfo = {
@@ -29,7 +29,7 @@ Action Kill_Me(int client, int args)
 		if (IsPlayerAlive(client))
 		{
 			ForcePlayerSuicide(client);
-			CPrintToChatAll("[{green}!{default}] {olive}%N{default} 破防了");
+			CPrintToChatAll("[{green}!{default}] {olive}%N{default} 破防了", client);
 		}
 		else{
 			CPrintToChat(client, "[{green}!{default}] 你已经死过了");

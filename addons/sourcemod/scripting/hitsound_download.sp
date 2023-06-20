@@ -56,7 +56,7 @@ public OnPluginStart()
 	hit2 = CreateConVar("sm_hitsound_pic_hit", "overlays/hitsound/hit", "击中图标的地址");
 	hit3 = CreateConVar("sm_hitsound_pic_kill", "overlays/hitsound/kill", "击杀图标的地址");
 	
-	plugin_enable 		= CreateConVar("sm_hitsound_enable",		"1",       	"是否开启本插件（ 0-关, 1-开 )", CVAR_FLAGS);
+	plugin_enable 		= CreateConVar("sm_hitsound_enable",		"0",       	"是否开启本插件（ 0-关, 1-开 )", CVAR_FLAGS);
 	//AutoExecConfig(true, "l4d2_hitsound");
 	HookEvent("infected_hurt",			Event_InfectedHurt, EventHookMode_Pre);
 	HookEvent("infected_death",			Event_InfectedDeath);

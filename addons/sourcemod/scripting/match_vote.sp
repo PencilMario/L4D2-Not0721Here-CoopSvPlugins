@@ -346,7 +346,7 @@ bool StartResetMatchVote(int iClient)
 		}
 
 		g_hVote = CreateBuiltinVote(VoteActionHandler, BuiltinVoteType_Custom_YesNo, BuiltinVoteAction_Cancel | BuiltinVoteAction_VoteEnd | BuiltinVoteAction_End);
-		SetBuiltinVoteArgument(g_hVote, "Turn off confogl?");
+		SetBuiltinVoteArgument(g_hVote, "卸载当前配置?");
 		SetBuiltinVoteInitiator(g_hVote, iClient);
 		SetBuiltinVoteResultCallback(g_hVote, ResetMatchVoteResultHandler);
 		DisplayBuiltinVote(g_hVote, iPlayers, iNumPlayers, 20);

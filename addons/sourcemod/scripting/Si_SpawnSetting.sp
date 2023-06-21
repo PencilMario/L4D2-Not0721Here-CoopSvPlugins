@@ -8,6 +8,7 @@ ConVar SS_Time;
 ConVar SS_EnableRelax;
 ConVar SS_DPSLimit;
 ConVar g_cAutoMode, g_cAutoTime, g_cAutoPerPTimeDe, g_cAutoSiLim, g_cAutoSiPIn;
+ConVar g_cEnableM4Fix;
 
 Handle g_TResetSpecialsTimer;
 public Plugin myinfo =
@@ -33,6 +34,8 @@ public void OnPluginStart()
 	g_cAutoTime = CreateConVar("sm_ss_autotime", "35", "一只特感的基础复活时间");
 	g_cAutoSiLim = CreateConVar("sm_ss_autosilim", "3", "在4名玩家时，基础特感数量");
 	g_cAutoSiPIn = CreateConVar("sm_ss_autoperinsi", "1", "每多一名生还，增加几只特感");
+	g_cEnableM4Fix = CreateConVar("sm_ss_fixm4spawn", "0", "是否启用绝境修复");
+	
 
 	HookEvent("round_start", RoundStart_Event);
 
@@ -41,10 +44,11 @@ public void OnPluginStart()
 	HookConVarChange(g_cAutoMode, reload_script);
 	HookConVarChange(SS_DPSLimit, reload_script);
 	HookConVarChange(SS_EnableRelax, OnRelaxChanged);
+	HookConVarChange(g_cEnableM4Fix, OnM4FixChanged)
 }
 public void OnMapInit()
 {
-	if (SS_EnableRelax.IntValue != 1) CheckValues();
+	if (g_cEnableM4Fix.IntValue == 1) CheckValues();
 }
 public Action RoundStart_Event(Event event, const String:name[], bool:dontBroadcast){
 	if (g_cAutoMode.IntValue == 1) AutoSetSi();
@@ -84,16 +88,21 @@ public Action SetSi(Handle timer, int client)
 	CPrintToChatAll("{green}[{lightgreen}!{green}] {default}刷新配置：最高同屏{olive}%d{default} ，单类至少{olive}%d{default}只，单SlotCD{olive}%ds{default}，DPS特感限制{olive}%d{default}只，Relax阶段：{olive}%d{default}",	SS_1_SiNum.IntValue, SILimit(SS_1_SiNum.IntValue), SS_Time.IntValue, SS_DPSLimit.IntValue, SS_EnableRelax.IntValue);
 	return Plugin_Stop;
 }
+public OnM4FixChanged(Handle:convar, const String:oldValue[], const String:newValue[]){
+	if (g_cEnableM4Fix.IntValue == 1){
+		CheckValues();
+	}else{
+		g_bFixUnlimitSpawnsEnable = false;
+	}
+}
 public OnRelaxChanged(Handle:convar, const String:oldValue[], const String:newValue[]){
 	if (SS_EnableRelax.IntValue == 1){
 		if (g_TResetSpecialsTimer != INVALID_HANDLE){
 			KillTimer(g_TResetSpecialsTimer);
 			g_TResetSpecialsTimer = INVALID_HANDLE;
-			g_bFixUnlimitSpawnsEnable = false;
 		}
 	}else{
 		g_TResetSpecialsTimer = CreateTimer(1.0, Timer_ResetSpecialsCountdownTime, _, TIMER_REPEAT);
-		CheckValues();
 	}
 }
 public Action Timer_ResetSpecialsCountdownTime(Handle Timer)

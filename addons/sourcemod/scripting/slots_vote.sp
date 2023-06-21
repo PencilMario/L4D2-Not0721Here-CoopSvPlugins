@@ -56,7 +56,7 @@ public Action SlotsRequest(int client, int args)
 				CPrintToChatAll("%t %t", "Tag", "LimitedSlotsTo", sName, Int);
 				SetConVarInt(FindConVar("sv_maxplayers"), Int);
 			}
-			else if (Int < GetConVarInt(FindConVar("survivor_limit")) + GetConVarInt(FindConVar("z_max_player_zombies")))
+			else if (Int < 1)//(Int < GetConVarInt(FindConVar("survivor_limit")) + GetConVarInt(FindConVar("z_max_player_zombies")))
 			{
 				CPrintToChat(client, "%t %t", "Tag", "RequiredPlayers");
 			}

@@ -59,7 +59,7 @@ public void OnPluginStart()
 		SetFailState("Couldn't load matchmodes.txt!");
 	}
 
-	g_hMaxPlayers = CreateConVar("mv_maxplayers", "30", "How many slots would you like the Server to be at Config Load/Unload?", _, true, 1.0, true, 32.0);
+	g_hMaxPlayers = CreateConVar("mv_maxplayers", "12", "How many slots would you like the Server to be at Config Load/Unload?", _, true, 1.0, true, 32.0);
 	g_hCvarPlayerLimit = CreateConVar("sm_match_player_limit", "1", "Minimum # of players in game to start the vote", _, true, 1.0, true, 32.0);
 
 	RegConsoleCmd("sm_match", MatchRequest);

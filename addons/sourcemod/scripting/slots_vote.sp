@@ -143,6 +143,7 @@ public void SlotVoteResultHandler(Handle vote, int num_votes, int num_clients, c
 				Format(Buffer, sizeof(Buffer), "%T", "LimitingSlots", LANG_SERVER);
 				DisplayBuiltinVotePass(vote, Buffer);
 				SetConVarInt(FindConVar("sv_maxplayers"), Slots);
+				SetConVarInt(FindConVar("mv_maxplayers"), Slots);
 				return;
 			}
 		}

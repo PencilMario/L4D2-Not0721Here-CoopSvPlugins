@@ -93,6 +93,8 @@ public OnM4FixChanged(Handle:convar, const String:oldValue[], const String:newVa
 		CheckValues();
 	}else{
 		g_bFixUnlimitSpawnsEnable = false;
+		CPrintToChatAll("{green}[{lightgreen}!{green}] {default}即将重启地图");
+		CreateTimer(5.0, Timer_RestartMap);
 	}
 }
 public OnRelaxChanged(Handle:convar, const String:oldValue[], const String:newValue[]){
@@ -104,6 +106,13 @@ public OnRelaxChanged(Handle:convar, const String:oldValue[], const String:newVa
 	}else{
 		g_TResetSpecialsTimer = CreateTimer(1.0, Timer_ResetSpecialsCountdownTime, _, TIMER_REPEAT);
 	}
+}
+
+public Action Timer_RestartMap(Handle Timer){
+	char mapname[64];
+	GetCurrentMap(mapname, sizeof(mapname));
+	ServerCommand("changelevel %s", mapname);
+	return Plugin_Handled;
 }
 public Action Timer_ResetSpecialsCountdownTime(Handle Timer)
 {

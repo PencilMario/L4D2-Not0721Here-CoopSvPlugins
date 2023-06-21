@@ -17,6 +17,7 @@ public Plugin myinfo =
 	url = "https://forums.alliedmods.net/showthread.php?t=336073"
 };
 
+ConVar g_cEnable;
 ConVar C_buffer_decay_rate;
 float O_buffer_decay_rate;
 ConVar C_interrupt_on_hurt;
@@ -68,6 +69,7 @@ float get_temp_health(int client)
 
 void set_temp_health(int client, float buffer)
 {
+	if (g_cEnable.IntValue != 1) return;
 	SetEntPropFloat(client, Prop_Send, "m_healthBuffer", buffer);
 	SetEntPropFloat(client, Prop_Send, "m_healthBufferTime", GetGameTime());
 }
@@ -298,11 +300,12 @@ public void OnPluginStart()
 
 	C_buffer_decay_rate = FindConVar("pain_pills_decay_rate");
 	C_buffer_decay_rate.AddChangeHook(convar_changed);
+	g_cEnable = CreateConVar(PLUGIN_PREFIX ... "_enable", "0", "1 = enable, 0 = disable.");
 	C_interrupt_on_hurt = CreateConVar(PLUGIN_PREFIX ... "_interrupt_on_hurt", "1", "1 = enable, 0 = disable. interrupt healing on hurt?");
 	C_interrupt_on_hurt.AddChangeHook(convar_changed);
 	C_wait_time = CreateConVar(PLUGIN_PREFIX ... "_wait_time", "5.0", "how long time need to wait after the interruption to start healing", _, true, 0.0);
 	C_wait_time.AddChangeHook(convar_changed);
-	C_health = CreateConVar(PLUGIN_PREFIX ... "_health", "0.0", "how many health buffer heal once", _, true, 0.1);
+	C_health = CreateConVar(PLUGIN_PREFIX ... "_health", "1.0", "how many health buffer heal once", _, true, 0.1);
 	C_health.AddChangeHook(convar_changed);
 	C_repeat_interval = CreateConVar(PLUGIN_PREFIX ... "_repeat_interval", "1.0", "repeat interval after healing start", _, true, 0.0);
 	C_repeat_interval.AddChangeHook(convar_changed);

@@ -3,7 +3,7 @@
 
 #include <sourcemod>
 #include <sdktools>
-#include <multicolors>
+#include <colors>
 #define PLUGIN_VERSION "1.0"
 
 public Plugin myinfo = {

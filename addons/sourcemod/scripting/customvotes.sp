@@ -281,6 +281,12 @@ public Action:Command_ChooseVote(iClient, iArgs)
 		return Plugin_Handled;
 	}
 
+	if (GetClientTeam(iClient) == 1)//spec
+	{
+		CReplyToCommand(iClient, "[SM] 旁观者不允许投票");
+		return Plugin_Handled;
+	}
+
 	Menu_ChooseVote(iClient);
 	return Plugin_Handled;
 }
@@ -1554,7 +1560,7 @@ public VoteHandler_Simple(Handle:hMenu, MenuAction:iAction, iVoter, iParam2)
 				FormatVoteString(g_iCurrentVoteIndex, _, strNotification, sizeof(strNotification));
 				FormatVoterString(g_iCurrentVoteIndex, iVoter, strNotification, sizeof(strNotification));
 				ConVar t_VoteConVar = FindConVar(g_strVoteConVar[g_iCurrentVoteIndex]);
-				if(t_VoteConVar != null && GetConVarBool(t_VoteConVar))
+				if(t_VoteConVar != null && t_VoteConVar != INVALID_HANDLE && GetConVarBool(t_VoteConVar))
 				{
 					ReplaceString(strNotification, sizeof(strNotification), "{On|Off}", "Off", true);
 					ReplaceString(strNotification, sizeof(strNotification), "{on|off}", "off", true);
@@ -1583,7 +1589,7 @@ public VoteHandler_Simple(Handle:hMenu, MenuAction:iAction, iVoter, iParam2)
 				FormatVoterString(g_iCurrentVoteIndex, iVoter, strNotification, sizeof(strNotification));
 
 				ConVar t_VoteConVar = FindConVar(g_strVoteConVar[g_iCurrentVoteIndex]);
-				if(t_VoteConVar != null && GetConVarBool(t_VoteConVar))
+				if(t_VoteConVar != null && t_VoteConVar != INVALID_HANDLE  && GetConVarBool(t_VoteConVar))
 				{
 					ReplaceString(strNotification, sizeof(strNotification), "{On|Off}", "Off", true);
 					ReplaceString(strNotification, sizeof(strNotification), "{on|off}", "off", true);

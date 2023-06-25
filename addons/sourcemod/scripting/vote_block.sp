@@ -259,7 +259,7 @@ public Action:Listener_CallVote(client, const String:command[], argc)
 
 					else
 					{
-						PrintToChat(x, "%s Successfully blocked a spectator's vote!", PREFIX);
+						PrintToChat(x, "%s 成功阻止 a spectator's vote!", PREFIX);
 					}
 				}
 			}
@@ -298,17 +298,17 @@ public Action:Listener_CallVote(client, const String:command[], argc)
 					{
 						if (client == x)
 						{
-							PrintToChat(x, "%s Kick votes are not allowed!", PREFIX);
+							PrintToChat(x, "%s 踢人 投票 被禁用!", PREFIX);
 						}
 
 						else if (IsClientAdmin(x))
 						{
-							PrintToChat(x, "%s %s called a Kick vote!", PREFIX, g_sCallerName[client]);
+							PrintToChat(x, "%s %s 发起一个 踢人 投票!", PREFIX, g_sCallerName[client]);
 						}
 
 						else
 						{
-							PrintToChat(x, "%s Successfully blocked Kick vote!", PREFIX);
+							PrintToChat(x, "%s 成功阻止 踢人 投票!", PREFIX);
 						}
 					}
 				}
@@ -321,8 +321,8 @@ public Action:Listener_CallVote(client, const String:command[], argc)
 					// If they have reached the limit for blocked votes, kick them
 					if (g_iBlockCount[client] >= GetConVarInt(g_hBlockCount))
 					{
-						PrintToChatAll("%s Kicked %s for calling too many illegal votes.", PREFIX, g_sCallerName[client]);
-						KickClient(client, "You called too many illegal votes");
+						PrintToChatAll("%s %s 因为尝试发起禁止的投票次数过多被踢出.", PREFIX, g_sCallerName[client]);
+						KickClient(client, "你发起了太多次禁止的投票");
 					}
 				}
 
@@ -346,8 +346,8 @@ public Action:Listener_CallVote(client, const String:command[], argc)
 				if (GetConVarBool(g_hRespectLevels) && callerid != INVALID_ADMIN_ID && targetid != INVALID_ADMIN_ID && !CanAdminTarget(callerid, targetid))
 				{
 					// Inform the caller that they cannot kick that player and inform the target of who tried to kick them
-					PrintToChat(client, "%s You cannot kick a player with higher immunity!", PREFIX);
-					PrintToChat(target, "%s %s tried to kick you!", PREFIX, g_sCallerName[client]);
+					PrintToChat(client, "%s 你不能踢出免疫值高于你的玩家!", PREFIX);
+					PrintToChat(target, "%s %s 尝试踢你!", PREFIX, g_sCallerName[client]);
 
 					// If the convar for logging blocked votes is enabled, log the vote
 					if (GetConVarBool(g_hLog))
@@ -363,8 +363,8 @@ public Action:Listener_CallVote(client, const String:command[], argc)
 						// If they have reached the limit for blocked votes, kick them
 						if (g_iBlockCount[client] >= GetConVarInt(g_hBlockCount))
 						{
-							PrintToChatAll("%s Kicked %s for calling too many illegal votes.", PREFIX, g_sCallerName[client]);
-							KickClient(client, "You called too many illegal votes");
+							PrintToChatAll("%s %s 因为尝试发起禁止的投票次数过多被踢出.", PREFIX, g_sCallerName[client]);
+							KickClient(client, "你发起了太多次禁止的投票");
 						}
 					}
 
@@ -376,8 +376,8 @@ public Action:Listener_CallVote(client, const String:command[], argc)
 				else if (IsClientImmune(target) || IsClientAuthor(target))
 				{
 					// Inform the caller that they cannot kick that player and inform the target of who tried to kick them
-					PrintToChat(client, "%s You cannot kick that player!", PREFIX);
-					PrintToChat(target, "%s %s tried to kick you!", PREFIX, g_sCallerName[client]);
+					PrintToChat(client, "%s 你不能踢出该玩家!", PREFIX);
+					PrintToChat(target, "%s %s 尝试踢你!", PREFIX, g_sCallerName[client]);
 
 					// If the convar for logging blocked votes is enabled, log the vote
 					if (GetConVarBool(g_hLog))
@@ -393,8 +393,8 @@ public Action:Listener_CallVote(client, const String:command[], argc)
 						// If they have reached the limit for blocked votes, kick them
 						if (g_iBlockCount[client] >= GetConVarInt(g_hBlockCount))
 						{
-							PrintToChatAll("%s Kicked %s for calling too many illegal votes.", PREFIX, g_sCallerName[client]);
-							KickClient(client, "You called too many illegal votes");
+							PrintToChatAll("%s %s 因为尝试发起禁止的投票次数过多被踢出.", PREFIX, g_sCallerName[client]);
+							KickClient(client, "你发起了太多次禁止的投票");
 						}
 					}
 
@@ -407,7 +407,7 @@ public Action:Listener_CallVote(client, const String:command[], argc)
 			else if (GetConVarBool(g_hTankImmunity) && IsPlayerTank(target))
 			{
 				// Inform the caller that they cannot kick that player
-				PrintToChat(client, "%s You cannot kick a player while they're a tank!", PREFIX);
+				PrintToChat(client, "%s 你不能踢出Tank玩家!", PREFIX);
 
 				// If the convar for logging blocked votes is enabled, log the vote
 				if (GetConVarBool(g_hLog))
@@ -423,8 +423,8 @@ public Action:Listener_CallVote(client, const String:command[], argc)
 					// If they have reached the limit for blocked votes, kick them
 					if (g_iBlockCount[client] >= GetConVarInt(g_hBlockCount))
 					{
-						PrintToChatAll("%s Kicked %s for calling too many illegal votes.", PREFIX, g_sCallerName[client]);
-						KickClient(client, "You called too many illegal votes");
+						PrintToChatAll("%s %s 因为尝试发起禁止的投票次数过多被踢出.", PREFIX, g_sCallerName[client]);
+						KickClient(client, "你发起了太多次禁止的投票");
 					}
 				}
 
@@ -450,17 +450,17 @@ public Action:Listener_CallVote(client, const String:command[], argc)
 					{
 						if (client == x)
 						{
-							PrintToChat(x, "%s Return To Lobby votes are not allowed!", PREFIX);
+							PrintToChat(x, "%s 返回大厅 投票 被禁用!", PREFIX);
 						}
 
 						else if (IsClientAdmin(x))
 						{
-							PrintToChat(x, "%s %s called a Return To Lobby vote!", PREFIX, g_sCallerName[client]);
+							PrintToChat(x, "%s %s 发起一个 返回大厅 投票!", PREFIX, g_sCallerName[client]);
 						}
 
 						else
 						{
-							PrintToChat(x, "%s Successfully blocked Return To Lobby vote!", PREFIX);
+							PrintToChat(x, "%s 成功阻止 返回大厅 投票!", PREFIX);
 						}
 					}
 				}
@@ -473,8 +473,8 @@ public Action:Listener_CallVote(client, const String:command[], argc)
 					// If they have reached the limit for blocked votes, kick them
 					if (g_iBlockCount[client] >= GetConVarInt(g_hBlockCount))
 					{
-						PrintToChatAll("%s Kicked %s for calling too many illegal votes.", PREFIX, g_sCallerName[client]);
-						KickClient(client, "You called too many illegal votes");
+						PrintToChatAll("%s %s 因为尝试发起禁止的投票次数过多被踢出.", PREFIX, g_sCallerName[client]);
+						KickClient(client, "你发起了太多次禁止的投票");
 					}
 				}
 
@@ -506,17 +506,17 @@ public Action:Listener_CallVote(client, const String:command[], argc)
 					{
 						if (client == x)
 						{
-							PrintToChat(x, "%s Change Alltalk votes are not allowed!", PREFIX);
+							PrintToChat(x, "%s 切换全体语音 被禁用!", PREFIX);
 						}
 
 						else if (IsClientAdmin(x))
 						{
-							PrintToChat(x, "%s %s called a Change Alltalk vote!", PREFIX, g_sCallerName[client]);
+							PrintToChat(x, "%s %s 发起一个 切换全体语音 投票!", PREFIX, g_sCallerName[client]);
 						}
 
 						else
 						{
-							PrintToChat(x, "%s Successfully blocked Change Alltalk vote!", PREFIX);
+							PrintToChat(x, "%s 成功阻止 切换全体语音 投票!", PREFIX);
 						}
 					}
 				}
@@ -529,8 +529,8 @@ public Action:Listener_CallVote(client, const String:command[], argc)
 					// If they have reached the limit for blocked votes, kick them
 					if (g_iBlockCount[client] >= GetConVarInt(g_hBlockCount))
 					{
-						PrintToChatAll("%s Kicked %s for calling too many illegal votes.", PREFIX, g_sCallerName[client]);
-						KickClient(client, "You called too many illegal votes");
+						PrintToChatAll("%s %s 因为尝试发起禁止的投票次数过多被踢出.", PREFIX, g_sCallerName[client]);
+						KickClient(client, "你发起了太多次禁止的投票");
 					}
 				}
 
@@ -562,17 +562,17 @@ public Action:Listener_CallVote(client, const String:command[], argc)
 					{
 						if (client == x)
 						{
-							PrintToChat(x, "%s Restart Chapter votes are not allowed!", PREFIX);
+							PrintToChat(x, "%s 重启章节 投票 被禁用!", PREFIX);
 						}
 
 						else if (IsClientAdmin(x))
 						{
-							PrintToChat(x, "%s %s called a Restart Chapter vote!", PREFIX, g_sCallerName[client]);
+							PrintToChat(x, "%s %s 发起一个 重启章节 投票!", PREFIX, g_sCallerName[client]);
 						}
 
 						else
 						{
-							PrintToChat(x, "%s Successfully blocked Restart Chapter vote!", PREFIX);
+							PrintToChat(x, "%s 成功阻止 重启章节 投票!", PREFIX);
 						}
 					}
 				}
@@ -585,8 +585,8 @@ public Action:Listener_CallVote(client, const String:command[], argc)
 					// If they have reached the limit for blocked votes, kick them
 					if (g_iBlockCount[client] >= GetConVarInt(g_hBlockCount))
 					{
-						PrintToChatAll("%s Kicked %s for calling too many illegal votes.", PREFIX, g_sCallerName[client]);
-						KickClient(client, "You called too many illegal votes");
+						PrintToChatAll("%s %s 因为尝试发起禁止的投票次数过多被踢出.", PREFIX, g_sCallerName[client]);
+						KickClient(client, "你发起了太多次禁止的投票");
 					}
 				}
 
@@ -618,17 +618,17 @@ public Action:Listener_CallVote(client, const String:command[], argc)
 					{
 						if (client == x)
 						{
-							PrintToChat(x, "%s Change Mission votes are not allowed!", PREFIX);
+							PrintToChat(x, "%s 切换战役 投票 被禁用!", PREFIX);
 						}
 
 						else if (IsClientAdmin(x))
 						{
-							PrintToChat(x, "%s %s called a Change Mission vote!", PREFIX, g_sCallerName[client]);
+							PrintToChat(x, "%s %s 发起一个 切换战役 投票!", PREFIX, g_sCallerName[client]);
 						}
 
 						else
 						{
-							PrintToChat(x, "%s Successfully blocked Change Mission vote!", PREFIX);
+							PrintToChat(x, "%s 成功阻止 切换战役 投票!", PREFIX);
 						}
 					}
 				}
@@ -641,8 +641,8 @@ public Action:Listener_CallVote(client, const String:command[], argc)
 					// If they have reached the limit for blocked votes, kick them
 					if (g_iBlockCount[client] >= GetConVarInt(g_hBlockCount))
 					{
-						PrintToChatAll("%s Kicked %s for calling too many illegal votes.", PREFIX, g_sCallerName[client]);
-						KickClient(client, "You called too many illegal votes");
+						PrintToChatAll("%s %s 因为尝试发起禁止的投票次数过多被踢出.", PREFIX, g_sCallerName[client]);
+						KickClient(client, "你发起了太多次禁止的投票");
 					}
 				}
 
@@ -674,17 +674,17 @@ public Action:Listener_CallVote(client, const String:command[], argc)
 					{
 						if (client == x)
 						{
-							PrintToChat(x, "%s Change Chapter votes are not allowed!", PREFIX);
+							PrintToChat(x, "%s 切换章节 投票 被禁用!", PREFIX);
 						}
 
 						else if (IsClientAdmin(x))
 						{
-							PrintToChat(x, "%s %s called a Change Chapter vote!", PREFIX, g_sCallerName[client]);
+							PrintToChat(x, "%s %s 发起一个 切换章节 投票!", PREFIX, g_sCallerName[client]);
 						}
 
 						else
 						{
-							PrintToChat(x, "%s Successfully blocked Change Chapter vote!", PREFIX);
+							PrintToChat(x, "%s 成功阻止 切换章节 投票!", PREFIX);
 						}
 					}
 				}
@@ -697,8 +697,8 @@ public Action:Listener_CallVote(client, const String:command[], argc)
 					// If they have reached the limit for blocked votes, kick them
 					if (g_iBlockCount[client] >= GetConVarInt(g_hBlockCount))
 					{
-						PrintToChatAll("%s Kicked %s for calling too many illegal votes.", PREFIX, g_sCallerName[client]);
-						KickClient(client, "You called too many illegal votes");
+						PrintToChatAll("%s %s 因为尝试发起禁止的投票次数过多被踢出.", PREFIX, g_sCallerName[client]);
+						KickClient(client, "你发起了太多次禁止的投票");
 					}
 				}
 
@@ -730,17 +730,17 @@ public Action:Listener_CallVote(client, const String:command[], argc)
 					{
 						if (client == x)
 						{
-							PrintToChat(x, "%s Change Difficulty votes are not allowed!", PREFIX);
+							PrintToChat(x, "%s 切换难度 投票 被禁用!", PREFIX);
 						}
 
 						else if (IsClientAdmin(x))
 						{
-							PrintToChat(x, "%s %s called a Change Difficulty vote!", PREFIX, g_sCallerName[client]);
+							PrintToChat(x, "%s %s 发起一个 切换难度 投票!", PREFIX, g_sCallerName[client]);
 						}
 
 						else
 						{
-							PrintToChat(x, "%s Successfully blocked Change Difficulty vote!", PREFIX);
+							PrintToChat(x, "%s 成功阻止 切换难度 投票!", PREFIX);
 						}
 					}
 				}
@@ -753,8 +753,8 @@ public Action:Listener_CallVote(client, const String:command[], argc)
 					// If they have reached the limit for blocked votes, kick them
 					if (g_iBlockCount[client] >= GetConVarInt(g_hBlockCount))
 					{
-						PrintToChatAll("%s Kicked %s for calling too many illegal votes.", PREFIX, g_sCallerName[client]);
-						KickClient(client, "You called too many illegal votes");
+						PrintToChatAll("%s %s 因为尝试发起禁止的投票次数过多被踢出.", PREFIX, g_sCallerName[client]);
+						KickClient(client, "你发起了太多次禁止的投票");
 					}
 				}
 

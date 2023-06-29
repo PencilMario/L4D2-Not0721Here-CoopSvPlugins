@@ -24,6 +24,10 @@
 	}
 	"绝境配置"
 	{
+		"mutation4_noobplus"
+		{
+			"name"		"逛街绝境混野版"
+		}
 		"mutation4_solo"
 		{
 			"name"		"绝境单通"
@@ -43,6 +47,10 @@
 	}
 	"死门配置"
 	{
+		"community5_noobplus"
+		{
+			"name"		"逛街绝境混野版"
+		}
 		"community5_ez"
 		{
 			"name"		"逛街死门12特0秒全控"

@@ -7,7 +7,7 @@
 int g_iFrindlyKillCount[MAXPLAYERS+1] = {0};
 int g_iContFKCount[MAXPLAYERS+1] = {0};
 int g_iContFKTime[MAXPLAYERS+1] = {0};
-
+int g_iMapHasTK = 0;
 Handle g_tCounter;
 
 public Plugin myinfo = {
@@ -56,12 +56,13 @@ public void OnMapStart(){
             g_iFrindlyKillCount[i]=0;
         }
     }
+    g_iMapHasTK = false;
 }
 
 public void RoundStart_Event(Event event, const char[] name, bool dontBroadcast)
 {
     g_tCounter = CreateTimer(1.0, TimePasser, _,TIMER_REPEAT|TIMER_FLAG_NO_MAPCHANGE);
-	for(int i = 0;i<MaxClients;i++){
+    for(int i = 0;i<MaxClients;i++){
         g_iContFKTime[i] = 0;
         g_iContFKCount[i] = 0;
     }
@@ -69,38 +70,39 @@ public void RoundStart_Event(Event event, const char[] name, bool dontBroadcast)
 
 public void RoundEnd_Event(Event event, const char[] name, bool dontBroadcast){
     KillTimer(g_tCounter);
-	g_tCounter = INVALID_HANDLE;
+    g_tCounter = INVALID_HANDLE;
 }
 public void Event_PlayerDeath(Event event, const char[] name, bool dontBroadcast) 
 {
-	int victim = GetClientOfUserId(event.GetInt("userid"));
-	if ( victim == 0 || !IsClientInGame(victim)) return;
-	
-	int attacker = GetClientOfUserId(event.GetInt("attacker"));
-	
-	if (attacker == 0 || !IsClientInGame(attacker) ) return;
-	if(GetClientTeam(attacker) == 2 ) //人類 kill
-	{
-		if(GetClientTeam(victim) == 2 && victim != attacker){
+    int victim = GetClientOfUserId(event.GetInt("userid"));
+    if ( victim == 0 || !IsClientInGame(victim)) return;
+    
+    int attacker = GetClientOfUserId(event.GetInt("attacker"));
+    
+    if (attacker == 0 || !IsClientInGame(attacker) ) return;
+    if(GetClientTeam(attacker) == 2 ) //人類 kill
+    {
+        if(GetClientTeam(victim) == 2 && victim != attacker){
+            g_iMapHasTK++;
             g_iFrindlyKillCount[attacker]++;
             g_iContFKCount[attacker]++;
-            g_iContFKTime[attacker] = 15;
+            g_iContFKTime[attacker] = 20;
             AnnounceSound(attacker);
         }
-	}	
+    }	
 }
 public Action TimePasser(Handle Timer){
 
-	for (int p = 1; p <= MaxClients; p++){
+    for (int p = 1; p <= MaxClients; p++){
         if (g_iContFKTime[p]>0){
             g_iContFKTime[p]--;
         }
         else{
             g_iContFKCount[p]=0;
         }
-	}
+    }
 
-	return Plugin_Continue;
+    return Plugin_Continue;
 }
 
 void AnnounceSound(int client){
@@ -124,6 +126,9 @@ void AnnounceSound(int client){
         }
         // 总击杀移动到这里，防止影响首杀判定
         g_iFrindlyKillCount[client]++;
+    }
+    else if (g_iMapHasTK == 1){
+        AaP(client, "[{red}!{default}] %s 拿下了{green}第一滴血！", "announcer_killing_spree/announcer_1stblood_01.mp3");
     }
     else{
         if (g_iFrindlyKillCount[client] > 9){
@@ -156,7 +161,7 @@ public void AaP(int client, const char[] message, const char[] sound){
     CPrintToChatAll(message,cname);
     for (int p = 1; p <= MaxClients; p++){
         if (IsClientInGame(p)){
-        EmitSoundToClient(p, sound, SOUND_FROM_PLAYER, SNDCHAN_STATIC, SNDLEVEL_NORMAL, SND_NOFLAGS, 2.0, SNDPITCH_NORMAL, -1, NULL_VECTOR, NULL_VECTOR, true, 0.0);
+        EmitSoundToClient(p, sound, SOUND_FROM_PLAYER, SNDCHAN_STATIC, SNDLEVEL_NORMAL, SND_NOFLAGS, 2.25, SNDPITCH_NORMAL, -1, NULL_VECTOR, NULL_VECTOR, true, 0.0);
         }
     }
 }

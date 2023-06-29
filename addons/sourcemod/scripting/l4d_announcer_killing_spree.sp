@@ -124,8 +124,7 @@ void AnnounceSound(int client){
             case 5:
                 AaP(client, "[{red}!{default}] %s 已经{red}暴走了！", "announcer_killing_spree/announcer_kill_rampage_01.mp3");
         }
-        // 总击杀移动到这里，防止影响首杀判定
-        g_iFrindlyKillCount[client]++;
+
     }
     else if (g_iMapHasTK == 1){
         AaP(client, "[{red}!{default}] %s 拿下了{green}第一滴血！", "announcer_killing_spree/announcer_1stblood_01.mp3");
@@ -161,7 +160,7 @@ public void AaP(int client, const char[] message, const char[] sound){
     CPrintToChatAll(message,cname);
     for (int p = 1; p <= MaxClients; p++){
         if (IsClientInGame(p)){
-        EmitSoundToClient(p, sound, SOUND_FROM_PLAYER, SNDCHAN_STATIC, SNDLEVEL_NORMAL, SND_NOFLAGS, 3.25, SNDPITCH_NORMAL, -1, NULL_VECTOR, NULL_VECTOR, true, 0.0);
+        EmitSoundToClient(p, sound, SOUND_FROM_PLAYER, SNDCHAN_STATIC, SNDLEVEL_NORMAL, SND_CHANGEVOL, 3.25, SNDPITCH_NORMAL, -1, NULL_VECTOR, NULL_VECTOR, true, 0.0);
         }
     }
 }

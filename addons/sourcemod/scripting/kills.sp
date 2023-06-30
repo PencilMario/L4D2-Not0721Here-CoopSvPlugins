@@ -267,7 +267,7 @@ void printMvpStatus(int client = -1)
 	else { CPrintToChatAll("{lightgreen}[生还者 MVP 统计]"); }
 	for (i = 0; i < playerCount; i++)
 	{
-		char buffer[64] = {'\0'}, toPrint[128] = {'\0'};
+		char buffer[64] = {'\0'}, toPrint[192] = {'\0'};
 		if (g_hAllowShowSi.BoolValue)
 		{
 			FormatEx(buffer, sizeof(buffer), "{lightgreen}特感{olive}%d ", playerInfos[players[i]].siCount);
@@ -312,7 +312,7 @@ void printMvpStatusToServer()
 	PrintToServer("[生还者 MVP 统计]");
 	for (i = 0; i < playerCount; i++)
 	{
-		char buffer[64] = {'\0'}, toPrint[128] = {'\0'};
+		char buffer[64] = {'\0'}, toPrint[192] = {'\0'};
 		if (g_hAllowShowSi.BoolValue)
 		{
 			FormatEx(buffer, sizeof(buffer), "特感：%d ", playerInfos[players[i]].siCount);

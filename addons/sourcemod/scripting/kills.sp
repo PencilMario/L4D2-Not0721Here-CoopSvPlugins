@@ -184,7 +184,7 @@ public void missionLostHandler(Event event, const char[] name, bool dontBroadcas
 		}
 		g_bHasPrint = true;
 	}
-	if (g_hAllowShowFailCount.BoolValue) { CPrintToChatAll("{lightgreen}[提示]：{green}这是你们第：%d 次团灭，请继续努力哦 (*･ω< )", ++failCount); }
+	if (g_hAllowShowFailCount.BoolValue) { CPrintToChatAll("[{lightgreen}!{default}] {green}重启次数 > {olive}%i", ++failCount); }
 	clearStuff();
 }
 

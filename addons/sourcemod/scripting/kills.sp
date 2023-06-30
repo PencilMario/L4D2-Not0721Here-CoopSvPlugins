@@ -1,244 +1,394 @@
 #pragma semicolon 1
-#pragma newdecls required //強制1.7以後的新語法
+#pragma newdecls required
+
+// 头文件
 #include <sourcemod>
 #include <sdktools>
-#include <multicolors>
+#include <left4dhooks>
+#include <colors>
+#include "treeutil\treeutil.sp"
 
-#define L4D_TEAM_INFECTED 3
-#define L4D_TEAM_SURVIVOR 2
-#define L4D_TEAM_SPECTATOR 1
+#define CVAR_FLAG FCVAR_NOTIFY
 
-int killif[MAXPLAYERS+1];
-int killifs[MAXPLAYERS+1];
-int damageff[MAXPLAYERS+1];
-int iheadshot[MAXPLAYERS+1];
-int sheadshot[MAXPLAYERS+1];
-//int PouncesEaten[MAXPLAYERS+1];
-//int Boomed[MAXPLAYERS+1];
-//int Smoked[MAXPLAYERS+1];
-bool HasRoundEndedPrinted;
+enum struct PlayerInfo
+{
+	int totalDamage;
+	int siCount;
+	int ciCount;
+	int ffCount;
+	int gotFFCount;
+	int headShotCount;
+	void init()
+	{
+		this.totalDamage = this.siCount = this.ciCount = this.ffCount = this.gotFFCount = this.headShotCount = 0;
+	}
+} 
+PlayerInfo playerInfos[MAXPLAYERS + 1];
+
+static int failCount = 0;
+static bool g_bHasPrint = false, g_bHasPrintDetails = false;
+static char mapName[64];
 
 public Plugin myinfo = 
 {
-	name = "擊殺殭屍與特殊感染者統計",
-	author = "fenghf & Harry Potter",
-	description = "show statistics of surviviors (kill S.I, C.I. and FF)on round end",
-	version = "1.4",
-	url = "https://steamcommunity.com/id/TIGER_x_DRAGON/"
-}
-public void OnPluginStart()   
-{   
-	RegConsoleCmd("sm_mvp", Command_kill);
-	
-	HookEvent("player_death", event_kill_infected);
-	HookEvent("infected_death", event_kill_infecteds);
-	HookEvent("round_end", event_RoundEnd);
-	HookEvent("round_start", event_RoundStart);
-	HookEvent("player_hurt", event_PlayerHurt);
-	//HookEvent("lunge_pounce", Event_LungePounce);//撲到人
-	//HookEvent("tongue_grab", Event_TongueGrab);//拉到人
-	//HookEvent("player_now_it", Event_PlayerBoomed);//噴到人
-	HookEvent("map_transition", Event_Maptransition, EventHookMode_Pre); //戰役過關到下一關的時候
-}
-public void OnMapStart() 
-{ 
-	HasRoundEndedPrinted = false;  
-	kill_infected();
+	name 			= "Survivor Mvp & Round Status",
+	author 			= "夜羽真白",
+	description 	= "生还者 MVP 统计",
+	version 		= "1.0.1.0",
+	url 			= "https://steamcommunity.com/id/saku_ra/"
 }
 
-public Action Event_Maptransition(Event event, const char[] name, bool dontBroadcast) 
+ConVar
+	g_hAllowShowMvp,
+	g_hWhichTeamToShow,
+	g_hAllowShowSi,
+	g_hAllowShowCi,
+	g_hAllowShowFF,
+	g_hAllowShowTotalDmg,
+	g_hAllowShowAccuracy,
+	g_hAllowShowFailCount,
+	g_hAllowShowDetails;
+
+public void OnPluginStart()
 {
-	if (!HasRoundEndedPrinted)
+	g_hAllowShowMvp = CreateConVar("mvp_allow_show", "1", "是否允许显示 MVP 数据统计", CVAR_FLAG, true, 0.0, true, 1.0);
+	g_hWhichTeamToShow = CreateConVar("mvp_witch_team_show", "0", "0=所有，1=旁观者，2=生还者，3=感染者", CVAR_FLAG, true, 0.0, true, 3.0);
+	g_hAllowShowSi = CreateConVar("mvp_allow_show_si", "1", "是否允许显示击杀感染者信息", CVAR_FLAG, true, 0.0, true, 1.0);
+	g_hAllowShowCi = CreateConVar("mvp_allow_show_ci", "1", "是否允许显示击杀丧尸信息", CVAR_FLAG, true, 0.0, true, 1.0);
+	g_hAllowShowFF = CreateConVar("mvp_allow_show_ff", "1", "是否允许显示友伤信息", CVAR_FLAG, true, 0.0, true, 1.0);
+	g_hAllowShowTotalDmg = CreateConVar("mvp_allow_show_damage", "1", "是否允许显示总伤害信息", CVAR_FLAG, true, 0.0, true, 1.0);
+	g_hAllowShowAccuracy = CreateConVar("mvp_allow_show_acc", "1", "是否允许显示准确度信息", CVAR_FLAG, true, 0.0, true, 1.0);
+	g_hAllowShowFailCount = CreateConVar("mvp_show_fail_count", "1", "是否在团灭时显示团灭次数", CVAR_FLAG, true, 0.0, true, 1.0);
+	g_hAllowShowDetails = CreateConVar("mvp_show_details", "1", "是否在过关或团灭时显示各项 MVP 数据", CVAR_FLAG, true, 0.0, true, 1.0);
+	// HookEvents
+	HookEvent("player_death", siDeathHandler);
+	HookEvent("infected_death", ciDeathHandler);
+	HookEvent("player_hurt", playerHurtHandler);
+	/* HookEvent("infected_hurt", ciHurtHandler); */
+	HookEvent("round_start", roundStartHandler);
+	HookEvent("round_end", roundEndHandler);
+	HookEvent("map_transition", roundEndHandler);
+	HookEvent("mission_lost", missionLostHandler);
+	HookEvent("finale_vehicle_leaving", roundEndHandler);
+	// RegConsoleCmd
+	RegConsoleCmd("sm_mvp", showMvpHandler);
+}
+
+public void OnMapStart()
+{
+	g_bHasPrint = g_bHasPrintDetails = false;
+	char nowMapName[64] = {'\0'};
+	GetCurrentMap(nowMapName, sizeof(nowMapName));
+	if (strcmp(mapName, NULL_STRING) == 0 || strcmp(mapName, nowMapName) != 0)
 	{
-		displaykillinfected(0);
-		HasRoundEndedPrinted = true;
+		failCount = 0;
+		strcopy(mapName, sizeof(mapName), nowMapName);
+	}
+	clearStuff();
+}
+
+public Action showMvpHandler(int client, int args)
+{
+	if (!g_hAllowShowMvp.BoolValue)
+	{
+		ReplyToCommand(client, "[MVP]：当前生还者 MVP 统计数据已禁用");
+		return Plugin_Handled;
+	}
+	if (IsValidClient(client))
+	{
+		if (GetClientTeam(client) == TEAM_SPECTATOR && (g_hWhichTeamToShow.IntValue != 0 && g_hWhichTeamToShow.IntValue != 1))
+		{
+			CPrintToChat(client, "{LG}[MVP]：{W}当前生还者 MVP 统计数据不允许向旁观者显示");
+			return Plugin_Handled;
+		}
+		else if (GetClientTeam(client) == TEAM_SURVIVOR && (g_hWhichTeamToShow.IntValue != 0 && g_hWhichTeamToShow.IntValue != 2))
+		{
+			CPrintToChat(client, "{LG}[MVP]：{W}当前生还者 MVP 统计数据不允许向生还者显示");
+			return Plugin_Handled;
+		}
+		else if (GetClientTeam(client) == TEAM_INFECTED && (g_hWhichTeamToShow.IntValue != 0 && g_hWhichTeamToShow.IntValue != 3))
+		{
+			CPrintToChat(client, "{LG}[MVP]：{W}当前生还者 MVP 统计数据不允许向感染者显示");
+			return Plugin_Handled;
+		}
+		printMvpStatus(client);
+		if (g_hAllowShowDetails.BoolValue) { printDetails(client); }
+	}
+	else if (client == 0)
+	{
+		printMvpStatusToServer();
+		printDetails(0);
+	}
+	return Plugin_Continue;
+}
+
+// 击杀特感
+public void siDeathHandler(Event event, const char[] name, bool dontBroadcast)
+{
+	int victim = GetClientOfUserId(event.GetInt("userid")), attacker = GetClientOfUserId(event.GetInt("attacker"));
+	if (!IsValidClient(victim) || !IsValidClient(attacker) || GetClientTeam(victim) != TEAM_INFECTED || GetClientTeam(attacker) != TEAM_SURVIVOR) { return; }
+	if (GetInfectedClass(victim) < ZC_SMOKER || GetInfectedClass(victim) > ZC_CHARGER) { return; }
+	playerInfos[attacker].siCount++;
+	if (event.GetBool("headshot")) { playerInfos[attacker].headShotCount++; }
+}
+
+// 击杀丧尸
+public void ciDeathHandler(Event event, const char[] name, bool dontBroadcast)
+{
+	int attacker = GetClientOfUserId(event.GetInt("attacker"));
+	if (!IsValidSurvivor(attacker)) { return; }
+	playerInfos[attacker].ciCount++;
+	if (event.GetBool("headshot")) { playerInfos[attacker].headShotCount++; }
+}
+
+// 造成伤害
+public void playerHurtHandler(Event event, const char[] name, bool dontBroadcast)
+{
+	int victim = GetClientOfUserId(event.GetInt("userid")), attacker = GetClientOfUserId(event.GetInt("attacker")), damage = event.GetInt("dmg_health");
+	if (IsValidSurvivor(attacker) && IsValidSurvivor(victim))
+	{
+		playerInfos[attacker].ffCount += damage;
+		playerInfos[victim].gotFFCount += damage;
+	}
+	else if (IsValidSurvivor(attacker) && IsValidInfected(victim) && GetInfectedClass(victim) >= ZC_SMOKER && GetInfectedClass(victim) <= ZC_CHARGER) { playerInfos[attacker].totalDamage += damage; }
+}
+// 对丧尸造成的伤害也算总伤害
+/* public void ciHurtHandler(Event event, const char[] name, bool dontBroadcast)
+{
+	int attacker = GetClientOfUserId(event.GetInt("attacker")), damage = event.GetInt("amount");
+	if (IsValidSurvivor(attacker)) { playerInfos[attacker].totalDamage += damage; }
+} */
+
+public void roundStartHandler(Event event, const char[] name, bool dontBroadcast)
+{
+	g_bHasPrint = g_bHasPrintDetails = false;
+	char nowMapName[64] = {'\0'};
+	GetCurrentMap(nowMapName, sizeof(nowMapName));
+	if (strcmp(mapName, NULL_STRING) == 0 || strcmp(mapName, nowMapName) != 0)
+	{
+		failCount = 0;
+		strcopy(mapName, sizeof(mapName), nowMapName);
+	}
+	clearStuff();
+}
+
+public void missionLostHandler(Event event, const char[] name, bool dontBroadcast)
+{
+	if (g_hAllowShowMvp.BoolValue && !g_bHasPrint)
+	{
+		roundEndPrintMvpStatus();
+		if (g_hAllowShowDetails.BoolValue && !g_bHasPrintDetails)
+		{
+			roundEndPrintDetails();
+			g_bHasPrintDetails = true;
+		}
+		g_bHasPrint = true;
+	}
+	if (g_hAllowShowFailCount.BoolValue) { CPrintToChatAll("{LG}[提示]：{G}这是你们第：%d 次团灭，请继续努力哦 (*･ω< )", ++failCount); }
+	clearStuff();
+}
+
+public void roundEndHandler(Event event, const char[] name, bool dontBroadcast)
+{
+	if (g_hAllowShowMvp.BoolValue && !g_bHasPrint)
+	{
+		roundEndPrintMvpStatus();
+		if (g_hAllowShowDetails.BoolValue && !g_bHasPrintDetails)
+		{
+			roundEndPrintDetails();
+			g_bHasPrintDetails = true;
+		}
+		g_bHasPrint = true;
+	}
+	clearStuff();
+}
+
+// 方法
+void clearStuff()
+{
+	for (int i = 1; i <= MaxClients; i++) { playerInfos[i].init(); }
+}
+
+void roundEndPrintMvpStatus()
+{
+	switch (g_hWhichTeamToShow.IntValue)
+	{
+		case 0:
+		{
+			printMvpStatus();
+		}
+		case 1:
+		{
+			for (int i = 1; i <= MaxClients; i++) { if (IsValidClient(i) && GetClientTeam(i) == TEAM_SPECTATOR) { printMvpStatus(i); } }
+		}
+		case 2:
+		{
+			for (int i = 1; i <= MaxClients; i++) { if (IsValidClient(i) && GetClientTeam(i) == TEAM_SURVIVOR) { printMvpStatus(i); } } 
+		}
+		case 3:
+		{
+			for (int i = 1; i <= MaxClients; i++) { if (IsValidClient(i) && GetClientTeam(i) == TEAM_INFECTED) { printMvpStatus(i); } }
+		}
+	}
+}
+
+void roundEndPrintDetails()
+{
+	switch (g_hWhichTeamToShow.IntValue)
+	{
+		case 0:
+		{
+			printDetails();
+		}
+		case 1:
+		{
+			for (int i = 1; i <= MaxClients; i++) { if (IsValidClient(i) && GetClientTeam(i) == TEAM_SPECTATOR) { printDetails(i); } }
+		}
+		case 2:
+		{
+			for (int i = 1; i <= MaxClients; i++) { if (IsValidClient(i) && GetClientTeam(i) == TEAM_SURVIVOR) { printDetails(i); } } 
+		}
+		case 3:
+		{
+			for (int i = 1; i <= MaxClients; i++) { if (IsValidClient(i) && GetClientTeam(i) == TEAM_INFECTED) { printDetails(i); } }
+		}
+	}
+}
+
+void printMvpStatus(int client = -1)
+{
+	static int playerCount, i;
+	playerCount = 0;
+	int[] players = new int[MaxClients + 1];
+	for (i = 1; i <= MaxClients; i++) { if (IsValidSurvivor(i)) { players[playerCount++] = i; } }
+	SortCustom1D(players, playerCount, sortByDamageFunction);
+	// Do Fomat
+	if (IsValidClient(client)) { CPrintToChat(client, "{LG}[生还者 MVP 统计]"); }
+	else { CPrintToChatAll("{LG}[生还者 MVP 统计]"); }
+	for (i = 0; i < playerCount; i++)
+	{
+		char buffer[64] = {'\0'}, toPrint[128] = {'\0'};
+		if (g_hAllowShowSi.BoolValue)
+		{
+			FormatEx(buffer, sizeof(buffer), "{LG}特感{O}%d ", playerInfos[players[i]].siCount);
+			StrCat(toPrint, sizeof(toPrint), buffer);
+		}
+		if (g_hAllowShowCi.BoolValue)
+		{
+			FormatEx(buffer, sizeof(buffer), "{LG}丧尸{O}%d ", playerInfos[players[i]].ciCount);
+			StrCat(toPrint, sizeof(toPrint), buffer);
+		}
+		if (g_hAllowShowTotalDmg.BoolValue)
+		{
+			FormatEx(buffer, sizeof(buffer), "{LG}伤害{O}%d ", playerInfos[players[i]].totalDamage);
+			StrCat(toPrint, sizeof(toPrint), buffer);
+		}
+		if (g_hAllowShowFF.BoolValue)
+		{
+			FormatEx(buffer, sizeof(buffer), "{LG}黑/被黑{O}%d/%d ", playerInfos[players[i]].ffCount, playerInfos[players[i]].gotFFCount);
+			StrCat(toPrint, sizeof(toPrint), buffer);
+		}
+		if (g_hAllowShowAccuracy.BoolValue)
+		{
+			float accuracy = playerInfos[players[i]].siCount + playerInfos[players[i]].ciCount == 0 ? 0.0 : float(playerInfos[players[i]].headShotCount) / float(playerInfos[players[i]].siCount + playerInfos[players[i]].ciCount);
+			FormatEx(buffer, sizeof(buffer), "{LG}爆头率{O}%.0f%% ", accuracy * 100.0);
+			StrCat(toPrint, sizeof(toPrint), buffer);
+		}
+		FormatEx(buffer, sizeof(buffer), "{LG}%N", players[i]);
+		StrCat(toPrint, sizeof(toPrint), buffer);
+		if (IsValidClient(client)) { CPrintToChat(client, "%s", toPrint); }
+		else { CPrintToChatAll("%s", toPrint); }
+	}
+}
+
+void printMvpStatusToServer()
+{
+	static int playerCount, i;
+	playerCount = 0;
+	int[] players = new int[MaxClients + 1];
+	for (i = 1; i <= MaxClients; i++) { if (IsValidSurvivor(i)) { players[playerCount++] = i; } }
+	SortCustom1D(players, playerCount, sortByDamageFunction);
+	// Do Fomat
+	PrintToServer("[生还者 MVP 统计]");
+	for (i = 0; i < playerCount; i++)
+	{
+		char buffer[64] = {'\0'}, toPrint[128] = {'\0'};
+		if (g_hAllowShowSi.BoolValue)
+		{
+			FormatEx(buffer, sizeof(buffer), "特感：%d ", playerInfos[players[i]].siCount);
+			StrCat(toPrint, sizeof(toPrint), buffer);
+		}
+		if (g_hAllowShowCi.BoolValue)
+		{
+			FormatEx(buffer, sizeof(buffer), "丧尸：%d ", playerInfos[players[i]].ciCount);
+			StrCat(toPrint, sizeof(toPrint), buffer);
+		}
+		if (g_hAllowShowTotalDmg.BoolValue)
+		{
+			FormatEx(buffer, sizeof(buffer), "伤害：%d ", playerInfos[players[i]].totalDamage);
+			StrCat(toPrint, sizeof(toPrint), buffer);
+		}
+		if (g_hAllowShowFF.BoolValue)
+		{
+			FormatEx(buffer, sizeof(buffer), "黑/被黑：%d/%d ", playerInfos[players[i]].ffCount, playerInfos[players[i]].gotFFCount);
+			StrCat(toPrint, sizeof(toPrint), buffer);
+		}
+		if (g_hAllowShowAccuracy.BoolValue)
+		{
+			float accuracy = playerInfos[players[i]].siCount + playerInfos[players[i]].ciCount == 0 ? 0.0 : float(playerInfos[players[i]].headShotCount) / float(playerInfos[players[i]].siCount + playerInfos[players[i]].ciCount);
+			FormatEx(buffer, sizeof(buffer), "爆头率：%.0f%% ", accuracy * 100.0);
+			StrCat(toPrint, sizeof(toPrint), buffer);
+		}
+		FormatEx(buffer, sizeof(buffer), "%N", players[i]);
+		StrCat(toPrint, sizeof(toPrint), buffer);
+		PrintToServer("%s", toPrint);
+	}
+}
+
+void printDetails(int client = -1)
+{
+	int siMVP = 1, ciMVP = 1, ffMVP = 1, gotFFMVP = 1;
+	int siTotal = playerInfos[1].siCount, ciTotal = playerInfos[1].ciCount, ffTotal = playerInfos[1].ffCount, gotFFTotal = playerInfos[1].gotFFCount;
+	for (int i = 2; i <= MaxClients; i++)
+	{
+		if (playerInfos[i].siCount > playerInfos[siMVP].siCount) { siMVP = i; }
+		if (playerInfos[i].ciCount > playerInfos[ciMVP].ciCount) { ciMVP = i; }
+		if (playerInfos[i].ffCount > playerInfos[ffMVP].ffCount) { ffMVP = i; }
+		if (playerInfos[i].gotFFCount > playerInfos[gotFFMVP].gotFFCount) { gotFFMVP = i; }
+		siTotal += playerInfos[i].siCount;
+		ciTotal += playerInfos[i].ciCount;
+		ffTotal += playerInfos[i].ffCount;
+		gotFFTotal += playerInfos[i].gotFFCount;
+	}
+	float siPercent = siTotal == 0 ? 0.0 : float(playerInfos[siMVP].siCount) / float(siTotal);
+	float ciPercent = ciTotal == 0 ? 0.0 : float(playerInfos[ciMVP].ciCount) / float(ciTotal);
+	float ffPercent = ffTotal == 0 ? 0.0 : float(playerInfos[ffMVP].ffCount) / float(ffTotal);
+	float gotFFPercent = gotFFTotal == 0 ? 0.0 : float(playerInfos[gotFFMVP].gotFFCount) / float(gotFFTotal);
+	if (IsValidClient(client))
+	{
+		siTotal == 0 ? CPrintToChat(client, "{LG}[特感糕手]：{O}本局暂无特感击杀") : CPrintToChat(client, "{LG}[特感糕手]：{O}%N {LG}击杀：{O}%d/%d {LG}[{O}%.0f%%{LG}]", siMVP, playerInfos[siMVP].siCount, siTotal, siPercent * 100.0);
+		ciTotal == 0 ? CPrintToChat(client, "{LG}[辛勤割草]：{O}本局暂无丧尸击杀") : CPrintToChat(client, "{LG}[辛勤割草]：{O}%N {LG}击杀：{O}%d/%d {LG}[{O}%.0f%%{LG}]", ciMVP, playerInfos[ciMVP].ciCount, ciTotal, ciPercent * 100.0);
+		ffTotal == 0 ? CPrintToChat(client, "{LG}[黑枪大师]：{O}大家都没有黑枪，没有友伤的世界达成啦 d(>ω<*)") : CPrintToChat(client, "{LG}[黑枪大师]：{O}%N {LG}黑枪：{O}%d/%d {LG}[{O}%.0f%%{LG}]", ffMVP, playerInfos[ffMVP].ffCount, ffTotal, ffPercent * 100.0);
+		if (ffTotal > 0) { CPrintToChat(client, "{LG}[老倒霉蛋]：{O}%N {LG}被黑：{O}%d/%d {LG}[{O}%.0f%%{LG}]", gotFFMVP, playerInfos[gotFFMVP].gotFFCount, gotFFTotal, gotFFPercent * 100.0); }
 		return;
-	}	
-}
-
-public Action event_PlayerHurt(Event event, const char[] name, bool dontBroadcast) 
-{
-	int victimId = event.GetInt("userid");
-	int victim = GetClientOfUserId(victimId);
-	int attackerId = event.GetInt("attacker");
-	int attackersid = GetClientOfUserId(attackerId);
-	int damageDone = event.GetInt("dmg_health");
-	
-	if (attackerId && victimId && IsClientInGame(attackersid) && GetClientTeam(attackersid) == L4D_TEAM_SURVIVOR && GetClientTeam(victim) == L4D_TEAM_SURVIVOR)
-    {
-        damageff[attackersid] += damageDone;
-    }
-    
-}
-
-
-
-public Action event_kill_infecteds(Event event, const char[] name, bool dontBroadcast) 
-{
-	int killer = GetClientOfUserId(event.GetInt("attacker"));
-	
-	if (!killer)
-        return;
-
-	if(GetClientTeam(killer) == L4D_TEAM_SURVIVOR)
+	}
+	if (client == 0)
 	{
-	  bool headshot=GetEventBool(event, "headshot");
-	  if(headshot)
-	  {
-	       iheadshot[killer] += 1;
-	  }
-	  killifs[killer] += 1;
+		siTotal == 0 ? PrintToServer("[特感糕手]：本局暂无特感击杀") : PrintToServer("[特感糕手]：%N 击杀：%d/%d [%.0f%%]", siMVP, playerInfos[siMVP].siCount, siTotal, siPercent * 100.0);
+		ciTotal == 0 ? PrintToServer("[辛勤割草]：本局暂无丧尸击杀") : PrintToServer("[辛勤割草]：%N 击杀：%d/%d [%.0f%%]", ciMVP, playerInfos[ciMVP].ciCount, ciTotal, ciPercent * 100.0);
+		ffTotal == 0 ? PrintToServer("[黑枪大师]：大家都没有黑枪，没有友伤的世界达成啦 d(´ω｀*)") : PrintToServer("[黑枪大师]：%N 黑枪：%d/%d [%.0f%%]", ffMVP, playerInfos[ffMVP].ffCount, ffTotal, ffPercent * 100.0);
+		if (ffTotal > 0) { PrintToServer("[老倒霉蛋]：%N 被黑：%d/%d [%.0f%%]", gotFFMVP, playerInfos[gotFFMVP].gotFFCount, gotFFTotal, gotFFPercent * 100.0); }
+		return;
 	}
+	siTotal == 0 ? CPrintToChatAll("{LG}[特感糕手]：{O}本局暂无特感击杀") : CPrintToChatAll("{LG}[特感糕手]：{O}%N {LG}击杀：{O}%d/%d {LG}[{O}%.0f%%{LG}]", siMVP, playerInfos[siMVP].siCount, siTotal, siPercent * 100.0);
+	ciTotal == 0 ? CPrintToChatAll("{LG}[辛勤割草]：{O}本局暂无丧尸击杀") : CPrintToChatAll("{LG}[辛勤割草]：{O}%N {LG}击杀：{O}%d/%d {LG}[{O}%.0f%%{LG}]", ciMVP, playerInfos[ciMVP].ciCount, ciTotal, ciPercent * 100.0);
+	ffTotal == 0 ? CPrintToChatAll("{LG}[黑枪大师]：{O}大家都没有黑枪，没有友伤的世界达成啦 d(>ω<*)") : CPrintToChatAll("{LG}[黑枪大师]：{O}%N {LG}黑枪：{O}%d/%d {LG}[{O}%.0f%%{LG}]", ffMVP, playerInfos[ffMVP].ffCount, ffTotal, ffPercent * 100.0);
+	if (ffTotal > 0) { CPrintToChatAll("{LG}[老倒霉蛋]：{O}%N {LG}被黑：{O}%d/%d {LG}[{O}%.0f%%{LG}]", gotFFMVP, playerInfos[gotFFMVP].gotFFCount, gotFFTotal, gotFFPercent * 100.0); }
 }
 
-
-
-public Action event_kill_infected(Event event, const char[] name, bool dontBroadcast) 
+int sortByDamageFunction(int o1, int o2, const int[] array, Handle hndl)
 {
-	int zombieClass = 0;
-	int killer = GetClientOfUserId(event.GetInt("attacker"));
-	int deadbody = GetClientOfUserId(event.GetInt("userid"));
-	if (0 < killer <= MaxClients && deadbody != 0)
-	{
-		if(GetClientTeam(deadbody) == L4D_TEAM_SURVIVOR) return;
-		
-		if(GetClientTeam(killer) == L4D_TEAM_SURVIVOR)
-		{
-			zombieClass = GetEntProp(deadbody, Prop_Send, "m_zombieClass");
-			if(zombieClass == 1 ||zombieClass == 2||zombieClass == 3)
-			{
-				bool headshot=GetEventBool(event, "headshot");
-				if(headshot)
-				{
-					sheadshot[killer] += 1;
-				}	
-				killif[killer] += 1;
-				
-			}
-		}
-	}
+	float o1Acc = float(playerInfos[o1].headShotCount) / float(playerInfos[o1].siCount + playerInfos[o1].ciCount);
+	float o2Acc = float(playerInfos[o2].headShotCount) / float(playerInfos[o2].siCount + playerInfos[o2].ciCount);
+	return playerInfos[o1].totalDamage > playerInfos[o2].totalDamage ? -1 : o1Acc > o2Acc ? -1 : o1Acc == o2Acc ? o1 > o2 ? -1 : o1 == o2 ? 0 : 1 : 1;
 }
-
-public Action event_RoundEnd(Event event, const char[] name, bool dontBroadcast) 
-{
-	if(!HasRoundEndedPrinted)
-	{
-		CreateTimer(1.5, KillPinfected_dis);
-		HasRoundEndedPrinted = true;
-	}
-}
-public Action KillPinfected_dis(Handle timer)
-{
-	displaykillinfected(0);
-}
-
-public Action event_RoundStart(Event event, const char[] name, bool dontBroadcast) 
-{
-	HasRoundEndedPrinted = false;
-	kill_infected();
-}
-
-public Action Command_kill(int client, int args)
-{
-	int iTeam = GetClientTeam(client);
-	displaykillinfected(iTeam);
-}
-
-void displaykillinfected(int team)
-{	
-	int client;
-	int players = -1;
-	int[] players_clients = new int[MaxClients+1];
-	int killss, killsss, killssss,damageffss,killssssss;
-	for (client = 1; client <= MaxClients; client++)
-	{
-		if (!IsClientInGame(client) || GetClientTeam(client) != L4D_TEAM_SURVIVOR) continue;
-		players++;
-		players_clients[players] = client;
-		killss = killif[client];
-		killsss = killifs[client];
-		killssss = iheadshot[client];
-		killssssss = sheadshot[client];
-		damageffss = damageff[client];
-	}
-	SortCustom1D(players_clients, 8, SortByDamageDesc);
-	for (int i; i <= players; i++)
-	{
-		client = players_clients[i];
-		killss = killif[client];
-		killsss = killifs[client];
-		killssss = iheadshot[client];
-		killssssss = sheadshot[client];
-		damageffss = damageff[client];
-		
-		if(team == 0){
-				C_PrintToChatAll("{default}击杀特感:{olive}%3d{default}[{green}爆头{default}:{olive}%3d{default}],僵尸:{olive}%3d{default}[{green}爆头{default}:{olive}%3d{default}],友伤:{olive}%3d{default} - {olive}%N", killss, killssssss, killsss, killssss, damageffss,client);
-				//C_PrintToChatAll("總計被控:{olive}%3d{default}[{lightgreen}被撲{default}:{olive}%3d{default},{lightgreen}被拉{default}:{olive}%3d{default},{lightgreen}被噴{default}:{olive}%3d{default}] - {olive}%N",PouncesEaten[client]+Smoked[client]+Boomed[client],PouncesEaten[client],Smoked[client],Boomed[client],client);
-		}
-		else
-		{
-			for (int j = 1; j <= MaxClients; j++)
-			{
-				if (IsClientConnected(j) && IsClientInGame(j)&& !IsFakeClient(j) && GetClientTeam(j) == team)
-				{
-				C_PrintToChat(j,"{default}击杀特感:{olive}%3d{default}[{green}爆头{default}:{olive}%3d{default}],僵尸:{olive}%3d{default}[{green}爆头{default}:{olive}%3d{default}],友伤:{olive}%3d{default} - {olive}%N", killss, killssssss, killsss, killssss, damageffss,client);
-				//C_PrintToChat(j,"總計被控:{olive}%3d{default}[{lightgreen}被撲{default}:{olive}%3d{default},{lightgreen}被拉{default}:{olive}%3d{default},{lightgreen}被噴{default}:{olive}%3d{default}] - {olive}%N",PouncesEaten[client]+Smoked[client]+Boomed[client],PouncesEaten[client],Smoked[client],Boomed[client],client);
-		
-				}
-			}
-		}
-		
-		//C_PrintToChatAll("丧尸-{red}爆头{default}: {green}%d{default}/{green}%d{default} | 特感-{red}爆头{default}: {green}%d{default}/{green}%d{default} | 友伤: {green}%d{default} | {olive}%N{default}",killsss, killssss, killss, killssssss, damageffss, client);
-		
-	}
-}	
-	
-
-public int SortByDamageDesc(int elem1, int elem2, const int[] array, Handle hndl)
-{
-	if (killif[elem1] > killif[elem2]) return -1;
-	else if (killif[elem2] > killif[elem1]) return 1;
-	else if (elem1 > elem2) return -1;
-	else if (elem2 > elem1) return 1;
-	return 0;
-}
-
-
-void kill_infected()
-{
-	for (int i = 1; i <= MaxClients; i++)
-	{ 
-		 killif[i] = 0; 
-		 killifs[i] = 0; 
-		 iheadshot[i] = 0;
-		 sheadshot[i] = 0;
-		 damageff[i] = 0;
-		 //PouncesEaten[i] = 0;
-		 //Boomed[i] = 0;
-		 //Smoked[i] = 0;
-	}
-}
-/*
-public Action Event_LungePounce(Event event, const char[] name, bool dontBroadcast) 
-{
-	//int attacker = GetClientOfUserId(GetEventInt(event, "userid"));
-	int victim = GetClientOfUserId(GetEventInt(event, "victim"));
-	PouncesEaten[victim] +=1;
-	//C_PrintToChatAll("%N 撲倒 %N",attacker,victim);
-}
-
-public Event_TongueGrab(Event event, const char[] name, bool dontBroadcast) 
-{
-	//int attacker = GetClientOfUserId(GetEventInt(event, "userid"));
-	int victim = GetClientOfUserId(GetEventInt(event, "victim"));
-	Smoked[victim] +=1;
-	//C_PrintToChatAll("%N 拉到 %N",attacker,victim);
-}
-
-public Event_PlayerBoomed(Event event, const char[] name, bool dontBroadcast) 
-{
-	//int attacker = GetClientOfUserId(GetEventInt(event, "attacker"));
-	int victim = GetClientOfUserId(GetEventInt(event, "userid"));
-	Boomed[victim] +=1;
-	//C_PrintToChatAll("%N 噴到 %N",attacker,victim);
-}*/

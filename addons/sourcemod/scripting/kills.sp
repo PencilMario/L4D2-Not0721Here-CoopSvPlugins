@@ -98,17 +98,17 @@ public Action showMvpHandler(int client, int args)
 	{
 		if (GetClientTeam(client) == TEAM_SPECTATOR && (g_hWhichTeamToShow.IntValue != 0 && g_hWhichTeamToShow.IntValue != 1))
 		{
-			CPrintToChat(client, "{LG}[MVP]：{W}当前生还者 MVP 统计数据不允许向旁观者显示");
+			CPrintToChat(client, "{lightgreen}[MVP]：{default}当前生还者 MVP 统计数据不允许向旁观者显示");
 			return Plugin_Handled;
 		}
 		else if (GetClientTeam(client) == TEAM_SURVIVOR && (g_hWhichTeamToShow.IntValue != 0 && g_hWhichTeamToShow.IntValue != 2))
 		{
-			CPrintToChat(client, "{LG}[MVP]：{W}当前生还者 MVP 统计数据不允许向生还者显示");
+			CPrintToChat(client, "{lightgreen}[MVP]：{default}当前生还者 MVP 统计数据不允许向生还者显示");
 			return Plugin_Handled;
 		}
 		else if (GetClientTeam(client) == TEAM_INFECTED && (g_hWhichTeamToShow.IntValue != 0 && g_hWhichTeamToShow.IntValue != 3))
 		{
-			CPrintToChat(client, "{LG}[MVP]：{W}当前生还者 MVP 统计数据不允许向感染者显示");
+			CPrintToChat(client, "{lightgreen}[MVP]：{default}当前生还者 MVP 统计数据不允许向感染者显示");
 			return Plugin_Handled;
 		}
 		printMvpStatus(client);
@@ -184,7 +184,7 @@ public void missionLostHandler(Event event, const char[] name, bool dontBroadcas
 		}
 		g_bHasPrint = true;
 	}
-	if (g_hAllowShowFailCount.BoolValue) { CPrintToChatAll("{LG}[提示]：{G}这是你们第：%d 次团灭，请继续努力哦 (*･ω< )", ++failCount); }
+	if (g_hAllowShowFailCount.BoolValue) { CPrintToChatAll("{lightgreen}[提示]：{green}这是你们第：%d 次团灭，请继续努力哦 (*･ω< )", ++failCount); }
 	clearStuff();
 }
 
@@ -263,38 +263,38 @@ void printMvpStatus(int client = -1)
 	for (i = 1; i <= MaxClients; i++) { if (IsValidSurvivor(i)) { players[playerCount++] = i; } }
 	SortCustom1D(players, playerCount, sortByDamageFunction);
 	// Do Fomat
-	if (IsValidClient(client)) { CPrintToChat(client, "{LG}[生还者 MVP 统计]"); }
-	else { CPrintToChatAll("{LG}[生还者 MVP 统计]"); }
+	if (IsValidClient(client)) { CPrintToChat(client, "{lightgreen}[生还者 MVP 统计]"); }
+	else { CPrintToChatAll("{lightgreen}[生还者 MVP 统计]"); }
 	for (i = 0; i < playerCount; i++)
 	{
 		char buffer[64] = {'\0'}, toPrint[128] = {'\0'};
 		if (g_hAllowShowSi.BoolValue)
 		{
-			FormatEx(buffer, sizeof(buffer), "{LG}特感{O}%d ", playerInfos[players[i]].siCount);
+			FormatEx(buffer, sizeof(buffer), "{lightgreen}特感{olive}%d ", playerInfos[players[i]].siCount);
 			StrCat(toPrint, sizeof(toPrint), buffer);
 		}
 		if (g_hAllowShowCi.BoolValue)
 		{
-			FormatEx(buffer, sizeof(buffer), "{LG}丧尸{O}%d ", playerInfos[players[i]].ciCount);
+			FormatEx(buffer, sizeof(buffer), "{lightgreen}丧尸{olive}%d ", playerInfos[players[i]].ciCount);
 			StrCat(toPrint, sizeof(toPrint), buffer);
 		}
 		if (g_hAllowShowTotalDmg.BoolValue)
 		{
-			FormatEx(buffer, sizeof(buffer), "{LG}伤害{O}%d ", playerInfos[players[i]].totalDamage);
+			FormatEx(buffer, sizeof(buffer), "{lightgreen}伤害{olive}%d ", playerInfos[players[i]].totalDamage);
 			StrCat(toPrint, sizeof(toPrint), buffer);
 		}
 		if (g_hAllowShowFF.BoolValue)
 		{
-			FormatEx(buffer, sizeof(buffer), "{LG}黑/被黑{O}%d/%d ", playerInfos[players[i]].ffCount, playerInfos[players[i]].gotFFCount);
+			FormatEx(buffer, sizeof(buffer), "{lightgreen}黑/被黑{olive}%d/%d ", playerInfos[players[i]].ffCount, playerInfos[players[i]].gotFFCount);
 			StrCat(toPrint, sizeof(toPrint), buffer);
 		}
 		if (g_hAllowShowAccuracy.BoolValue)
 		{
 			float accuracy = playerInfos[players[i]].siCount + playerInfos[players[i]].ciCount == 0 ? 0.0 : float(playerInfos[players[i]].headShotCount) / float(playerInfos[players[i]].siCount + playerInfos[players[i]].ciCount);
-			FormatEx(buffer, sizeof(buffer), "{LG}爆头率{O}%.0f%% ", accuracy * 100.0);
+			FormatEx(buffer, sizeof(buffer), "{lightgreen}爆头率{olive}%.0f%% ", accuracy * 100.0);
 			StrCat(toPrint, sizeof(toPrint), buffer);
 		}
-		FormatEx(buffer, sizeof(buffer), "{LG}%N", players[i]);
+		FormatEx(buffer, sizeof(buffer), "{lightgreen}%N", players[i]);
 		StrCat(toPrint, sizeof(toPrint), buffer);
 		if (IsValidClient(client)) { CPrintToChat(client, "%s", toPrint); }
 		else { CPrintToChatAll("%s", toPrint); }
@@ -366,10 +366,10 @@ void printDetails(int client = -1)
 	float gotFFPercent = gotFFTotal == 0 ? 0.0 : float(playerInfos[gotFFMVP].gotFFCount) / float(gotFFTotal);
 	if (IsValidClient(client))
 	{
-		siTotal == 0 ? CPrintToChat(client, "{LG}[特感糕手]：{O}本局暂无特感击杀") : CPrintToChat(client, "{LG}[特感糕手]：{O}%N {LG}击杀：{O}%d/%d {LG}[{O}%.0f%%{LG}]", siMVP, playerInfos[siMVP].siCount, siTotal, siPercent * 100.0);
-		ciTotal == 0 ? CPrintToChat(client, "{LG}[辛勤割草]：{O}本局暂无丧尸击杀") : CPrintToChat(client, "{LG}[辛勤割草]：{O}%N {LG}击杀：{O}%d/%d {LG}[{O}%.0f%%{LG}]", ciMVP, playerInfos[ciMVP].ciCount, ciTotal, ciPercent * 100.0);
-		ffTotal == 0 ? CPrintToChat(client, "{LG}[黑枪大师]：{O}大家都没有黑枪，没有友伤的世界达成啦 d(>ω<*)") : CPrintToChat(client, "{LG}[黑枪大师]：{O}%N {LG}黑枪：{O}%d/%d {LG}[{O}%.0f%%{LG}]", ffMVP, playerInfos[ffMVP].ffCount, ffTotal, ffPercent * 100.0);
-		if (ffTotal > 0) { CPrintToChat(client, "{LG}[老倒霉蛋]：{O}%N {LG}被黑：{O}%d/%d {LG}[{O}%.0f%%{LG}]", gotFFMVP, playerInfos[gotFFMVP].gotFFCount, gotFFTotal, gotFFPercent * 100.0); }
+		siTotal == 0 ? CPrintToChat(client, "{lightgreen}[特感糕手]：{olive}本局暂无特感击杀") : CPrintToChat(client, "{lightgreen}[特感糕手]：{olive}%N {lightgreen}击杀：{olive}%d/%d {lightgreen}[{olive}%.0f%%{lightgreen}]", siMVP, playerInfos[siMVP].siCount, siTotal, siPercent * 100.0);
+		ciTotal == 0 ? CPrintToChat(client, "{lightgreen}[辛勤割草]：{olive}本局暂无丧尸击杀") : CPrintToChat(client, "{lightgreen}[辛勤割草]：{olive}%N {lightgreen}击杀：{olive}%d/%d {lightgreen}[{olive}%.0f%%{lightgreen}]", ciMVP, playerInfos[ciMVP].ciCount, ciTotal, ciPercent * 100.0);
+		ffTotal == 0 ? CPrintToChat(client, "{lightgreen}[黑枪大师]：{olive}大家都没有黑枪，没有友伤的世界达成啦 d(>ω<*)") : CPrintToChat(client, "{lightgreen}[黑枪大师]：{olive}%N {lightgreen}黑枪：{olive}%d/%d {lightgreen}[{olive}%.0f%%{lightgreen}]", ffMVP, playerInfos[ffMVP].ffCount, ffTotal, ffPercent * 100.0);
+		if (ffTotal > 0) { CPrintToChat(client, "{lightgreen}[老倒霉蛋]：{olive}%N {lightgreen}被黑：{olive}%d/%d {lightgreen}[{olive}%.0f%%{lightgreen}]", gotFFMVP, playerInfos[gotFFMVP].gotFFCount, gotFFTotal, gotFFPercent * 100.0); }
 		return;
 	}
 	if (client == 0)
@@ -380,10 +380,10 @@ void printDetails(int client = -1)
 		if (ffTotal > 0) { PrintToServer("[老倒霉蛋]：%N 被黑：%d/%d [%.0f%%]", gotFFMVP, playerInfos[gotFFMVP].gotFFCount, gotFFTotal, gotFFPercent * 100.0); }
 		return;
 	}
-	siTotal == 0 ? CPrintToChatAll("{LG}[特感糕手]：{O}本局暂无特感击杀") : CPrintToChatAll("{LG}[特感糕手]：{O}%N {LG}击杀：{O}%d/%d {LG}[{O}%.0f%%{LG}]", siMVP, playerInfos[siMVP].siCount, siTotal, siPercent * 100.0);
-	ciTotal == 0 ? CPrintToChatAll("{LG}[辛勤割草]：{O}本局暂无丧尸击杀") : CPrintToChatAll("{LG}[辛勤割草]：{O}%N {LG}击杀：{O}%d/%d {LG}[{O}%.0f%%{LG}]", ciMVP, playerInfos[ciMVP].ciCount, ciTotal, ciPercent * 100.0);
-	ffTotal == 0 ? CPrintToChatAll("{LG}[黑枪大师]：{O}大家都没有黑枪，没有友伤的世界达成啦 d(>ω<*)") : CPrintToChatAll("{LG}[黑枪大师]：{O}%N {LG}黑枪：{O}%d/%d {LG}[{O}%.0f%%{LG}]", ffMVP, playerInfos[ffMVP].ffCount, ffTotal, ffPercent * 100.0);
-	if (ffTotal > 0) { CPrintToChatAll("{LG}[老倒霉蛋]：{O}%N {LG}被黑：{O}%d/%d {LG}[{O}%.0f%%{LG}]", gotFFMVP, playerInfos[gotFFMVP].gotFFCount, gotFFTotal, gotFFPercent * 100.0); }
+	siTotal == 0 ? CPrintToChatAll("{lightgreen}[特感糕手]：{olive}本局暂无特感击杀") : CPrintToChatAll("{lightgreen}[特感糕手]：{olive}%N {lightgreen}击杀：{olive}%d/%d {lightgreen}[{olive}%.0f%%{lightgreen}]", siMVP, playerInfos[siMVP].siCount, siTotal, siPercent * 100.0);
+	ciTotal == 0 ? CPrintToChatAll("{lightgreen}[辛勤割草]：{olive}本局暂无丧尸击杀") : CPrintToChatAll("{lightgreen}[辛勤割草]：{olive}%N {lightgreen}击杀：{olive}%d/%d {lightgreen}[{olive}%.0f%%{lightgreen}]", ciMVP, playerInfos[ciMVP].ciCount, ciTotal, ciPercent * 100.0);
+	ffTotal == 0 ? CPrintToChatAll("{lightgreen}[黑枪大师]：{olive}大家都没有黑枪，没有友伤的世界达成啦 d(>ω<*)") : CPrintToChatAll("{lightgreen}[黑枪大师]：{olive}%N {lightgreen}黑枪：{olive}%d/%d {lightgreen}[{olive}%.0f%%{lightgreen}]", ffMVP, playerInfos[ffMVP].ffCount, ffTotal, ffPercent * 100.0);
+	if (ffTotal > 0) { CPrintToChatAll("{lightgreen}[老倒霉蛋]：{olive}%N {lightgreen}被黑：{olive}%d/%d {lightgreen}[{olive}%.0f%%{lightgreen}]", gotFFMVP, playerInfos[gotFFMVP].gotFFCount, gotFFTotal, gotFFPercent * 100.0); }
 }
 
 int sortByDamageFunction(int o1, int o2, const int[] array, Handle hndl)

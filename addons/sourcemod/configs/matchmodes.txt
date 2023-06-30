@@ -53,11 +53,11 @@
 		}
 		"community5_ez"
 		{
-			"name"		"逛街死门12特0秒全控"
+			"name"		"逛街死门12特0秒"
 		}
 		"community5"
 		{
-			"name"		"死门10特0秒全控"
+			"name"		"死门10特0秒"
 		}
 		"community5_himiko"
 		{

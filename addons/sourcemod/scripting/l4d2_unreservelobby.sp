@@ -8,6 +8,7 @@
 
 ConVar g_cvUnreserve, g_cvGameMode, g_cvCookie, g_cvLobbyOnly, g_cvMaxPlayers;
 bool g_bUnreserve;
+bool g_bShouldStopReserve;
 
 
 public Plugin myinfo = {
@@ -34,6 +35,7 @@ public void OnPluginStart() {
 
 Action cmdUnreserve(int client, int args) {
 	ServerCommand("sv_cookie 0");
+	g_bShouldStopReserve = true;
 	ReplyToCommand(client, "[UL] Lobby reservation has been removed.");
 	return Plugin_Handled;
 }
@@ -51,6 +53,7 @@ void GetCvars() {
 }
 
 public void OnClientAuthorized(int client, const char[] auth) {
+	if (g_bShouldStopReserve) return;
 	if (!g_bUnreserve || g_cvMaxPlayers.IntValue == -1)
 		return;
 
@@ -65,6 +68,7 @@ public void OnClientAuthorized(int client, const char[] auth) {
 
 //OnClientDisconnect will fired when changing map, issued by gH0sTy at http://docs.sourcemod.net/api/index.php?fastload=show&id=390&
 void Event_PlayerDisconnect(Event event, const char[] name, bool dontBroadcast) {
+	if (g_bShouldStopReserve) return;
 	if (g_cvMaxPlayers.IntValue == -1)
 		return;
 

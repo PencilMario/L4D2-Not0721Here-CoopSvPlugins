@@ -1,7 +1,7 @@
 #include <sourcemod>
 
 #define WARMBOT_STEAMID "STEAM_1:1:695917591"
-
+bool g_bMapChanged;
 enum FirstMapList
 {
     C1,C2,C3,C4,C5,C6,C7,C8,C9,C19,C11,C12,C13,C14,
@@ -27,7 +27,7 @@ char L4D2_FirstMaps[FirstMapList_Size][] = {
 
 public void OnClientAuthorized(iTarget, const char[] strTargetSteamId)
 {
-    if (StrEqual(strTargetSteamId, WARMBOT_STEAMID)) CreateTimer(60.0, Timer_CheckAndRestartNewMap)
+    if (StrEqual(strTargetSteamId, WARMBOT_STEAMID) && !g_bMapChanged) CreateTimer(60.0, Timer_CheckAndRestartNewMap)
 }
 
 public Action Timer_CheckAndRestartNewMap(Handle timer)
@@ -35,6 +35,7 @@ public Action Timer_CheckAndRestartNewMap(Handle timer)
     if (CountTruePlayers() < 1){
         int map = GetRandomInt(0, view_as<int>(FirstMapList_Size)-1)
         ServerCommand("changelevel %s", L4D2_FirstMaps[map])
+        g_bMapChanged = true;
     }
     return Plugin_Stop;
 }

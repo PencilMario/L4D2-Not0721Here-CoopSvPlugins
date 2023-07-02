@@ -49,7 +49,7 @@
 	{
 		"community5_noobplus"
 		{
-			"name"		"逛街绝境混野版"
+			"name"		"逛街死门混野版"
 		}
 		"community5_ez"
 		{

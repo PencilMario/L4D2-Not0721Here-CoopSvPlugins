@@ -38,16 +38,14 @@ public void OnClientAuthorized(iTarget, const char[] strTargetSteamId)
     if (StrEqual(strTargetSteamId, WARMBOT_STEAMID)) 
     {
         if (!g_bMapChanged) CreateTimer(60.0, Timer_CheckAndRestartNewMap);
+        else CreateTimer(5.0, Timer_TeleportWarmBot, _, TIMER_REPEAT|TIMER_FLAG_NO_MAPCHANGE);
     }
 }
 
-public void OnClientPutInServer(int client){
-    if (IsWarmBot(client)){
-        if (g_bMapChanged) CreateTimer(5.0, Timer_TeleportWarmBot);
-    }
-}
 public Action Timer_TeleportWarmBot(Handle timer)
 {
+    if (GetWarmBot() == 0) return Plugin_Stop;
+    if (!IsClientInGame(GetWarmBot())) return Plugin_Continue
     if (CountTruePlayers() < 1){
         ProcessSurPredictModel(g_vTeleportPos, g_vTepeportAng);
     }

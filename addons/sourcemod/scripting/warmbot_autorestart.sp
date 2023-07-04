@@ -45,9 +45,9 @@ public void OnClientAuthorized(iTarget, const char[] strTargetSteamId)
 public Action Timer_TeleportWarmBot(Handle timer)
 {
     if (GetWarmBot() == 0) return Plugin_Stop;
-    if (!IsClientInGame(GetWarmBot())) return Plugin_Continue
+    if (!IsClientInGame(GetWarmBot())) return Plugin_Continue;
     if (CountTruePlayers() < 1){
-        ProcessSurPredictModel(g_vTeleportPos, g_vTepeportAng);
+        if (ProcessSurPredictModel(g_vTeleportPos, g_vTepeportAng) == -1) return Plugin_Continue;
     }
     return Plugin_Stop;
 }
@@ -108,9 +108,11 @@ int ProcessSurPredictModel(float vPos[3], float vAng[3])
     //PrintToConsole("已传送warmbot");
     if (GetVectorLength(vPos) == 0.0)
         return -1;
-    if (GetWarmBot()) TeleportEntity(GetWarmBot(), vPos, vAng, NULL_VECTOR);
-    return 0;
-
+    if (GetWarmBot()) {
+        TeleportEntity(GetWarmBot(), vPos, vAng, NULL_VECTOR);
+        return 0;
+    }
+    return -1;
 }
 
 TerrorNavArea GetBossSpawnAreaForFlow(float flow)

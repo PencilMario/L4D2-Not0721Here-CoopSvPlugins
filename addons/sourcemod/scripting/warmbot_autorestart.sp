@@ -47,7 +47,8 @@ public Action Timer_TeleportWarmBot(Handle timer)
     if (GetWarmBot() == 0) return Plugin_Stop;
     if (!IsClientInGame(GetWarmBot())) return Plugin_Continue;
     if (CountTruePlayers() < 1){
-        if (ProcessSurPredictModel(g_vTeleportPos, g_vTepeportAng) == -1) return Plugin_Continue;
+        ProcessSurPredictModel(g_vTeleportPos, g_vTepeportAng);
+        return Plugin_Continue;
     }
     return Plugin_Stop;
 }

@@ -158,6 +158,13 @@ stock void HxUpdateMissionsList()
 				char sPath[128];
 				Format(sPath, sizeof(sPath), "missions/%s", sBuffer);
 				File f = OpenFile(sPath, "rt", true, NULL_STRING);
+				File tFile = OpenFile("addons/sourcemod/data/buffer.txt", "at");
+				
+				if (tFile == INVALID_HANDLE) {
+					delete tFile;
+					SetFailState("[List mission] 无法在data中创建临时文件");
+				}
+				delete tFile;
 				if (f)
 				{
 					char sText[256];

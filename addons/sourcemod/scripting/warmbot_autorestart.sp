@@ -32,6 +32,25 @@ char L4D2_FirstMaps[FirstMapList_Size][] = {
 
 public void OnPluginStart(){
     LoadSDK();
+
+    RegServerCmd("sm_warptoper", CMD_TeleportAllSurvivortoPercent);
+}
+
+public Action CMD_TeleportAllSurvivortoPercent(int client, int args){
+    char buf[32];
+    GetCmdArg(1, buf, sizeof(buf));
+    float fTarget = StringToFloat(buf);
+    fTarget = (fTarget > 0.1) ? fTarget : 0.1;
+    if (fTarget >= 1.0){
+        ServerCommand("sm_svcmd warp_all_survivors_to_checkpoint");
+        return Plugin_Handled;
+    }
+    for (int i = 1; i <= MaxClients; i++){
+        if (IsClientInGame(i)){
+            if (GetClientTeam(i) == L4D2Team_Survivor) ProcessSurPredictModel(i, g_vTeleportPos, g_vTepeportAng, fTarget);
+        }
+    }
+    return Plugin_Handled;
 }
 
 public void OnClientAuthorized(iTarget, const char[] strTargetSteamId)
@@ -50,7 +69,7 @@ public Action Timer_TeleportWarmBot(Handle timer)
     if (!IsClientInGame(warmbot)) return Plugin_Continue;
     if (CountTruePlayers() < 1){
         if (!IsIncapacitated(warmbot) || !IsHangingFromLedge(warmbot)){
-            ProcessSurPredictModel(g_vTeleportPos, g_vTepeportAng);
+            ProcessSurPredictModel(warmbot, g_vTeleportPos, g_vTepeportAng, GetRandomFloat(0.1, 0.5));
             return Plugin_Continue;
         }
     }
@@ -91,10 +110,10 @@ int GetWarmBot(){
 /**
  * 获取TP位置并传送,感谢l4d_predict_tank_glow
  */
-int ProcessSurPredictModel(float vPos[3], float vAng[3])
+void ProcessSurPredictModel(int client, float vPos[3], float vAng[3], float Target)
 {
     // 从 -12% 反方向获取位置
-    for (float p = GetRandomFloat(0.1, 0.5); p > 0.0; p -= 0.01)
+    for (float p = Target; p > 0.0; p -= 0.01)
     {
         TerrorNavArea nav = GetBossSpawnAreaForFlow(p);
         if (nav.Valid())
@@ -110,14 +129,8 @@ int ProcessSurPredictModel(float vPos[3], float vAng[3])
         }
     }
     
-    //PrintToConsole("已传送warmbot");
-    if (GetVectorLength(vPos) == 0.0)
-        return -1;
-    if (GetWarmBot()) {
-        TeleportEntity(GetWarmBot(), vPos, vAng, NULL_VECTOR);
-        return 0;
-    }
-    return -1;
+
+    TeleportEntity(client, vPos, vAng, NULL_VECTOR);
 }
 
 TerrorNavArea GetBossSpawnAreaForFlow(float flow)

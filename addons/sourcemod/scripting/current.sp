@@ -34,7 +34,7 @@ public Action CurrentCmd(int client, int args)
 
 float GetBossProximity()
 {
-	float proximity = GetMaxSurvivorCompletion() + g_hVsBossBuffer.FloatValue / L4D2Direct_GetMapMaxFlowDistance();
+	float proximity = GetMaxSurvivorCompletion();
 
 	return (proximity > 1.0) ? 1.0 : proximity;
 }

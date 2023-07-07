@@ -1,5 +1,6 @@
 #include <sourcemod>
 #include <left4dhooks>
+#include <l4d2util_survivors>
 #define GAMEDATA_FILE "l4d_predict_tank_glow"
 #include <tankglow/tankglow_defines>
 CZombieManager ZombieManager;
@@ -44,11 +45,14 @@ public void OnClientAuthorized(iTarget, const char[] strTargetSteamId)
 
 public Action Timer_TeleportWarmBot(Handle timer)
 {
-    if (GetWarmBot() == 0) return Plugin_Stop;
-    if (!IsClientInGame(GetWarmBot())) return Plugin_Continue;
+    int warmbot = GetWarmBot();
+    if (warmbot == 0) return Plugin_Stop;
+    if (!IsClientInGame(warmbot)) return Plugin_Continue;
     if (CountTruePlayers() < 1){
-        ProcessSurPredictModel(g_vTeleportPos, g_vTepeportAng);
-        return Plugin_Continue;
+        if (!IsIncapacitated(warmbot) || !IsHangingFromLedge(warmbot)){
+            ProcessSurPredictModel(g_vTeleportPos, g_vTepeportAng);
+            return Plugin_Continue;
+        }
     }
     return Plugin_Stop;
 }

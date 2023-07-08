@@ -105,7 +105,7 @@ methodmap Logger __nullable__
      */
     public void debug(const char[] message, any ...)
     {
-        if (view_as<LogType>(this.IgnoreLevel) >= view_as<LogType>(LogType_Debug)) return;
+        if (view_as<LogType>(this.IgnoreLevel) > view_as<LogType>(LogType_Debug)) return;
         char buffer[512];
         VFormat(buffer, sizeof(buffer), message, 3);
         if (this.LogObjectType == LoggerType_NewLogFile) this.WritetoLogFile(LogType_Debug, message)
@@ -118,7 +118,7 @@ methodmap Logger __nullable__
      */
     public void info(const char[] message, any ...)
     {
-        if (view_as<LogType>(this.IgnoreLevel) >= view_as<LogType>(LogType_Info)) return;
+        if (view_as<LogType>(this.IgnoreLevel) > view_as<LogType>(LogType_Info)) return;
         char buffer[512];
         VFormat(buffer, sizeof(buffer), message, 3);
         if (this.LogObjectType == LoggerType_NewLogFile) this.WritetoLogFile(LogType_Info, message)
@@ -131,7 +131,7 @@ methodmap Logger __nullable__
      */
     public void warning(const char[] message, any ...)
     {
-        if (view_as<LogType>(this.IgnoreLevel) >= view_as<LogType>(LogType_Warning)) return;
+        if (view_as<LogType>(this.IgnoreLevel) > view_as<LogType>(LogType_Warning)) return;
         char buffer[512];
         VFormat(buffer, sizeof(buffer), message, 3);
         PrintToServer("[%s]%s",LogTypeStr[LogType_Warning],buffer);
@@ -145,7 +145,7 @@ methodmap Logger __nullable__
      */
     public void error(const char[] message, any ...)
     {
-        if (view_as<LogType>(this.IgnoreLevel) >= view_as<LogType>(LogType_Error)) return;
+        if (view_as<LogType>(this.IgnoreLevel) > view_as<LogType>(LogType_Error)) return;
         char buffer[512];
         VFormat(buffer, sizeof(buffer), message, 3);
         PrintToServer("[%s]%s",LogTypeStr[LogType_Error],buffer);
@@ -159,7 +159,7 @@ methodmap Logger __nullable__
      */
     public void critical(const char[] message, any ...)
     {
-        if (view_as<LogType>(this.IgnoreLevel) >= view_as<LogType>(LogType_Critical)) return;
+        if (view_as<LogType>(this.IgnoreLevel) > view_as<LogType>(LogType_Critical)) return;
         char buffer[512];
         VFormat(buffer, sizeof(buffer), message, 3);
         PrintToServer("[%s]%s",LogTypeStr[LogType_Critical],buffer);

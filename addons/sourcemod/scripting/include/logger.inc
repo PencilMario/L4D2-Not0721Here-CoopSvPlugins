@@ -1,9 +1,16 @@
 /*
- * @Author: 夜羽真白
+ * @Author: 夜羽真白/Sir.P
  * @Date: 2023-05-23 00:03 周二
  * @Type: Left 4 Dead 2 Plugin
  * @Description: 日志记录对象
- * @URL: https://github.com/GlowingTree880/L4D2_LittlePlugins
+ * @URL: https://github.com/GlowingTree880/L4D2_LittlePlugins & https://github.com/PencilMario/L4D2-Not0721Here-CoopSvPlugins
+ */
+
+/**
+ * 使用方法与原版有一些区别：
+ * 在引用头文件前，需要define log的名称（决定了保存的log文件）（只限于LoggerType_NewLogFile）
+ * 在new Logger时，可以不传变量，也可以传入LoggerType
+ * 可在 https://github.com/PencilMario/L4D2-Not0721Here-CoopSvPlugins/blob/main/addons/sourcemod/scripting/logger_test.sp 查看示例
  */
 
 #if defined _logger_included
@@ -18,7 +25,9 @@
 
 
 enum LoggerType{
+    // 保存在log/L********.log，默认
     LoggerType_SourcemodLog = 0,
+    // 保存在log/[LOGGER_NAME].log
     LoggerType_NewLogFile,
     LoggerType_Size
 };

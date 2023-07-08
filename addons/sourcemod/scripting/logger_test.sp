@@ -5,7 +5,7 @@ Logger log;
 Logger log2
 public void OnPluginStart(){
     log = new Logger();
-    log2 = new Logger();
+    log2 = new Logger(LoggerType_NewLogFile);
     log.debug("Logger_test_SourcemodLog debug");
     log.info("Logger_test_SourcemodLog info");
     log.warning("Logger_test_SourcemodLog warning");

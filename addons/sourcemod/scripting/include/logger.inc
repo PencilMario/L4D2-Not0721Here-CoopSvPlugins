@@ -46,7 +46,7 @@ char LogTypeStr[LogType_Size][] = {
     "Info",
     "Warning",
     "Error",
-    "Critical"
+    "CRITICAL"
 }
 
 methodmap Logger __nullable__
@@ -85,7 +85,7 @@ methodmap Logger __nullable__
     {
         char buffer[512];
         VFormat(buffer, sizeof(buffer), message, 3);
-        PrintToServer(buffer);
+        PrintToServer("[%s]%s",LogTypeStr[LogType_Warning],buffer);
         if (this.LogObjectType == LoggerType_NewLogFile) this.WritetoLogFile(LogType_Warning, message)
         else LogError(buffer);
     }  
@@ -94,7 +94,7 @@ methodmap Logger __nullable__
     {
         char buffer[512];
         VFormat(buffer, sizeof(buffer), message, 3);
-        PrintToServer(buffer);
+        PrintToServer("[%s]%s",LogTypeStr[LogType_Error],buffer);
         if (this.LogObjectType == LoggerType_NewLogFile) this.WritetoLogFile(LogType_Error, message)
         else LogError(buffer);
     }    
@@ -103,7 +103,7 @@ methodmap Logger __nullable__
     {
         char buffer[512];
         VFormat(buffer, sizeof(buffer), message, 3);
-        PrintToServer(buffer);
+        PrintToServer("[%s]%s",LogTypeStr[LogType_Critical],buffer);
         if (this.LogObjectType == LoggerType_NewLogFile) this.WritetoLogFile(LogType_Critical, message)
         else LogError(buffer);
     }

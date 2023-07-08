@@ -29,7 +29,7 @@
 enum LoggerType{
     // 保存在log/L********.log，默认
     LoggerType_SourcemodLog = 0,
-    // 保存在log/[LOGGER_NAME].log
+    // 保存在log/[LogObjectData[this.index].LogName].log
     LoggerType_NewLogFile,
 };
 

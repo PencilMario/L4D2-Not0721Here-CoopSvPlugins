@@ -6,7 +6,17 @@
  * @URL: https://github.com/GlowingTree880/L4D2_LittlePlugins
  */
 
-#include <colors.inc>
+#if defined _logger_included
+ #endinput
+#endif
+#define _logger_included
+
+#if !defined LOGGER_NAME
+ #define LOGGER_NAME "Logger"
+#endif
+
+
+
 enum LoggerType{
     LoggerType_SourcemodLog = 0,
     LoggerType_NewLogFile,
@@ -33,7 +43,7 @@ char LogTypeStr[LogType_Size][] = {
 methodmap Logger __nullable__
 {
 
-    public Logger(LoggerType LogObjectType)
+    public Logger(LoggerType LogObjectType = LoggerType_SourcemodLog)
     {
         return view_as<Logger>(LogObjectType);
     }
@@ -90,7 +100,7 @@ methodmap Logger __nullable__
     {
         char logpath[160];
         //char buffer[512];
-        BuildPath(Path_SM, logpath, sizeof(logpath), "logs/%s.log", LOG_NAME);
+        BuildPath(Path_SM, logpath, sizeof(logpath), "logs/%s.log", LOGGER_NAME);
         Handle file = OpenFile(logpath, "at");
 
         if (file == null) {

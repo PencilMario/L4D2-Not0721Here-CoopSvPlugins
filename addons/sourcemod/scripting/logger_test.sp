@@ -1,11 +1,11 @@
 #include <sourcemod>
-#define LOG_NAME "Logger_test"
+#define LOGGER_NAME "Logger_test"
 #include <logger>
 Logger log;
 Logger log2
 public void OnPluginStart(){
-    log = new Logger(LoggerType_SourcemodLog);
-    log2 = new Logger(LoggerType_NewLogFile);
+    log = new Logger();
+    log2 = new Logger();
     log.debug("Logger_test_SourcemodLog debug");
     log.info("Logger_test_SourcemodLog info");
     log.warning("Logger_test_SourcemodLog warning");

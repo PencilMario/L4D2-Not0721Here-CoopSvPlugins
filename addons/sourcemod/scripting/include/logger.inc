@@ -57,6 +57,13 @@ methodmap Logger __nullable__
         return view_as<Logger>(LogObjectType);
     }
 
+    public void lograw(const char[] message, any ...)
+    {
+        char buffer[512];
+        VFormat(buffer, sizeof(buffer), message, 3);
+        if (this.LogObjectType == LoggerType_NewLogFile) this.WritetoLogFileRaw(message)
+        else LogMessage(buffer);
+    }
     
     public void debug(const char[] message, any ...)
     {
@@ -121,6 +128,22 @@ methodmap Logger __nullable__
         char time[64];
         FormatTime(time, sizeof(time), "%Y-%m-%d %H:%M:%S", GetTime());
         WriteFileLine(file, "[%s] [%s]: %s", time, LogTypeStr[logtype], message);
+        CloseHandle(file);
+    }
+
+    public void WritetoLogFileRaw(const char[] message, any ...)
+    {
+        char logpath[160];
+        BuildPath(Path_SM, logpath, sizeof(logpath), "logs/%s.log", LOGGER_NAME);
+        Handle file = OpenFile(logpath, "at");
+
+        if (file == null) {
+            PrintToServer("[logger] 无法打开文件：%s", logpath);
+            LogError("[logger] 无法打开文件：%s", logpath);
+            return;
+        }
+
+        WriteFileLine(file, "%s", message);
         CloseHandle(file);
     }
 }

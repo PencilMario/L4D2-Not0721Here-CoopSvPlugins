@@ -56,6 +56,7 @@ enum struct LogObjectData{
     LoggerType LogObjectType
     LogType Ignore_Level
     char LogName[MAX_LOGGERNAME_LENGTH]
+    char PreFix[32]
 }
 
 LogObject LoggerIndex[MAX_LOGGER];
@@ -73,17 +74,21 @@ methodmap Logger __nullable__
     public Logger(const char[] name, LoggerType logtype = LoggerType_SourcemodLog)
     {   
         Logger r;
+        bool created = false;
         for (int i = 0; i < MAX_LOGGER; i++)
         {
             if (LoggerIndex[i] != Invaild_Logger){
                 r = view_as<Logger>(i);
                 LoggerIndex[i] = view_as<LogObject>(i);
+                created = true;
                 break;
             }
         }
+        if (!created) SetFailState("[Logger] 该插件已经无法创建更多的Logger");
         r.LogObjectType = logtype;
         r.SetLogName(name);
         r.IgnoreLevel = LogType_Info;
+        r.SetLogPrefix("");
         return r;
     }
     /**
@@ -94,10 +99,8 @@ methodmap Logger __nullable__
      */
     public void lograw(const char[] message, any ...)
     {
-        char buffer[512];
-        VFormat(buffer, sizeof(buffer), message, 3);
         if (this.LogObjectType == LoggerType_NewLogFile) this.WritetoLogFileRaw(message)
-        else LogMessage(buffer);
+        else LogMessage(message);
     }
 
     /**
@@ -108,9 +111,10 @@ methodmap Logger __nullable__
      */
     public void logfirst(const char[] message, any ...)
     {
-        char buffer[512];
-        VFormat(buffer, sizeof(buffer), message, 3);
-        if (this.LogObjectType == LoggerType_NewLogFile) this.WritetoLogFileFirst(message);
+        char logpath[PLATFORM_MAX_PATH];
+        BuildPath(Path_SM, logpath, sizeof(logpath), "logs/%s.log", LoggerData[this.index].LogName);
+        if( FileExists(logpath) == true ) return;
+        if (this.LogObjectType == LoggerType_NewLogFile) this.lograw(message);
         else this.warning("[Logger] LoggerType_SourcemodLog类型的Logger对象试图调用logfirst()");
     }
     /**
@@ -198,6 +202,15 @@ methodmap Logger __nullable__
         Format(LoggerData[this.index].LogName, MAX_LOGGERNAME_LENGTH, "%s", name) 
     }
 
+    /**
+     * 设置每次记录时的前缀
+     * 
+     * @param prefix 前缀
+     */
+    public void SetLogPrefix(const char[] prefix){
+        Format(LoggerData[this.index].PreFix, MAX_LOGGERNAME_LENGTH, "%s", prefix) 
+    }
+
     // logger对象的数据索引
     property LogObject index{
         public get() { return view_as<LogObject>(this); }
@@ -234,7 +247,7 @@ methodmap Logger __nullable__
 
         char time[64];
         FormatTime(time, sizeof(time), "%Y-%m-%d %H:%M:%S", GetTime());
-        WriteFileLine(file, "[%s] [%s]: %s", time, LogTypeStr[logtype], message);
+        WriteFileLine(file, "[%s] [%s]: %s%s", time, LogTypeStr[logtype], LoggerData[this.index].PreFix, message);
         CloseHandle(file);
     }
 
@@ -250,26 +263,6 @@ methodmap Logger __nullable__
             return;
         }
 
-        WriteFileLine(file, "%s", message);
-        CloseHandle(file);
-    }
-
-    public void WritetoLogFileFirst(const char[] message, any ...)
-    {
-        char logpath[PLATFORM_MAX_PATH];
-        //char buffer[512];
-        BuildPath(Path_SM, logpath, sizeof(logpath), "logs/%s.log", LoggerData[this.index].LogName);
-        if( FileExists(logpath) == true ) return;
-        Handle file = OpenFile(logpath, "at");
-
-        if (file == null) {
-            PrintToServer("[logger] 无法打开文件：%s", logpath);
-            LogError("[logger] 无法打开文件：%s", logpath);
-            return;
-        }
-
-        char time[64];
-        FormatTime(time, sizeof(time), "%Y-%m-%d %H:%M:%S", GetTime());
         WriteFileLine(file, "%s", message);
         CloseHandle(file);
     }

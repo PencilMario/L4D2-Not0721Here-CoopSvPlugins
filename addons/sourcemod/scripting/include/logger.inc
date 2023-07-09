@@ -110,7 +110,7 @@ methodmap Logger __nullable__
         char buffer[512];
         VFormat(buffer, sizeof(buffer), message, 3);
         if (this.LogObjectType == LoggerType_NewLogFile) this.WritetoLogFileFirst(message);
-        else this.warning("[Logger] LoggerType_SourcemodLog类型的Logger对象试图写入初始化讯息");
+        else this.warning("[Logger] LoggerType_SourcemodLog类型的Logger对象试图调用logfirst()");
     }
     /**
      * 向log目标文件写入一条debug记录，在LoggerType_SourcemodLog中将不会包括log等级记录

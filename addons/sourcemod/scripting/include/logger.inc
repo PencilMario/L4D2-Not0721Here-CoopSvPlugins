@@ -87,8 +87,9 @@ methodmap Logger __nullable__
         return r;
     }
     /**
-     * 向log目标文件写入一行信息，在LoggerType_NewLogFile中，不会被格式化
+     * 向log目标文件写入一行信息
      * 
+     * @note LoggerType_NewLogFile类型不会被格式化
      * @param message 写入的信息
      */
     public void lograw(const char[] message, any ...)
@@ -113,8 +114,9 @@ methodmap Logger __nullable__
         else this.warning("[Logger] LoggerType_SourcemodLog类型的Logger对象试图调用logfirst()");
     }
     /**
-     * 向log目标文件写入一条debug记录，在LoggerType_SourcemodLog中将不会包括log等级记录
-     * 
+     * 向log目标文件写入一条debug记录
+     *   
+     * @note LoggerType_SourcemodLog将不会包括log等级记录
      * @param message 写入的信息
      */
     public void debug(const char[] message, any ...)
@@ -126,8 +128,9 @@ methodmap Logger __nullable__
         else LogMessage(buffer);
     }
     /**
-     * 向log目标文件写入一条info记录，在LoggerType_SourcemodLog中将不会包括log等级记录
+     * 向log目标文件写入一条info记录
      * 
+     * @note LoggerType_SourcemodLog将不会包括log等级记录
      * @param message 写入的信息
      */
     public void info(const char[] message, any ...)
@@ -139,8 +142,9 @@ methodmap Logger __nullable__
         else LogMessage(buffer);
     }
     /**
-     * 向log目标文件写入一条warning记录并打印到服务器控制台，在LoggerType_SourcemodLog中将不会包括log等级记录
+     * 向log目标文件写入一条warning记录并打印到服务器控制台
      * 
+     * @note LoggerType_SourcemodLog将不会包括log等级记录
      * @param message 写入的信息
      */
     public void warning(const char[] message, any ...)
@@ -153,8 +157,9 @@ methodmap Logger __nullable__
         else LogError(buffer);
     }  
     /**
-     * 向log目标文件写入一条error记录并打印到服务器控制台，在LoggerType_SourcemodLog中将不会包括log等级记录
+     * 向log目标文件写入一条error记录并打印到服务器控制台
      * 
+     * @note LoggerType_SourcemodLog将不会包括log等级记录
      * @param message 写入的信息
      */
     public void error(const char[] message, any ...)
@@ -167,8 +172,9 @@ methodmap Logger __nullable__
         else LogError(buffer);
     }    
     /**
-     * 向log目标文件写入一条critical记录并打印到服务器控制台，在LoggerType_SourcemodLog中将不会包括log等级记录
+     * 向log目标文件写入一条critical记录并打印到服务器控制台
      * 
+     * @note LoggerType_SourcemodLog将不会包括log等级记录
      * @param message 写入的信息
      */
     public void critical(const char[] message, any ...)
@@ -182,8 +188,9 @@ methodmap Logger __nullable__
     }
 
     /**
-     * 设置当前logger的目标文件，只在LoggerType_NewLogFile有作用
+     * 设置当前logger的目标文件
      * 
+     * @note 只对LoggerType_NewLogFile有作用
      * @param name 文件名（不包括扩展名
      */
 

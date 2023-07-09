@@ -98,6 +98,20 @@ methodmap Logger __nullable__
         if (this.LogObjectType == LoggerType_NewLogFile) this.WritetoLogFileRaw(message)
         else LogMessage(buffer);
     }
+
+    /**
+     * 如果log文件不存在，创建log并写入message
+     * 
+     * @note 只对LoggerType_NewLogFile有效
+     * @param message 写入的信息
+     */
+    public void logfirst(const char[] message, any ...)
+    {
+        char buffer[512];
+        VFormat(buffer, sizeof(buffer), message, 3);
+        if (this.LogObjectType == LoggerType_NewLogFile) this.WritetoLogFileFirst(message);
+        else this.warning("[Logger] LoggerType_SourcemodLog类型的Logger对象试图写入初始化讯息");
+    }
     /**
      * 向log目标文件写入一条debug记录，在LoggerType_SourcemodLog中将不会包括log等级记录
      * 
@@ -196,6 +210,8 @@ methodmap Logger __nullable__
         public set(LoggerType value) { LoggerData[this.index].LogObjectType = value;}
     }
     
+    
+
     public void WritetoLogFile(LogType logtype, const char[] message, any ...)
     {
         char logpath[PLATFORM_MAX_PATH];
@@ -227,6 +243,26 @@ methodmap Logger __nullable__
             return;
         }
 
+        WriteFileLine(file, "%s", message);
+        CloseHandle(file);
+    }
+
+    public void WritetoLogFileFirst(const char[] message, any ...)
+    {
+        char logpath[PLATFORM_MAX_PATH];
+        //char buffer[512];
+        BuildPath(Path_SM, logpath, sizeof(logpath), "logs/%s.log", LoggerData[this.index].LogName);
+        if( FileExists(logpath) == true ) return;
+        Handle file = OpenFile(logpath, "at");
+
+        if (file == null) {
+            PrintToServer("[logger] 无法打开文件：%s", logpath);
+            LogError("[logger] 无法打开文件：%s", logpath);
+            return;
+        }
+
+        char time[64];
+        FormatTime(time, sizeof(time), "%Y-%m-%d %H:%M:%S", GetTime());
         WriteFileLine(file, "%s", message);
         CloseHandle(file);
     }

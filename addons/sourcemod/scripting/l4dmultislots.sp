@@ -152,7 +152,7 @@ public void OnPluginStart()
 
 	BufferHP = FindSendPropInfo( "CTerrorPlayer", "m_healthBuffer" );
 	
-	g_hSurvivorsLimit	= CreateConVar(			"l4d_multislots_limit_survivors", 				"10", 	"Total survivors allowed on the server. If numbers of survivors reached limit, no any new bots would be created.\nMust be greater then or equal to 'l4d_multislots_max_survivors'", CVAR_FLAGS, true, 1.0, true, 32.0);
+	g_hSurvivorsLimit	= CreateConVar(			"l4d_multislots_limit_survivors", 				"20", 	"Total survivors allowed on the server. If numbers of survivors reached limit, no any new bots would be created.\nMust be greater then or equal to 'l4d_multislots_max_survivors'", CVAR_FLAGS, true, 1.0, true, 32.0);
 	g_hMaxSurvivors	= CreateConVar(				"l4d_multislots_max_survivors", 				"4", 	"Kick AI Survivor bots if numbers of survivors has exceeded the certain value. (does not kick real player, minimum is 4)", CVAR_FLAGS, true, 1.0, true, 32.0);
 	hStripBotWeapons = CreateConVar(			"l4d_multislots_bot_items_delete", 				"1", 	"Delete all items form survivor bots when they got kicked by this plugin. (0=off)", CVAR_FLAGS, true, 0.0, true, 1.0);
 	hDeadBotTime = CreateConVar(				"l4d_multislots_alive_bot_time", 				"0", 	"When 5+ new player joins the server but no any bot can be taken over, the player will appear as a dead survivor if survivors have left start safe area for at least X seconds. (0=Always spawn alive bot for new player)", CVAR_FLAGS, true, 0.0);
@@ -184,7 +184,7 @@ public void OnPluginStart()
 	g_hCvar_VSCommandBalance  	= CreateConVar(	"l4d_multislots_versus_command_balance", 		"1", 	"If 1, Check team balance when player tries to use 'Join Survivors' command to join survivor team in versus/scavenge.\nIf team is unbanlance, will fail to join survivor team!", CVAR_FLAGS, true, 0.0, true, 1.0);
 	g_hCvar_VSUnBalanceLimit  	= CreateConVar(	"l4d_multislots_versus_teams_unbalance_limit", 	"1", 	"Teams are unbalanced when one team has this many more players than the other team in versus/scavenge.", CVAR_FLAGS, true, 1.0);
 	CreateConVar(								"l4d_multislots_version",						PLUGIN_VERSION,	"MultiSlots Improved plugin version.", FCVAR_NOTIFY|FCVAR_DONTRECORD);
-	AutoExecConfig(true, 						"l4dmultislots");
+	//AutoExecConfig(true, 						"l4dmultislots");
 
 	GetCvars();
 	g_hSurvivorsLimit.AddChangeHook(ConVarChanged_Cvars);

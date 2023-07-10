@@ -209,6 +209,18 @@ methodmap Logger __nullable__
     }
 
     /**
+     * 删除log文件
+     * 
+     * @note 只对LoggerType_NewLogFile有作用
+     * @return 如果成功则为 true，如果失败或文件未立即删除或logger类型不正确则为 false。
+     */
+    public bool DelLogFile(){
+        if (this.LogObjectType != LoggerType_NewLogFile) return false;
+        char logpath[PLATFORM_MAX_PATH];
+        BuildPath(Path_SM, logpath, sizeof(logpath), "logs/%s.log", LoggerData[this.index].LogName);
+        return DeleteFile(logpath);
+    }
+    /** 
      * 设置每次记录时的前缀
      * 
      * @param prefix 前缀

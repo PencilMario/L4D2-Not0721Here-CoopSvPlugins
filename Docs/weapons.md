@@ -180,6 +180,9 @@ sm_weapon weapon_sniper_military maxmovespread 3.8
 
 // 15连
 sm_weapon weapon_hunting_rifle clipsize 20
+
+// 榴弹
+sm_weapon weapon_grenade_launcher reloaddurationmult 0.6
 ```
 
 ## 物品名称对比

@@ -50,8 +50,9 @@ char LogTypeStr[LogType_Size][] = {
     "Error",
     "CRITICAL"
 }
-enum LogObject {
-    Invaild_Logger = 0
+enum LogSlot {
+    Logger_SlotFree = 0,
+    Logger_SlotUsing = 1
 }
 enum struct LogObjectData{
     LoggerType LogObjectType
@@ -60,7 +61,7 @@ enum struct LogObjectData{
     char PreFix[32]
 }
 
-LogObject LoggerIndex[MAX_LOGGER];
+LogSlot LoggerIndex[MAX_LOGGER];
 LogObjectData LoggerData[MAX_LOGGER];
 
 methodmap Logger __nullable__
@@ -78,9 +79,9 @@ methodmap Logger __nullable__
         int created = -1;
         for (int i = 0; i < MAX_LOGGER; i++)
         {
-            if (LoggerIndex[i] != Invaild_Logger){
+            if (LoggerIndex[i] == Logger_SlotFree){
                 r = view_as<Logger>(i);
-                LoggerIndex[i] = view_as<LogObject>(i);
+                LoggerIndex[i] = Logger_SlotUsing;
                 created = i;
                 break;
             }
@@ -217,8 +218,8 @@ methodmap Logger __nullable__
     }
 
     // logger对象的数据索引
-    property LogObject index{
-        public get() { return view_as<LogObject>(this); }
+    property int index{
+        public get() { return view_as<int>(this); }
     }
 
     // 忽略等级，低于该级别将不会处理

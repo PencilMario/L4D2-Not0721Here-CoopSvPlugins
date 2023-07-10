@@ -26,5 +26,13 @@ public void OnPluginStart(){
     log2.warning("Logger_test_NewLog warning");
     log2.error("Logger_test_NewLog error");
     log2.critical("Logger_test_NewLog critical");
+
+    log2.IgnoreLevel = LogType_Info;
+    log2.lograw("!!Format test!!");
+    log2.info("index: %i", log2.index);
+
+    log2.lograw("!!Prefix test!!");
+    log2.SetLogPrefix("[test]");
+    log2.info("Prefix test");
 }
 

@@ -24,10 +24,11 @@
 
 #define MAX_LOGGER 32
 #define MAX_LOGGERNAME_LENGTH 64
+#define MAX_LOG_LINE 512
 
 
 enum LoggerType{
-    // 保存在log/L********.log，默认
+    // 保存在log/L********.log，warning以上保存在error_L********.log
     LoggerType_SourcemodLog = 0,
     // 保存在log/[LogObjectData[this.index].LogName].log
     LoggerType_NewLogFile,
@@ -74,33 +75,35 @@ methodmap Logger __nullable__
     public Logger(const char[] name, LoggerType logtype = LoggerType_SourcemodLog)
     {   
         Logger r;
-        bool created = false;
+        int created = -1;
         for (int i = 0; i < MAX_LOGGER; i++)
         {
             if (LoggerIndex[i] != Invaild_Logger){
                 r = view_as<Logger>(i);
                 LoggerIndex[i] = view_as<LogObject>(i);
-                created = true;
+                created = i;
                 break;
             }
         }
-        if (!created) SetFailState("[Logger] 该插件已经无法创建更多的Logger");
+        if (created == -1) SetFailState("[Logger] 该插件已经无法创建更多的Logger");
         r.LogObjectType = logtype;
         r.SetLogName(name);
         r.IgnoreLevel = LogType_Info;
         r.SetLogPrefix("");
+        LogMessage("[Logger] 创建了一个新logger：index: %i name: %s", created, name);
         return r;
     }
     /**
      * 向log目标文件写入一行信息
      * 
-     * @note LoggerType_NewLogFile类型不会被格式化
      * @param message 写入的信息
      */
     public void lograw(const char[] message, any ...)
     {
-        if (this.LogObjectType == LoggerType_NewLogFile) this.WritetoLogFileRaw(message)
-        else LogMessage(message);
+        char buffer[MAX_LOG_LINE];
+        VFormat(buffer, sizeof(buffer), message, 3);
+        if (this.LogObjectType == LoggerType_NewLogFile) this.WritetoLogFileRaw(buffer)
+        else LogMessage(buffer);
     }
 
     /**
@@ -114,7 +117,9 @@ methodmap Logger __nullable__
         char logpath[PLATFORM_MAX_PATH];
         BuildPath(Path_SM, logpath, sizeof(logpath), "logs/%s.log", LoggerData[this.index].LogName);
         if( FileExists(logpath) == true ) return;
-        if (this.LogObjectType == LoggerType_NewLogFile) this.lograw(message);
+        char buffer[MAX_LOG_LINE];
+        VFormat(buffer, sizeof(buffer), message, 3);
+        if (this.LogObjectType == LoggerType_NewLogFile) this.lograw(buffer);
         else this.warning("[Logger] LoggerType_SourcemodLog类型的Logger对象试图调用logfirst()");
     }
     /**
@@ -126,9 +131,9 @@ methodmap Logger __nullable__
     public void debug(const char[] message, any ...)
     {
         if (view_as<LogType>(this.IgnoreLevel) > view_as<LogType>(LogType_Debug)) return;
-        char buffer[512];
+        char buffer[MAX_LOG_LINE];
         VFormat(buffer, sizeof(buffer), message, 3);
-        if (this.LogObjectType == LoggerType_NewLogFile) this.WritetoLogFile(LogType_Debug, message)
+        if (this.LogObjectType == LoggerType_NewLogFile) this.WritetoLogFile(LogType_Debug, buffer);
         else LogMessage(buffer);
     }
     /**
@@ -140,9 +145,9 @@ methodmap Logger __nullable__
     public void info(const char[] message, any ...)
     {
         if (view_as<LogType>(this.IgnoreLevel) > view_as<LogType>(LogType_Info)) return;
-        char buffer[512];
+        char buffer[MAX_LOG_LINE];
         VFormat(buffer, sizeof(buffer), message, 3);
-        if (this.LogObjectType == LoggerType_NewLogFile) this.WritetoLogFile(LogType_Info, message)
+        if (this.LogObjectType == LoggerType_NewLogFile) this.WritetoLogFile(LogType_Info, buffer)
         else LogMessage(buffer);
     }
     /**
@@ -154,10 +159,10 @@ methodmap Logger __nullable__
     public void warning(const char[] message, any ...)
     {
         if (view_as<LogType>(this.IgnoreLevel) > view_as<LogType>(LogType_Warning)) return;
-        char buffer[512];
+        char buffer[MAX_LOG_LINE];
         VFormat(buffer, sizeof(buffer), message, 3);
-        PrintToServer("[%s]%s",LogTypeStr[LogType_Warning],buffer);
-        if (this.LogObjectType == LoggerType_NewLogFile) this.WritetoLogFile(LogType_Warning, message)
+        PrintToServer("[%s]%s",LogTypeStr[LogType_Warning], buffer);
+        if (this.LogObjectType == LoggerType_NewLogFile) this.WritetoLogFile(LogType_Warning, buffer)
         else LogError(buffer);
     }  
     /**
@@ -169,10 +174,10 @@ methodmap Logger __nullable__
     public void error(const char[] message, any ...)
     {
         if (view_as<LogType>(this.IgnoreLevel) > view_as<LogType>(LogType_Error)) return;
-        char buffer[512];
+        char buffer[MAX_LOG_LINE];
         VFormat(buffer, sizeof(buffer), message, 3);
         PrintToServer("[%s]%s",LogTypeStr[LogType_Error],buffer);
-        if (this.LogObjectType == LoggerType_NewLogFile) this.WritetoLogFile(LogType_Error, message)
+        if (this.LogObjectType == LoggerType_NewLogFile) this.WritetoLogFile(LogType_Error, buffer)
         else LogError(buffer);
     }    
     /**
@@ -184,10 +189,10 @@ methodmap Logger __nullable__
     public void critical(const char[] message, any ...)
     {
         if (view_as<LogType>(this.IgnoreLevel) > view_as<LogType>(LogType_Critical)) return;
-        char buffer[512];
+        char buffer[MAX_LOG_LINE];
         VFormat(buffer, sizeof(buffer), message, 3);
         PrintToServer("[%s]%s",LogTypeStr[LogType_Critical],buffer);
-        if (this.LogObjectType == LoggerType_NewLogFile) this.WritetoLogFile(LogType_Critical, message)
+        if (this.LogObjectType == LoggerType_NewLogFile) this.WritetoLogFile(LogType_Critical, buffer)
         else LogError(buffer);
     }
 
@@ -232,10 +237,10 @@ methodmap Logger __nullable__
     
     
 
-    public void WritetoLogFile(LogType logtype, const char[] message, any ...)
+    public void WritetoLogFile(LogType logtype, const char[] message)
     {
         char logpath[PLATFORM_MAX_PATH];
-        //char buffer[512];
+        //char buffer[MAX_LOG_LINE];
         BuildPath(Path_SM, logpath, sizeof(logpath), "logs/%s.log", LoggerData[this.index].LogName);
         Handle file = OpenFile(logpath, "at");
 
@@ -251,7 +256,7 @@ methodmap Logger __nullable__
         CloseHandle(file);
     }
 
-    public void WritetoLogFileRaw(const char[] message, any ...)
+    public void WritetoLogFileRaw(const char[] message)
     {
         char logpath[PLATFORM_MAX_PATH];
         BuildPath(Path_SM, logpath, sizeof(logpath), "logs/%s.log", LoggerData[this.index].LogName);

@@ -65,7 +65,7 @@ enum
 
 char karmaNames[KarmaType_MAX][] = {
 	"撞秒了",
-	"撞飞了",
+	"创飞了",
 	"骑秒了",
 	"拍飞了",
 	"拍飞了",
@@ -2020,7 +2020,7 @@ void AnnounceKarma(int client, int victim, int type, bool bBird, bool bKillConfi
 
 		if (type == KT_Jump)
 		{
-			CPrintToChatAll("[{olive}%s{default}] {green}%s{olive} [%s] {default} %s %s {olive}%N{default}, 波门~", g_sPrefix, LastKarma[victim][type].artistName, LastKarma[victim][type].artistSteamId, bBird ? "" : "", KarmaName, victim);
+			CPrintToChatAll("[{olive}%s{default}] {green}%s{olive} {default} %s %s {olive}%N{default}, 波门~", g_sPrefix, LastKarma[victim][type].artistName, bBird ? "" : "", KarmaName, victim);
 		}
 		else
 		{

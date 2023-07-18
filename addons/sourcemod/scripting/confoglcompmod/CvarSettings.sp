@@ -397,6 +397,6 @@ public void CVS_ConVarChange(ConVar hConVar, const char[] sOldValue, const char[
 
 		PrintToServer("[Confogl] Tracked Server CVar '%s' changed from '%s' to '%s' !!!", sName, sOldValue, sNewValue);
 		//PrintToChatAll("[Confogl] Tracked Server CVar '%s' changed from '%s' to '%s' !!!", sName, sOldValue, sNewValue);
-		CPrintToChatAll("{blue}[{default}Confogl{blue}]{default} Tracked Server CVar '{green}%s{default}' changed from '{blue}%s{default}' to '{blue}%s{default}' !!!", sName, sOldValue, sNewValue);
+		CPrintToChatAll("{blue}[{default}Confogl{blue}]{default} 检测到服务器控制台变量 '{green}%s{default}' 从 '{blue}%s{default}' 改为 '{blue}%s{default}' !!!", sName, sOldValue, sNewValue);
 	}
 }

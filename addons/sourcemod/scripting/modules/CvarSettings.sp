@@ -251,6 +251,6 @@ public CVS_ConVarChange(Handle:convar, const String:oldValue[], const String:new
 	{
 		decl String:name[CVS_CVAR_MAXLEN];
 		GetConVarName(convar, name, sizeof(name));
-		CPrintToChatAll("{blue}[{default}Confogl{blue}] {default}Tracked Server CVar \"{green}%s{default}\" changed from \"{blue}%s{default}\" to \"{blue}%s{default}\"", name, oldValue, newValue);
+		CPrintToChatAll("{blue}[{default}Confogl{blue}] {default}检测到服务器控制台变量 \"{green}%s{default}\" 从 \"{blue}%s{default}\" 改为 \"{blue}%s{default}\"", name, oldValue, newValue);
 	}
 }

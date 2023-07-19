@@ -27,11 +27,11 @@
     }
     "3"
     {
-        "chat"      "{green}当前模式：{lightgreen}{l4d_ready_cfg_name}\n这模式太难了？使用!rmatch卸载当前配置，然后用!match选个新的逛街吧"
+        "chat"      "[{green}!{default}]当前模式：{lightgreen}{l4d_ready_cfg_name}\n{green}这模式太难了？使用!rmatch卸载当前配置，然后用!match选个新的逛街吧"
     }
     "4"
     {
-        "chat"      "{green}服务器群159923320，别忘记按H加入服务器组"
+        "chat"      "{green}服务器群159923320，别忘记按H加入服务器组\n"
     }
     "5"
     {
@@ -64,5 +64,9 @@
     "12"
     {
         "chat"      "{green}狠狠的锻炼！"
+    }
+    "13"
+    {
+        "chat"      "{green}姊妹药抗群：493349527 每天组织内战，提升技术\nSteam组搜索[Chikko Zonemod]加入"
     }
 }

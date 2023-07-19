@@ -27,7 +27,7 @@
     }
     "3"
     {
-        "chat"      "[{green}!{default}]当前模式：{lightgreen}{l4d_ready_cfg_name}\n{green}这模式太难了？使用!rmatch卸载当前配置，然后用!match选个新的逛街吧"
+        "chat"      "[{green}!{default}]当前模式：{lightgreen}{l4d_ready_cfg_name}\n这模式太难了？使用!rmatch卸载当前配置，然后用!match选个新的逛街吧"
     }
     "4"
     {

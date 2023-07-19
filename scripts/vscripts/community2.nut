@@ -47,22 +47,24 @@ DirectorOptions <-
 		return 0;
 	}
 
-	function ConvertZombieClass( iClass )
-	{
-		switch (iClass){
-        	case 1:
-        	case 3:
-        	    return 2;
-        	case 5:
-        	case 6:
-        	    return 4;
-		}
-		return iClass;
-	}	
 }
 
-
-
+function OnGameEvent_round_start_post_nav( params )
+{
+	local spawner = null;
+	while ( spawner = Entities.FindByClassname( spawner, "info_zombie_spawn" ) )
+	{
+		if ( spawner.IsValid() )
+		{
+			local population = NetProps.GetPropString( spawner, "m_szPopulation" );
+			
+			if ( population == "boomer" || population == "spitter" || population == "church" || population == "river_docks_trap" )
+				continue;
+			else
+				spawner.Kill();
+		}
+	}
+}
 
 MapData <-{
 	g_nSI 	= 3
@@ -75,7 +77,7 @@ function update_diff()
     local Si1p = (Convars.GetFloat("sss_1P")).tointeger()
 	local relax = (Convars.GetFloat("SS_Relax")).tointeger()
 	local dpslim = (Convars.GetFloat("SS_DPSSiLimit")).tointeger()
-
+	
 	local SpecialLimits = [0,0,0,0,0,0];
 	local index = 0;
 	local Sifix = Si1p;
@@ -133,19 +135,19 @@ function update_diff()
 		Convars.SetValue("director_special_original_offer_length", 30)
 	}
 
-    DirectorOptions.cm_SpecialRespawnInterval = timer
-    DirectorOptions.cm_SpecialSlotCountdownTime = timer
-    DirectorOptions.HunterLimit = SpecialLimits[0]
-    DirectorOptions.JockeyLimit = SpecialLimits[1]
-    DirectorOptions.SmokerLimit = SpecialLimits[2]
-    DirectorOptions.ChargerLimit = SpecialLimits[3]
-    DirectorOptions.SpitterLimit = SpecialLimits[4]
-	DirectorOptions.BoomerLimit = SpecialLimits[5]
+    DirectorOptions.cm_SpecialRespawnInterval <- timer
+    DirectorOptions.cm_SpecialSlotCountdownTime <- timer
+    DirectorOptions.HunterLimit = 0
+    DirectorOptions.JockeyLimit = 0
+    DirectorOptions.SmokerLimit = 0
+    DirectorOptions.ChargerLimit = 0
+    DirectorOptions.SpitterLimit = SpecialLimits[4] + SpecialLimits[0] + SpecialLimits[1]
+	DirectorOptions.BoomerLimit = SpecialLimits[5] + SpecialLimits[2] + SpecialLimits[3]
     MapData.g_nSI = Si1p
     
-    DirectorOptions.cm_BaseSpecialLimit = MapData.g_nSI
-    DirectorOptions.cm_MaxSpecials      = MapData.g_nSI
-    DirectorOptions.DominatorLimit      = MapData.g_nSI
+    DirectorOptions.cm_BaseSpecialLimit <- MapData.g_nSI
+    DirectorOptions.cm_MaxSpecials      <- MapData.g_nSI
+    DirectorOptions.DominatorLimit      <- MapData.g_nSI
 }
 
 update_diff();

@@ -248,6 +248,17 @@
      * 锁定专家难度
      * 武器配置：v3
       </details>
+
+   * *community2 感染季节|绝境14特*
+      > 基于coop_base
+     <details>
+      <summary>配置细节</summary>
+
+      * 默认刷特：基础14只15s，允许Relax阶段
+      * ~~牛冲锋带有减伤/HT空爆伤害恢复~~ 但是没牛没HT
+      * 3倍弹药
+      * 锁定专家难度
+      </details>
 # 配置细节
 
    * 每类特感的数量

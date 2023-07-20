@@ -13,7 +13,7 @@
 	"HopNotification"
 	{
 		"#format"	"{1:s},{2:s}"
-		"chi"		"{1} 准备跳转至 {2} ! \n 如果提示{green}Please configure a key to accept\n请在控制台输入{blue}askconnect_accept\n{lightgreen}请知悉, 中途加入其他服务器可能会直接返回主界面, 建议额外记住ip使用connect直连!"
+		"chi"		"{1} 准备跳转至 {2} !"
 		"en"		"{1} is about to hop to {2} !"
 	}
 	"Advert"

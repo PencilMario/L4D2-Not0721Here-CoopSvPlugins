@@ -2,7 +2,7 @@
 #pragma newdecls required
 #include <sourcemod>
 #include <socket>
-
+#include <colors>
 #define PLUGIN_VERSION "1.0.2"
 #define PLUGIN_DESCRIPTION "Provides live server info with join option"
 #define MAX_SERVERS 10
@@ -90,7 +90,7 @@ public void OnPluginStart() {
 		"Advertisement interval: advertise a server every x minute(s)"
 	);
 
-	AutoExecConfig(true, "plugin.serverhop");
+	//AutoExecConfig(true, "plugin.serverhop");
 
 	Handle timer = CreateTimer(REFRESH_TIME, RefreshServerInfo, _, TIMER_REPEAT);
 
@@ -259,7 +259,7 @@ public int MenuConfirmHandler(Menu menu, MenuAction action, int param1, int para
 		if (g_cvarBroadcastHops.BoolValue) {
 			char clientName[MAX_NAME_LENGTH];
 			GetClientName(param1, clientName, sizeof(clientName));
-			PrintToChatAll("\x01[\x03hop\x01] %t", "HopNotification", clientName, g_sServer[param1]);
+			CPrintToChatAll("\x01[\x03hop\x01] %t", "HopNotification", clientName, g_sServer[param1]);
 		}
 	}
 	g_sAddress[param1][0] = '\0';
@@ -311,7 +311,7 @@ public void Advertise() {
 	}
 
 	if (strlen(g_sServerInfo[g_iAdvertCount]) > 0) {
-		PrintToChatAll("\x01[\x03hop\x01] %t", "Advert", g_sServerInfo[g_iAdvertCount], trigger);
+		CPrintToChatAll("\x01[\x03hop\x01] %t", "Advert", g_sServerInfo[g_iAdvertCount], trigger);
 
 		if (++g_iAdvertCount >= g_iServerCount) {
 			g_iAdvertCount = 0;

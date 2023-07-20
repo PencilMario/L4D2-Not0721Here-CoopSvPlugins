@@ -86,7 +86,7 @@ public void OnPluginStart() {
 	);
 	g_cvarAdvert_Interval = CreateConVar(
 		"sm_hop_advertisement_interval",
-		"1",
+		"5",
 		"Advertisement interval: advertise a server every x minute(s)"
 	);
 
@@ -246,7 +246,15 @@ public int Menu_Handler(Menu menu, MenuAction action, int param1, int param2) {
 
 public int MenuConfirmHandler(Menu menu, MenuAction action, int param1, int param2) {
 	if (param2 == 3) {
-		ClientCommand(param1, "redirect %s", g_sAddress[param1]);
+		//ClientCommand(param1, "redirect %s", g_sAddress[param1]);
+		    // join confirmation dialog
+			char address[MAX_STR_LEN];
+    		Handle kv = CreateKeyValues( "menu" );
+    		KvSetString( kv, "time", "10" );
+    		Format( address, MAX_STR_LEN, "%s", g_sAddress[param1]);
+    		KvSetString( kv, "title", address );
+    		CreateDialog( param1, kv, DialogType_AskConnect );
+    		CloseHandle( kv );
 		// broadcast to all
 		if (g_cvarBroadcastHops.BoolValue) {
 			char clientName[MAX_NAME_LENGTH];

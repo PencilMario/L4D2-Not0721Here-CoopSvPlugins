@@ -223,7 +223,7 @@ public int Menu_Handler(Menu menu, MenuAction action, int param1, int param2) {
 		g_sServer[param1] = g_sServerInfo[serverNum];
 
 		if (!g_bConnectedFromFavorites[param1]) {
-			PrintToChat(param1, "\x01[\x03ServerHop\x01] Due to Valve game change, clients must connect via favorites to be redirected by server.");
+			PrintToChat(param1, "\x01[\x03ServerHop\x01] 因为Valve的修改, 你必须使用connect指令进入本服务器才能通过本插件进入其他服务器");
 			PrintToChat(param1, "\x01[\x03ServerHop\x01] %s:\x03 %s", g_sServer[param1], g_sAddress[param1]);
 			return;
 		}
@@ -231,10 +231,10 @@ public int Menu_Handler(Menu menu, MenuAction action, int param1, int param2) {
 		Panel panel = new Panel();
 		panel.SetTitle(menuTitle);
 		panel.DrawText(g_sServerInfo[serverNum]);
-		panel.DrawText("Is this correct?");
+		panel.DrawText("以上信息正确吗?");
 		panel.CurrentKey = 3;
-		panel.DrawItem("Accept");
-		panel.DrawItem("Decline");
+		panel.DrawItem("正确");
+		panel.DrawItem("算了");
 		panel.Send(param1, MenuConfirmHandler, 15);
 
 		delete panel;
@@ -260,6 +260,7 @@ public int MenuConfirmHandler(Menu menu, MenuAction action, int param1, int para
 			char clientName[MAX_NAME_LENGTH];
 			GetClientName(param1, clientName, sizeof(clientName));
 			CPrintToChatAll("\x01[\x03hop\x01] %t", "HopNotification", clientName, g_sServer[param1]);
+			CPrintToChat(param1, "\x01[\x03hop\x01] 请返回主界面后, 使用指令{lightgreen}askconnect_accept{default}连接服务器");
 		}
 	}
 	g_sAddress[param1][0] = '\0';

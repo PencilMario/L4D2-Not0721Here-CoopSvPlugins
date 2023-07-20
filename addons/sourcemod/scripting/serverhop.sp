@@ -261,6 +261,7 @@ public int MenuConfirmHandler(Menu menu, MenuAction action, int param1, int para
 			GetClientName(param1, clientName, sizeof(clientName));
 			CPrintToChatAll("\x01[\x03hop\x01] %t", "HopNotification", clientName, g_sServer[param1]);
 			CPrintToChat(param1, "\x01[\x03hop\x01] 请返回主界面后, 使用指令{lightgreen}askconnect_accept{default}连接服务器");
+			CPrintToChat(param1, "直接输入也可以，但可能会直接返回主界面");
 		}
 	}
 	g_sAddress[param1][0] = '\0';

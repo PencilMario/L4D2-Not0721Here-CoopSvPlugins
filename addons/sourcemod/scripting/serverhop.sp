@@ -201,7 +201,7 @@ public Action ServerMenu(int client) {
 	menu.SetTitle(menuTitle);
 	int host = GetConVarInt(FindConVar("hostport"));
 	for (int i = 0; i < g_iServerCount; i++) {
-		if (strlen(g_sServerInfo[i]) > 0 || g_iServerPort[i] != host) {
+		if (strlen(g_sServerInfo[i]) > 0 && g_iServerPort[i] != host) {
 			IntToString(i, serverNumStr, sizeof(serverNumStr));
 			menu.AddItem(serverNumStr, g_sServerInfo[i]);
 		}

@@ -24,15 +24,17 @@ public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max
 #define HOSTNAME_CONFIG "data/hostname.txt"
 ConVar cv_hostname;
 char g_hostname[200];
+ConVar cv_configname;
 
 public void OnPluginStart()
 {
+	cv_configname = FindConVar("l4d_ready_cfg_name");
+	cv_configname.AddChangeHook(OnCvarChanged);
 	SetHostName();
 }
 
 public void SetHostName()
 {
-	ConVar cv_configname = FindConVar("l4d_ready_cfg_name");
 	char cfgname[64];
 	if (cv_configname != null) cv_configname.GetString(cfgname, sizeof(cfgname));
 	KeyValues kv_hostname = new KeyValues("hostname");
@@ -58,7 +60,9 @@ public void SetHostName()
 	cv_hostname.SetString(name);
 
 }
-
+public void OnCvarChanged(ConVar convar, const char[] oldValue, const char[] newValue){
+	SetHostName();
+}
 public void OnConfigsExecuted()
 {
 	cv_hostname.SetString(g_hostname);

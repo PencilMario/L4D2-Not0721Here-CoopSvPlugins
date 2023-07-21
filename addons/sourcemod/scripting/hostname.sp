@@ -27,14 +27,6 @@ char g_hostname[200];
 
 public void OnPluginStart()
 {
-	SetHostName();
-}
-
-public void SetHostName()
-{
-	ConVar cv_configname = FindConVar("l4d_ready_cfg_name");
-	char cfgname[64];
-	if (cv_configname != null) cv_configname.GetString(cfgname, sizeof(cfgname));
 	KeyValues kv_hostname = new KeyValues("hostname");
 	ConVar cv_hostport = FindConVar("hostport");
 	cv_hostname	= FindConVar("hostname");
@@ -53,10 +45,7 @@ public void SetHostName()
 	FormatEx(port, sizeof(port), "%d", cv_hostport.IntValue);
 	kv_hostname.JumpToKey(port);
 	kv_hostname.GetString("hostname", g_hostname, sizeof(g_hostname), "Left 4 Dead 2");
-	char name[128];
-	Format(name, sizeof(name), "%s|%s", g_hostname, cfgname);
-	cv_hostname.SetString(name);
-
+	cv_hostname.SetString(g_hostname);
 }
 
 public void OnConfigsExecuted()

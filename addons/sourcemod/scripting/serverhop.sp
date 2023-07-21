@@ -71,7 +71,7 @@ public void OnPluginStart() {
 	);
 	g_cvarServerFormat = CreateConVar(
 		"sm_hop_serverformat",
-		"%name - %map (%numplayers/%maxplayers)",
+		"%hostname - %map (%numplayers/%maxplayers)",
 		"Defines how the server info should be presented"
 	);
 	g_cvarBroadcastHops = CreateConVar(

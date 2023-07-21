@@ -199,9 +199,9 @@ public Action ServerMenu(int client) {
 	Menu menu = new Menu(Menu_Handler, MENU_ACTIONS_DEFAULT);
 	Format(menuTitle, sizeof(menuTitle), "%T", "SelectServer", client);
 	menu.SetTitle(menuTitle);
-
+	int host = GetConVarInt(FindConVar("hostport"));
 	for (int i = 0; i < g_iServerCount; i++) {
-		if (strlen(g_sServerInfo[i]) > 0) {
+		if (strlen(g_sServerInfo[i]) > 0 || g_iServerPort[i] != host) {
 			IntToString(i, serverNumStr, sizeof(serverNumStr));
 			menu.AddItem(serverNumStr, g_sServerInfo[i]);
 		}
@@ -304,14 +304,16 @@ public void Advertise() {
 	char trigger[MAX_STR_LEN];
 	g_cvarHopTrigger.GetString(trigger, sizeof(trigger));
 
+	int host = GetConVarInt(FindConVar("hostport"));
+
 	// skip servers being marked as down
-	while (strlen(g_sServerInfo[g_iAdvertCount]) == 0) {
+	while (strlen(g_sServerInfo[g_iAdvertCount] ) == 0) {
 		if (++g_iAdvertCount >= g_iServerCount) {
 			g_iAdvertCount = 0;
 			break;
 		}
 	}
-
+	if (g_iServerPort[g_iAdvertCount] == host) return;
 	if (strlen(g_sServerInfo[g_iAdvertCount]) > 0) {
 		CPrintToChatAll("\x01[\x03hop\x01] %t", "Advert", g_sServerInfo[g_iAdvertCount], trigger);
 

@@ -307,13 +307,14 @@ public void Advertise() {
 	int host = GetConVarInt(FindConVar("hostport"));
 
 	// skip servers being marked as down
-	while (strlen(g_sServerInfo[g_iAdvertCount] ) == 0) {
+	while (strlen(g_sServerInfo[g_iAdvertCount] ) == 0 || g_iServerPort[g_iAdvertCount] == host) {
 		if (++g_iAdvertCount >= g_iServerCount) {
 			g_iAdvertCount = 0;
 			break;
 		}
+		
 	}
-	if (g_iServerPort[g_iAdvertCount] == host) return;
+	
 	if (strlen(g_sServerInfo[g_iAdvertCount]) > 0) {
 		CPrintToChatAll("\x01[\x03hop\x01] %t", "Advert", g_sServerInfo[g_iAdvertCount], trigger);
 

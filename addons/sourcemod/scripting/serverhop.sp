@@ -86,7 +86,7 @@ public void OnPluginStart() {
 	);
 	g_cvarAdvert_Interval = CreateConVar(
 		"sm_hop_advertisement_interval",
-		"5",
+		"2",
 		"Advertisement interval: advertise a server every x minute(s)"
 	);
 

@@ -1,14 +1,12 @@
 #include <sourcemod>
 #include <left4dhooks>
 #include <l4d2util_survivors>
-#include <sirputil/sirp_general.sp>
 #define GAMEDATA_FILE "l4d_predict_tank_glow"
 #include <tankglow/tankglow_defines>
 CZombieManager ZombieManager;
 #define WARMBOT_STEAMID "STEAM_1:1:695917591"
 bool g_bMapChanged;
 float g_vTeleportPos[3], g_vTepeportAng[3];
-int g_iCountDown;
 enum FirstMapList
 {
     C1,C2,C3,C4,C5,C6,C7,C8,C9,C19,C11,C12,C13,C14,
@@ -38,30 +36,21 @@ public void OnPluginStart(){
     RegServerCmd("sm_warptoper", CMD_TeleportAllSurvivortoPercent);
 }
 
-public Action CMD_TeleportAllSurvivortoPercent(int args){
+public Action CMD_TeleportAllSurvivortoPercent(int client, int args){
     char buf[32];
     GetCmdArg(1, buf, sizeof(buf));
     float fTarget = StringToFloat(buf);
-    CreateTimer(1.0, Timer_TeleportToPerAll, fTarget, TIMER_REPEAT);
-    return Plugin_Handled;
-}
-
-public Action Timer_TeleportToPerAll(Handle timer, float fTarget){
-    if (g_iCountDown > 0){
-        CPrintToChatAll("%s即将在 {blue}%is {default}后传送所有生还者", SP_TAG, g_iCountDown--);
-        return Plugin_Continue;
-    }
     fTarget = (fTarget > 0.1) ? fTarget : 0.1;
     if (fTarget >= 1.0){
         ServerCommand("sm_svcmd warp_all_survivors_to_checkpoint");
-        return Plugin_Stop;
+        return Plugin_Handled;
     }
     for (int i = 1; i <= MaxClients; i++){
         if (IsClientInGame(i)){
             if (GetClientTeam(i) == L4D2Team_Survivor) ProcessSurPredictModel(i, g_vTeleportPos, g_vTepeportAng, fTarget);
         }
     }
-    return Plugin_Stop;
+    return Plugin_Handled;
 }
 
 public void OnClientAuthorized(iTarget, const char[] strTargetSteamId)

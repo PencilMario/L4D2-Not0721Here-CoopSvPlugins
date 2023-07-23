@@ -241,6 +241,18 @@ methodmap Logger __nullable__
         public set(LogType value) { LoggerData[this.index].Ignore_Level = value;}
     }
 
+    // log文件的大小(byte) 只对LoggerType_NewLogFile有效
+    property int FileSize{
+        public get() {
+            if (this.LogObjectType == LoggerType_NewLogFile){
+                char logpath[PLATFORM_MAX_PATH];
+                BuildPath(Path_SM, logpath, sizeof(logpath), "logs/%s.log", LoggerData[this.index].LogName);
+                return FileSize(logpath);
+            }
+            return -1;
+        }
+    }
+
     // 保存位置
     property LoggerType LogObjectType
     {

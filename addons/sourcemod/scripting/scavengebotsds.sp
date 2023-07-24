@@ -93,7 +93,7 @@ public OnPluginStart()
 
 	CreateTimer(0.1, BotUpdate, _, TIMER_REPEAT);
 	
-	AutoExecConfig(true, "l4d2_scavengebotsds");
+	//AutoExecConfig(true, "l4d2_scavengebotsds");
 }
 
 public OnMapStart()

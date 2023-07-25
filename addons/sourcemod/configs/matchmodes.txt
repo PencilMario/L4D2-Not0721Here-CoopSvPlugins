@@ -8,7 +8,7 @@
 		}
 		"coop_hard"
 		{
-			"name"		"逛街多特"
+			"name"		"逛街多人多特"
 		}
 		"coop_fire"
 		{

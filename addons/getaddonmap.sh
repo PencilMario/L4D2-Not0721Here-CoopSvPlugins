@@ -42,7 +42,7 @@ file_list=('B计划.rar' 'CEDA狂热.rar' 'F18之路.rar' 'ZMB13.rar' 'ZPTZ.rar'
 for file in "${file_list[@]}"
 do
     echo "正在下载 $file"
-    aria2c -x 16 "$base_url$file"
+    aria2c -x 16 --spilt 16 "$base_url$file"
     unrar x -o+ "$file" 
     rm "$file"
     echo "已完成 $file"

@@ -45,7 +45,7 @@ for file in "${file_list[@]}"
 do
     if [ ! -f "$file" ]; then # 如果文件不存在
         echo "正在下载 $file"
-        aria2c -x 16 -s 16 "$base_url$file"
+        aria2c -x 16 -s 16 -k 1M "$base_url$file"
         unrar x -o+ "$file" 
         rm "$file"
         touch "$file"

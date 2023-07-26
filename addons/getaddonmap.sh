@@ -43,12 +43,12 @@ file_list=('B计划.rar' 'CEDA狂热.rar' 'F18之路.rar' 'ZMB13.rar' 'ZPTZ.rar'
     )
 for file in "${file_list[@]}"
 do
-    if [ ! -f "$file" ]; then # 如果文件不存在
+    if [ ! -f "fin_$file" ]; then # 如果文件不存在
         echo "正在下载 $file"
         aria2c -x 16 -s 16 -k 1M "$base_url$file"
         unrar x -o+ "$file" 
         rm "$file"
-        touch "$file"
+        touch "fin_$file"
     fi
     echo "已完成 $file"
 done

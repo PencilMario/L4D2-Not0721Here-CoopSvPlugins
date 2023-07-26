@@ -2,7 +2,7 @@
 # 这是一个脚本，用curl命令从http://sp2.0721play.icu/d/L4D2相关/MOD/战役图/下载文件
 
 sudo apt install unrar -y
-sudo apt install axel -y
+sudo apt install aria2 -y
 base_url="http://sp2.0721play.icu/d/L4D2相关/MOD/战役图/"
 file_list=('B计划.rar' 'CEDA狂热.rar' 'F18之路.rar' 'ZMB13.rar' 'ZPTZ.rar' 
     '七小时后.rar' '万里.rar' '不再有工业区v4.7.rar' 
@@ -41,7 +41,7 @@ file_list=('B计划.rar' 'CEDA狂热.rar' 'F18之路.rar' 'ZMB13.rar' 'ZPTZ.rar'
 for file in "${file_list[@]}"
 do
     echo "正在下载 $file"
-    axel -n 12 "$base_url$file"
+    aria2c -x 16 "$base_url$file"
     unrar x -o+ "$file" 
     rm "$file"
     echo "已完成 $file"

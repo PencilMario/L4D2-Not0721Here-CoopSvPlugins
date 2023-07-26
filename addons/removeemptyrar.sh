@@ -1,1 +1,1 @@
-find . -name "*.rar" -exec rm {} \;
+find . -name "*.rar" -exec rm -f {} \;

@@ -1,6 +1,6 @@
 #!/bin/bash
 # 这是一个脚本，用curl命令从http://sp2.0721play.icu/d/L4D2相关/MOD/战役图/下载文件
-
+# 请在你的addons文件夹中放置并执行该脚本
 sudo apt install unrar -y
 sudo apt install aria2 -y
 base_url="http://sp2.0721play.icu/d/L4D2相关/MOD/战役图/"

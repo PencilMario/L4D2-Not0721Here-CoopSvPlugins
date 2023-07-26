@@ -8,7 +8,7 @@ file_list=('B计划.rar' 'CEDA狂热.rar' 'F18之路.rar' 'ZMB13.rar' 'ZPTZ.rar'
     '不寒而栗v1.rar' '丧尸侵袭.rar' '乐高运动.rar' '乡村之旅.rar' '二零一九周年纪念版.rar' '亡灵区.rar' '传送门2地下.rar' 
     '佩萨罗.rar' '佩萨罗2.rar' '停电的地下室.rar' '八四区.rar' '公路杀手.rar' '关键时刻v1.rar' '再见了南宁v5.3.rar' 
     '再见了晨茗.rar' '冬日低语.rar' '冰点.rar' '别掉下去圣诞版.rar' '北卡罗来纳州的公路修复版.rar' '北极.rar' '十七号城市.rar' 
-    '午夜油井(单章 节).rar' '午夜铁路.rar' '半条命2十七号公路.rar' '去年夏天.rar' '古墓亡影.rar' '只此一路.rar' '可乐之塔.rar' 
+    '午夜油井(单章节).rar' '午夜铁路.rar' '半条命2十七号公路.rar' '去年夏天.rar' '古墓亡影.rar' '只此一路.rar' '可乐之塔.rar' 
     '命中注定v1.rar' '回到学校完整版v1.06.rar' '地狱之路.rar' '地狱城市.rar' '坠入死亡.rar' '城市中心启示录扩展版.rar' 
     '城市航班.rar' '城郊惊魂.rar' '夜惊.rar' '大坝.rar' '大坝2导演剪辑版.rar' '大坝的使命修复版.rar' '大阪感染2.rar' 
     '天堂可待2.rar' '天堂可待2修复版v16.rar' '太平间v8.rar' '奥本计划2.rar' '完美逃脱2.rar' '实验室024(V1.4).rar' '封锁.rar' 
@@ -39,6 +39,7 @@ file_list=('B计划.rar' 'CEDA狂热.rar' 'F18之路.rar' 'ZMB13.rar' 'ZPTZ.rar'
     )
 for file in "${file_list[@]}"
 do
+    echo "正在下载 $file"
     curl -L -O "$base_url$file"
     unrar x "$file" && rm "$file"
 done

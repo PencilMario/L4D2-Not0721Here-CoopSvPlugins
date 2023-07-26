@@ -2,6 +2,7 @@
 # 这是一个脚本，用curl命令从http://sp2.0721play.icu/d/L4D2相关/MOD/战役图/ 下载文件
 # 请在你的addons文件夹中放置并执行该脚本
 # 地图可在 http://sp2.0721play.icu/L4D2相关/MOD/战役图/ 获取
+# .fin文件表示该mod下载完成，以后的下载将会跳过该文件
 sudo apt install unrar -y
 sudo apt install aria2 -y
 base_url="http://sp2.0721play.icu/d/L4D2相关/MOD/战役图/"
@@ -41,9 +42,12 @@ file_list=('B计划.rar' 'CEDA狂热.rar' 'F18之路.rar' 'ZMB13.rar' 'ZPTZ.rar'
     )
 for file in "${file_list[@]}"
 do
-    echo "正在下载 $file"
-    aria2c -x 16 --spilt 16 "$base_url$file"
-    unrar x -o+ "$file" 
-    rm "$file"
+    if [ -f "$file" ]; then # 如果文件不存在
+        echo "正在下载 $file"
+        aria2c -x 16 -s 16 "$base_url$file"
+        unrar x -o+ "$file" 
+        rm "$file"
+        touch "$file"
+    fi
     echo "已完成 $file"
 done

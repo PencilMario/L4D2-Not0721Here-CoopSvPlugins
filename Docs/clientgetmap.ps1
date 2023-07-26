@@ -4,7 +4,8 @@
 # mod下载完成会创建一个空的.rar文件防止再次下载，以后的下载将会跳过该文件
 # 使用指令 del /s /q *.rar 删除所有.rar文件
 # 不定期更新：
-# Linux：
+# Linux：https://github.com/PencilMario/L4D2-Not0721Here-CoopSvPlugins/blob/main/addons/getaddonmap.sh
+# Windows：https://github.com/PencilMario/L4D2-Not0721Here-CoopSvPlugins/blob/main/Docs/clientgetmap.ps1
 winget install aria2.aria2
 try {
     aria2c.exe

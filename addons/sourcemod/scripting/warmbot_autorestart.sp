@@ -57,7 +57,7 @@ public void OnClientAuthorized(iTarget, const char[] strTargetSteamId)
 {
     if (StrEqual(strTargetSteamId, WARMBOT_STEAMID)) 
     {
-        if (!g_bMapChanged) CreateTimer(60.0, Timer_CheckAndRestartNewMap);
+        if (!g_bMapChanged) CreateTimer(30.0, Timer_CheckAndRestartNewMap);
         else CreateTimer(5.0, Timer_TeleportWarmBot, _, TIMER_REPEAT|TIMER_FLAG_NO_MAPCHANGE);
     }
 }

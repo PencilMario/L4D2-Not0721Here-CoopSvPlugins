@@ -36,7 +36,7 @@ public void OnPluginStart(){
     RegServerCmd("sm_warptoper", CMD_TeleportAllSurvivortoPercent);
 }
 
-public Action CMD_TeleportAllSurvivortoPercent(int client, int args){
+public Action CMD_TeleportAllSurvivortoPercent(int args){
     char buf[32];
     GetCmdArg(1, buf, sizeof(buf));
     float fTarget = StringToFloat(buf);
@@ -57,7 +57,7 @@ public void OnClientAuthorized(iTarget, const char[] strTargetSteamId)
 {
     if (StrEqual(strTargetSteamId, WARMBOT_STEAMID)) 
     {
-        if (!g_bMapChanged) CreateTimer(30.0, Timer_CheckAndRestartNewMap);
+        if (!g_bMapChanged) CreateTimer(25.0, Timer_CheckAndRestartNewMap);
         else CreateTimer(5.0, Timer_TeleportWarmBot, _, TIMER_REPEAT|TIMER_FLAG_NO_MAPCHANGE);
     }
 }

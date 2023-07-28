@@ -4,12 +4,16 @@
 # 地图可在 http://sp2.0721play.icu/L4D2相关/MOD/战役图/ 获取
 # mod下载完成会创建一个空的.rar文件防止再次下载，以后的下载将会跳过该文件
 # 使用指令 find . -name "*.rar" -exec rm -f {} \; 删除所有.rar文件
+
+# 2023.7.28
+# 移除 B计划/活死人黎明未剪辑版/二零一九周年纪念版 - 存在模式脚本
+
 sudo apt install unrar -y
 sudo apt install aria2 -y
 base_url="http://sp2.0721play.icu/d/L4D2相关/MOD/战役图/"
-file_list=('B计划.rar' 'CEDA狂热.rar' 'F18之路.rar' 'ZMB13.rar' 'ZPTZ.rar' 
+file_list=('CEDA狂热.rar' 'F18之路.rar' 'ZMB13.rar' 'ZPTZ.rar' 
     '七小时后.rar' '万里.rar' '不再有工业区v4.7.rar' 
-    '不寒而栗v1.rar' '丧尸侵袭.rar' '乐高运动.rar' '乡村之旅.rar' '二零一九周年纪念版.rar' '亡灵区.rar' '传送门2地下.rar' 
+    '不寒而栗v1.rar' '丧尸侵袭.rar' '乐高运动.rar' '乡村之旅.rar' '亡灵区.rar' '传送门2地下.rar' 
     '佩萨罗.rar' '佩萨罗2.rar' '停电的地下室.rar' '八四区.rar' '公路杀手.rar' '关键时刻v1.rar' '再见了南宁v5.3.rar' 
     '再见了晨茗.rar' '冬日低语.rar' '冰点.rar' '别掉下去圣诞版.rar' '北卡罗来纳州的公路修复版.rar' '北极.rar' '十七号城市.rar' 
     '午夜油井(单章节).rar' '午夜铁路.rar' '半条命2十七号公路.rar' '去年夏天.rar' '古墓亡影.rar' '只此一路.rar' '可乐之塔.rar' 
@@ -26,7 +30,7 @@ file_list=('B计划.rar' 'CEDA狂热.rar' 'F18之路.rar' 'ZMB13.rar' 'ZPTZ.rar'
     '死亡县城.rar' '死亡商场.rar' '死亡回声2修复版.rar' '死亡回声2原版.rar' '死亡地带.rar' '死亡尖叫2.rar' '死亡度假.rar' 
     '死亡森林.rar' '死亡狂奔v7.rar' '死亡目的地v3.rar' '死亡竞技场2.rar' '死亡缠绕2.rar' '死亡蓝旗2.rar' '死亡逃脱.rar' 
     '死亡陷阱.rar' '死亡高校.rar' '死囚区.rar' '死期将至.rar' '死神天降.rar' '死胡同.rar' '死里逃生.rar' '汽油狂热.rar' 
-    '治愈.rar' '治愈2.rar' '活死人黎明导演剪辑版v7.rar' '活死人黎明未剪辑版.rar' '流浪者营地(单章节).rar' '浴室.rar' 
+    '治愈.rar' '治愈2.rar' '活死人黎明导演剪辑版v7.rar' '流浪者营地(单章节).rar' '浴室.rar' 
     '海岸救援.rar' '深埋.rar' '深埋v1.8.rar' '漆黑的台面.rar' '激流.rar' '灰色.rar' '燃烧之下.rar' '狂热的梦v2.1.rar' 
     '玛雅遗址v3.rar' ' 玩具世界.rar' '生还之锋重制版.rar' '痛苦列车v3(单章节).rar' '瘟疫传说(新版).rar' '白森林.rar' 
     '盐井地狱公园.rar' '真方氏.rar' '稀释v1.rar' '红色城市.rar' '终生监禁.rar' '绝境逢生.rar' '绝对零度.rar' 

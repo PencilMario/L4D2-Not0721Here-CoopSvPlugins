@@ -28,8 +28,13 @@ public void OnPluginStart(){
 public void OnEntityCreated(int iEntity, const char[] sClassname){
     if (StrEqual(HintEntityClassName[env_instructor_hint], sClassname)) {
         HintLog.info("实体：%s / %i 地图：%s", HintEntityClassName[env_instructor_hint], iEntity, curmap);
-        char hint_caption[128];
-        GetEntPropString(iEntity, Prop_Data, "hint_caption", hint_caption, sizeof(hint_caption));
-        HintLog.info("hint_caption: %s", hint_caption);
+        char buffer[128];
+        if (HasEntProp(iEntity, Prop_Send,"m_iszCaption"))
+        {
+            GetEntPropString(iEntity, Prop_Data, "m_iszCaption", buffer, sizeof(buffer));
+            HintLog.info("m_iszCaption(hint_caption): %s", buffer);
+        }else{
+            HintLog.info("实体无Prop: \"m_iszCaption\"");
+        }
     }
 }

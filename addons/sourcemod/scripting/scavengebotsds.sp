@@ -4,7 +4,7 @@
 #include <sdkhooks>
 
 #define PLUGIN_VERSION		"2.1"
-#define CVAR_FLAGS		FCVAR_PLUGIN|FCVAR_NOTIFY
+#define CVAR_FLAGS		FCVAR_NOTIFY
 #define CONFIG_DATA		"data/scavengebotsds.cfg"
 #define CONFIG_FINALE_DATA		"data/scavengefinalebotsds.cfg"
 #define CONFIG_SCAVENGE_DATA		"data/scavengegamebotsds.cfg"
@@ -15,6 +15,9 @@ static bool:bScavengeBotsDS = false;
 static Handle:hScavengeBuddy = INVALID_HANDLE;
 static bool:bScavengeBuddy = false;
 
+static Handle:hScavengeEscort = INVALID_HANDLE;
+static bool:bScavengeEscort = true;
+
 static BotAction[MAXPLAYERS+1];
 static BotTarget[MAXPLAYERS+1];
 static BotAIUpdate[MAXPLAYERS+1];
@@ -22,6 +25,7 @@ static Float:BotCheckPos[MAXPLAYERS+1][3];
 static BotAbortTick[MAXPLAYERS+1];
 static BotUseGasCan[MAXPLAYERS+1];
 static BotBuddy[MAXPLAYERS+1];
+static HumanBuddy[MAXPLAYERS+1];
 static Float:hpMultiplier;
 
 static GasNozzle;
@@ -67,6 +71,9 @@ public OnPluginStart()
 	hScavengeBuddy = CreateConVar("scavengebotsds_buddy", "0", "Enable ScavengeBots Buddy System? 0=off, 1=on.", CVAR_FLAGS, true, 0.0, true, 1.0);
 	bScavengeBuddy = GetConVarBool(hScavengeBuddy);
 	
+	hScavengeEscort = CreateConVar("scavengebotsds_buddyWithHuman", "1", "Allow Bots to Buddy with Humans? 0=off, 1=on.", CVAR_FLAGS, true, 0.0, true, 1.0);
+	bScavengeEscort = GetConVarBool(hScavengeEscort);
+	
 	hpMultiplier = GetConVarFloat(FindConVar("sb_temp_health_consider_factor"));
 
 	HookEvent("finale_start", Finale_Start);
@@ -90,6 +97,7 @@ public OnPluginStart()
 
 	HookConVarChange(hScavengeBotsDS, ConVarChanged);
 	HookConVarChange(hScavengeBuddy, ConVarChanged);
+	HookConVarChange(hScavengeEscort, ConVarChanged);
 
 	CreateTimer(0.1, BotUpdate, _, TIMER_REPEAT);
 	
@@ -141,6 +149,10 @@ public ConVarChanged(Handle:convar, const String:oldValue[], const String:newVal
 	if (convar == hScavengeBuddy)
 	{
 		bScavengeBuddy = GetConVarBool(hScavengeBuddy);
+	}
+	if (convar == hScavengeEscort)
+	{
+		bScavengeEscort = GetConVarBool(hScavengeEscort);
 	}
 }
 public Action:Finale_Start(Handle:event, String:event_name[], bool:dontBroadcast)
@@ -273,6 +285,7 @@ stock ResetClientArrays(client)
 		BotCheckPos[client][i] = 0.0;
 	}
 	BotBuddy[client] = -1;
+	HumanBuddy[client] = -1;
 }
 stock LoadConfig()
 {
@@ -284,32 +297,32 @@ stock LoadConfig()
 		bScavengeInProgress = false;
 		return;
 	}
-	new Handle:File = CreateKeyValues("maps");
-	if (!FileToKeyValues(File, Path))
+	new Handle:cFile = CreateKeyValues("maps");
+	if (!FileToKeyValues(cFile, Path))
 	{
 		PrintToServer("ScavengeBotsDS Error: Failed to get maps from %s", Path);
 		bScavengeInProgress = false;
-		CloseHandle(File);
+		CloseHandle(cFile);
 		return;
 	}
 	decl String:Map[PLATFORM_MAX_PATH];
 	GetCurrentMap(Map, sizeof(Map));
-	if (!KvJumpToKey(File, Map))
+	if (!KvJumpToKey(cFile, Map))
 	{
 		PrintToServer("ScavengeBotsDS Error: Failed to get map from %s", Path);
 		bScavengeInProgress = false;
-		CloseHandle(File);
+		CloseHandle(cFile);
 		return;
 	}
 	if (FinaleHasStarted)
 	{
 		bScavengeInProgress = false;
-		CloseHandle(File);
+		CloseHandle(cFile);
 		return;
 	}
-	KvGetVector(File, "origin", NozzleOrigin2);
-	KvGetVector(File, "angles", NozzleAngles2);
-	CloseHandle(File);
+	KvGetVector(cFile, "origin", NozzleOrigin2);
+	KvGetVector(cFile, "angles", NozzleAngles2);
+	CloseHandle(cFile);
 }
 
 stock LoadFinaleConfig()
@@ -386,6 +399,7 @@ public Action:BotUpdate(Handle:timer)
 	{
 		for (new i=1; i<=MaxClients; i++)
 		{
+			updateBotBuddy(i);
 			if (IsBot(i))
 			{
 				BotAI(i);
@@ -545,7 +559,7 @@ assignBotGas(client, origin, maxDist)
 // Maintain Bot Buddy Pairings
 updateBotBuddy(client)
 {
-	if (bScavengeBuddy)
+	if (bScavengeBuddy && isScavengeActive())
 	{
 		// If this bot is alive, just double check we have a buddy assigned.
 		if (IsBot(client))
@@ -581,13 +595,106 @@ updateBotBuddy(client)
 					if (BotBuddy[i] != client)
 					{
 						BotBuddy[client] = -1;
-						BotBuddy[i] = -1;
 					}
 				}
 				if (client == i)
 				{
 					BotBuddy[client] = -1;
 				}
+			}
+		}
+		if (isTeammate(client))
+		{
+			updateHumanBuddy(client);
+		}
+	}
+}
+
+public updateHumanBuddy(client)
+{
+	if (!bScavengeEscort || !bScavengeBuddy)
+	{
+		return;
+	}
+	
+	// Humans only need to check if their bot buddy is still assigned to them.
+	if (IsHumanSurvivor(client) && HumanBuddy[client] >= 0)
+	{
+		if (!IsBot(HumanBuddy[client]) || HumanBuddy[HumanBuddy[client]] != client)
+		{
+			HumanBuddy[client] = -1;
+		}
+		return;
+	}
+	
+	// If this is not a bot, no further code logic is needed.
+	if (!IsBot(client))
+	{
+		return;
+	}
+	
+	new buddy = HumanBuddy[client];
+	
+	// If Bot has found a CPU buddy, detach from human buddy.
+	if (BotBuddy[client] != -1)
+	{
+		if (buddy != -1)
+		{
+			HumanBuddy[client] = -1;
+			HumanBuddy[buddy] = -1;
+		}
+		return;
+	}
+	
+	// If human buddy isn't human anymore, detach from this monster.
+	if (buddy > -1 && !IsHumanSurvivor(buddy))
+	{
+		HumanBuddy[client] = -1;
+		if (buddy > -1)
+		{
+			HumanBuddy[buddy] = -1;
+		}
+		buddy = -1;
+	}
+	
+	// If Bot has no human buddy, assign nearest one.
+	if (buddy == -1)
+	{
+		new dist = -1;
+		for (new i=1; i<=MaxClients; i++)
+		{
+			if (IsHumanSurvivor(i))
+			{
+				new dist2 = getPlayerDistance(client, i);
+				if (dist2 < dist || dist == -1)
+				{
+					buddy = i;
+					dist = dist2;
+				}
+			}
+		}
+		if (buddy > -1)
+		{
+			HumanBuddy[client] = buddy;
+			HumanBuddy[buddy] = client;
+		}
+		return;
+	}
+	
+	// If Bot already has a human buddy, re-assign if another human bumps into us.
+	if (buddy != -1)
+	{
+		for (new i = 1; i <= MaxClients; i++)
+		{
+			if (IsHumanSurvivor(i) && getPlayerDistance(client, i) < 100)
+			{
+				if (buddy != i)
+				{
+					HumanBuddy[client] = i;
+					HumanBuddy[buddy] = -1;
+					HumanBuddy[i] = client;
+				}
+				return;
 			}
 		}
 	}
@@ -664,17 +771,43 @@ public bool:isBuddyBusy(b)
 	return false;
 }
 
+public verifyGasTarget(client)
+{
+	new gas = BotTarget[client];
+	if (!IsHoldingGasCan(client) && IsGasCanOwned(gas))
+	{
+		BotTarget[client] = -1;
+	}
+}
+
 // Buddy Bot AI. Executes Buddy AI Logic and returns true if so. This function is not responsible for checking validity of buddies. Use updateBotBuddy() to maintain correct buddy pairings.
-public updateBuddyMove(client)
+public bool:updateBuddyMove(client)
 {
 	if (!bScavengeBuddy || !IsBot(client))
 	{
 		return false;
 	}
 	
+	// Verify gas can assignment is valid.
+	verifyGasTarget(client);
+	
 	new buddy = BotBuddy[client];
 	new leader = -1;
 	new escort = -1;
+	
+	// If Bot does not have a CPU Buddy, try to buddy with human.
+	if (buddy == -1 || !IsBot(buddy))
+	{
+		// If human buddies are allowed, function will transfer AI control to human-buddy logic.
+		if (bScavengeEscort)
+		{
+			return updateEscortMove(client);
+		}
+		else
+		{
+			return false;
+		}
+	}
 	
 	// Figure out which bot is leader.
 	if (client < buddy)
@@ -763,12 +896,81 @@ public updateBuddyMove(client)
 	return false;
 }
 
+// Buddy AI Logic for human-cpu pairings. Returns true if instructions are given to bots.
+public bool:updateEscortMove(client)
+{
+	new buddy = HumanBuddy[client];
+	if (!bScavengeEscort || !IsHumanSurvivor(buddy) || IsBot(BotBuddy[client]))
+	{
+		return false;
+	}
+	
+	// If bot has gas can and is near nozzle, let standard gas can logic control.
+	if (IsHoldingGasCan(client) && getEntityDistance(client, GasNozzle) < 500)
+	{
+		return false;
+	}
+	
+	// If assigned gas can is far away, unassign it.
+	if (!IsHoldingGasCan(client) && getEntityDistance(client, BotTarget[client]) > 750)
+	{
+		BotTarget[client] = -1;
+	}
+	
+	// If Human is far away, regroup with human.
+	if (getPlayerDistance(client, buddy) > 400)
+	{
+		moveToEntity(client, buddy);
+		return true;
+	}
+	
+	// If no gas can assignment, follow human. If human finds a new gas can, assign it to bot.
+	if (!IsHoldingGasCan(client) && BotTarget[client] == -1)
+	{
+		moveToEntity(client, buddy);
+		assignNearestGas(client, buddy, 100);
+		return true;
+	}
+	
+	return false;
+	
+}
+
+public getBuddy(client)
+{
+	if (bScavengeBuddy)
+	{
+		new b = -1;
+		b = BotBuddy[client];
+		if (IsBot(b))
+		{
+			return b;
+		}
+		else
+		{
+			if (bScavengeEscort)
+			{
+				b = HumanBuddy[client];
+				if (isTeammate(b))
+				{
+					return b;
+				}
+				else
+				{
+					return -1;
+				}
+			}
+		}
+	}
+	return -1;
+}
+
 stock bool:isBuddyNeeded(client)
 {
 	if (bScavengeBuddy)
 	{
-		new b = BotBuddy[client];
-		if (IsBot(b) && (IsPlayerIncap(b) || IsPlayerHeld(b)))
+		new b = getBuddy(client);
+		if (isTeammate(b) && (IsPlayerIncap(b) || IsPlayerHeld(b)))
 		{
 			return true;
 		}
@@ -790,13 +992,6 @@ stock BotAI(client)
 	if (IsBot(client) && bScavengeInProgress || IsBot(client) && bFinaleScavengeInProgress || IsBot(client) && bScavengeGameInProgress)
 	{
 		//PrintToChatAll("client %N, action %i, target %i", client, BotAction[client], BotTarget[client]);
-		
-		new b = -1;
-		if (bScavengeBuddy && BotAction[client] > -1)
-		{
-			updateBotBuddy(client);
-			b = BotBuddy[client];
-		}
 		
 		if (BotAction[client] == -1)
 		{
@@ -822,7 +1017,7 @@ stock BotAI(client)
 			if (!IsPlayerHeld(client) && !IsPlayerIncap(client))
 			{
 				// Buddy System instructions have priority and will interrupt non-buddy logic flow.
-				if (bScavengeBuddy && IsBot(b))
+				if (bScavengeBuddy)
 				{
 					if (updateBuddyMove(client))
 					{
@@ -881,39 +1076,6 @@ stock BotAI(client)
 						L4D2_RunScript("CommandABot({cmd=3,bot=GetPlayerFromUserID(%i)})", GetClientUserId(client));
 						return;
 					}
-					
-					new Float:Origin[3], Float:TOrigin[3], Float:SOrigin[3], Float:distance = 0.0, Float:storeddist = 0.0, storedent = 0;
-					GetEntPropVector(client, Prop_Send, "m_vecOrigin", Origin);
-					new entity = -1;
-					while ((entity = FindEntityByClassname(entity, "weapon_gascan")) != INVALID_ENT_REFERENCE)
-					{
-						if (IsValidGasCan(entity) && !IsGasCanOwned(entity))
-						{
-							GetEntPropVector(entity, Prop_Send, "m_vecOrigin", TOrigin);
-							distance = GetVectorDistance(Origin, TOrigin);
-							if (storeddist == 0.0 || storeddist > distance)
-							{
-								storedent = entity;
-								storeddist = distance;
-								GetEntPropVector(entity, Prop_Send, "m_vecOrigin", SOrigin);
-							}
-						}
-					}
-					if (storedent > 0 && IsValidGasCan(storedent) && !IsGasCanOwned(storedent))
-					{
-						BotTarget[client] = storedent;
-						L4D2_RunScript("CommandABot({cmd=1,pos=Vector(%f,%f,%f),bot=GetPlayerFromUserID(%i)})", SOrigin[0], SOrigin[1], SOrigin[2], GetClientUserId(client));
-						BotAction[client] = 1;
-						BotAIUpdate[client] = 10;
-						BotUseGasCan[client] = -1;
-						BotAbortTick[client] = 50;
-						GetClientAbsOrigin(client, BotCheckPos[client]);
-					}
-					else
-					{
-						BotAction[client] = -1;
-						L4D2_RunScript("CommandABot({cmd=3,bot=GetPlayerFromUserID(%i)})", GetClientUserId(client));
-					}
 				}
 			}
 		}
@@ -922,7 +1084,7 @@ stock BotAI(client)
 			decl Float:Origin[3], Float:TOrigin[3];
 			
 			// Buddy system logic interrupts non-buddy logic
-			if (bScavengeBuddy && IsBot(b))
+			if (bScavengeBuddy)
 			{
 				if (updateBuddyMove(client))
 				{
@@ -1039,7 +1201,7 @@ stock BotAI(client)
 		else if (BotAction[client] == 3)
 		{
 			// Buddy system logic interrupts non-buddy logic
-			if (bScavengeBuddy && IsBot(b))
+			if (bScavengeBuddy)
 			{
 				if (updateBuddyMove(client))
 				{
@@ -1191,8 +1353,8 @@ stock bool:IsAssistNeeded()
 			{
 				if (bScavengeBuddy && !isTankActive())
 				{
-					new b = BotBuddy[i];
-					if (IsBot(b) && !IsPlayerIncap(b) && !IsPlayerHeld(b) && getPlayerDistance(i, b) < 800)
+					new b = getBuddy(i);
+					if (isTeammate(b) && (BotBuddy[b] == i || HumanBuddy[b] == i) && !IsPlayerIncap(b) && !IsPlayerHeld(b) && getPlayerDistance(i, b) < 800)
 					{
 						return false;
 					}
@@ -1315,16 +1477,34 @@ public getEntityDistance(client, target)
 	return RoundToNearest(GetVectorDistance(selfPos, targetPos, false));
 }
 
-public bool:isInfectedSighted(client)
+public getVisibleInfected(client, iDist)
 {
 	for (new x = 1; x <= MaxClients; x++)
 	{
-		// If we see SI, we only worry if it is close enough, but if tank is active we should not take any chances.
-		new iDist = 750;
-		if (isInfected(x) && IsPlayerAlive(x) && isVisibleTo(client, x) && ((getPlayerDistance(client, x) < iDist) || isTankActive()))
+		if (isInfected(x) && IsPlayerAlive(x) && ((getPlayerDistance(client, x) < iDist)))
 		{
-			return true;
+			if (isVisibleTo(client, x))
+			{
+				return x;
+			}
 		}
+	}
+	return -1;
+}
+
+public bool:isInfectedSighted(client)
+{
+	// If Tank is active, we should be extra-cautious.
+	new iDist = 750;
+	if (isTankActive())
+	{
+		iDist = 1500;
+	}
+	
+	new si = getVisibleInfected(client, iDist);
+	if (si > -1)
+	{
+		return true;
 	}
 	return false;
 }
@@ -1347,15 +1527,10 @@ public bool:isCommonNearby(client, dist)
 	for (new iEntity = MaxClients+1; iEntity <= 2048; ++iEntity) {
 		if (IsCommonInfected(iEntity)
 			&& GetEntProp(iEntity, Prop_Data, "m_iHealth") > 0
-			&& isVisibleToEntity(iEntity, client))
+			&& getEntityDistance(client, iEntity) < dist)
 		{
-			new Float:selfPos[3];
-			new Float:commonPos[3];
 			
-			GetClientAbsOrigin(client, selfPos);
-			GetEntPropVector(iEntity, Prop_Data, "m_vecAbsOrigin", commonPos);
-			
-			if (RoundToNearest(GetVectorDistance(selfPos, commonPos, false)) < dist)
+			if (isVisibleToEntity(iEntity, client))
 			{
 				return true;
 			}
@@ -1419,7 +1594,7 @@ public bool:isLowHP(client)
 	
 	tempHP = tempHP * hpMultiplier;
 	
-	if (baseHP + tempHP <= 30)
+	if (baseHP + tempHP < 30)
 	{
 		return true;
 	}
@@ -1444,7 +1619,7 @@ public bool:shouldCover(client)
 	}
 	for (new i=1; i<=MaxClients; i++)
 	{
-		if (IsBot(i) && !IsPlayerIncap(i) && !IsPlayerHeld(i))
+		if (isTeammate(i) && !IsPlayerIncap(i) && !IsPlayerHeld(i))
 		{
 			if ((isLowHP(client) || isLowHP(i)) && isVisibleTo(client, i) && getPlayerDistance(client, i) < 500 && (hasHealthItem(client) || hasHealthItem(i)))
 			{
@@ -1492,6 +1667,18 @@ public bool:shouldBotFight(client)
 	}
 }
 
+public bool:isScavengeActive()
+{
+	if (!bScavengeInProgress && !bFinaleScavengeInProgress && !bScavengeGameInProgress)
+	{
+		return false;
+	}
+	else
+	{
+		return true;
+	}
+}
+
 public OnPreThink(client)
 {
 	if (bScavengeBotsDS)
@@ -1499,11 +1686,17 @@ public OnPreThink(client)
 		if (IsBot(client))
 		{
 			// Drop extra gas cans if scavenge ended. Only relevant in singleplayer where required gas cans are fewer than available.
-			if (IsBot(client) && IsGasCan(IsHoldingGasCan(client)) && !IsPlayerHeld(client) && !IsPlayerIncap(client) && !bScavengeInProgress && !bFinaleScavengeInProgress && !bScavengeGameInProgress)
+			if (IsBot(client) && IsGasCan(IsHoldingGasCan(client)) && !IsPlayerHeld(client) && !IsPlayerIncap(client) && !isScavengeActive())
 			{
 				new buttons = GetClientButtons(client);
 				SetEntProp(client, Prop_Data, "m_nButtons", buttons|IN_ATTACK);
 				ResetClientArrays(client);
+			}
+			
+			// If no Scavenge is active, stop any further Pre-Think code from executing.
+			if (!isScavengeActive)
+			{
+				return;
 			}
 			
 			// If bot loses track of holding gas can, we fix the assignment.
@@ -1514,8 +1707,18 @@ public OnPreThink(client)
 				BotAction[client] = 3;
 			}
 			
+			// If Bot is holding gas can while in danger, drop the gas can.
+			if (!IsPlayerHeld(client) && !IsPlayerIncap(client) && (BotAction[client] == 4 || BotAction[client] == 5))
+			{
+				if (IsGasCan(IsHoldingGasCan(client)))
+				{
+					new buttons = GetClientButtons(client);
+					SetEntProp(client, Prop_Data, "m_nButtons", buttons|IN_ATTACK);
+				}
+			}
+			
 			// Stop collecting cans if any significant danger to team is present
-			if (!IsPlayerHeld(client) && !IsPlayerIncap(client) && shouldBotFight(client))
+			if (!IsPlayerHeld(client) && !IsPlayerIncap(client) && (BotAction[client] != -1 && BotAction[client] != 4 && BotAction[client] != 5) && shouldBotFight(client))
 			{
 				// Drop can if special infected on the field and bot is not in SI kill-mode.
 				if (IsGasCan(IsHoldingGasCan(client)))
@@ -1524,20 +1727,17 @@ public OnPreThink(client)
 					SetEntProp(client, Prop_Data, "m_nButtons", buttons|IN_ATTACK);
 				}
 				
-				if (BotAction[client] != -1 && BotAction[client] != 4 && BotAction[client] != 5)
+				if (IsAssistNeeded())
 				{
-					if (IsAssistNeeded())
-					{
-						BotAction[client] = 4;
-					}
-					else
-					{
-						BotAction[client] = 5;
-						
-					}
-					BotAIUpdate[client] = 10;
-					L4D2_RunScript("CommandABot({cmd=3,bot=GetPlayerFromUserID(%i)})", GetClientUserId(client));
+					BotAction[client] = 4;
 				}
+				else
+				{
+					BotAction[client] = 5;
+					
+				}
+				BotAIUpdate[client] = 10;
+				L4D2_RunScript("CommandABot({cmd=3,bot=GetPlayerFromUserID(%i)})", GetClientUserId(client));
 			}
 			
 			// Double check Bot Update timers are active when we need them
@@ -1759,17 +1959,30 @@ stock bool:IsSurvivor(client)
 }
 stock bool:IsBot(client)
 {
-	for (int i = 1; i <= MaxClients; i++)
+	if (IsSurvivor(client) && IsFakeClient(client) && IsPlayerAlive(client))
 	{
-		if (IsSurvivor(client) && IsFakeClient(client) && IsPlayerAlive(client))
+		new String:classname[16];
+		GetEntityNetClass(client, classname, sizeof(classname));
+		if (StrEqual(classname, "SurvivorBot", false))
 		{
-			new String:classname[16];
-			GetEntityNetClass(client, classname, sizeof(classname));
-			if (StrEqual(classname, "SurvivorBot", false))
-			{
-				return true;
-			}
+			return true;
 		}
+	}
+	return false;
+}
+public bool:IsHumanSurvivor(client)
+{
+	if (IsSurvivor(client) && !IsFakeClient(client) && IsPlayerAlive(client))
+	{
+		return true;
+	}
+	return false;
+}
+public bool:isTeammate(client)
+{
+	if (IsSurvivor(client) && IsPlayerAlive(client))
+	{
+		return true;
 	}
 	return false;
 }

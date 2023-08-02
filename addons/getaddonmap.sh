@@ -9,7 +9,8 @@
 # 移除 B计划/活死人黎明未剪辑版/二零一九周年纪念版 - 存在模式脚本
 
 # 2023.8.2- (未实装)
-# 新增 抢救黎明/
+# 新增 抢救黎明/生化危机3缩短版
+# 移除 深埋 - 存在更新版本
 sudo apt install p7zip-full p7zip-rar -y
 sudo apt install aria2 -y
 base_url="http://sp2.0721play.icu/d/L4D2相关/MOD/战役图/"
@@ -33,7 +34,7 @@ file_list=('CEDA狂热.rar' 'F18之路.rar' 'ZMB13.rar' 'ZPTZ.rar'
     '死亡森林.rar' '死亡狂奔v7.rar' '死亡目的地v3.rar' '死亡竞技场2.rar' '死亡缠绕2.rar' '死亡蓝旗2.rar' '死亡逃脱.rar' 
     '死亡陷阱.rar' '死亡高校.rar' '死囚区.rar' '死期将至.rar' '死神天降.rar' '死胡同.rar' '死里逃生.rar' '汽油狂热.rar' 
     '治愈.rar' '治愈2.rar' '活死人黎明导演剪辑版v7.rar' '流浪者营地(单章节).rar' '浴室.rar' 
-    '海岸救援.rar' '深埋.rar' '深埋v1.8.rar' '漆黑的台面.rar' '激流.rar' '灰色.rar' '燃烧之下.rar' '狂热的梦v2.1.rar' 
+    '海岸救援.rar' '深埋v1.8.rar' '漆黑的台面.rar' '激流.rar' '灰色.rar' '燃烧之下.rar' '狂热的梦v2.1.rar' 
     '玛雅遗址v3.rar' ' 玩具世界.rar' '生还之锋重制版.rar' '痛苦列车v3(单章节).rar' '瘟疫传说(新版).rar' '白森林.rar' 
     '盐井地狱公园.rar' '真方氏.rar' '稀释v1.rar' '红色城市.rar' '终生监禁.rar' '绝境逢生.rar' '绝对零度.rar' 
     '绝对零度结局.rar' '绝望.rar' '绝非宿命2_v1.rar' '维也纳的呼唤.rar' '维也纳的呼唤2.rar' '维修站.rar' '能源危机.rar' 
@@ -46,7 +47,7 @@ file_list=('CEDA狂热.rar' 'F18之路.rar' 'ZMB13.rar' 'ZPTZ.rar'
     '阴暗森林v1.8(可能引起不适).rar' '阴霾降至.rar' '雪窝.rar' '音讯全无重制版.rar' '颤栗森林.rar' 
     '风暴挽歌(单章节).rar' '飞溅山之旅.rar' '马里奥探险.rar' '魔鬼山.rar' '黄金眼.rar' '黄金眼之007.rar' 
     '黎明.rar' '黑暗之塔枪手.rar' '黑暗水域v1.rar' '黑血2.rar'
-    'Rescue Dawn 抢救黎明.7z'
+    'Rescue Dawn 抢救黎明.7z' '生化危机3缩短版.7z'
     )
 for file in "${file_list[@]}"
 do

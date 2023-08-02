@@ -53,7 +53,7 @@ $file_list=('B计划.rar', 'CEDA狂热.rar', 'F18之路.rar', 'ZMB13.rar', 'ZPTZ
     '阴暗森林v1.8(可能引起不适).rar', '阴霾降至.rar', '雪窝.rar', '音讯全无重制版.rar', '颤栗森林.rar' ,
     '风暴挽歌(单章节).rar', '飞溅山之旅.rar', '马里奥探险.rar', '魔鬼山.rar', '黄金眼.rar', '黄金眼之007.rar' ,
     '黎明.rar', '黑暗之塔枪手.rar', '黑暗水域v1.rar', '黑血2.rar',
-    'Rescue Dawn 抢救黎明.7z'
+    'Rescue Dawn 抢救黎明.7z','生化危机3缩短版.7z'
     )
 
 foreach ($file in $file_list) {

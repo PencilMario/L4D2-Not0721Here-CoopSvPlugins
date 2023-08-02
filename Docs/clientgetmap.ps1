@@ -3,7 +3,7 @@
 # 地图可在 http://sp2.0721play.icu/L4D2相关/MOD/战役图/ 获取
 # mod下载完成会创建一个空的.rar文件防止再次下载，以后的下载将会跳过该文件
 # 使用指令 del /s /q *.rar 删除所有.rar文件
-# 不定期更新：
+# 不定期更新，更新记录请看Linux版：
 # Linux：https://github.com/PencilMario/L4D2-Not0721Here-CoopSvPlugins/blob/main/addons/getaddonmap.sh
 # Windows：https://github.com/PencilMario/L4D2-Not0721Here-CoopSvPlugins/blob/main/Docs/clientgetmap.ps1
 winget install aria2.aria2
@@ -52,7 +52,8 @@ $file_list=('B计划.rar', 'CEDA狂热.rar', 'F18之路.rar', 'ZMB13.rar', 'ZPTZ
     '逃离瓦伦西亚.rar', '逃离马拉巴v7.rar', '逃脱v1(蒸汽波风格).rar', '邪恶双眸.rar', '闪电突袭2.rar' ,
     '阴暗森林v1.8(可能引起不适).rar', '阴霾降至.rar', '雪窝.rar', '音讯全无重制版.rar', '颤栗森林.rar' ,
     '风暴挽歌(单章节).rar', '飞溅山之旅.rar', '马里奥探险.rar', '魔鬼山.rar', '黄金眼.rar', '黄金眼之007.rar' ,
-    '黎明.rar', '黑暗之塔枪手.rar', '黑暗水域v1.rar', '黑血2.rar'
+    '黎明.rar', '黑暗之塔枪手.rar', '黑暗水域v1.rar', '黑血2.rar',
+    'Rescue Dawn 抢救黎明.7z'
     )
 
 foreach ($file in $file_list) {

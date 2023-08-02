@@ -8,7 +8,9 @@
 # 2023.7.28
 # 移除 B计划/活死人黎明未剪辑版/二零一九周年纪念版 - 存在模式脚本
 
-sudo apt install unrar -y
+# 2023.8.2- (未实装)
+# 新增 抢救黎明/
+sudo apt install p7zip-full p7zip-rar -y
 sudo apt install aria2 -y
 base_url="http://sp2.0721play.icu/d/L4D2相关/MOD/战役图/"
 file_list=('CEDA狂热.rar' 'F18之路.rar' 'ZMB13.rar' 'ZPTZ.rar' 
@@ -44,13 +46,14 @@ file_list=('CEDA狂热.rar' 'F18之路.rar' 'ZMB13.rar' 'ZPTZ.rar'
     '阴暗森林v1.8(可能引起不适).rar' '阴霾降至.rar' '雪窝.rar' '音讯全无重制版.rar' '颤栗森林.rar' 
     '风暴挽歌(单章节).rar' '飞溅山之旅.rar' '马里奥探险.rar' '魔鬼山.rar' '黄金眼.rar' '黄金眼之007.rar' 
     '黎明.rar' '黑暗之塔枪手.rar' '黑暗水域v1.rar' '黑血2.rar'
+    'Rescue Dawn 抢救黎明.7z'
     )
 for file in "${file_list[@]}"
 do
     if [ ! -f "fin_$file" ]; then # 如果文件不存在
         echo "正在下载 $file"
         aria2c -x 16 -s 16 -k 1M "$base_url$file"
-        unrar x -o+ "$file" 
+        7z x -o+ "$file" 
         rm "$file"
         touch "fin_$file"
     fi

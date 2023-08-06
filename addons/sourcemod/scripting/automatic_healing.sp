@@ -307,7 +307,7 @@ public void OnPluginStart()
 	C_wait_time.AddChangeHook(convar_changed);
 	C_health = CreateConVar(PLUGIN_PREFIX ... "_health", "1.0", "how many health buffer heal once", _, true, 0.1);
 	C_health.AddChangeHook(convar_changed);
-	C_repeat_interval = CreateConVar(PLUGIN_PREFIX ... "_repeat_interval", "1.0", "repeat interval after healing start", _, true, 0.0);
+	C_repeat_interval = CreateConVar(PLUGIN_PREFIX ... "_repeat_interval", "0.7", "repeat interval after healing start", _, true, 0.0);
 	C_repeat_interval.AddChangeHook(convar_changed);
 	C_max = CreateConVar(PLUGIN_PREFIX ... "_max", "30.2", "max health of healing", _, true, 1.1);
 	C_max.AddChangeHook(convar_changed);	

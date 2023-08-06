@@ -390,13 +390,13 @@ public void OnPluginStart()
 	gnomemoney	=	CreateConVar("sm_integralshop_gnomemoney","2","小矮人的价格.",CVAR_FLAGS);
 	ammostackmoney	=	CreateConVar("sm_integralshop_ammostackmoney","2","弹药堆的价格",CVAR_FLAGS);
 
-	killcommonmoney	=	CreateConVar("sm_integralshop_killcommonmoney","1","杀死全部小僵尸需要多少积分.",CVAR_FLAGS);
-	killwitchmoney	=	CreateConVar("sm_integralshop_killwitchmoney","1","清除地图上全部女巫需要多少积分.",CVAR_FLAGS);
-	createfiremoney	=	CreateConVar("sm_integralshop_createfiremoney","1","脚下点火需要多少积分",CVAR_FLAGS);
-	killwitchesmoney	=	CreateConVar("sm_integralshop_killwitchesmoney","1","杀死全部女巫需要多少积分.",CVAR_FLAGS);
-	killinfectedmoney	=	CreateConVar("sm_integralshop_killnfectedmoney","1","杀死全部特感需要多少积分.",CVAR_FLAGS);
-	createbombmoney	=	CreateConVar("sm_integralshop_createbombmoney","1","脚下放炸弹需要多少积分",CVAR_FLAGS);
-	infiniteammomoney	=	CreateConVar("sm_integralshop_infiniteammomoney","1","无限补给需要多少积分",CVAR_FLAGS);
+	killcommonmoney	=	CreateConVar("sm_integralshop_killcommonmoney","100","杀死全部小僵尸需要多少积分.",CVAR_FLAGS);
+	killwitchmoney	=	CreateConVar("sm_integralshop_killwitchmoney","100","清除地图上全部女巫需要多少积分.",CVAR_FLAGS);
+	createfiremoney	=	CreateConVar("sm_integralshop_createfiremoney","100","脚下点火需要多少积分",CVAR_FLAGS);
+	killwitchesmoney	=	CreateConVar("sm_integralshop_killwitchesmoney","100","杀死全部女巫需要多少积分.",CVAR_FLAGS);
+	killinfectedmoney	=	CreateConVar("sm_integralshop_killnfectedmoney","100","杀死全部特感需要多少积分.",CVAR_FLAGS);
+	createbombmoney	=	CreateConVar("sm_integralshop_createbombmoney","100","脚下放炸弹需要多少积分",CVAR_FLAGS);
+	infiniteammomoney	=	CreateConVar("sm_integralshop_infiniteammomoney","100","无限补给需要多少积分",CVAR_FLAGS);
 	godmodemoney	=	CreateConVar("sm_integralshop_godmodemoney","100","无敌模式需要多少积分",CVAR_FLAGS);
 	swarmmodemoney	=	CreateConVar("sm_integralshop_swarmmodemoney","100","抵抗力需要多少积分",CVAR_FLAGS);
 	immunedamagemoney	=	CreateConVar("sm_integralshop_immunedamagemoney","1","免疫友伤需要多少积分",CVAR_FLAGS);

@@ -71,7 +71,8 @@ public void OnPluginStart()
 	RegConsoleCmd("sm_s", Spectate_Cmd, "Moves you to the spectator team");
 
 	AddCommandListener(TeamChange_Listener, "jointeam");
-
+	AddCommandListener(GoAfk_Listener, "go_away_from_keyboard");
+	
 	survivor_limit = FindConVar("survivor_limit");
 	survivor_limit.AddChangeHook(survivor_limitChanged);
 
@@ -212,6 +213,11 @@ public Action L4D_OnEnterGhostStatePre(int client)
 	return blockVotes[client] ? Plugin_Handled : Plugin_Continue;
 }
 
+public Action GoAfk_Listener(int client, const char[] command, int argc){
+	if(!IsClientInGame(client)) 
+		return Plugin_Handled;
+	return Spectate_Cmd(client, 0);
+}
 public Action TeamChange_Listener(int client, const char[] command, int argc)
 {
 	// Invalid 

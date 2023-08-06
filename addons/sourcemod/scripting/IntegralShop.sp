@@ -288,7 +288,7 @@ public void OnPluginStart()
 {
 	LogAction(0, -1, "验证通过，欢迎使用.");
 
-	MaxIntegral=CreateConVar("sm_integralshop_MaxIntegral","100","积分上限.",CVAR_FLAGS, true, 0.0, true, 99999.0);
+	MaxIntegral=CreateConVar("sm_integralshop_MaxIntegral","500","积分上限.",CVAR_FLAGS, true, 0.0, true, 99999.0);
 
 	MaxKillZombies	=	CreateConVar("sm_integralshop_MaxKillZombies","26","杀多少僵尸能获得积分奖励.",CVAR_FLAGS);
 	KillZombiesIntegral	=	CreateConVar("sm_integralshop_KillZombiesIntegral","2","杀足够僵尸获得的积分.",CVAR_FLAGS);
@@ -396,21 +396,21 @@ public void OnPluginStart()
 	killwitchesmoney	=	CreateConVar("sm_integralshop_killwitchesmoney","100","杀死全部女巫需要多少积分.",CVAR_FLAGS);
 	killinfectedmoney	=	CreateConVar("sm_integralshop_killnfectedmoney","100","杀死全部特感需要多少积分.",CVAR_FLAGS);
 	createbombmoney	=	CreateConVar("sm_integralshop_createbombmoney","100","脚下放炸弹需要多少积分",CVAR_FLAGS);
-	infiniteammomoney	=	CreateConVar("sm_integralshop_infiniteammomoney","100","无限补给需要多少积分",CVAR_FLAGS);
-	godmodemoney	=	CreateConVar("sm_integralshop_godmodemoney","100","无敌模式需要多少积分",CVAR_FLAGS);
+	infiniteammomoney	=	CreateConVar("sm_integralshop_infiniteammomoney","200","无限补给需要多少积分",CVAR_FLAGS);
+	godmodemoney	=	CreateConVar("sm_integralshop_godmodemoney","200","无敌模式需要多少积分",CVAR_FLAGS);
 	swarmmodemoney	=	CreateConVar("sm_integralshop_swarmmodemoney","100","抵抗力需要多少积分",CVAR_FLAGS);
 	immunedamagemoney	=	CreateConVar("sm_integralshop_immunedamagemoney","1","免疫友伤需要多少积分",CVAR_FLAGS);
-	skinblackmoney	=	CreateConVar("sm_integralshop_skinblackmoney","2","黑色皮肤需要多少积分",CVAR_FLAGS);
-	skininvisiblemoney	=	CreateConVar("sm_integralshop_skininvisiblemoney","2","透明皮肤需要多少积分",CVAR_FLAGS);
-	skinredmoney	=	CreateConVar("sm_integralshop_skinredmoney","2","红色皮肤需要多少积分",CVAR_FLAGS);
-	skingreenmoney	=	CreateConVar("sm_integralshop_skingreenmoney","2","绿色皮肤需要多少积分",CVAR_FLAGS);
-	skinbluemoney	=	CreateConVar("sm_integralshop_skinbluemoney","2","蓝色皮肤需要多少积分",CVAR_FLAGS);
-	skinyellowmoney	=	CreateConVar("sm_integralshop_skinyellowmoney","2","黄色皮肤需要多少积分",CVAR_FLAGS);
-	skinpurplemoney	=	CreateConVar("sm_integralshop_skinpurplemoney","2","紫色皮肤需要多少积分",CVAR_FLAGS);
-	skinpinkmoney	=	CreateConVar("sm_integralshop_skinpinkmoney","2","粉红色皮肤需要多少积分",CVAR_FLAGS);
-	skincyanmoney	=	CreateConVar("sm_integralshop_skincyanmoney","2","青色皮肤需要多少积分",CVAR_FLAGS);
-	skingoldmoney	=	CreateConVar("sm_integralshop_skingoldmoney","2","金色皮肤需要多少积分",CVAR_FLAGS);
-	skinicebluemoney	=	CreateConVar("sm_integralshop_skinicebluemoney","2","冰蓝色皮肤需要多少积分",CVAR_FLAGS);
+	skinblackmoney	=	CreateConVar("sm_integralshop_skinblackmoney","100","黑色皮肤需要多少积分",CVAR_FLAGS);
+	skininvisiblemoney	=	CreateConVar("sm_integralshop_skininvisiblemoney","100","透明皮肤需要多少积分",CVAR_FLAGS);
+	skinredmoney	=	CreateConVar("sm_integralshop_skinredmoney","100","红色皮肤需要多少积分",CVAR_FLAGS);
+	skingreenmoney	=	CreateConVar("sm_integralshop_skingreenmoney","100","绿色皮肤需要多少积分",CVAR_FLAGS);
+	skinbluemoney	=	CreateConVar("sm_integralshop_skinbluemoney","100","蓝色皮肤需要多少积分",CVAR_FLAGS);
+	skinyellowmoney	=	CreateConVar("sm_integralshop_skinyellowmoney","100","黄色皮肤需要多少积分",CVAR_FLAGS);
+	skinpurplemoney	=	CreateConVar("sm_integralshop_skinpurplemoney","200","紫色皮肤需要多少积分",CVAR_FLAGS);
+	skinpinkmoney	=	CreateConVar("sm_integralshop_skinpinkmoney","200","粉红色皮肤需要多少积分",CVAR_FLAGS);
+	skincyanmoney	=	CreateConVar("sm_integralshop_skincyanmoney","200","青色皮肤需要多少积分",CVAR_FLAGS);
+	skingoldmoney	=	CreateConVar("sm_integralshop_skingoldmoney","200","金色皮肤需要多少积分",CVAR_FLAGS);
+	skinicebluemoney	=	CreateConVar("sm_integralshop_skinicebluemoney","200","冰蓝色皮肤需要多少积分",CVAR_FLAGS);
 
 	RegConsoleCmd("sm_b",ShowMenu,"购买主菜单");
 	RegConsoleCmd("sm_buy",ShowMenu,"购买主菜单");

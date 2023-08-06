@@ -77,4 +77,8 @@
     {
         "chat"      "{green}也可以使用脚本 https://github.com/PencilMario/L4D2-Not0721Here-CoopSvPlugins/blob/main/Docs/clientgetmap.ps1 自动下载所有三方图\n预估占用80g，请注意腾出空间"
     }
+    "16"
+    {
+        "chat"      "{green}满弹双击R键可以触发检视动作 :)"
+    }
 }

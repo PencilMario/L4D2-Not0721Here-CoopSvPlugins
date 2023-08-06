@@ -292,7 +292,7 @@ public void OnPluginStart()
 
 	MaxKillZombies	=	CreateConVar("sm_integralshop_MaxKillZombies","26","杀多少僵尸能获得积分奖励.",CVAR_FLAGS);
 	KillZombiesIntegral	=	CreateConVar("sm_integralshop_KillZombiesIntegral","2","杀足够僵尸获得的积分.",CVAR_FLAGS);
-	WarningIntegral	=	CreateConVar("sm_integralshop_WarningIntegral","1.0","积分达到多少预警(0.5就是50%).",CVAR_FLAGS);
+	WarningIntegral	=	CreateConVar("sm_integralshop_WarningIntegral","2.0","积分达到多少预警(0.5就是50%).",CVAR_FLAGS);
 	
 	SmokerIntegral	=	CreateConVar("sm_integralshop_SmokerIntegral","5","杀Smoker获得的积分.",CVAR_FLAGS);
 	BoomerIntegral	=	CreateConVar("sm_integralshop_BoomerIntegral","5","杀Boomer获得的积分.",CVAR_FLAGS);
@@ -305,41 +305,41 @@ public void OnPluginStart()
 	WitchIntegral	=	CreateConVar("sm_integralshop_WitchIntegral","50","女巫死亡全队活者的幸存者获得的积分.",CVAR_FLAGS);
 	WitchKillIntegral	=	CreateConVar("sm_integralshop_WitchKillIntegral","100","给予女巫克最后一击的人获得的积分奖励.",CVAR_FLAGS);	
 
-	pistolmoney	=	CreateConVar("sm_integralshop_pistolmoney","0","手枪的价格.",CVAR_FLAGS);
-	magnummoney	=	CreateConVar("sm_integralshop_magnummoney","0","马格南手枪的价格.",CVAR_FLAGS);
-	smgsilencedmoney	=	CreateConVar("sm_integralshop_smgsilencedmoney","5","消声冲锋枪的价格.",CVAR_FLAGS);
-	smgmoney	=	CreateConVar("sm_integralshop_smgmoney","5","冲锋枪的价格.",CVAR_FLAGS);
-	mp5money	=	CreateConVar("sm_integralshop_mp5money","8","MP5冲锋枪的价格.",CVAR_FLAGS);
-	pumpshotgun1money	=	CreateConVar("sm_integralshop_pumpshotgun1money","5","老式单发霰弹枪的价格.",CVAR_FLAGS);
-	autoshotgun1money	=	CreateConVar("sm_integralshop_autoshotgun1money","5","老式连发霰弹枪的价格.",CVAR_FLAGS);
+	pistolmoney	=	CreateConVar("sm_integralshop_pistolmoney","100","手枪的价格.",CVAR_FLAGS);
+	magnummoney	=	CreateConVar("sm_integralshop_magnummoney","100","马格南手枪的价格.",CVAR_FLAGS);
+	smgsilencedmoney	=	CreateConVar("sm_integralshop_smgsilencedmoney","20","消声冲锋枪的价格.",CVAR_FLAGS);
+	smgmoney	=	CreateConVar("sm_integralshop_smgmoney","20","冲锋枪的价格.",CVAR_FLAGS);
+	mp5money	=	CreateConVar("sm_integralshop_mp5money","20","MP5冲锋枪的价格.",CVAR_FLAGS);
+	pumpshotgun1money	=	CreateConVar("sm_integralshop_pumpshotgun1money","20","老式单发霰弹枪的价格.",CVAR_FLAGS);
+	autoshotgun1money	=	CreateConVar("sm_integralshop_autoshotgun1money","20","老式连发霰弹枪的价格.",CVAR_FLAGS);
 	
-	pumpshotgun2money	=	CreateConVar("sm_integralshop_pumpshotgun2money","5","新式单发霰弹枪的价格.",CVAR_FLAGS);
-	autoshotgun2money	=	CreateConVar("sm_integralshop_autoshotgun2money","5","新式连发霰弹枪的价格.",CVAR_FLAGS);
-	m16money	=	CreateConVar("sm_integralshop_m16money","10","M16步枪的价格.",CVAR_FLAGS);
-	ak47money	=	CreateConVar("sm_integralshop_ak47money","10","AK47步枪的价格.",CVAR_FLAGS);
-	scarmoney	=	CreateConVar("sm_integralshop_scarmoney","10","三连发步枪的价格.",CVAR_FLAGS);
-	sg552money	=	CreateConVar("sm_integralshop_sg552money","10","放大步枪的价格.",CVAR_FLAGS);
-	m60money	=	CreateConVar("sm_integralshop_m60money","10","m60机枪的价格.",CVAR_FLAGS);	
+	pumpshotgun2money	=	CreateConVar("sm_integralshop_pumpshotgun2money","100","新式单发霰弹枪的价格.",CVAR_FLAGS);
+	autoshotgun2money	=	CreateConVar("sm_integralshop_autoshotgun2money","100","新式连发霰弹枪的价格.",CVAR_FLAGS);
+	m16money	=	CreateConVar("sm_integralshop_m16money","100","M16步枪的价格.",CVAR_FLAGS);
+	ak47money	=	CreateConVar("sm_integralshop_ak47money","100","AK47步枪的价格.",CVAR_FLAGS);
+	scarmoney	=	CreateConVar("sm_integralshop_scarmoney","100","三连发步枪的价格.",CVAR_FLAGS);
+	sg552money	=	CreateConVar("sm_integralshop_sg552money","100","放大步枪的价格.",CVAR_FLAGS);
+	m60money	=	CreateConVar("sm_integralshop_m60money","100","m60机枪的价格.",CVAR_FLAGS);	
 	
-	hunting1money	=	CreateConVar("sm_integralshop_hunting1money","10","狩猎狙击枪的价格.",CVAR_FLAGS);
-	sniperscoutmoney	=	CreateConVar("sm_integralshop_sniperscoutmoney","10","Scout小型狙击枪的价格.",CVAR_FLAGS);
-	hunting2money	=	CreateConVar("sm_integralshop_hunting2money","10","军事狙击枪的价格.",CVAR_FLAGS);
-	awpmoney	=	CreateConVar("sm_integralshop_awpmoney","10","AWP狙击枪的价格.",CVAR_FLAGS);
+	hunting1money	=	CreateConVar("sm_integralshop_hunting1money","100","狩猎狙击枪的价格.",CVAR_FLAGS);
+	sniperscoutmoney	=	CreateConVar("sm_integralshop_sniperscoutmoney","75","Scout小型狙击枪的价格.",CVAR_FLAGS);
+	hunting2money	=	CreateConVar("sm_integralshop_hunting2money","100","军事狙击枪的价格.",CVAR_FLAGS);
+	awpmoney	=	CreateConVar("sm_integralshop_awpmoney","100","AWP狙击枪的价格.",CVAR_FLAGS);
 	grenadelaunchermoney	=	CreateConVar("sm_integralshop_grenadelaunchermoney","1000","榴弹发射器的价格.",CVAR_FLAGS);
 
-	crowbarmoney	=	CreateConVar("sm_integralshop_crowbarmoney","10","撬棍的价格.",CVAR_FLAGS);
-	fireaxemoney	=	CreateConVar("sm_integralshop_fireaxemoney","3","斧头的价格.",CVAR_FLAGS);
-	katanamoney	=	CreateConVar("sm_integralshop_katanamoney","5","武士刀的价格.",CVAR_FLAGS);
-	cricketbatmoney	=	CreateConVar("sm_integralshop_cricketbatmoney","10","板球棒的价格.",CVAR_FLAGS);
-	baseballbatmoney	=	CreateConVar("sm_integralshop_baseballbatmoney","10","棒球棒的价格.",CVAR_FLAGS);
-	fryingpanmoney	=	CreateConVar("sm_integralshop_fryingpanmoney","10","平底锅的价格.",CVAR_FLAGS);
-	guitarmoney	=	CreateConVar("sm_integralshop_guitarmoney","10","电吉他的价格.",CVAR_FLAGS);
-	tonfamoney	=	CreateConVar("sm_integralshop_tonfamoney","10","警棍的价格.",CVAR_FLAGS);
-	machetemoney	=	CreateConVar("sm_integralshop_machetemoney","5","砍刀的价格.",CVAR_FLAGS);
-	chainsawmoney	=	CreateConVar("sm_integralshop_chainsawmoney","5","电锯的价格.",CVAR_FLAGS);
-	knifemoney	=	CreateConVar("sm_integralshop_knifemoney","5","小刀的价格.",CVAR_FLAGS);	
-	shovelmoney	=	CreateConVar("sm_integralshop_shovelmoney","5","铁铲的价格.",CVAR_FLAGS);
-	pitchforkmoney	=	CreateConVar("sm_integralshop_pitchforkmoney","5","干草叉的价格.",CVAR_FLAGS);
+	crowbarmoney	=	CreateConVar("sm_integralshop_crowbarmoney","100","撬棍的价格.",CVAR_FLAGS);
+	fireaxemoney	=	CreateConVar("sm_integralshop_fireaxemoney","30","斧头的价格.",CVAR_FLAGS);
+	katanamoney	=	CreateConVar("sm_integralshop_katanamoney","50","武士刀的价格.",CVAR_FLAGS);
+	cricketbatmoney	=	CreateConVar("sm_integralshop_cricketbatmoney","100","板球棒的价格.",CVAR_FLAGS);
+	baseballbatmoney	=	CreateConVar("sm_integralshop_baseballbatmoney","100","棒球棒的价格.",CVAR_FLAGS);
+	fryingpanmoney	=	CreateConVar("sm_integralshop_fryingpanmoney","100","平底锅的价格.",CVAR_FLAGS);
+	guitarmoney	=	CreateConVar("sm_integralshop_guitarmoney","100","电吉他的价格.",CVAR_FLAGS);
+	tonfamoney	=	CreateConVar("sm_integralshop_tonfamoney","100","警棍的价格.",CVAR_FLAGS);
+	machetemoney	=	CreateConVar("sm_integralshop_machetemoney","50","砍刀的价格.",CVAR_FLAGS);
+	chainsawmoney	=	CreateConVar("sm_integralshop_chainsawmoney","50","电锯的价格.",CVAR_FLAGS);
+	knifemoney	=	CreateConVar("sm_integralshop_knifemoney","50","小刀的价格.",CVAR_FLAGS);	
+	shovelmoney	=	CreateConVar("sm_integralshop_shovelmoney","50","铁铲的价格.",CVAR_FLAGS);
+	pitchforkmoney	=	CreateConVar("sm_integralshop_pitchforkmoney","50","干草叉的价格.",CVAR_FLAGS);
 
 	leonknifemoney	=	CreateConVar("sm_integralshop_leonknifemoney","5","里昂匕首的价格.",CVAR_FLAGS);
 	bajorokumoney	=	CreateConVar("sm_integralshop_bajorokumoney","3","黑色吉他的价格.",CVAR_FLAGS);
@@ -367,28 +367,28 @@ public void OnPluginStart()
 	wrenchmoney	=	CreateConVar("sm_integralshop_wrenchmoney","5","扳手的价格.",CVAR_FLAGS);
 	flamethrowermoney	=	CreateConVar("sm_integralshop_flamethrowermoney","5","喷火枪的价格.",CVAR_FLAGS);
 
-	painpillsmoney	=	CreateConVar("sm_integralshop_painpillsmoney","0","止痛药的价格.",CVAR_FLAGS);
-	adrenalinemoney	=	CreateConVar("sm_integralshop_adrenalinemoney","0","肾上腺素的价格.",CVAR_FLAGS);
-	firstaidkitmoney	=	CreateConVar("sm_integralshop_firstaidkitmoney","0","医疗包的价格.",CVAR_FLAGS);
-	defibrillatormoney	=	CreateConVar("sm_integralshop_defibrillatormoney","0","电击器的价格.",CVAR_FLAGS);
-	pipebombmoney	=	CreateConVar("sm_integralshop_bombmoney","2","土制炸药的价格.",CVAR_FLAGS);
-	vomitjarmoney	=	CreateConVar("sm_integralshop_vomitjarmoney","2","胆汁的价格.",CVAR_FLAGS);
-	molotovmoney	=	CreateConVar("sm_integralshop_molotovmoney","2","燃烧瓶的价格.",CVAR_FLAGS);
-	explosivepackmoney	=	CreateConVar("sm_integralshop_explosivepackmoney","5","高爆弹药盒子的价格.",CVAR_FLAGS);
-	incendiarypackmoney	=	CreateConVar("sm_integralshop_incendiarypackmoney","5","燃烧弹药盒子的价格.",CVAR_FLAGS);
-	upgradelasermoney	=	CreateConVar("sm_integralshop_upgradelasermoney","0","红外线的价格.",CVAR_FLAGS);
-	ammomoney	=	CreateConVar("sm_integralshop_ammomoney","0","弹药的价格",CVAR_FLAGS);
-	healthmoney = CreateConVar("sm_integralshop_healthmoney","0","补充生命的价格",CVAR_FLAGS);
-	explosivemoney	=	CreateConVar("sm_integralshop_explosivemoney","5","高爆子弹箱的价格.",CVAR_FLAGS);
-	incendiarymoney	=	CreateConVar("sm_integralshop_incendiarymoney","5","燃烧子弹箱的价格.",CVAR_FLAGS);
-	laserpackmoney	=	CreateConVar("sm_integralshop_upgrademoney","5","红外线盒子的价格.",CVAR_FLAGS);
+	painpillsmoney	=	CreateConVar("sm_integralshop_painpillsmoney","100","止痛药的价格.",CVAR_FLAGS);
+	adrenalinemoney	=	CreateConVar("sm_integralshop_adrenalinemoney","100","肾上腺素的价格.",CVAR_FLAGS);
+	firstaidkitmoney	=	CreateConVar("sm_integralshop_firstaidkitmoney","100","医疗包的价格.",CVAR_FLAGS);
+	defibrillatormoney	=	CreateConVar("sm_integralshop_defibrillatormoney","100","电击器的价格.",CVAR_FLAGS);
+	pipebombmoney	=	CreateConVar("sm_integralshop_bombmoney","50","土制炸药的价格.",CVAR_FLAGS);
+	vomitjarmoney	=	CreateConVar("sm_integralshop_vomitjarmoney","50","胆汁的价格.",CVAR_FLAGS);
+	molotovmoney	=	CreateConVar("sm_integralshop_molotovmoney","50","燃烧瓶的价格.",CVAR_FLAGS);
+	explosivepackmoney	=	CreateConVar("sm_integralshop_explosivepackmoney","100","高爆弹药盒子的价格.",CVAR_FLAGS);
+	incendiarypackmoney	=	CreateConVar("sm_integralshop_incendiarypackmoney","100","燃烧弹药盒子的价格.",CVAR_FLAGS);
+	upgradelasermoney	=	CreateConVar("sm_integralshop_upgradelasermoney","100","红外线的价格.",CVAR_FLAGS);
+	ammomoney	=	CreateConVar("sm_integralshop_ammomoney","100","弹药的价格",CVAR_FLAGS);
+	healthmoney = CreateConVar("sm_integralshop_healthmoney","100","补充生命的价格",CVAR_FLAGS);
+	explosivemoney	=	CreateConVar("sm_integralshop_explosivemoney","100","高爆子弹箱的价格.",CVAR_FLAGS);
+	incendiarymoney	=	CreateConVar("sm_integralshop_incendiarymoney","100","燃烧子弹箱的价格.",CVAR_FLAGS);
+	laserpackmoney	=	CreateConVar("sm_integralshop_upgrademoney","100","红外线盒子的价格.",CVAR_FLAGS);
 
-	gascanmoney	=	CreateConVar("sm_integralshop_gascanmoney","2","汽油桶的价格.",CVAR_FLAGS);
-	propanetankmoney	=	CreateConVar("sm_integralshop_propanetankmoney","2","煤气瓶的价格.",CVAR_FLAGS);
-	oxygentankmoney	=	CreateConVar("sm_integralshop_oxygentankmoney","2","氧气瓶的价格.",CVAR_FLAGS);
-	fireworkcratemoney	=	CreateConVar("sm_integralshop_fireworkmoney","2","烟花盒子的价格.",CVAR_FLAGS);
-	gnomemoney	=	CreateConVar("sm_integralshop_gnomemoney","2","小矮人的价格.",CVAR_FLAGS);
-	ammostackmoney	=	CreateConVar("sm_integralshop_ammostackmoney","2","弹药堆的价格",CVAR_FLAGS);
+	gascanmoney	=	CreateConVar("sm_integralshop_gascanmoney","50","汽油桶的价格.",CVAR_FLAGS);
+	propanetankmoney	=	CreateConVar("sm_integralshop_propanetankmoney","50","煤气瓶的价格.",CVAR_FLAGS);
+	oxygentankmoney	=	CreateConVar("sm_integralshop_oxygentankmoney","50","氧气瓶的价格.",CVAR_FLAGS);
+	fireworkcratemoney	=	CreateConVar("sm_integralshop_fireworkmoney","50","烟花盒子的价格.",CVAR_FLAGS);
+	gnomemoney	=	CreateConVar("sm_integralshop_gnomemoney","50","小矮人的价格.",CVAR_FLAGS);
+	ammostackmoney	=	CreateConVar("sm_integralshop_ammostackmoney","20","弹药堆的价格",CVAR_FLAGS);
 
 	killcommonmoney	=	CreateConVar("sm_integralshop_killcommonmoney","100","杀死全部小僵尸需要多少积分.",CVAR_FLAGS);
 	killwitchmoney	=	CreateConVar("sm_integralshop_killwitchmoney","100","清除地图上全部女巫需要多少积分.",CVAR_FLAGS);

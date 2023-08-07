@@ -36,14 +36,16 @@ public void OnPluginStart(){
 
 public Action Cmd_SetAmmo(int args)
 {
-    int multi = GetCmdArgInt(1);
-    g_cSmgAmmo.IntValue = AMMO_SMG_MAX * multi;
-    g_cShotGunAmmo.IntValue = AMMO_SHOTGUN_MAX * multi;
-    g_cAutoShotGunAmmo.IntValue = AMMO_AUTOSHOTGUN_MAX * multi;
-    g_cAssrultRifleAmmo.IntValue = AMMO_ASSAULTRIFLE_MAX * multi;
-    g_cHuntingRifleAmmo.IntValue = AMMO_HUNTINGRIFLE_MAX * multi;
-    g_cSinperRifleAmmo.IntValue = AMMO_SNIPERRIFLE_MAX * multi;
-    g_cM60Ammo.IntValue = AMMO_M60_MAX * multi;
-    g_cGrenadeAmmo.IntValue = AMMO_GRENADELAUNCHER_MAX * multi;
+    char num[32];
+    GetCmdArg(1, num, sizeof(num));
+    float multi = StringToFloat(num);
+    g_cSmgAmmo.IntValue = RoundToNearest(float(AMMO_SMG_MAX) * multi);
+    g_cShotGunAmmo.IntValue = RoundToNearest(float(AMMO_SHOTGUN_MAX) * multi);
+    g_cAutoShotGunAmmo.IntValue = RoundToNearest(float(AMMO_AUTOSHOTGUN_MAX) * multi);
+    g_cAssrultRifleAmmo.IntValue = RoundToNearest(float(AMMO_ASSAULTRIFLE_MAX) * multi);
+    g_cHuntingRifleAmmo.IntValue = RoundToNearest(float(AMMO_HUNTINGRIFLE_MAX) * multi);
+    g_cSinperRifleAmmo.IntValue = RoundToNearest(float(AMMO_SNIPERRIFLE_MAX) * multi);
+    g_cM60Ammo.IntValue = RoundToNearest(float(AMMO_M60_MAX) * multi);
+    g_cGrenadeAmmo.IntValue = RoundToNearest(float(AMMO_GRENADELAUNCHER_MAX) * multi);
     return Plugin_Handled;
 }

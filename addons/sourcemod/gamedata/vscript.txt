@@ -1,0 +1,367 @@
+"Games"
+{
+	"#default"
+	{
+		"Keys"
+		{
+			"OS"
+			{
+				"linux"		"linux"
+				"windows"	"windows"
+			}
+			
+			"IGameSystem"	"CVScriptGameSystem"
+			"IScriptVM"		"CSquirrelVM"
+			
+			// Extra virtual functions that exists for each games
+			"IGameSystem::ExtraOffsets"	""
+			"IScriptVM::ExtraOffsets"	""
+			
+			"AllowResetScriptVM"	"1"
+			
+			"FIELD_VOID"		"0"
+			"FIELD_FLOAT"		"1"
+			"FIELD_VECTOR"		"3"
+			"FIELD_INTEGER"		"5"
+			"FIELD_BOOLEAN"		"6"
+			"FIELD_TYPEUNKNOWN"	"29"	// Normally shouldn't be allowed, but some functions have it
+			"FIELD_CSTRING"		"30"
+			"FIELD_HSCRIPT"		"31"
+			"FIELD_VARIANT"		"32"
+			"FIELD_QANGLE"		"39"
+		}
+		
+		"Offsets"
+		{
+			// All offsets are based on games with smallest offset numbers (e.g. CSGO)
+			
+			"ScriptClassDesc_t::m_pszScriptName"
+			{
+				"linux"		"0"
+				"windows"	"0"
+			}
+			
+			"ScriptClassDesc_t::m_pBaseDesc"
+			{
+				"linux"		"12"
+				"windows"	"12"
+			}
+			
+			"ScriptClassDesc_t::m_FunctionBindings"
+			{
+				"linux"		"16"
+				"windows"	"16"
+			}
+			
+			"ScriptFunctionBinding_t::m_pszScriptName"
+			{
+				"linux"		"0"
+				"windows"	"0"
+			}
+			
+			"ScriptFunctionBinding_t::m_pszFunction"
+			{
+				"linux"		"4"
+				"windows"	"4"
+			}
+			
+			"ScriptFunctionBinding_t::m_pszDescription"
+			{
+				"linux"		"8"
+				"windows"	"8"
+			}
+			
+			"ScriptFunctionBinding_t::m_ReturnType"
+			{
+				"linux"		"12"
+				"windows"	"12"
+			}
+			
+			"ScriptFunctionBinding_t::m_Parameters"
+			{
+				"linux"		"16"
+				"windows"	"16"
+			}
+			
+			"ScriptFunctionBinding_t::m_pfnBinding"
+			{
+				"linux"		"36"
+				"windows"	"36"
+			}
+			
+			"ScriptFunctionBinding_t::m_pFunction"
+			{
+				"linux"		"40"
+				"windows"	"40"
+			}
+			
+			"ScriptFunctionBinding_t::m_flags"
+			{
+				"linux"		"44"
+				"windows"	"44"
+			}
+			
+			"sizeof(ScriptFunctionBinding_t)"
+			{
+				"linux"		"48"
+				"windows"	"48"
+			}
+			
+			"ScriptVariant_t::union"
+			{
+				"linux"		"0"
+				"windows"	"0"
+			}
+			
+			"ScriptVariant_t::m_type"
+			{
+				"linux"		"4"
+				"windows"	"4"
+			}
+			
+			"sizeof(ScriptVariant_t)"
+			{
+				"linux"		"8"
+				"windows"	"8"
+			}
+			
+			"sizeof(ScriptFunctionBindingStorageType_t)"
+			{
+				"linux"		"4"
+				"windows"	"4"
+			}
+			
+			"CBaseEntity::GetScriptDesc"
+			{
+				"linux"		"13"
+				"windows"	"12"
+			}
+			
+			"IGameSystem::LevelInitPreEntity"
+			{
+				"linux"		"4"
+				"windows"	"4"
+			}
+			
+			"IGameSystem::LevelShutdownPostEntity"
+			{
+				"linux"		"7"
+				"windows"	"7"
+			}
+			
+			"IGameSystem::FrameUpdatePostEntityThink"
+			{
+				"linux"		"15"
+				"windows"	"14"
+			}
+			
+			"CVScriptGameSystem::m_bAllowEntityCreationInScripts"
+			{
+				"linux"		"12"
+				"windows"	"12"
+			}
+			
+			"IScriptVM::Init"
+			{
+				"linux"		"0"
+				"windows"	"0"
+			}
+			
+			"IScriptVM::CompileScript"	// vtable dumper got it wrong
+			{
+				"linux"		"9"
+				"windows"	"11"
+			}
+			
+			"IScriptVM::ReleaseScript"
+			{
+				"linux"		"10"
+				"windows"	"12"
+			}
+			
+			"IScriptVM::ExecuteFunction"
+			{
+				"linux"		"17"
+				"windows"	"17"
+			}
+			
+			"IScriptVM::RegisterFunction"
+			{
+				"linux"		"18"
+				"windows"	"18"
+			}
+			
+			"IScriptVM::RegisterClass"
+			{
+				"linux"		"19"
+				"windows"	"19"
+			}
+			
+			"IScriptVM::RegisterInstance"
+			{
+				"linux"		"20"
+				"windows"	"20"
+			}
+			
+			"IScriptVM::SetInstanceUniqeId"
+			{
+				"linux"		"21"
+				"windows"	"21"
+			}
+			
+			"IScriptVM::GetInstanceValue"
+			{
+				"linux"		"23"
+				"windows"	"23"
+			}
+			
+			"IScriptVM::GenerateUniqueKey"
+			{
+				"linux"		"24"
+				"windows"	"24"
+			}
+			
+			"IScriptVM::SetValue"
+			{
+				"linux"		"27"
+				"windows"	"26"
+			}
+			
+			"IScriptVM::CreateTable"
+			{
+				"linux"		"28"
+				"windows"	"28"
+			}
+			
+			"IScriptVM::GetKeyValue"
+			{
+				"linux"		"30"
+				"windows"	"30"
+			}
+			
+			"IScriptVM::GetValue"
+			{
+				"linux"		"31"
+				"windows"	"31"
+			}
+			
+			"IScriptVM::ReleaseValue"
+			{
+				"linux"		"32"
+				"windows"	"32"
+			}
+			
+			"IScriptVM::ClearValue"
+			{
+				"linux"		"33"
+				"windows"	"33"
+			}
+		}
+	}
+	
+	"#default"
+	{
+		"#supported"
+		{
+			"game"	"left4dead2"
+			"game"	"tf"
+		}
+		
+		// L4D2 and TF2 have an extra +4 bytes at offset 4, and windows have another at 12
+		
+		"Offsets"
+		{
+			"ScriptVariant_t::m_type"
+			{
+				"linux"		"8"
+				"windows"	"8"
+			}
+			
+			"sizeof(ScriptVariant_t)"
+			{
+				"linux"		"12"
+				"windows"	"16"
+			}
+		}
+	}
+	
+	"csgo"
+	{
+		"Keys"
+		{
+			"FIELD_TYPEUNKNOWN"	"31"	// +2
+			"FIELD_CSTRING"		"32"	// +2
+			"FIELD_HSCRIPT"		"33"	// +2
+			"FIELD_VARIANT"		"0"
+			"FIELD_QANGLE"		"0"
+		}
+	}
+	
+	"left4dead2"
+	{
+		"Keys"
+		{
+			//   6 - IScriptVM::GetInternalVM
+			//   8 - IScriptVM::ForwardConsoleCommand
+			//  16 - IScriptVM::ReferenceScope
+			//31/29- IScriptVM::SetValue (integer version)
+			//  33 - IScriptVM::IsTable
+			//37/36- IScriptVM::GetValue (integer version)
+			//  38 - IScriptVM::GetScalarValue
+			// There are more after 41, but none of our offsets go beyond that yet
+			"IScriptVM::ExtraOffsets"
+			{
+				"linux"		"6 8 16 31 33 37 38"
+				"windows"	"6 8 16 29 33 36 38"
+			}
+			
+			// resetting g_pScriptVM in linux causes crash
+			
+			"AllowResetScriptVM"
+			{
+				"linux"		"0"
+			}
+			
+			"FIELD_TYPEUNKNOWN"	"30"	// +1
+			"FIELD_CSTRING"		"31"	// +1
+			"FIELD_HSCRIPT"		"32"	// +1
+			"FIELD_VARIANT"		"33"	// +1
+			"FIELD_QANGLE"		"40"	// +1
+		}
+	}
+	
+	"tf"
+	{
+		"Keys"
+		{
+			//  6 - IGameSystem::LevelShutdownPreClearSteamAPIContext
+			"IGameSystem::ExtraOffsets"	"6"
+			
+			// 14 - IScriptVM::ReferenceScope
+			"IScriptVM::ExtraOffsets"	"14"
+		}
+		
+		"Offsets"
+		{
+			// TF2 have m_pFunction sized 16 bytes, giving 12 extra bytes
+			
+			"ScriptFunctionBinding_t::m_flags"
+			{
+				"linux"		"56"
+				"windows"	"56"
+			}
+			
+			"sizeof(ScriptFunctionBinding_t)"
+			{
+				"linux"		"60"
+				"windows"	"60"
+			}
+			
+			"sizeof(ScriptFunctionBindingStorageType_t)"
+			{
+				"linux"		"16"
+				"windows"	"16"
+			}
+		}
+	}
+}

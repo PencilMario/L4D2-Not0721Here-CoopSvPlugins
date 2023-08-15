@@ -8,7 +8,7 @@
 
 // These field values does NOT reflect with actual game values, as it vaires between games.
 // This should only be used with this plugin natives.
-#if !defined _dhooks_included
+
 enum fieldtype_t
 {
 	FIELD_VOID,
@@ -22,7 +22,7 @@ enum fieldtype_t
 	FIELD_VARIANT,
 	FIELD_QANGLE,
 };
-#endif
+
 enum ScriptStatus_t
 {
 	SCRIPT_ERROR = -1,

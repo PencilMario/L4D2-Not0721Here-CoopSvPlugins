@@ -36,10 +36,11 @@
 #include <sdktools>
 #include <sdkhooks>
 #include <dhooks>
+#include <vscript>
 #include <left4dhooks>
 #include <profiler>
 #include <adt_trie>
-#include <vscript> //https://github.com/FortyTwoFortyTwo/VScript
+ //https://github.com/FortyTwoFortyTwo/VScript
 
 #undef REQUIRE_EXTENSIONS
 #include <actions>

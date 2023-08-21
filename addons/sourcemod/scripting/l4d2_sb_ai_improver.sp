@@ -786,7 +786,7 @@ public void OnPluginStart()
 	// CONSOLE VARIABLES
 	// ----------------------------------------------------------------------------------------------------
 	CreateAndHookConVars();
-	//AutoExecConfig(true, "l4d2_improved_bots");
+	AutoExecConfig(true, "l4d2_improved_bots");
 
 	// ----------------------------------------------------------------------------------------------------
 	// MISC

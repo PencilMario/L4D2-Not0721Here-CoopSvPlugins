@@ -73,14 +73,6 @@
 				"windows"	"\x2A\x2A\x2A\x2A\x2A\x2A\xA1\x2A\x2A\x2A\x2A\x33\x2A\x89\x2A\x2A\x53\x8B\x2A\x2A\x56\x8B\x2A\x83\x2A\x2A\x2A\x2A\x2A\x2A\x57"
 			}
 
-			"CPhysicsProp::GetMass"
-			{
-				"library"	"server"
-				"linux"		"@_ZNK12CPhysicsProp7GetMassEv"
-				"mac"		"@_ZNK12CPhysicsProp7GetMassEv"
-				"windows"	"\x55\x8B\xEC\x51\x8B\x89\x24\x02\x00\x00"
-			}
-
 			"CTerrorPlayer::FindUseEntity"
 			{
 				"library"	"server"

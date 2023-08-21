@@ -1367,7 +1367,7 @@ forward Action L4D_OnGetScriptValueFloat(const char[] key, float &retVal);
 forward Action L4D_OnGetScriptValueString(const char[] key, const char[] defaultVal, char retVal[128]);
 
 // These are used for the "L4D2_OnGetScriptValueVoid" forward, and interally for the other "L4D2_OnGetScriptValue*" forwards:
-#if !defined _vscript_included
+#if !defined _vscript_included_pre
 enum fieldtype_t
 {
 	FIELD_VOID = 0,				// No type or value

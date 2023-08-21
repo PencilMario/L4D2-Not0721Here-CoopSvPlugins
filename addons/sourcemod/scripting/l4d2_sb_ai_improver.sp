@@ -31,16 +31,15 @@
 
 #pragma newdecls required
 #pragma semicolon 1
-
+#define _vscript_included_pre
 #include <sourcemod>
 #include <sdktools>
 #include <sdkhooks>
 #include <dhooks>
-#include <vscript>
 #include <left4dhooks>
 #include <profiler>
 #include <adt_trie>
- //https://github.com/FortyTwoFortyTwo/VScript
+#include <vscript> //https://github.com/FortyTwoFortyTwo/VScript
 
 #undef REQUIRE_EXTENSIONS
 #include <actions>
@@ -114,6 +113,13 @@ public Plugin myinfo =
 
 //0: Disable, 1: Pipe Bomb, 2: Molotov, 4: Bile Bomb, 8: Medkit, 16: Defibrillator, 32: UpgradePack, 64: Pain Pills
 //128: Adrenaline, 256: Laser Sights, 512: Ammopack, 1024: Ammopile, 2048: Chainsaw, 4096: Secondary Weapons, 8192: Primary Weapons
+stock float GetCmdArgFloat(int argnum)
+{
+    char str[18];
+    GetCmdArg(argnum, str, sizeof(str));
+
+    return StringToFloat(str);
+}
 
 static const char IBWeaponName[][] =
 {
@@ -780,7 +786,7 @@ public void OnPluginStart()
 	// CONSOLE VARIABLES
 	// ----------------------------------------------------------------------------------------------------
 	CreateAndHookConVars();
-	//AutoExecConfig(true, "l4d2_improved_bots");
+	AutoExecConfig(true, "l4d2_improved_bots");
 
 	// ----------------------------------------------------------------------------------------------------
 	// MISC
@@ -851,7 +857,7 @@ void CreateAndHookConVars()
 	g_hCvar_ImprovedMelee_Enabled 					= CreateConVar("ib_melee_enabled", "1", "Enables survivor bots' improved melee behaviour.", FCVAR_NOTIFY, true, 0.0, true, 1.0);
 	g_hCvar_ImprovedMelee_MaxCount 					= CreateConVar("ib_melee_max_team", "2", "The total number of melee weapons allowed on the team. <0: Bots never use melee>", FCVAR_NOTIFY, true, 0.0);
 	g_hCvar_ImprovedMelee_SwitchCount 				= CreateConVar("ib_melee_switch_count", "3", "The nearby infected count required for bot to switch to their melee weapon.", FCVAR_NOTIFY, true, 1.0);
-	g_hCvar_ImprovedMelee_SwitchRange 				= CreateConVar("ib_melee_switch_range", "140", "Range at which bot's target should be to switch to melee weapon.", FCVAR_NOTIFY, true, 0.0);
+	g_hCvar_ImprovedMelee_SwitchRange 				= CreateConVar("ib_melee_switch_range", "250", "Range at which bot's target should be to switch to melee weapon.", FCVAR_NOTIFY, true, 0.0);
 	g_hCvar_ImprovedMelee_ApproachRange				= CreateConVar("ib_melee_approach_range", "120", "Range at which bot's target should be to approach it. <0: Disable Approaching>", FCVAR_NOTIFY, true, 0.0);
 	g_hCvar_ImprovedMelee_AimRange 					= CreateConVar("ib_melee_aim_range", "125", "Range at which bot's target should be to start taking aim at it.", FCVAR_NOTIFY, true, 0.0);
 	g_hCvar_ImprovedMelee_AttackRange 				= CreateConVar("ib_melee_attack_range", "70", "Range at which bot's target should be to start attacking it.", FCVAR_NOTIFY, true, 0.0);
@@ -928,11 +934,11 @@ void CreateAndHookConVars()
 	g_hCvar_AvoidTanksWithProp						= CreateConVar("ib_avoidtanksnearpunchableprops", "1", "If bots should avoid and retreat from tanks that are nearby punchable props like cars.", FCVAR_NOTIFY, true, 0.0, true, 1.0);
 	g_hCvar_NoFallDmgOnLadderFail					= CreateConVar("ib_nofalldmgonladderfail", "0", "If enabled, survivor bots won't take fall damage if they were climbing a ladder just before that.", FCVAR_NOTIFY, true, 0.0, true, 1.0);
 
-	g_hCvar_WitchBehavior_WalkWhenNearby			= CreateConVar("ib_witchbehavior_walkwhennearby", "500", "Survivor bots will start walking near witch if they're this range near her and she's not disturbed. <0: Disabled>", FCVAR_NOTIFY, true, 0.0);
-	g_hCvar_WitchBehavior_AllowCrowning				= CreateConVar("ib_witchbehavior_allowcrowning", "2", "Allows survivor bots to crown witch on their path if they're holding any shotgun type weapon. <0: Disabled; 1: Only if survivor team doesn't have any human players; 2:Enabled>", FCVAR_NOTIFY, true, 0.0, true, 2.0);
+	g_hCvar_WitchBehavior_WalkWhenNearby			= CreateConVar("ib_witchbehavior_walkwhennearby", "0", "Survivor bots will start walking near witch if they're this range near her and she's not disturbed. <0: Disabled>", FCVAR_NOTIFY, true, 0.0);
+	g_hCvar_WitchBehavior_AllowCrowning				= CreateConVar("ib_witchbehavior_allowcrowning", "1", "Allows survivor bots to crown witch on their path if they're holding any shotgun type weapon. <0: Disabled; 1: Only if survivor team doesn't have any human players; 2:Enabled>", FCVAR_NOTIFY, true, 0.0, true, 2.0);
 
 	g_hCvar_NextProcessTime 						= CreateConVar("ib_process_time", "0.2", "Bots' data computing time delay (infected count, nearby friends, etc). Increasing the value might help increasing the game performance, but slow down bots.", FCVAR_NOTIFY, true, 0.033);
-	g_hCvar_Debug 									= CreateConVar("ib_debug", "0", "Spam console/chat in hopes of finding a a clue for your problems. Prints WILL LAG on Windows GUI!", FCVAR_NOTIFY, true, 0.0, true, 1.0);
+	g_hCvar_Debug 									= CreateConVar("ib_debug", "1", "Spam console/chat in hopes of finding a a clue for your problems. Prints WILL LAG on Windows GUI!", FCVAR_NOTIFY, true, 0.0, true, 1.0);
 
 	g_hCvar_GameDifficulty.AddChangeHook(OnConVarChanged);
 	g_hCvar_SurvivorLimpHealth.AddChangeHook(OnConVarChanged);
@@ -5827,13 +5833,7 @@ Action CmdSqrt(int client, int args)
 	
 	return Plugin_Handled;
 }
-stock float GetCmdArgFloat(int argnum)
-{
-    char str[18];
-    GetCmdArg(argnum, str, sizeof(str));
 
-    return StringToFloat(str);
-}
 Action CmdPrintFlag(int client, int args)
 {
 	int i, iItemFlags, iWeaponID, tier, size, iMaxAmmo;

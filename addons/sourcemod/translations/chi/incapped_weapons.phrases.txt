@@ -1,0 +1,32 @@
+"Phrases"
+{
+	"Revive_Wait"
+	{
+		"chi"		"{orange}%d {white}后{olive}起身"
+	}
+
+	"Revive_Done"
+	{
+		"chi"		"{olive}已起身!"
+	}
+
+	"Revive_UsePills"
+	{
+		"chi"		"{olive}[Incap] {white}你可以使用 {orange}药丸 {white}恢复生命！"
+	}
+
+	"Revive_UseAdren"
+	{
+		"chi"		"{olive}[Incap] {white}你可以使用 {orange}肾上腺素 {white}恢复生命！"
+	}
+
+	"Heal_UsePills"
+	{
+		"chi"		"{olive}[Incap] {white}你可以使用 {orange}药丸 {white}治疗！"
+	}
+
+	"Heal_UseAdren"
+	{
+		"chi"		"{olive}[Incap] {white}你可以使用 {orange}肾上腺素 {white}治疗！"
+	}
+}

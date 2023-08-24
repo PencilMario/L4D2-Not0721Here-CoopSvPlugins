@@ -1,0 +1,32 @@
+"Phrases"
+{
+	"Revive_Wait"
+	{
+		"en"		"{olive}Reviving {white}in {orange}%d"
+	}
+
+	"Revive_Done"
+	{
+		"en"		"{olive}Revived!"
+	}
+
+	"Revive_UsePills"
+	{
+		"en"		"{olive}[Incap] {white}you can use {orange}Pills {white}to revive"
+	}
+
+	"Revive_UseAdren"
+	{
+		"en"		"{olive}[Incap] {white}you can use {orange}Adrenaline {white}to revive"
+	}
+
+	"Heal_UsePills"
+	{
+		"en"		"{olive}[Incap] {white}you can use {orange}Pills {white}to heal"
+	}
+
+	"Heal_UseAdren"
+	{
+		"en"		"{olive}[Incap] {white}you can use {orange}Adrenaline {white}to heal"
+	}
+}

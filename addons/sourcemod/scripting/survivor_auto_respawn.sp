@@ -260,7 +260,7 @@ public void OnPluginStart()
 	
 	g_hRespawnTime 			= 	CreateConVar("sar_respawn_survivor_time",		"10", 	"玩家自动复活的默认时间(秒).", CVAR_FLAGS);
 	g_hRespawnAdd 			= 	CreateConVar("sar_respawn_survivor_time_add",	"4", 	"玩家每次死亡增加多少复活时间(秒).", CVAR_FLAGS);
-	g_hRespawnMax 			= 	CreateConVar("sar_respawn_survivor_time_max",	"60", 	"玩家自动复活的最大时间(秒).", CVAR_FLAGS);
+	g_hRespawnMax 			= 	CreateConVar("sar_respawn_survivor_time_max",	"60", 	"玩家自动复活的最大时间(  秒).", CVAR_FLAGS);
 
 	g_hRespawnLimit 		= 	CreateConVar("sar_respawn_survivor_limit",		"10", 	"玩家每回合自动复活次数.", CVAR_FLAGS);
 	g_hAllowSurvivorBot		= 	CreateConVar("sar_respawn_survivor_bot",		"1", 	"启用电脑幸存者自动复活? 0=禁用, 1=启用.", CVAR_FLAGS);

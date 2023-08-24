@@ -1,0 +1,248 @@
+"Games"
+{
+	"left4dead2"
+	{
+		"Functions"
+		{
+			"IW::CPainPills::CanUseOnSelf"
+			{
+				"signature"		"CPainPills::CanUseOnSelf"
+				"callconv"		"thiscall"
+				"return"		"int"
+				"this"			"entity"
+				"arguments"
+				{
+					"client"
+					{
+						"type"	"cbaseentity"
+					}
+				}
+			}
+			"IW::CTerrorGun::FireBullet"
+			{
+				"signature"		"CTerrorGun::FireBullet"
+				"callconv"		"thiscall"
+				"return"		"void"
+				"this"			"entity"
+			}
+		}
+
+		"Addresses"
+		{
+			"CanDeploy"
+			{
+				"windows"
+				{
+					"signature"	"CTerrorWeapon::CanDeployFor"			
+				}
+				"linux"
+				{
+					"signature"	"CTerrorWeapon::CanDeployFor"
+				}
+			}
+
+			"OnIncapacitatedAsSurvivor"
+			{
+				"windows"
+				{
+					"signature"	"CTerrorPlayer::OnIncapacitatedAsSurvivor"			
+				}
+				"linux"
+				{
+					"signature"	"CTerrorPlayer::OnIncapacitatedAsSurvivor"
+				}
+			}
+
+			"FireBullet"
+			{
+				"windows"
+				{
+					"signature" "CTerrorPlayer::FireBullet"
+				}
+				"linux"
+				{
+					"signature"	"CTerrorPlayer::FireBullet"
+				}
+			}
+		}
+
+		"Offsets"
+		{
+			"CanDeploy_Offset"
+			{
+				"windows"		"18"
+				"linux"			"20"
+			}
+			"CanDeploy_Byte"
+			{
+				"windows"		"139" // 0x8B
+				"linux"			"139" // 0x8B
+			}
+			"CanDeploy_Count"
+			{
+				"windows"		"36"
+				"linux"			"19"
+			}
+
+			"OnIncap_Offset"
+			{
+				"windows"		"0"
+				"linux"			"837"
+			}
+			"OnIncap_Byte"
+			{
+				"windows"		"106" // 0x6A
+				"linux"			"199" // 0xC7
+			}
+			"OnIncap_Count"
+			{
+				"windows"		"90"
+				"linux"			"24"
+			}
+
+			"FireBullet_Offset" // The line that reads the "m_isIncapacitated" netprop
+			{
+				"windows"		"969"
+				"linux"			"8289"
+			}
+			"FireBullet_Byte"
+			{
+				"windows"		"116" // 0x74
+				"linux"			"139" // 0x8B
+			}
+			"FireBullet_Count"
+			{
+				"windows"		"1"
+				"linux"			"19"
+			}
+		}
+
+		"Signatures"
+		{
+			/* CTerrorWeapon::CanDeployFor(CTerrorWeapon *this, CTerrorPlayer *) */
+			"CTerrorWeapon::CanDeployFor"
+			{
+				"library"		"server"
+				"linux"			"@_ZN13CTerrorWeapon12CanDeployForEP13CTerrorPlayer"
+				"windows"		"\x55\x8B\x2A\x56\x8B\x2A\x2A\x57\x8B\x2A\x85\x2A\x0F\x84\x2A\x2A\x2A\x2A\x8B\x2A\x8B\x2A\x2A\x2A\x2A\x2A\x8B\x2A\xFF\x2A\x84\x2A\x74\x2A\x8B\x2A\xE8\x2A\x2A\x2A\x2A\x83"
+				/* 55 8B ? 56 8B ? ? 57 8B ? 85 ? 0F 84 ? ? ? ? 8B ? 8B ? ? ? ? ? 8B ? FF ? 84 ? 74 ? 8B ? E8 ? ? ? ? 83 */
+				/* Search: "Weapon.Swing". VTable ~20 entries above. */
+			}
+
+			/* CTerrorPlayer::OnIncapacitatedAsSurvivor(CTakeDamageInfo  const&) */
+			"CTerrorPlayer::OnIncapacitatedAsSurvivor"
+			{
+				"library"		"server"
+				"linux"			"@_ZN13CTerrorPlayer25OnIncapacitatedAsSurvivorERK15CTakeDamageInfo"
+				"windows"		"\x6A\x00\x8B\x2A\xE8\x2A\x2A\x2A\x2A\x84\x2A\x75\x2A\x8B\x2A\x8B\x2A\x2A\x2A\x2A\x2A\x6A\x01\x8B\x2A\xFF\x2A\x8B\x2A\x85\x2A\x74\x2A\x57"
+				/* 6A 00 8B ? E8 ? ? ? ? 84 ? 75 ? 8B ? 8B ? ? ? ? ? 6A 01 8B ? FF ? 8B ? 85 ? 74 ? 57 */
+
+				// This points to the function start, where the other above points directly to the patch. In future could possibly make more of an advanced patch to search from function start for our target.. Better with E8 calls though.
+				// "windows"		"\x53\x8B\x2A\x83\x2A\x2A\x83\x2A\x2A\x83\x2A\x2A\x55\x8B\x2A\x2A\x89\x2A\x2A\x2A\x8B\x2A\x81\x2A\x2A\x2A\x2A\x2A\xA1\x2A\x2A\x2A\x2A\x33"
+				// /* 53 8B ? 83 ? ? 83 ? ? 83 ? ? 55 8B ? ? 89 ? ? ? 8B ? 81 ? ? ? ? ? A1 ? ? ? ? 33 */
+				/* Search: "PainLevel:Critical" */
+			}
+
+			/* CPainPills::CanUseOnSelf(CPainPills *this, CTerrorPlayer *) */
+			"CPainPills::CanUseOnSelf"
+			{
+				"library"		"server"
+				"linux"			"@_ZN10CPainPills12CanUseOnSelfEP13CTerrorPlayer"
+				"windows"		"\x2A\x2A\x2A\x2A\x2A\x2A\x2A\x2A\x2A\x2A\xD9\x2A\x2A\x57\x8B\x2A\x2A\xD9\x2A\x2A\x8B\x2A\x2A\x2A\x2A\x2A\x8B\x2A\x89\x2A\x2A\x8B"
+				/* ? ? ? ? ? ? ? ? ? ? D9 ? ? 57 8B ? ? D9 ? ? 8B ? ? ? ? ? 8B ? 89 ? ? 8B */
+				/* Search: "pills_used_fail" */
+			}
+
+			/* CTerrorPlayer::FireBullet(Vector, QAngle const&, CSWeaponID, int) */
+			"CTerrorPlayer::FireBullet"
+			{
+				"library"	"server"
+				"linux"		"@_ZN13CTerrorPlayer10FireBulletE6VectorRK6QAngle10CSWeaponIDi"
+				"windows"	"\x2A\x2A\x2A\x2A\x2A\x2A\x83\x2A\x2A\x83\x2A\x2A\x55\x8B\x2A\x2A\x89\x2A\x2A\x2A\x8B\x2A\x81\x2A\x2A\x2A\x2A\x2A\xA1\x2A\x2A\x2A\x2A\x33\x2A\x89\x2A\x2A\x8B\x2A\x2A\x56\x8B\x2A\x8B\x2A\x2A\x89\x2A\x2A\x89\x2A\x2A\x2A\x2A\x2A\x85"
+				/* ? ? ? ? ? ? 83 ? ? 83 ? ? 55 8B ? ? 89 ? ? ? 8B ? 81 ? ? ? ? ? A1 ? ? ? ? 33 ? 89 ? ? 8B ? ? 56 8B ? 8B ? ? 89 ? ? 89 ? ? ? ? ? 85 */
+				/* String "Multi-trace error: encountered a recycled entity %p (%s)!\n" */
+			}
+
+			/* CTerrorGun::FireBullet(CTerrorGun *this) */
+			"CTerrorGun::FireBullet"
+			{
+				"library"	"server"
+				"linux"		"@_ZN10CTerrorGun10FireBulletEv"
+				"windows"	"\x2A\x2A\x2A\x2A\x2A\x2A\x53\x56\x8B\x2A\xE8\x2A\x2A\x2A\x2A\x8B\x2A\x85\x2A\x0F\x84\x2A\x2A\x2A\x2A\x80\x2A\x2A\x2A\x2A\x2A\x2A\x74"
+				/* ? ? ? ? ? ? 53 56 8B ? E8 ? ? ? ? 8B ? 85 ? 0F 84 ? ? ? ? 80 ? ? ? ? ? ? 74 */
+				/* String "IsHoldingFireButton() && !IsFullyAutomatic()" */
+			}
+		}
+	}
+
+	"left4dead"
+	{
+		"Functions"
+		{
+			"IW::CPainPills::PrimaryAttack"
+			{
+				"signature"		"CPainPills::PrimaryAttack"
+				"callconv"		"thiscall"
+				"return"		"int"
+				"this"			"entity"
+			}
+		}
+
+		"Addresses"
+		{
+			"CanDeploy"
+			{
+				"windows"
+				{
+					"signature"	"CanDeploy"			
+				}
+				"linux"
+				{
+					"signature"	"CanDeploy"
+				}
+			}
+		}
+
+		"Offsets"
+		{
+			"CanDeploy_Offset"
+			{
+				"windows"		"39"
+				"linux"			"66"
+			}
+			"CanDeploy_Byte"
+			{
+				"windows"		"139" // 0x8B
+				"linux"			"117" // 0x75
+			}
+			"CanDeploy_Count"
+			{
+				"windows"		"36"
+				"linux"			"1"
+			}
+		}
+
+		"Signatures"
+		{
+			/* CTerrorWeapon::CanDeploy(void) */
+			"CanDeploy"
+			{
+				"library"		"server"
+				"linux"			"@_ZN13CTerrorWeapon9CanDeployEv"
+				"windows"		"\x56\x57\x8B\x2A\xE8\x2A\x2A\x2A\x2A\x8B\x2A\x85\x2A\x0F\x84\x2A\x2A\x2A\x2A\x8B\x2A\x8B\x2A\x2A\x2A\x2A\x2A\x8B\x2A\xFF\x2A\x84\x2A\x0F\x84\x2A\x2A\x2A\x2A\x8B\x2A\x8B\x2A\x2A\x2A\x2A\x2A\x8B\x2A\xFF\x2A\x84\x2A\x74"
+				/* 56 57 8B ? E8 ? ? ? ? 8B ? 85 ? 0F 84 ? ? ? ? 8B ? 8B ? ? ? ? ? 8B ? FF ? 84 ? 0F 84 ? ? ? ? 8B ? 8B ? ? ? ? ? 8B ? FF ? 84 ? 74 */
+				/* Search: "models/weapons/w_shield.mdl". VTable entry below. */
+			}
+
+			/* CPainPills::PrimaryAttack(CPainPills *this) */
+			"CPainPills::PrimaryAttack"
+			{
+				"library"		"server"
+				"linux"			"@_ZN10CPainPills13PrimaryAttackEv"
+				"windows"		"\x2A\x2A\x2A\x2A\x2A\x2A\x8B\x2A\xE8\x2A\x2A\x2A\x2A\x8B\x2A\x85\x2A\x0F\x84\x2A\x2A\x2A\x2A\x8B\x2A\x8B\x2A\x2A\x2A\x2A\x2A\x8B\x2A\xFF\x2A\x84\x2A\x0F\x84\x2A\x2A\x2A\x2A\xD9\x2A\xD8\x2A\x2A\x2A\x2A\x2A\xDF\x2A\xF6\x2A\x2A\x0F"
+				/* ? ? ? ? ? ? 8B ? E8 ? ? ? ? 8B ? 85 ? 0F 84 ? ? ? ? 8B ? 8B ? ? ? ? ? 8B ? FF ? 84 ? 0F 84 ? ? ? ? D9 ? D8 ? ? ? ? ? DF ? F6 ? ? 0F */
+				/* Search: "pills_used_fail" */
+			}
+		}
+	}
+}

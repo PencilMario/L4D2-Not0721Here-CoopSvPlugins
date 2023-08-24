@@ -415,7 +415,7 @@ public void OnPluginStart()
 	}
 
 	g_hCvarReviveHealth =	CreateConVar(	"l4d_incapped_weapons_health",			"30",					"How much health to give a player when they revive themselves.", CVAR_FLAGS);
-	g_hCvarThrow =			CreateConVar(	"l4d_incapped_weapons_throw",			"0",					"0=Block grenade throwing animation to prevent standing up during throw (requires Left4DHooks plugin). 1=Allow throwing animation.", CVAR_FLAGS);
+	g_hCvarThrow =			CreateConVar(	"l4d_incapped_weapons_throw",			"1",					"0=Block grenade throwing animation to prevent standing up during throw (requires Left4DHooks plugin). 1=Allow throwing animation.", CVAR_FLAGS);
 
 	CreateConVar(							"l4d_incapped_weapons_version",			PLUGIN_VERSION,			"Incapped Weapons plugin version.", FCVAR_NOTIFY|FCVAR_DONTRECORD);
 	AutoExecConfig(true,					"l4d_incapped_weapons");

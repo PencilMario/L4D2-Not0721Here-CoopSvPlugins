@@ -256,7 +256,7 @@ public BuildPrintPanel(client)
     for (i=1;i<=MaxClients;i++)
     {
         if (skip) continue;
-        if (sumspec > 4){
+        if (sumspec >= 4){
             Format(text, sizeof(text), "一万个旁观，不干了！");
             DrawPanelText(TeamPanel, text);
             skip = true;
@@ -283,7 +283,7 @@ public BuildPrintPanel(client)
         {
             if (IsClientConnected(i) && IsClientInGame(i) && GetClientTeam(i) == 2)
             {
-                GetClientHealthStatus(i, hpstatus, sizeof(hpstatus));
+                GetClientHealthStatus(i, hpstatus, sizeof(hpstatus), sumsurv > 4);
                 Format(text, sizeof(text), "%N - %s", i, hpstatus);
                 DrawPanelText(TeamPanel, text);
                 count++;
@@ -293,7 +293,7 @@ public BuildPrintPanel(client)
         {
             if (IsValidPlayer(i) && GetClientTeam(i) == 2)
             {
-                GetClientHealthStatus(i, hpstatus, sizeof(hpstatus));
+                GetClientHealthStatus(i, hpstatus, sizeof(hpstatus), sumsurv > 4);
                 Format(text, sizeof(text), "%N - %s", i, hpstatus);
                 DrawPanelText(TeamPanel, text);
                 count++;
@@ -399,7 +399,7 @@ public TeamPanelHandler(Handle:TeamPanel, MenuAction:action, param1, param2)
         }
     }
 }
-public void GetClientHealthStatus(int client, char[] buffer, int len){
+void GetClientHealthStatus(int client, char[] buffer, int len, bool moreinfo = true){
     char info[100];
     if (IsPlayerAlive(client)){
         int health = GetSurvivorPermanentHealth(client) + (GetClientTeam(client) == 2 ? GetSurvivorTemporaryHealth(client) : 0);
@@ -407,7 +407,7 @@ public void GetClientHealthStatus(int client, char[] buffer, int len){
     }else{
         Format(buffer, len, "死亡")
     }
-    
+    if (!moreinfo) return;
     if (GetClientTeam(client) == TEAM_SURVIVOR){
         if (GetSurvivorTemporaryHealth(client) > 0) Format(buffer, len, "#%s", buffer);
         if (IsPlayerAlive(client)){

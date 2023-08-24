@@ -544,7 +544,7 @@ void vRespawnSurvivor(int client)
 {
 	vRoundRespawn(client);
 	vGiveWeapon(client);
-	vTeleportToSurvivor(client);
+	vTeleportToSurvivor(client, true, GetClientViewingPlayer(client));
 	//vRemoveSurvivorDeathModel(client);
 	g_esPlayer[client].iRespawned += 1;
 
@@ -561,14 +561,17 @@ void vRespawnSurvivor(int client)
 		CreateTimer(1.0, DelayDisplayPrompt, GetClientUserId(client), TIMER_FLAG_NO_MAPCHANGE);
 	}
 }
+int GetClientViewingPlayer(int client){
+	return GetEntPropEnt(client, Prop_Send, "m_hObserverTarget");
 
+}
 Action DelayDisplayPrompt(Handle timer, int client)
 {
 	if((client = GetClientOfUserId(client)) == 0)
 		return Plugin_Continue;
 
 	if(IsClientInGame(client) && !IsFakeClient(client))
-		PrintHintText(client, "你剩余%d次复活,下一次复活时间:%d秒.", g_iRespawnLimit - g_esPlayer[client].iRespawned, g_esPlayer[client].iDynamic);
+		PrintHintText(client, "你剩余%d次复活,下一次复活时间:%d秒.\n你将尝试复活至当前观看的玩家（%N）", g_iRespawnLimit - g_esPlayer[client].iRespawned, g_esPlayer[client].iDynamic);
 	return Plugin_Continue;
 }
 
@@ -835,35 +838,41 @@ void vCheatCommand(int client, const char[] sCommand, const char[] sArguments = 
 	SetCommandFlags(sCommand, iCmdFlags);
 }
 
-void vTeleportToSurvivor(int client, bool bRandom = true)
+void vTeleportToSurvivor(int client, bool bRandom = true, int targetplayer = -1)
 {
 	int iSurvivor = 1;
-	ArrayList aClients = new ArrayList(2);
+	if (targetplayer == -1){
+		ArrayList aClients = new ArrayList(2);
+		for(; iSurvivor <= MaxClients; iSurvivor++)
+		{
+			if(iSurvivor == client || !IsClientInGame(iSurvivor) || GetClientTeam(iSurvivor) != 2 || !IsPlayerAlive(iSurvivor))
+				continue;
 
-	for(; iSurvivor <= MaxClients; iSurvivor++)
-	{
-		if(iSurvivor == client || !IsClientInGame(iSurvivor) || GetClientTeam(iSurvivor) != 2 || !IsPlayerAlive(iSurvivor))
-			continue;
-	
-		aClients.Set(aClients.Push(!GetEntProp(iSurvivor, Prop_Send, "m_isIncapacitated") ? 0 : !GetEntProp(iSurvivor, Prop_Send, "m_isHangingFromLedge") ? 1 : 2), iSurvivor, 1);
-	}
+			aClients.Set(aClients.Push(!GetEntProp(iSurvivor, Prop_Send, "m_isIncapacitated") ? 0 : !GetEntProp(iSurvivor, Prop_Send, "m_isHangingFromLedge") ? 1 : 2), iSurvivor, 1);
+		}
 
-	if(!aClients.Length)
-		iSurvivor = 0;
-	else
-	{
-		aClients.Sort(Sort_Descending, Sort_Integer);
-
-		if(!bRandom)
-			iSurvivor = aClients.Get(aClients.Length - 1, 1);
+		if(!aClients.Length)
+			iSurvivor = 0;
 		else
 		{
-			iSurvivor = aClients.Length - 1;
-			iSurvivor = aClients.Get(GetRandomInt(aClients.FindValue(aClients.Get(iSurvivor, 0)), iSurvivor), 1);
+			aClients.Sort(Sort_Descending, Sort_Integer);
+
+			if(!bRandom)
+				iSurvivor = aClients.Get(aClients.Length - 1, 1);
+			else
+			{
+				iSurvivor = aClients.Length - 1;
+				iSurvivor = aClients.Get(GetRandomInt(aClients.FindValue(aClients.Get(iSurvivor, 0)), iSurvivor), 1);
+			}
 		}
+		delete aClients;
+	}else if(!IsClientInGame(targetplayer) || GetClientTeam(targetplayer) != 2 || !IsPlayerAlive(targetplayer) || client == targetplayer){
+		iSurvivor = targetplayer;
+	}else{
+		vTeleportToSurvivor(client);
+		return;
 	}
 
-	delete aClients;
 
 	if(iSurvivor)
 	{

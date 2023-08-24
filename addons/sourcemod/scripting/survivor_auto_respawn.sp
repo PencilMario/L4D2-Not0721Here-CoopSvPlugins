@@ -274,7 +274,7 @@ public void OnPluginStart()
 	g_esWeapon[3].cFlags	=	CreateConVar("sar_respawn_slot3", 	"0", 		"槽位3给什么 \n0=不给,15=所有.", CVAR_FLAGS);
 	g_esWeapon[4].cFlags	= 	CreateConVar("sar_respawn_slot4", 	"0", 		"槽位4给什么 \n0=不给,3=所有.", CVAR_FLAGS);
 	g_hGiveWeaponType		= 	CreateConVar("sar_give_type", 		"2", 		"根据什么来给玩家装备. \n0=不给,1=根据每个槽位的设置,2=根据当前所有生还者的平均装备质量(仅主副武器).");
-	g_hRemoveDeathDrop		= 	CreateConVar("sar_remove_drop", 	"1", 		"玩家死亡移除掉落的武器(建议启用). 0=禁用, 1=启用.", CVAR_FLAGS);
+	g_hRemoveDeathDrop		= 	CreateConVar("sar_remove_drop", 	"0", 		"玩家死亡移除掉落的武器(建议启用). 0=禁用, 1=启用.", CVAR_FLAGS);
 
 	g_hSbAllBotGame = FindConVar("sb_all_bot_game");
 	g_hAllowAllBotSur = FindConVar("allow_all_bot_survivor_team");

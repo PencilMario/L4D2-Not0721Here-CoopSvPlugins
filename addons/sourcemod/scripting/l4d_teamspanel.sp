@@ -283,7 +283,7 @@ public BuildPrintPanel(client)
         {
             if (IsClientConnected(i) && IsClientInGame(i) && GetClientTeam(i) == 2)
             {
-                GetClientHealthStatus(i, hpstatus, sizeof(hpstatus), sumsurv > 4);
+                GetClientHealthStatus(i, hpstatus, sizeof(hpstatus), sumsurv <= 4);
                 Format(text, sizeof(text), "%N - %s", i, hpstatus);
                 DrawPanelText(TeamPanel, text);
                 count++;
@@ -293,7 +293,7 @@ public BuildPrintPanel(client)
         {
             if (IsValidPlayer(i) && GetClientTeam(i) == 2)
             {
-                GetClientHealthStatus(i, hpstatus, sizeof(hpstatus), sumsurv > 4);
+                GetClientHealthStatus(i, hpstatus, sizeof(hpstatus), sumsurv <= 4);
                 Format(text, sizeof(text), "%N - %s", i, hpstatus);
                 DrawPanelText(TeamPanel, text);
                 count++;

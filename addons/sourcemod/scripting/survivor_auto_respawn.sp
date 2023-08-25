@@ -522,7 +522,7 @@ Action tmrRespawnSurvivor(Handle timer, int client)
 		if(g_esPlayer[client].iCountdown > 0)
 		{
 			if(!IsFakeClient(client))
-				PrintCenterText(client, "你将在%d秒后复活(还剩%d次)", g_esPlayer[client].iCountdown, g_iRespawnLimit - g_esPlayer[client].iRespawned);
+				PrintCenterText(client, "你将在%d秒后复活(还剩%d次)\n你将复活至你正在观看的玩家：%N", g_esPlayer[client].iCountdown, g_iRespawnLimit - g_esPlayer[client].iRespawned, GetClientViewingPlayer(client));
 
 			g_esPlayer[client].iCountdown--;
 		}
@@ -542,9 +542,10 @@ Action tmrRespawnSurvivor(Handle timer, int client)
 
 void vRespawnSurvivor(int client)
 {
+	int viewing = GetClientViewingPlayer(client);
 	vRoundRespawn(client);
 	vGiveWeapon(client);
-	vTeleportToSurvivor(client, true, GetClientViewingPlayer(client));
+	vTeleportToSurvivor(client, true, viewing);
 	//vRemoveSurvivorDeathModel(client);
 	g_esPlayer[client].iRespawned += 1;
 
@@ -571,7 +572,7 @@ Action DelayDisplayPrompt(Handle timer, int client)
 		return Plugin_Continue;
 
 	if(IsClientInGame(client) && !IsFakeClient(client))
-		PrintHintText(client, "你剩余%d次复活,下一次复活时间:%d秒.\n你将尝试复活至当前观看的玩家（%N）", g_iRespawnLimit - g_esPlayer[client].iRespawned, g_esPlayer[client].iDynamic);
+		PrintHintText(client, "你剩余%d次复活,下一次复活时间:%d秒.", g_iRespawnLimit - g_esPlayer[client].iRespawned, g_esPlayer[client].iDynamic);
 	return Plugin_Continue;
 }
 

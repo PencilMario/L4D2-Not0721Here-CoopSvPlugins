@@ -868,10 +868,10 @@ void vTeleportToSurvivor(int client, bool bRandom = true, int targetplayer = -1)
 		}
 		delete aClients;
 	}else if(!IsClientInGame(targetplayer) || GetClientTeam(targetplayer) != 2 || !IsPlayerAlive(targetplayer) || client == targetplayer){
-		iSurvivor = targetplayer;
-	}else{
 		vTeleportToSurvivor(client);
 		return;
+	}else{
+		iSurvivor = targetplayer;
 	}
 
 

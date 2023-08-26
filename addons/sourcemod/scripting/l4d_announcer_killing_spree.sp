@@ -80,22 +80,22 @@ public void RoundEnd_Event(Event event, const char[] name, bool dontBroadcast){
 public void Event_Incapacitated(Event event, const char[] name, bool dontBroadcast){
     int victim = GetClientOfUserId(event.GetInt("userid"));
     int attacker = GetClientOfUserId(event.GetInt("attacker"));
-    if (GetClientTeam(victim) != 2 && GetClientTeam(attacker) != 2) return; // 队友击倒
-    CPrintToChatAll("[{red}!{default}] %N {olive}黑倒了 {default}%N", attacker, victim);
-    float pos[3];
-    GetClientAbsOrigin(victim, pos);
-    for (int p = 1; p <= MaxClients; p++){
-        if (IsClientInGame(p)){
-        EmitSoundToClient(p, "announcer_killing_spree/hpain1.mp3", victim, SNDCHAN_STATIC, SNDLEVEL_NORMAL, SND_NOFLAGS, SNDVOL_NORMAL, SNDPITCH_NORMAL, -1, pos, NULL_VECTOR, true, 0.0);
-        EmitSoundToClient(p, "announcer_killing_spree/hpain1.mp3", victim, SNDCHAN_STATIC, SNDLEVEL_NORMAL, SND_NOFLAGS, SNDVOL_NORMAL, SNDPITCH_NORMAL, -1, pos, NULL_VECTOR, true, 0.0);
-        EmitSoundToClient(p, "announcer_killing_spree/hpain1.mp3", victim, SNDCHAN_STATIC, SNDLEVEL_NORMAL, SND_NOFLAGS, SNDVOL_NORMAL, SNDPITCH_NORMAL, -1, pos, NULL_VECTOR, true, 0.0);
-        EmitSoundToClient(p, "announcer_killing_spree/hpain1.mp3", victim, SNDCHAN_STATIC, SNDLEVEL_NORMAL, SND_NOFLAGS, SNDVOL_NORMAL, SNDPITCH_NORMAL, -1, pos, NULL_VECTOR, true, 0.0);
-        EmitSoundToClient(p, "announcer_killing_spree/hpain1.mp3", victim, SNDCHAN_STATIC, SNDLEVEL_NORMAL, SND_NOFLAGS, SNDVOL_NORMAL, SNDPITCH_NORMAL, -1, pos, NULL_VECTOR, true, 0.0);
-        EmitSoundToClient(p, "announcer_killing_spree/hpain1.mp3", victim, SNDCHAN_STATIC, SNDLEVEL_NORMAL, SND_NOFLAGS, SNDVOL_NORMAL, SNDPITCH_NORMAL, -1, pos, NULL_VECTOR, true, 0.0);
-
+    if (GetClientTeam(victim) == 2 && GetClientTeam(attacker) == 2){// 队友击倒
+        CPrintToChatAll("[{red}!{default}] %N {olive}黑倒了 {default}%N", attacker, victim);
+        float pos[3];
+        GetClientAbsOrigin(victim, pos);
+        for (int p = 1; p <= MaxClients; p++){
+            if (IsClientInGame(p)){
+            EmitSoundToClient(p, "announcer_killing_spree/hpain1.mp3", victim, SNDCHAN_STATIC, SNDLEVEL_NORMAL, SND_NOFLAGS, SNDVOL_NORMAL, SNDPITCH_NORMAL, -1, pos, NULL_VECTOR, true, 0.0);
+            EmitSoundToClient(p, "announcer_killing_spree/hpain1.mp3", victim, SNDCHAN_STATIC, SNDLEVEL_NORMAL, SND_NOFLAGS, SNDVOL_NORMAL, SNDPITCH_NORMAL, -1, pos, NULL_VECTOR, true, 0.0);
+            EmitSoundToClient(p, "announcer_killing_spree/hpain1.mp3", victim, SNDCHAN_STATIC, SNDLEVEL_NORMAL, SND_NOFLAGS, SNDVOL_NORMAL, SNDPITCH_NORMAL, -1, pos, NULL_VECTOR, true, 0.0);
+            EmitSoundToClient(p, "announcer_killing_spree/hpain1.mp3", victim, SNDCHAN_STATIC, SNDLEVEL_NORMAL, SND_NOFLAGS, SNDVOL_NORMAL, SNDPITCH_NORMAL, -1, pos, NULL_VECTOR, true, 0.0);
+            EmitSoundToClient(p, "announcer_killing_spree/hpain1.mp3", victim, SNDCHAN_STATIC, SNDLEVEL_NORMAL, SND_NOFLAGS, SNDVOL_NORMAL, SNDPITCH_NORMAL, -1, pos, NULL_VECTOR, true, 0.0);
+            EmitSoundToClient(p, "announcer_killing_spree/hpain1.mp3", victim, SNDCHAN_STATIC, SNDLEVEL_NORMAL, SND_NOFLAGS, SNDVOL_NORMAL, SNDPITCH_NORMAL, -1, pos, NULL_VECTOR, true, 0.0);
+    
+            }
         }
     }
-    
 } 
 
 public void Event_PlayerDeath(Event event, const char[] name, bool dontBroadcast) 

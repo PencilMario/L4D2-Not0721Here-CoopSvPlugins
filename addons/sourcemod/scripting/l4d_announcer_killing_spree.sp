@@ -38,6 +38,8 @@ public void OnMapStart(){
     AddFileToDownloadsTable("sound/announcer_killing_spree/announcer_kill_godlike_01.mp3");
     AddFileToDownloadsTable("sound/announcer_killing_spree/announcer_kill_holy_01.mp3");
 
+    AddFileToDownloadsTable("sound/announcer_killing_spree/hpain1.mp3");
+    
     PrecacheSound("announcer_killing_spree/announcer_kill_double_01.mp3");
     PrecacheSound("announcer_killing_spree/announcer_kill_triple_01.mp3");
     PrecacheSound("announcer_killing_spree/announcer_kill_ultra_01.mp3");
@@ -51,6 +53,8 @@ public void OnMapStart(){
     PrecacheSound("announcer_killing_spree/announcer_kill_monster_01.mp3");
     PrecacheSound("announcer_killing_spree/announcer_kill_godlike_01.mp3");
     PrecacheSound("announcer_killing_spree/announcer_kill_holy_01.mp3");
+    PrecacheSound("announcer_killing_spree/hpain1.mp3");
+
     for (int i=0;i < MAXPLAYERS;i++){
         if (g_iFrindlyKillCount[i]!=0){
             g_iFrindlyKillCount[i]=0;
@@ -72,6 +76,24 @@ public void RoundEnd_Event(Event event, const char[] name, bool dontBroadcast){
     KillTimer(g_tCounter);
     g_tCounter = INVALID_HANDLE;
 }
+public void Event_Incapacitated(Event event, const char[] name, bool dontBroadcast){
+    int victim = GetClientOfUserId(event.GetInt("userid"));
+    int attacker = GetClientOfUserId(event.GetInt("attacker"));
+    if (GetClientTeam(victim) != 2 && GetClientTeam(attacker) != 2) return; // 队友击倒
+    CPrintToChatAll("[{red}!{default}] %N {olive}黑倒了 {default}%N", attacker, victim);
+    float pos[3];
+    GetClientAbsOrigin(victim, pos);
+    for (int p = 1; p <= MaxClients; p++){
+        if (IsClientInGame(p)){
+        EmitSoundToClient(p, "announcer_killing_spree/hpain1.mp3", SOUND_FROM_PLAYER, SNDCHAN_STATIC, SNDLEVEL_NORMAL, SND_NOFLAGS, SNDVOL_NORMAL, SNDPITCH_NORMAL, -1, pos, NULL_VECTOR, true, 0.0);
+        EmitSoundToClient(p, "announcer_killing_spree/hpain1.mp3", SOUND_FROM_PLAYER, SNDCHAN_STATIC, SNDLEVEL_NORMAL, SND_NOFLAGS, SNDVOL_NORMAL, SNDPITCH_NORMAL, -1, pos, NULL_VECTOR, true, 0.0);
+        EmitSoundToClient(p, "announcer_killing_spree/hpain1.mp3", SOUND_FROM_PLAYER, SNDCHAN_STATIC, SNDLEVEL_NORMAL, SND_NOFLAGS, SNDVOL_NORMAL, SNDPITCH_NORMAL, -1, pos, NULL_VECTOR, true, 0.0);
+        EmitSoundToClient(p, "announcer_killing_spree/hpain1.mp3", SOUND_FROM_PLAYER, SNDCHAN_STATIC, SNDLEVEL_NORMAL, SND_NOFLAGS, SNDVOL_NORMAL, SNDPITCH_NORMAL, -1, pos, NULL_VECTOR, true, 0.0);
+        }
+    }
+    
+} 
+
 public void Event_PlayerDeath(Event event, const char[] name, bool dontBroadcast) 
 {
     int victim = GetClientOfUserId(event.GetInt("userid"));

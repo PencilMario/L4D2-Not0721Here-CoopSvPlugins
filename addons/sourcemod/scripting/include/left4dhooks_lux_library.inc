@@ -20,6 +20,8 @@
 #endif
 #define _lux_library_included
 
+#pragma newdecls required
+
 #include <sourcemod>
 #include <sdktools>
 
@@ -384,6 +386,9 @@ stock float Terror_GetAdrenalineTime(int iClient)
 	{
 		timerAddress = FindSendPropInfo("CTerrorPlayer", "m_bAdrenalineActive") - 12;
 	}
+	
+	if(GetEntProp(iClient, Prop_Send, "m_bAdrenalineActive", 1) < 1)
+		return -1.0;
 	
 	//timerAddress + 8 = TimeStamp
 	float flGameTime = GetGameTime();

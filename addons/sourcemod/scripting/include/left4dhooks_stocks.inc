@@ -32,6 +32,8 @@
 #endif
 #define _l4d_stocks_included
 
+#pragma newdecls required
+
 #tryinclude <left4dhooks_anim>
 #tryinclude <left4dhooks_silver>
 #tryinclude <left4dhooks_lux_library>
@@ -665,7 +667,7 @@ stock int L4D_GetPendingTankPlayer()
  * @return				True if glow was set, false if entity does not support glow.
  */
 // L4D2 only.
-stock bool L4D2_SetEntityGlow(int entity, L4D2GlowType type, int range, int minRange, colorOverride[3], bool flashing)
+stock bool L4D2_SetEntityGlow(int entity, L4D2GlowType type, int range, int minRange, int colorOverride[3], bool flashing)
 {
 	if (!IsValidEntity(entity))
 	{
@@ -1319,6 +1321,30 @@ stock void L4D_SetPlayerTempHealth(int client, int tempHealth)
 {
 	SetEntPropFloat(client, Prop_Send, "m_healthBuffer", float(tempHealth));
 	SetEntPropFloat(client, Prop_Send, "m_healthBufferTime", GetGameTime());
+}
+
+/**
+ * Set players temporarily health. Allows for setting above 200 HP.
+ *
+ * @param client		Client index.
+ * @param tempHealth	Temporarily health.
+ * @noreturn
+ * @error				Invalid client index.
+ */
+stock void L4D_SetPlayerTempHealthFloat(int client, float tempHealth)
+{
+	static ConVar painPillsDecayCvar;
+	if (painPillsDecayCvar == null)
+	{
+		painPillsDecayCvar = FindConVar("pain_pills_decay_rate");
+		if (painPillsDecayCvar == null)
+		{
+			return;
+		}
+	}
+
+	SetEntPropFloat(client, Prop_Send, "m_healthBuffer", tempHealth);
+	SetEntPropFloat(client, Prop_Send, "m_healthBufferTime", GetGameTime() + ((tempHealth - 200) / painPillsDecayCvar.FloatValue + 1 / painPillsDecayCvar.FloatValue));
 }
 
 /**

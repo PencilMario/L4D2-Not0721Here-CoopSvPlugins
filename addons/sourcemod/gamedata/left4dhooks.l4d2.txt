@@ -98,6 +98,21 @@
 				}
 			}
 
+			"L4DD::CTankRock::BounceTouch"
+			{
+				"signature"		"CTankRock::BounceTouch"
+				"callconv"		"thiscall"
+				"return"		"int"
+				"this"			"entity"
+				"arguments"
+				{
+					"a1"
+					{
+						"type"	"cbaseentity"
+					}
+				}
+			}
+
 			"L4DD::CDeathFallCamera::Enable"
 			{
 				"signature"		"CDeathFallCamera::Enable"
@@ -1086,7 +1101,7 @@
 			{
 				"signature"		"CTerrorPlayer::OnShovedByPounceLanding"
 				"callconv"		"thiscall"
-				"return"		"float"
+				"return"		"void"
 				"this"			"entity"
 				"arguments"
 				{
@@ -1882,6 +1897,12 @@
 				"linux"		"1596"
 			}
 
+			"SurvivalModePtr"
+			{
+				"windows"	"1600"
+				"linux"		"1600"
+			}
+
 			"ScriptedEventManagerPtr"
 			{
 				"windows"	"1592"
@@ -1921,11 +1942,11 @@
 				"linux"		"528"
 			}
 
-			// Can be found in "CDirector::OnMapLoaded" - *((_DWORD *)v13 + 270) = RandomInt((char *)&n + 1, 6);
+			// Can be found in "CDirector::OnMapLoaded" - *((_DWORD *)v13 + 318) = RandomInt((char *)&n + 1, 6);
 			"CDirector::m_nFirstClassIndex"
 			{
-				"linux"		"1080"
-				"windows"	"1080"
+				"linux"		"1272"
+				"windows"	"1272"
 			}
 
 			"CTerrorPlayer::CanBecomeGhost::Offset"
@@ -2161,6 +2182,33 @@
 				"linux"		"80"
 			}
 
+			/**
+			 * Search string "#Survival_Spawn_Start_Warning"
+			 * Used in-game to count down till holdout starts
+			 *
+			 * CountdownTimer::Now((CDirectorSurvivalMode *)((char *)this + 68));
+			 */
+			"L4D2CountdownTimer_SurvivalSetupTimer"
+			{
+				"windows"	"68"
+				"linux"		"68"
+			}
+
+			/**
+			 * Search string "#Survival_Spawn_Start_Warning"
+			 * Used in-game to notify players the remaining time before holdout starts
+			 * 
+			 * Vscript entry: "DirectorOptions.SurvivalSetupTime"
+			 * ConVar: "director_survival_setup_time"
+			 *
+			 * .text:008AF615   sub     dword ptr [ebx+9Ch], 0Ah
+			 */
+			"CDirectorSurvivalMode::m_iSetupNotifyTime" // integer
+			{
+				"windows"		"156"
+				"linux"			"156"
+			}
+
 			// L4D2IntervalTimer
 			"L4D2IntervalTimer_SmokerDeathTimer"
 			{
@@ -2369,6 +2417,37 @@
 			{
 				"windows"	"3148"
 				"linux"		"3148"
+			}
+
+
+
+			// Animation offsets:
+			/* Windows offset:
+			 *
+			 * Search string "PlayerLedgeHangMiddle", which will lead you to "CTerrorPlayerAnimState::HandleActivity_Incapacitated".
+			 * Go to its only xref function, and again, then you are at vtable of "CTerrorPlayerAnimState".
+			 * Double click on the first virtual function "CTerrorPlayerAnimState::ClearAnimationState".
+			 * Go to its function xref 3 times, and you will meet with an enormous constructor function.
+			 * 
+			 * 1. Generate pseudocode and you can easily find the offset where the cursor is.
+			 * 2. See the "mov" instruction below the highlighted "call".
+			 */
+			"CTerrorPlayer::m_PlayerAnimState"
+			{
+				"linux"		"10512"
+				"windows"	"10524"
+			}
+
+			"CMultiPlayerAnimState::m_eCurrentMainSequenceActivity"
+			{
+				"linux"		"276"
+				"windows"	"276"
+			}
+
+			"CTerrorPlayerAnimState::m_bIsCustomSequence"
+			{
+				"linux"		"340"
+				"windows"	"340"
 			}
 		}
 
@@ -2686,6 +2765,25 @@
 				"linux"		"@_ZN13CTerrorPlayer10ExtinguishEv"
 				"windows"	"\x2A\x2A\x2A\x2A\x2A\x2A\x53\x56\x57\x8B\x2A\x8B\xB7\x2A\x2A\x2A\x2A\x68"
 				/* ? ? ? ? ? ? 53 56 57 8B ? 8B B7 ? ? ? ? 68 */
+			}
+
+			/**
+			 * CTerrorPlayer::FindUseEntity(float, float, float, bool *, bool)
+			 *
+			 * How to find on Windows:
+			 * 1. Find the function's offsets with asherkin's VTable dump.
+			 * 2. In IDA Pro, go to the ".rdata" section of the Windows binary.
+			 * 3. Search for "CTerrorPlayer::`vftable'" to jump to the "CTerrorPlayer" vtable.
+			 * 4. Compare your dump's offsets with asherkin's dump's offsets to find the target function.
+			 * 5. Look for the target function in the Windows binary.
+			 **/
+			"CTerrorPlayer::FindUseEntity"
+			{
+				"library"	"server"
+				"linux"		"@_ZN13CTerrorPlayer13FindUseEntityEfffPbb"
+				"mac"		"@_ZN13CTerrorPlayer13FindUseEntityEfffPbb"
+				"windows"	"\x2A\x2A\x2A\x2A\x2A\x2A\x2A\x2A\xE8\x2A\x2A\x2A\x2A\xA1\x2A\x2A\x2A\x2A\x33\x2A\x89\x2A\x2A\x0F"
+				/* ? ? ? ? ? ? ? ? E8 ? ? ? ? A1 ? ? ? ? 33 ? 89 ? ? 0F */
 			}
 
 			/*
@@ -3013,6 +3111,17 @@
 				/* Search: "NumberOfTeamDead" call is 2 functions below this. */
 			}
 			// =========================
+
+
+
+			// Animation signatures:
+			"CMultiPlayerAnimState::ResetMainActivity"
+			{
+				"library"		"server"
+				"linux"			"@_ZN21CMultiPlayerAnimState17ResetMainActivityEv"
+				"windows"		"\x56\x8B\x2A\x8B\x2A\x8B\x2A\x2A\xC7\x2A\x2A\x2A\x2A\x2A\x2A\x2A\x2A\x2A\xFF"
+								/* 56 8B ? 8B ? 8B ? ? C7 ? ? ? ? ? ? ? ? ? FF */
+			}
 
 
 
@@ -3577,6 +3686,17 @@
 						/* ? ? ? ? ? ? 57 C6 86 ? ? ? ? ? C7 */
 			}
 
+			/**
+			* Search string "HulkZombie.ThrownProjectileHit"
+			*/
+			"CTankRock::BounceTouch"
+			{
+				"library"	"server"
+				"linux"		"@_ZN9CTankRock11BounceTouchEP11CBaseEntity"
+				"windows"	"\x2A\x2A\x2A\x2A\x2A\x2A\x2A\x2A\x2A\xA1\x2A\x2A\x2A\x2A\x2A\x2A\x89\x2A\x2A\x2A\x8B\x2A\x2A\x0F\xB7"
+				/* ? ? ? ? ? ? ? ? ? A1 ? ? ? ? ? ? 89 ? ? ? 8B ? ? 0F B7 */
+			}
+
 			/*
 			 * CTerrorGameRules::GetSurvivorSet(void)
 			 *
@@ -3987,7 +4107,7 @@
 
 				- Find it through only xref, which is setting up ScriptDesc structures: string "Trigger a mob as soon as possible when"
 				- If you go past the first call, you should hit unique bytes in sig making
-				*/
+			*/
 			"CDirector::ResetMobTimer"
 			{
 				"library"	"server"
@@ -4030,7 +4150,7 @@
 				Uses campaign mission file to determine if the current map
 				is a First map.
 				Called from CDirector::OnEndScenario, look near string "vs_shutting_down", up to case 7
-				*/
+			*/
 			"CDirector::IsFirstMapInScenario"
 			{
 				"library"	"server"
@@ -4043,7 +4163,7 @@
 				Uses campaign mission file to determine if the current map
 				is a Final(e) map.
 				Called from CDirectorVersusMode::EndVersusModeRound(), look near string "versus_match_finished"
-				*/
+			*/
 			"CTerrorGameRules::IsMissionFinalMap"
 			{
 				"library"	"server"
@@ -4059,7 +4179,7 @@
 
 				- Find "Going to intermission...\n" in CGameRules::GoToIntermission
 				- Last call in the func
-				*/
+			*/
 			"CGameRulesProxy::NotifyNetworkStateChanged"
 			{
 				"library"	"server"
@@ -4390,6 +4510,18 @@
 			}
 
 			/*
+			 * CTerrorPlayer::OnCarryEnded(CTerrorPlayer *this, bool, bool, bool)
+			 */
+			"CTerrorPlayer::OnCarryEnded"
+			{
+				"library"	"server"
+				"linux"		"@_ZN13CTerrorPlayer12OnCarryEndedEbbb"
+				"windows"	"\x55\x8B\x2A\x53\x56\x8B\x2A\x2A\x2A\x2A\x2A\x57\x8B\x2A\x8B\x2A\x2A\x2A\x2A\x2A\x8D"
+				/* 55 8B ? 53 56 8B ? ? ? ? ? 57 8B ? 8B ? ? ? ? ? 8D */
+				/* Search: "charger_carry_end" */ // Found by "SilverShot".
+			}
+
+			/*
 			 * CTerrorPlayer::OnRideEnded(CTerrorPlayer *this, CTerrorPlayer *)
 			 */
 			"CTerrorPlayer::OnRideEnded"
@@ -4399,6 +4531,30 @@
 				"windows"	"\x55\x8B\x2A\x83\x2A\x2A\x53\x56\x57\x68\x2A\x2A\x2A\x2A\x8B\x2A\xE8"
 				/* 55 8B ? 83 ? ? 53 56 57 68 ? ? ? ? 8B ? E8 */
 				/* Search: "SurvivorJockeyEnded.Ride" */ // Found by "SilverShot".
+			}
+
+			/*
+			 * CTerrorPlayer::ReleaseTongueVictim(CTerrorPlayer *this, bool)
+			 */
+			"CTerrorPlayer::ReleaseTongueVictim"
+			{
+				"library"	"server"
+				"linux"		"@_ZN13CTerrorPlayer19ReleaseTongueVictimEb"
+				"windows"	"\x53\x8B\x2A\x83\x2A\x2A\x83\x2A\x2A\x83\x2A\x2A\x55\x8B\x2A\x2A\x89\x2A\x2A\x2A\x8B\x2A\x83\x2A\x2A\x8B\x2A\x2A\x2A\x2A\x2A\x56\x8B\x2A\x2A\x2A\x2A\x2A\x57\x89"
+				/* 53 8B ? 83 ? ? 83 ? ? 83 ? ? 55 8B ? ? 89 ? ? ? 8B ? 83 ? ? 8B ? ? ? ? ? 56 8B ? ? ? ? ? 57 89 */
+				/* Search: "Tongue letting go because of damage" target function is called not far below */ // Found by "SilverShot".
+			}
+
+			/*
+			 * CTerrorPlayer::OnPounceEnded(CTerrorPlayer *this)
+			 */
+			"CTerrorPlayer::OnPounceEnded"
+			{
+				"library"	"server"
+				"linux"		"@_ZN13CTerrorPlayer13OnPounceEndedEv"
+				"windows"	"\x55\x8B\x2A\x51\x53\x8B\x2A\x80\x2A\x2A\x2A\x2A\x2A\x2A\x56\x74"
+				/* 55 8B ? 51 53 8B ? 80 ? ? ? ? ? ? 56 74 */
+				/* Search: "pounce_end */ // Found by "SilverShot".
 			}
 
 			/*
@@ -4590,6 +4746,18 @@
 				"windows"	"\x83\x2A\x2A\x56\x8B\xF1\x68\x2A\x2A\x2A\x2A\x6A\x2A\xB9\x2A\x2A\x2A\x2A\xC6"
 				/* 83 ? ? 56 8B F1 68 ? ? ? ? 6A ? B9 ? ? ? ? C6 */ // Found by "SilverShot".
 				/* Search: "PZEndGame" one of two. */
+			}
+
+			/*
+			 * CDirector::Rematch(void)
+			 */
+			"CDirector::Rematch"
+			{
+				"library"	"server"
+				"linux"		"@_ZN9CDirector7RematchEv"
+				"windows"    "\x55\x8B\x2A\x51\x56\x8B\x2A\x57\x8D\x2A\x2A\x2A\x2A\x2A\x8B\x2A\xE8\x2A\x2A\x2A\x2A\xD9\x2A\x2A\xD9\x2A\x2A\x83\x2A\x2A\xDF\x2A\xDD\x2A\x9F\xF6\x2A\x2A\x7B\x2A\x8B\x2A\x2A\x8B\x2A\x8D\x2A\x2A\x57\xFF\x2A\xF3\x2A\x2A\x2A\x2A\xF3\x2A\x2A\x2A\x0F\x2A\x2A\x8D\x2A\x2A\x2A\x2A\x2A\xF3\x2A\x2A\x2A\x2A\x2A\x2A\x2A\xF3\x2A\x2A\x2A\x0F\x2E\x2A\x2A\x2A\x2A\x2A\x9F\xF6\x2A\x2A\x7B\x2A\x8B\x2A\x2A\x8B\x2A\x8D\x2A\x2A\x57\xFF\x2A\xF3\x2A\x2A\x2A\x2A\x2A\x2A\x2A\xF3\x2A\x2A\x2A\x8B\x2A\x2A\x2A\x2A\x2A\x85\x2A\x74\x2A\x6A\x2A\xE8\x2A\x2A\x2A\x2A\x8B\x2A\x2A\x2A\x2A\x2A\x85\x2A\x74\x2A\x6A\x2A\xE8\x2A\x2A\x2A\x2A\x8B\x2A\x2A\x2A\x2A\x2A\xE8\x2A\x2A\x2A\x2A\x8B\x2A\x2A\x2A\x2A\x2A\x6A\x2A\xE8\x2A\x2A\x2A\x2A\x66\x2A\x2A\x2A\x2A\x2A\x2A\x2A\x2A\x8B"
+				/* 55 8B ? 51 56 8B ? 57 8D ? ? ? ? ? 8B ? E8 ? ? ? ? D9 ? ? D9 ? ? 83 ? ? DF ? DD ? 9F F6 ? ? 7B ? 8B ? ? 8B ? 8D ? ? 57 FF ? F3 ? ? ? ? F3 ? ? ? 0F ? ? 8D ? ? ? ? ? F3 ? ? ? ? ? ? ? F3 ? ? ? 0F 2E ? ? ? ? ? 9F F6 ? ? 7B ? 8B ? ? 8B ? 8D ? ? 57 FF ? F3 ? ? ? ? ? ? ? F3 ? ? ? 8B ? ? ? ? ? 85 ? 74 ? 6A ? E8 ? ? ? ? 8B ? ? ? ? ? 85 ? 74 ? 6A ? E8 ? ? ? ? 8B ? ? ? ? ? E8 ? ? ? ? 8B ? ? ? ? ? 6A ? E8 ? ? ? ? 66 ? ? ? ? ? ? ? ? 8B */
+				/* Search: "PZEndGamePanelMsg" - xref this function, the function checking "if == 1" at the bottom, probably the first call, calls our target within that if statement, the first call if == 1 */
 			}
 
 			/*
@@ -5140,6 +5308,18 @@
 				"windows"	"\x55\x8B\xEC\x56\x8B\xF1\xF3\x0F\x10\x86\x2A\x2A\x2A\x2A\x0F\x2E\x45\x08\x9F\x57"
 				/* 55 8B EC 56 8B F1 F3 0F 10 86 ? ? ? ? 0F 2E 45 08 9F 57 */
 			}
+
+			/*
+			 * CDirector::SpawnAllScavengeItems(void)
+			 */
+			"CDirector::SpawnAllScavengeItems"
+			{
+				"library"	"server"
+				"linux"		"@_ZN9CDirector21SpawnAllScavengeItemsEv"
+				"windows"	"\x55\x8B\x2A\x83\x2A\x2A\x57\x8B\x2A\x8B\x2A\x2A\x2A\x2A\x2A\xE8\x2A\x2A\x2A\x2A\x89"
+				/* 55 8B ? 83 ? ? 57 8B ? 8B ? ? ? ? ? E8 ? ? ? ? 89 */
+				// Search string is "weapon_scavenge_item_spawn"
+			 }
 
 			/*
 			 * CDirector::IsFinale(void)const

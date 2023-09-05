@@ -18,8 +18,8 @@
 
 
 
-#define PLUGIN_VERSION		"1.132"
-#define PLUGIN_VERLONG		1132
+#define PLUGIN_VERSION		"1.136"
+#define PLUGIN_VERLONG		1136
 
 #define DEBUG				0
 // #define DEBUG			1	// Prints addresses + detour info (only use for debugging, slows server down).
@@ -140,6 +140,7 @@ float g_fProf;
 #define GAMEDATA_TEMP						"left4dhooks.temp"
 #define NATIVE_UNSUPPORTED1					"\n==========\nThis Native is only supported in L4D1.\nPlease fix the code to avoid calling this native from L4D2.\n=========="
 #define NATIVE_UNSUPPORTED2					"\n==========\nThis Native is only supported in L4D2.\nPlease fix the code to avoid calling this native from L4D1.\n=========="
+#define NATIVE_TOO_EARLY					"\n==========\nNative '%s' should not be used before OnMapStart, please report to 3rd party plugin author.\n=========="
 #define COMPILE_FROM_MAIN					true
 
 
@@ -258,10 +259,14 @@ int g_iOff_m_rescueCheckTimer;
 int g_iOff_m_iszScriptId;
 int g_iOff_m_flBecomeGhostAt;
 int g_iOff_MobSpawnTimer;
+int g_iOff_m_iSetupNotifyTime;
 int g_iOff_VersusMaxCompletionScore;
 int g_iOff_OnBeginRoundSetupTime;
 int g_iOff_m_iTankCount;
 int g_iOff_m_iWitchCount;
+int g_iOff_m_PlayerAnimState;
+int g_iOff_m_eCurrentMainSequenceActivity;
+int g_iOff_m_bIsCustomSequence;
 int g_iOff_m_iCampaignScores;
 int g_iOff_m_fTankSpawnFlowPercent;
 int g_iOff_m_fWitchSpawnFlowPercent;
@@ -292,8 +297,8 @@ int g_iOff_NavAreaID;
 // Address TeamScoresAddress;
 
 // l4d2timers.inc
-int L4D2CountdownTimer_Offsets[9];
-int L4D2IntervalTimer_Offsets[7];
+int L4D2CountdownTimer_Offsets[10];
+int L4D2IntervalTimer_Offsets[6];
 
 // l4d2weapons.inc
 int L4D2IntWeapon_Offsets[6];
@@ -307,6 +312,7 @@ int L4D2FloatMeleeWeapon_Offsets[3];
 // Pointers
 int g_pScriptedEventManager;
 int g_pVersusMode;
+int g_pSurvivalMode;
 int g_pScavengeMode;
 Address g_pServer;
 Address g_pDirector;
@@ -341,6 +347,7 @@ int g_iClassTank;
 char g_sSystem[16];
 bool g_bLinuxOS;
 bool g_bLeft4Dead2;
+bool g_bFinalCheck;
 bool g_bMapStarted;
 bool g_bRoundEnded;
 bool g_bCheckpointFirst[MAXPLAYERS+1];
@@ -880,6 +887,14 @@ int Native_Internal_GetGameMode(Handle plugin, int numParams) // Native "L4D_Get
 
 int Native_CTerrorGameRules_IsGenericCooperativeMode(Handle plugin, int numParams) // Native "L4D2_IsGenericCooperativeMode"
 {
+	if( !g_bLeft4Dead2 ) ThrowNativeError(SP_ERROR_NOT_RUNNABLE, NATIVE_UNSUPPORTED2);
+
+	if( !g_bMapStarted )
+	{
+		ThrowNativeError(SP_ERROR_NOT_RUNNABLE, NATIVE_TOO_EARLY, "L4D2_IsGenericCooperativeMode");
+		return false;
+	}
+
 	ValidateAddress(g_pGameRules, "g_pGameRules");
 	ValidateNatives(g_hSDK_CTerrorGameRules_IsGenericCooperativeMode, "CTerrorGameRules::IsGenericCooperativeMode");
 
@@ -894,6 +909,14 @@ int Native_Internal_IsCoopMode(Handle plugin, int numParams) // Native "L4D_IsCo
 
 int Native_Internal_IsRealismMode(Handle plugin, int numParams) // Native "L4D2_IsRealismMode"
 {
+	if( !g_bLeft4Dead2 ) ThrowNativeError(SP_ERROR_NOT_RUNNABLE, NATIVE_UNSUPPORTED2);
+
+	if( !g_bMapStarted )
+	{
+		ThrowNativeError(SP_ERROR_NOT_RUNNABLE, NATIVE_TOO_EARLY, "L4D2_IsRealismMode");
+		return false;
+	}
+
 	ValidateAddress(g_pGameRules, "g_pGameRules");
 	ValidateNatives(g_hSDK_CTerrorGameRules_IsRealismMode, "CTerrorGameRules::IsRealismMode");
 
@@ -925,6 +948,7 @@ public void OnMapEnd()
 {
 	// Reset vars
 	g_bMapStarted = false;
+	g_bFinalCheck = false;
 	g_iMaxChapters = 0;
 
 	// Reset checkpoints
@@ -1391,7 +1415,7 @@ public void OnMapStart()
 	// Load PlayerResource
 	int iPlayerResource = FindEntityByClassname(-1, "terror_player_manager");
 
-	g_iPlayerResourceRef = (iPlayerResource != INVALID_ENT_REFERENCE) ? EntIndexToEntRef(iPlayerResource): INVALID_ENT_REFERENCE;
+	g_iPlayerResourceRef = (iPlayerResource != INVALID_ENT_REFERENCE) ? EntIndexToEntRef(iPlayerResource) : INVALID_ENT_REFERENCE;
 
 
 
@@ -1436,8 +1460,6 @@ public void OnMapStart()
 	// Because reload command calls this function. We only want these loaded on actual map start.
 	if( !g_bMapStarted )
 	{
-		g_bMapStarted = true;
-
 		GetGameMode(); // Get current game mode
 
 
@@ -1547,6 +1569,8 @@ public void OnMapStart()
 				}
 			}
 		}
+
+		g_bMapStarted = true;
 	}
 }
 

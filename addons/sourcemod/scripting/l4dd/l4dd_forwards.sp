@@ -82,6 +82,9 @@ GlobalForward g_hFWD_CTankClaw_OnPlayerHit_PostHandled;
 GlobalForward g_hFWD_CTankRock_Detonate;
 GlobalForward g_hFWD_CTankRock_OnRelease;
 GlobalForward g_hFWD_CTankRock_OnRelease_Post;
+GlobalForward g_hFWD_CTankRock_BounceTouch;
+GlobalForward g_hFWD_CTankRock_BounceTouch_Post;
+GlobalForward g_hFWD_CTankRock_BounceTouch_PostHandled;
 GlobalForward g_hFWD_CDirector_TryOfferingTankBot;
 GlobalForward g_hFWD_CDirector_TryOfferingTankBot_Post;
 GlobalForward g_hFWD_CDirector_TryOfferingTankBot_PostHandled;
@@ -318,7 +321,7 @@ void SetupDetours(GameData hGameData = null)
 	CreateDetour(hGameData,			DTR_CDirectorVersusMode_GetMissionVersusBossSpawning,		DTR_CDirectorVersusMode_GetMissionVersusBossSpawning_Post,	"L4DD::CDirectorVersusMode::GetMissionVersusBossSpawning",			"L4D_OnGetMissionVSBossSpawning_PostHandled",	true);
 	CreateDetour(hGameData,			DTR_ZombieManager_ReplaceTank,								INVALID_FUNCTION,											"L4DD::ZombieManager::ReplaceTank",									"L4D_OnReplaceTank");
 	CreateDetour(hGameData,			DTR_CTankClaw_DoSwing_Pre,									DTR_CTankClaw_DoSwing_Post,									"L4DD::CTankClaw::DoSwing",											"L4D_TankClaw_DoSwing_Pre");
-	CreateDetour(hGameData,			DTR_CTankClaw_DoSwing_Pre,									DTR_CTankClaw_DoSwing_Post,									"L4DD::CTankClaw::DoSwing",											"L4D_TankClaw_DoSwing_Post3",					true);
+	CreateDetour(hGameData,			DTR_CTankClaw_DoSwing_Pre,									DTR_CTankClaw_DoSwing_Post,									"L4DD::CTankClaw::DoSwing",											"L4D_TankClaw_DoSwing_Post",					true);
 	CreateDetour(hGameData,			DTR_CTankClaw_GroundPound_Pre,								DTR_CTankClaw_GroundPound_Post,								"L4DD::CTankClaw::GroundPound",										"L4D_TankClaw_GroundPound_Pre");
 	CreateDetour(hGameData,			DTR_CTankClaw_GroundPound_Pre,								DTR_CTankClaw_GroundPound_Post,								"L4DD::CTankClaw::GroundPound",										"L4D_TankClaw_GroundPound_Post",				true);
 	CreateDetour(hGameData,			DTR_CTankClaw_OnPlayerHit_Pre,								DTR_CTankClaw_OnPlayerHit_Post,								"L4DD::CTankClaw::OnPlayerHit",										"L4D_TankClaw_OnPlayerHit_Pre");
@@ -327,6 +330,9 @@ void SetupDetours(GameData hGameData = null)
 	CreateDetour(hGameData,			DTR_CTankRock_Detonate,										INVALID_FUNCTION,											"L4DD::CTankRock::Detonate",										"L4D_TankRock_OnDetonate");
 	CreateDetour(hGameData,			DTR_CTankRock_OnRelease,									DTR_CTankRock_OnRelease_Post,								"L4DD::CTankRock::OnRelease",										"L4D_TankRock_OnRelease");
 	CreateDetour(hGameData,			DTR_CTankRock_OnRelease,									DTR_CTankRock_OnRelease_Post,								"L4DD::CTankRock::OnRelease",										"L4D_TankRock_OnRelease_Post",					true);
+	CreateDetour(hGameData,			DTR_CTankRock_BounceTouch,									DTR_CTankRock_BounceTouch_Post,								"L4DD::CTankRock::BounceTouch",										"L4D_TankRock_BounceTouch");
+	CreateDetour(hGameData,			DTR_CTankRock_BounceTouch,									DTR_CTankRock_BounceTouch_Post,								"L4DD::CTankRock::BounceTouch",										"L4D_TankRock_BounceTouch_Post",				true);
+	CreateDetour(hGameData,			DTR_CTankRock_BounceTouch,									DTR_CTankRock_BounceTouch_Post,								"L4DD::CTankRock::BounceTouch",										"L4D_TankRock_BounceTouch_PostHandled",			true);
 	CreateDetour(hGameData,			DTR_CThrow_ActivateAbililty,								DTR_CThrow_ActivateAbililty_Post,							"L4DD::CThrow::ActivateAbililty",									"L4D_OnCThrowActivate");
 	CreateDetour(hGameData,			DTR_CThrow_ActivateAbililty,								DTR_CThrow_ActivateAbililty_Post,							"L4DD::CThrow::ActivateAbililty",									"L4D_OnCThrowActivate_Post",					true);
 	CreateDetour(hGameData,			DTR_CThrow_ActivateAbililty,								DTR_CThrow_ActivateAbililty_Post,							"L4DD::CThrow::ActivateAbililty",									"L4D_OnCThrowActivate_PostHandled",				true);
@@ -2061,6 +2067,56 @@ MRESReturn DTR_CTankRock_OnRelease_Post(DHookParam hParams) // Forward "L4D_Tank
 	return MRES_Ignored;
 }
 
+bool g_bBlock_CTankRock_BounceTouch;
+MRESReturn DTR_CTankRock_BounceTouch(int pThis, DHookReturn hReturn, DHookParam hParams) // Forward "L4D_TankRock_BounceTouch"
+{
+	//PrintToServer("##### DTR_CTankRock_BounceTouch");
+	int a1;
+
+	if( !hParams.IsNull(1) )
+		a1 = hParams.Get(1);
+
+	int client = GetEntPropEnt(pThis, Prop_Send, "m_hOwnerEntity");
+
+	Action aResult = Plugin_Continue;
+	Call_StartForward(g_hFWD_CTankRock_BounceTouch);
+	Call_PushCell(client);
+	Call_PushCell(pThis);
+	Call_PushCell(a1);
+	Call_Finish(aResult);
+
+	if( aResult == Plugin_Handled )
+	{
+		g_bBlock_CTankRock_BounceTouch = true;
+
+		hReturn.Value = 0;
+		return MRES_Supercede;
+	}
+
+	g_bBlock_CTankRock_BounceTouch = false;
+
+	return MRES_Ignored;
+}
+
+MRESReturn DTR_CTankRock_BounceTouch_Post(int pThis, DHookReturn hReturn, DHookParam hParams) // Forward "L4D_TankRock_BounceTouch_Post" and "L4D_TankRock_BounceTouch_PostHandled"
+{
+	//PrintToServer("##### DTR_CTankRock_BounceTouch_Post");
+	int a1;
+
+	if( !hParams.IsNull(1) )
+		a1 = hParams.Get(1);
+
+	int client = GetEntPropEnt(pThis, Prop_Send, "m_hOwnerEntity");
+
+	Call_StartForward(g_bBlock_CTankRock_BounceTouch ? g_hFWD_CTankRock_BounceTouch_PostHandled : g_hFWD_CTankRock_BounceTouch_Post);
+	Call_PushCell(client);
+	Call_PushCell(pThis);
+	Call_PushCell(a1);
+	Call_Finish();
+
+	return MRES_Ignored;
+}
+
 bool g_bBlock_CDirector_TryOfferingTankBot;
 MRESReturn DTR_CDirector_TryOfferingTankBot(DHookReturn hReturn, DHookParam hParams) // Forward "L4D_OnTryOfferingTankBot"
 {
@@ -2915,7 +2971,7 @@ MRESReturn DTR_CTerrorWeapon_OnHit_Post(int weapon, DHookReturn hReturn, DHookPa
 }
 
 bool g_bBlock_CTerrorPlayer_OnShovedByPounceLanding;
-MRESReturn DTR_CTerrorPlayer_OnShovedByPounceLanding(int pThis, DHookReturn hReturn, DHookParam hParams) // Forward "L4D2_OnPounceOrLeapStumble"
+MRESReturn DTR_CTerrorPlayer_OnShovedByPounceLanding(int pThis, DHookParam hParams) // Forward "L4D2_OnPounceOrLeapStumble"
 {
 	//PrintToServer("##### DTR_CTerrorPlayer_OnShovedByPounceLanding");
 	int a1 = hParams.Get(1);
@@ -2930,7 +2986,6 @@ MRESReturn DTR_CTerrorPlayer_OnShovedByPounceLanding(int pThis, DHookReturn hRet
 	{
 		g_bBlock_CTerrorPlayer_OnShovedByPounceLanding = true;
 
-		hReturn.Value = 0.0;
 		return MRES_Supercede;
 	}
 
@@ -2939,7 +2994,7 @@ MRESReturn DTR_CTerrorPlayer_OnShovedByPounceLanding(int pThis, DHookReturn hRet
 	return MRES_Ignored;
 }
 
-MRESReturn DTR_CTerrorPlayer_OnShovedByPounceLanding_Post(int pThis, DHookReturn hReturn, DHookParam hParams) // Forward "L4D2_OnPounceOrLeapStumble_Post" and "L4D2_OnPounceOrLeapStumble_PostHandled"
+MRESReturn DTR_CTerrorPlayer_OnShovedByPounceLanding_Post(int pThis, DHookParam hParams) // Forward "L4D2_OnPounceOrLeapStumble_Post" and "L4D2_OnPounceOrLeapStumble_PostHandled"
 {
 	//PrintToServer("##### DTR_CTerrorPlayer_OnShovedByPounceLanding_Post");
 	int a1 = hParams.Get(1);
@@ -3917,155 +3972,6 @@ MRESReturn DTR_CGasCan_ShouldStartAction_Post(DHookReturn hReturn, DHookParam hP
 	return MRES_Ignored;
 }
 
-bool g_bBlock_CBaseBackpackItem_StartAction;
-MRESReturn DTR_CBaseBackpackItem_StartAction(int pThis, DHookReturn hReturn, DHookParam hParams) // Forward "L4D2_BackpackItem_StartAction"
-{
-	//PrintToServer("##### DTR_CBaseBackpackItem_StartAction");
-
-	if( !IsValidEntity(pThis) ) return MRES_Ignored;
-
-	int client = GetEntPropEnt(pThis, Prop_Send, "m_hOwner");
-
-	if( client > 0 && IsClientInGame(client) )
-	{
-		Action aResult = Plugin_Continue;
-		Call_StartForward(g_hFWD_CBaseBackpackItem_StartAction);
-		Call_PushCell(client);
-		Call_PushCell(pThis);
-		Call_Finish(aResult);
-
-		if( aResult == Plugin_Handled )
-		{
-			g_bBlock_CBaseBackpackItem_StartAction = true;
-
-			hReturn.Value = 0;
-			return MRES_Supercede;
-		}
-	}
-
-	g_bBlock_CBaseBackpackItem_StartAction = false;
-
-	return MRES_Ignored;
-}
-
-MRESReturn DTR_CBaseBackpackItem_StartAction_Post(int pThis, DHookReturn hReturn, DHookParam hParams) // Forward "L4D2_BackpackItem_StartAction_Post" and "L4D2_BackpackItem_StartAction_PostHandled"
-{
-	//PrintToServer("##### DTR_CBaseBackpackItem_StartAction_Post");
-
-	if( !IsValidEntity(pThis) ) return MRES_Ignored;
-
-	int client = GetEntPropEnt(pThis, Prop_Send, "m_hOwner");
-
-	if( client > 0 && IsClientInGame(client) )
-	{
-		Call_StartForward(g_bBlock_CBaseBackpackItem_StartAction ? g_hFWD_CBaseBackpackItem_StartAction_PostHandled : g_hFWD_CBaseBackpackItem_StartAction_Post);
-		Call_PushCell(client);
-		Call_PushCell(pThis);
-		Call_Finish();
-	}
-
-	return MRES_Ignored;
-}
-
-bool g_bBlock_CFirstAidKit_StartHealing;
-MRESReturn DTR_CFirstAidKit_StartHealing_NIX(DHookParam hParams) // Forward "L4D1_FirstAidKit_StartHealing"
-{
-	//PrintToServer("##### DTR_CFirstAidKit_StartHealing");
-
-	int pThis = hParams.Get(1);
-	if( !IsValidEntity(pThis) ) return MRES_Ignored;
-
-	int client = GetEntPropEnt(pThis, Prop_Send, "m_hOwner");
-
-	if( client > 0 && IsClientInGame(client) )
-	{
-		Action aResult = Plugin_Continue;
-		Call_StartForward(g_hFWD_CFirstAidKit_StartHealing);
-		Call_PushCell(client);
-		Call_PushCell(pThis);
-		Call_Finish(aResult);
-
-		if( aResult == Plugin_Handled )
-		{
-			g_bBlock_CFirstAidKit_StartHealing = true;
-
-			return MRES_Supercede;
-		}
-	}
-
-	g_bBlock_CFirstAidKit_StartHealing = false;
-
-	return MRES_Ignored;
-}
-
-MRESReturn DTR_CFirstAidKit_StartHealing_Post_NIX(DHookParam hParams) // Forward "L4D1_FirstAidKit_StartHealing_Post" and "L4D1_FirstAidKit_StartHealing_PostHandled"
-{
-	//PrintToServer("##### DTR_CFirstAidKit_StartHealing_Post");
-
-	int pThis = hParams.Get(1);
-	if( !IsValidEntity(pThis) ) return MRES_Ignored;
-
-	int client = GetEntPropEnt(pThis, Prop_Send, "m_hOwner");
-
-	if( client > 0 && IsClientInGame(client) )
-	{
-		Call_StartForward(g_bBlock_CFirstAidKit_StartHealing ? g_hFWD_CFirstAidKit_StartHealing_PostHandled : g_hFWD_CFirstAidKit_StartHealing_Post);
-		Call_PushCell(client);
-		Call_PushCell(pThis);
-		Call_Finish();
-	}
-
-	return MRES_Ignored;
-}
-
-MRESReturn DTR_CFirstAidKit_StartHealing_WIN(int pThis, DHookParam hParams) // Forward "L4D1_FirstAidKit_StartHealing"
-{
-	//PrintToServer("##### DTR_CFirstAidKit_StartHealing");
-
-	if( !IsValidEntity(pThis) ) return MRES_Ignored;
-
-	int client = GetEntPropEnt(pThis, Prop_Send, "m_hOwner");
-
-	if( client > 0 && IsClientInGame(client) )
-	{
-		Action aResult = Plugin_Continue;
-		Call_StartForward(g_hFWD_CFirstAidKit_StartHealing);
-		Call_PushCell(client);
-		Call_PushCell(pThis);
-		Call_Finish(aResult);
-
-		if( aResult == Plugin_Handled )
-		{
-			g_bBlock_CFirstAidKit_StartHealing = true;
-
-			return MRES_Supercede;
-		}
-	}
-
-	g_bBlock_CFirstAidKit_StartHealing = false;
-
-	return MRES_Ignored;
-}
-
-MRESReturn DTR_CFirstAidKit_StartHealing_Post_WIN(int pThis, DHookParam hParams) // Forward "L4D1_FirstAidKit_StartHealing_Post" and "L4D1_FirstAidKit_StartHealing_PostHandled"
-{
-	//PrintToServer("##### DTR_CFirstAidKit_StartHealing_Post");
-
-	if( !IsValidEntity(pThis) ) return MRES_Ignored;
-
-	int client = GetEntPropEnt(pThis, Prop_Send, "m_hOwner");
-
-	if( client > 0 && IsClientInGame(client) )
-	{
-		Call_StartForward(g_bBlock_CFirstAidKit_StartHealing ? g_hFWD_CFirstAidKit_StartHealing_PostHandled : g_hFWD_CFirstAidKit_StartHealing_Post);
-		Call_PushCell(client);
-		Call_PushCell(pThis);
-		Call_Finish();
-	}
-
-	return MRES_Ignored;
-}
-
 bool g_bBlock_CGasCan_OnActionComplete;
 MRESReturn DTR_CGasCan_OnActionComplete(int pThis, DHookReturn hReturn, DHookParam hParams) // Forward "L4D2_CGasCan_ActionComplete"
 {
@@ -4112,6 +4018,164 @@ MRESReturn DTR_CGasCan_OnActionComplete_Post(int pThis, DHookReturn hReturn, DHo
 	Call_PushCell(pThis);
 	Call_PushCell(nozzle);
 	Call_Finish();
+
+	return MRES_Ignored;
+}
+
+int g_iCBaseBackpackItem_StartAction;
+bool g_bBlock_CBaseBackpackItem_StartAction;
+MRESReturn DTR_CBaseBackpackItem_StartAction(int pThis, DHookReturn hReturn, DHookParam hParams) // Forward "L4D2_BackpackItem_StartAction"
+{
+	//PrintToServer("##### DTR_CBaseBackpackItem_StartAction");
+
+	g_iCBaseBackpackItem_StartAction = -1;
+
+	if( !IsValidEntity(pThis) ) return MRES_Ignored;
+
+	int client = GetEntPropEnt(pThis, Prop_Send, "m_hOwner");
+
+	if( client > 0 && IsClientInGame(client) )
+	{
+		static char sTemp[32];
+		GetEdictClassname(pThis, sTemp, sizeof(sTemp));
+		g_aWeaponIDs.GetValue(sTemp, g_iCBaseBackpackItem_StartAction);
+
+		Action aResult = Plugin_Continue;
+		Call_StartForward(g_hFWD_CBaseBackpackItem_StartAction);
+		Call_PushCell(client);
+		Call_PushCell(pThis);
+		Call_PushCell(g_iCBaseBackpackItem_StartAction);
+		Call_Finish(aResult);
+
+		if( aResult == Plugin_Handled )
+		{
+			g_bBlock_CBaseBackpackItem_StartAction = true;
+
+			hReturn.Value = 0;
+			return MRES_Supercede;
+		}
+	}
+
+	g_bBlock_CBaseBackpackItem_StartAction = false;
+
+	return MRES_Ignored;
+}
+
+MRESReturn DTR_CBaseBackpackItem_StartAction_Post(int pThis, DHookReturn hReturn, DHookParam hParams) // Forward "L4D2_BackpackItem_StartAction_Post" and "L4D2_BackpackItem_StartAction_PostHandled"
+{
+	//PrintToServer("##### DTR_CBaseBackpackItem_StartAction_Post");
+
+	if( !IsValidEntity(pThis) ) return MRES_Ignored;
+
+	int client = GetEntPropEnt(pThis, Prop_Send, "m_hOwner");
+
+	if( client > 0 && IsClientInGame(client) )
+	{
+		Call_StartForward(g_bBlock_CBaseBackpackItem_StartAction ? g_hFWD_CBaseBackpackItem_StartAction_PostHandled : g_hFWD_CBaseBackpackItem_StartAction_Post);
+		Call_PushCell(client);
+		Call_PushCell(pThis);
+		Call_PushCell(g_iCBaseBackpackItem_StartAction);
+		Call_Finish();
+	}
+
+	return MRES_Ignored;
+}
+
+bool g_bBlock_CFirstAidKit_StartHealing;
+MRESReturn DTR_CFirstAidKit_StartHealing_NIX(DHookParam hParams) // Forward "L4D1_FirstAidKit_StartHealing"
+{
+	//PrintToServer("##### DTR_CFirstAidKit_StartHealing_NIX");
+
+	int pThis = hParams.Get(1);
+	if( !IsValidEntity(pThis) ) return MRES_Ignored;
+
+	int client = GetEntPropEnt(pThis, Prop_Send, "m_hOwner");
+
+	if( client > 0 && IsClientInGame(client) )
+	{
+		Action aResult = Plugin_Continue;
+		Call_StartForward(g_hFWD_CFirstAidKit_StartHealing);
+		Call_PushCell(client);
+		Call_PushCell(pThis);
+		Call_Finish(aResult);
+
+		if( aResult == Plugin_Handled )
+		{
+			g_bBlock_CFirstAidKit_StartHealing = true;
+
+			return MRES_Supercede;
+		}
+	}
+
+	g_bBlock_CFirstAidKit_StartHealing = false;
+
+	return MRES_Ignored;
+}
+
+MRESReturn DTR_CFirstAidKit_StartHealing_Post_NIX(DHookParam hParams) // Forward "L4D1_FirstAidKit_StartHealing_Post" and "L4D1_FirstAidKit_StartHealing_PostHandled"
+{
+	//PrintToServer("##### DTR_CFirstAidKit_StartHealing_Post_NIX");
+
+	int pThis = hParams.Get(1);
+	if( !IsValidEntity(pThis) ) return MRES_Ignored;
+
+	int client = GetEntPropEnt(pThis, Prop_Send, "m_hOwner");
+
+	if( client > 0 && IsClientInGame(client) )
+	{
+		Call_StartForward(g_bBlock_CFirstAidKit_StartHealing ? g_hFWD_CFirstAidKit_StartHealing_PostHandled : g_hFWD_CFirstAidKit_StartHealing_Post);
+		Call_PushCell(client);
+		Call_PushCell(pThis);
+		Call_Finish();
+	}
+
+	return MRES_Ignored;
+}
+
+MRESReturn DTR_CFirstAidKit_StartHealing_WIN(int pThis, DHookParam hParams) // Forward "L4D1_FirstAidKit_StartHealing"
+{
+	//PrintToServer("##### DTR_CFirstAidKit_StartHealing_WIN");
+
+	if( !IsValidEntity(pThis) ) return MRES_Ignored;
+
+	int client = GetEntPropEnt(pThis, Prop_Send, "m_hOwner");
+
+	if( client > 0 && IsClientInGame(client) )
+	{
+		Action aResult = Plugin_Continue;
+		Call_StartForward(g_hFWD_CFirstAidKit_StartHealing);
+		Call_PushCell(client);
+		Call_PushCell(pThis);
+		Call_Finish(aResult);
+
+		if( aResult == Plugin_Handled )
+		{
+			g_bBlock_CFirstAidKit_StartHealing = true;
+
+			return MRES_Supercede;
+		}
+	}
+
+	g_bBlock_CFirstAidKit_StartHealing = false;
+
+	return MRES_Ignored;
+}
+
+MRESReturn DTR_CFirstAidKit_StartHealing_Post_WIN(int pThis, DHookParam hParams) // Forward "L4D1_FirstAidKit_StartHealing_Post" and "L4D1_FirstAidKit_StartHealing_PostHandled"
+{
+	//PrintToServer("##### DTR_CFirstAidKit_StartHealing_Post_WIN");
+
+	if( !IsValidEntity(pThis) ) return MRES_Ignored;
+
+	int client = GetEntPropEnt(pThis, Prop_Send, "m_hOwner");
+
+	if( client > 0 && IsClientInGame(client) )
+	{
+		Call_StartForward(g_bBlock_CFirstAidKit_StartHealing ? g_hFWD_CFirstAidKit_StartHealing_PostHandled : g_hFWD_CFirstAidKit_StartHealing_Post);
+		Call_PushCell(client);
+		Call_PushCell(pThis);
+		Call_Finish();
+	}
 
 	return MRES_Ignored;
 }

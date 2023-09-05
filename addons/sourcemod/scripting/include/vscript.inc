@@ -8,10 +8,6 @@
 
 // These field values does NOT reflect with actual game values, as it vaires between games.
 // This should only be used with this plugin natives.
-<<<<<<< HEAD
-
-=======
->>>>>>> parent of f5af03bb (bot更新)
 enum fieldtype_t
 {
 	FIELD_VOID,

@@ -12,7 +12,7 @@
 
 	"Value of cvar"
 	{
-		"jp"		"CVar \"{1]\" の値: \"{2}\""
+		"jp"		"CVar \"{1}\" の値: \"{2}\""
 	}
 
 	"Cvar changed"
@@ -123,6 +123,11 @@
 	"Kicked target reason"
 	{
 		"jp"		"{1}をキックしました。(理由: {2})"
+	}
+
+	"Please select a map"
+	{
+		"jp"		"マップを選択してください。"
 	}
 
 }

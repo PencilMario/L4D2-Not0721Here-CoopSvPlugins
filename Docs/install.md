@@ -53,7 +53,7 @@ git clone https://github.com/PencilMario/L4D2-Not0721Here-CoopSvPlugins
 
 ```
 cd L4D2-Not0721Here-CoopSvPlugins
-sudo bash update_full.sh
+bash update_full.sh
 ```
 
 * 可选：设置自动更新
@@ -64,9 +64,11 @@ sudo bash update_full.sh
 
     示例代码：
     ```
-    export HOME="/home/steam";
-    git config --global --add safe.directory /home/steam/   L4D2-Not0721Here-CoopSvPlugins;
-    bash /home/steam/L4D2-Not0721Here-CoopSvPlugins/update.sh
+    crontab -e
+
+    添加两行
+    30 * * * * bash /home/steam/L4D2-Not0721Here-CoopSvPlugins/update.sh
+    0 3 * * * bash /home/steam/L4D2-Not0721Here-CoopSvPlugins/update_full.sh
     ```
 
 **差异部分结束**

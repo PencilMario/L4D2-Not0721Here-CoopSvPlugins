@@ -15,6 +15,7 @@ sudo apt install p7zip-full p7zip-rar -y
 sudo apt install aria2 -y
 base_url="http://sp2.0721play.icu/d/L4D2相关/MOD/战役图/"
 file_list=(
+    '深埋v1.8.rar' '广州增城v7.3.rar' '城市航班.rar' '再见了晨茗.rar' '白森林.rar' '阴暗森林v1.8(可能引起不适).rar'
     )
 for file in "${file_list[@]}"
 do

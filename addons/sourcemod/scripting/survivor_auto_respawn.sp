@@ -523,7 +523,9 @@ Action tmrRespawnSurvivor(Handle timer, int client)
 		{
 			if(!IsFakeClient(client))
 				PrintCenterText(client, "你将在%d秒后复活(还剩%d次)\n你将复活至你正在观看的玩家：%N", g_esPlayer[client].iCountdown, g_iRespawnLimit - g_esPlayer[client].iRespawned, GetClientViewingPlayer(client));
-
+				if (g_esPlayer[client].iCountdown < 6){
+					PrintHintText(GetClientViewingPlayer(client), "%N 即将在你所在的位置复活(%is)", client, g_esPlayer[client].iCountdown);
+				}
 			g_esPlayer[client].iCountdown--;
 		}
 		else
@@ -719,16 +721,16 @@ bool IsValidClient(int client)
 //https://forums.alliedmods.net/showthread.php?t=327928
 void vTerror_SetAdrenalineTime(int client, float fDuration)
 {
-    // Get CountdownTimer address
-    static int iTimerAddress = -1;
-    if(iTimerAddress == -1)
-        iTimerAddress = FindSendPropInfo("CTerrorPlayer", "m_bAdrenalineActive") - 12;
-    
-    //iTimerAddress + 4 = Duration
-    //iTimerAddress + 8 = TimeStamp
-    SetEntDataFloat(client, iTimerAddress + 4, fDuration);
-    SetEntDataFloat(client, iTimerAddress + 8, GetGameTime() + fDuration);
-    SetEntProp(client, Prop_Send, "m_bAdrenalineActive", 1);
+	// Get CountdownTimer address
+	static int iTimerAddress = -1;
+	if(iTimerAddress == -1)
+		iTimerAddress = FindSendPropInfo("CTerrorPlayer", "m_bAdrenalineActive") - 12;
+	
+	//iTimerAddress + 4 = Duration
+	//iTimerAddress + 8 = TimeStamp
+	SetEntDataFloat(client, iTimerAddress + 4, fDuration);
+	SetEntDataFloat(client, iTimerAddress + 8, GetGameTime() + fDuration);
+	SetEntProp(client, Prop_Send, "m_bAdrenalineActive", 1);
 } 
 */
 void vGiveWeapon(int client)

@@ -3,6 +3,7 @@
 #include <sourcemod>
 #include <sdktools>
 #include <sdkhooks>
+#include <l4d2util>
 //#include <Defib_Fix>
 
 #define GAMEDATA	"survivor_auto_respawn"
@@ -869,7 +870,7 @@ void vTeleportToSurvivor(int client, bool bRandom = true, int targetplayer = -1)
 			}
 		}
 		delete aClients;
-	}else if(!IsClientInGame(targetplayer) || GetClientTeam(targetplayer) != 2 || !IsPlayerAlive(targetplayer) || client == targetplayer){
+	}else if(!IsClientInGame(targetplayer) || GetClientTeam(targetplayer) != 2 || !IsPlayerAlive(targetplayer) || client == targetplayer || !IsHangingFromLedge(targetplayer)){
 		vTeleportToSurvivor(client);
 		return;
 	}else{

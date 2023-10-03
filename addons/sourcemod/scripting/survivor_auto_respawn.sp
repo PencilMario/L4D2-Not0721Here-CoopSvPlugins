@@ -524,7 +524,7 @@ Action tmrRespawnSurvivor(Handle timer, int client)
 			if(!IsFakeClient(client))
 				PrintCenterText(client, "你将在%d秒后复活(还剩%d次)\n你将复活至你正在观看的玩家：%N", g_esPlayer[client].iCountdown, g_iRespawnLimit - g_esPlayer[client].iRespawned, GetClientViewingPlayer(client));
 				if (g_esPlayer[client].iCountdown < 6){
-					PrintHintText(GetClientViewingPlayer(client), "%N 即将在你所在的位置复活(%is)", client, g_esPlayer[client].iCountdown);
+					PrintHintText(GetClientViewingPlayer(client), "%N 即将在你所在的位置复活(%is)\n请注意控制枪口", client, g_esPlayer[client].iCountdown);
 				}
 			g_esPlayer[client].iCountdown--;
 		}

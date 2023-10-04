@@ -17,6 +17,7 @@ KeyValues
 	g_hModesKV = null;
 
 ConVar
+	g_hEnabled = null,
 	g_hCvarPlayerLimit = null,
 	g_hMaxPlayers = null,
 	g_hSvMaxPlayers = null;
@@ -32,9 +33,9 @@ bool
 public Plugin myinfo =
 {
 	name = "Match Vote",
-	author = "vintik, Sir",
-	description = "!match !rmatch - Change Hostname and Slots while you're at it!",
-	version = "1.2.1",
+	author = "vintik, Sir, StarterX4",
+	description = "!match !rmatch !chmatch - Change Hostname and Slots while you're at it!",
+	version = "1.3",
 	url = "https://github.com/L4D-Community/L4D2-Competitive-Framework"
 };
 
@@ -59,10 +60,12 @@ public void OnPluginStart()
 		SetFailState("Couldn't load matchmodes.txt!");
 	}
 
+	g_hEnabled = CreateConVar("sm_match_vote_enabled", "1", "Plugin enabled", _, true, 0.0, true, 1.0);
 	g_hMaxPlayers = CreateConVar("mv_maxplayers", "12", "How many slots would you like the Server to be at Config Load/Unload?", _, true, 1.0, true, 32.0);
 	g_hCvarPlayerLimit = CreateConVar("sm_match_player_limit", "1", "Minimum # of players in game to start the vote", _, true, 1.0, true, 32.0);
 
 	RegConsoleCmd("sm_match", MatchRequest);
+	RegConsoleCmd("sm_chmatch", ChangeMatchRequest);
 	RegConsoleCmd("sm_rmatch", MatchReset);
 
 	g_hSvMaxPlayers = FindConVar("sv_maxplayers");
@@ -106,7 +109,7 @@ public void OnCedapugEnded() {
 
 public Action MatchRequest(int iClient, int iArgs)
 {
-	if (iClient == 0 || !g_bIsConfoglAvailable) {
+	if (!g_hEnabled.BoolValue || iClient == 0 || !g_bIsConfoglAvailable) {
 		return Plugin_Handled;
 	}
 
@@ -299,7 +302,7 @@ public void MatchVoteResultHandler(Handle vote, int num_votes, int num_clients, 
 
 public Action MatchReset(int iClient, int iArgs)
 {
-	if (iClient == 0 || !g_bIsConfoglAvailable) {
+	if (!g_hEnabled.BoolValue || iClient == 0 || !g_bIsConfoglAvailable) {
 		return Plugin_Handled;
 	}
 
@@ -365,8 +368,175 @@ public void ResetMatchVoteResultHandler(Handle vote, int num_votes, int num_clie
 	for (int i = 0; i < num_items; i++) {
 		if (item_info[i][BUILTINVOTEINFO_ITEM_INDEX] == BUILTINVOTES_VOTE_YES) {
 			if (item_info[i][BUILTINVOTEINFO_ITEM_VOTES] > (num_votes / 2)) {
-				DisplayBuiltinVotePass(vote, "Confogl is unloading...");
+				DisplayBuiltinVotePass(vote, "配置文件卸载中...");
 				ServerCommand("sm_resetmatch");
+
+				return;
+			}
+		}
+	}
+
+	DisplayBuiltinVoteFail(vote, BuiltinVoteFail_Loses);
+}
+
+public Action ChangeMatchRequest(int iClient, int iArgs)
+{
+	if (!g_hEnabled.BoolValue || iClient == 0 || !g_bIsConfoglAvailable) {
+		return Plugin_Handled;
+	}
+
+	if (iArgs > 0) {
+		//config specified
+		char sCfg[64], sName[64];
+		GetCmdArg(1, sCfg, sizeof(sCfg));
+		if (FindConfigName(sCfg, sName, sizeof(sName))) {
+			if (StartChMatchVote(iClient, sName)) {
+				strcopy(g_sCfg, sizeof(g_sCfg), sCfg);
+
+				//caller is voting for
+				FakeClientCommand(iClient, "Vote Yes");
+			}
+			return Plugin_Handled;
+		}
+	}
+
+	//show main menu
+	ChMatchModeMenu(iClient);
+	return Plugin_Handled;
+}
+
+void ChMatchModeMenu(int iClient)
+{
+	Menu hMenu = new Menu(ChMatchModeMenuHandler);
+	hMenu.SetTitle("选择配置文件:");
+
+	char sBuffer[64];
+	g_hModesKV.Rewind();
+
+	if (g_hModesKV.GotoFirstSubKey()) {
+		do {
+			g_hModesKV.GetSectionName(sBuffer, sizeof(sBuffer));
+			hMenu.AddItem(sBuffer, sBuffer);
+		} while (g_hModesKV.GotoNextKey(false));
+	}
+
+	hMenu.Display(iClient, 20);
+}
+
+public int ChMatchModeMenuHandler(Menu menu, MenuAction action, int param1, int param2)
+{
+	if (action == MenuAction_End) {
+		delete menu;
+	} else if (action == MenuAction_Select) {
+		char sInfo[64], sBuffer[64];
+		menu.GetItem(param2, sInfo, sizeof(sInfo));
+
+		g_hModesKV.Rewind();
+
+		if (g_hModesKV.JumpToKey(sInfo) && g_hModesKV.GotoFirstSubKey()) {
+			Menu hMenu = new Menu(ChConfigsMenuHandler);
+
+			FormatEx(sBuffer, sizeof(sBuffer), "选择 %s 配置:", sInfo);
+			hMenu.SetTitle(sBuffer);
+
+			do {
+				g_hModesKV.GetSectionName(sInfo, sizeof(sInfo));
+				g_hModesKV.GetString("name", sBuffer, sizeof(sBuffer));
+
+				hMenu.AddItem(sInfo, sBuffer);
+			} while (g_hModesKV.GotoNextKey());
+
+			hMenu.Display(param1, 20);
+		} else {
+			CPrintToChat(param1, "{blue}[{default}Match{blue}] {default}没有这种模式的配置");
+			ChMatchModeMenu(param1);
+		}
+	}
+
+	return 0;
+}
+
+public int ChConfigsMenuHandler(Menu menu, MenuAction action, int param1, int param2)
+{
+	if (action == MenuAction_End) {
+		delete menu;
+	} else if (action == MenuAction_Cancel) {
+		ChMatchModeMenu(param1);
+	} else if (action == MenuAction_Select) {
+		char sInfo[64], sBuffer[64];
+		menu.GetItem(param2, sInfo, sizeof(sInfo), _, sBuffer, sizeof(sBuffer));
+
+		if (StartChMatchVote(param1, sBuffer)) {
+			strcopy(g_sCfg, sizeof(g_sCfg), sInfo);
+			//caller is voting for
+			FakeClientCommand(param1, "Vote Yes");
+		} else {
+			ChMatchModeMenu(param1);
+		}
+	}
+
+	return 0;
+}
+
+bool StartChMatchVote(int iClient, const char[] sCfgName)
+{
+	if (GetClientTeam(iClient) <= TEAM_SPECTATE) {
+		CPrintToChat(iClient, "{blue}[{default}Match{blue}] {default}旁观者不允许发起投票");
+		return false;
+	}
+
+	if (!LGO_IsMatchModeLoaded()) {
+		CPrintToChat(iClient, "{blue}[{default}Match{blue}] {default}未加载任何配置! 请使用!match加载一个");
+		return false;
+	}
+
+	if (IsNewBuiltinVoteAllowed() || !IsBuiltinVoteInProgress()) {
+		int iNumPlayers = 0, iConnectedCount = 0;
+		int[] iPlayers = new int[MaxClients];
+
+		//list of non-spectators players
+		for (int i = 1; i <= MaxClients; i++) {
+			if (!IsClientInGame(i) || IsFakeClient(i) || GetClientTeam(i) <= TEAM_SPECTATE) {
+				continue;
+			}
+
+			iPlayers[iNumPlayers++] = i;
+		}
+
+		if (iNumPlayers < g_hCvarPlayerLimit.IntValue) {
+			CPrintToChat(iClient, "{blue}[{default}Match{blue}] {default}无法发起配置投票, 没有足够的人数");
+			return false;
+		}
+
+		if (iConnectedCount > 0) {
+			CPrintToChat(iClient, "{blue}[{default}Match{blue}] {default}无法发起更换配置投票, 有玩家正在连接");
+			return false;
+		}
+
+		char sBuffer[64];
+		FormatEx(sBuffer, sizeof(sBuffer), "更改配置为 '%s'?", sCfgName);
+
+		g_hVote = CreateBuiltinVote(VoteActionHandler, BuiltinVoteType_Custom_YesNo, BuiltinVoteAction_Cancel | BuiltinVoteAction_VoteEnd | BuiltinVoteAction_End);
+		SetBuiltinVoteArgument(g_hVote, sBuffer);
+		SetBuiltinVoteInitiator(g_hVote, iClient);
+		SetBuiltinVoteResultCallback(g_hVote, ChMatchVoteResultHandler);
+		DisplayBuiltinVote(g_hVote, iPlayers, iNumPlayers, 20);
+
+		return true;
+	}
+
+	CPrintToChat(iClient, "{blue}[{default}Match{blue}] {default}现在无法发起投票.");
+	return false;
+}
+
+public void ChMatchVoteResultHandler(Handle vote, int num_votes, int num_clients, \
+										const int[][] client_info, int num_items, const int[][] item_info)
+{
+	for (int i = 0; i < num_items; i++) {
+		if (item_info[i][BUILTINVOTEINFO_ITEM_INDEX] == BUILTINVOTES_VOTE_YES) {
+			if (item_info[i][BUILTINVOTEINFO_ITEM_VOTES] > (num_votes / 2)) {
+				DisplayBuiltinVotePass(vote, "配置文件已更换");
+				ServerCommand("sm_forcechangematch %s", g_sCfg);
 
 				return;
 			}

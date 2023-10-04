@@ -9,7 +9,7 @@ bool g_bMapChanged;
 float g_vTeleportPos[3], g_vTepeportAng[3];
 enum FirstMapList
 {
-    C1,C2,C3,C4,C5,C6,C7,C8,C9,C19,C11,C12,C13,C14,
+    C1,C2,C3,C4,C5,C6,C7,C8,C9,C19,C11,C12,C13,C14,AC1,AC2,AC3,AC4,AC5,AC6,
 	FirstMapList_Size 
 }
 
@@ -27,7 +27,13 @@ char L4D2_FirstMaps[FirstMapList_Size][] = {
     "c11m1_greenhouse",
     "c12m1_hilltop",
     "c13m1_alpinecreek",
-    "c14m1_junkyard"
+    "c14m1_junkyard",
+    "bdp_bunker01",
+    "zc_m1",
+    "uf1_boulevard",
+    "msd1_town",
+    "wfp1_track",
+    "dw_woods",
 };
 
 public void OnPluginStart(){

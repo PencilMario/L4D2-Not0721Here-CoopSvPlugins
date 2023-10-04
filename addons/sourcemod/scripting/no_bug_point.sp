@@ -9,6 +9,7 @@ public Action CMD_ReachAble_Test(int client, int args){
     float pos[3], pos2[3];
     int compareclient;
     for (int i = 1; i <= MaxClients; i++){
+        if (!IsClientInGame(i)) continue;
         if (i != client) {compareclient = i;break;}
     }
     GetClientAbsOrigin(client, pos);

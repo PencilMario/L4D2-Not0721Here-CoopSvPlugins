@@ -567,7 +567,7 @@ void vRespawnSurvivor(int client)
 }
 int GetClientViewingPlayer(int client){
 	int res = GetEntPropEnt(client, Prop_Send, "m_hObserverTarget");
-	if (IsClientInGame(res)) return res;
+	if (res!=1) return res;
 	else return client;
 
 }

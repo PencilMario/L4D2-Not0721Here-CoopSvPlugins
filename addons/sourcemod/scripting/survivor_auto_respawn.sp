@@ -566,7 +566,9 @@ void vRespawnSurvivor(int client)
 	}
 }
 int GetClientViewingPlayer(int client){
-	return GetEntPropEnt(client, Prop_Send, "m_hObserverTarget");
+	int res = GetEntPropEnt(client, Prop_Send, "m_hObserverTarget");
+	if (IsClientInGame(res)) return res;
+	else return client;
 
 }
 Action DelayDisplayPrompt(Handle timer, int client)

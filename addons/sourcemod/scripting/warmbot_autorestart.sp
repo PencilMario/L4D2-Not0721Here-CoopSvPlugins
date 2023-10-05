@@ -9,8 +9,14 @@ bool g_bMapChanged;
 float g_vTeleportPos[3], g_vTepeportAng[3];
 enum FirstMapList
 {
-    C1,C2,C3,C4,C5,C6,C7,C8,C9,C19,C11,C12,C13,C14,AC1,AC2,AC3,AC4,AC5,AC6,
+    C1,C2,C3,C4,C5,C6,C7,C8,C9,C19,C11,C12,C13,C14,
 	FirstMapList_Size 
+}
+
+enum FirstAddonMapList
+{
+    AC1,AC2,AC3,AC4,AC5,AC6,
+	FirstAddonMapList_Size 
 }
 
 char L4D2_FirstMaps[FirstMapList_Size][] = {
@@ -27,7 +33,10 @@ char L4D2_FirstMaps[FirstMapList_Size][] = {
     "c11m1_greenhouse",
     "c12m1_hilltop",
     "c13m1_alpinecreek",
-    "c14m1_junkyard",
+    "c14m1_junkyard"
+};
+
+char L4D2_FirstAddonMaps[FirstAddonMapList_Size][] = {
     "bdp_bunker01",
     "zc_m1",
     "uf1_boulevard",
@@ -84,8 +93,14 @@ public Action Timer_TeleportWarmBot(Handle timer)
 public Action Timer_CheckAndRestartNewMap(Handle timer)
 {
     if (CountTruePlayers() < 1){
-        int map = GetRandomInt(0, view_as<int>(FirstMapList_Size)-1)
-        ServerCommand("changelevel %s", L4D2_FirstMaps[map])
+        int map
+        int c2addonmap = GetRandomInt(0, 1)
+        if (c2addonmap == 0){
+            map = GetRandomInt(0, view_as<int>(FirstMapList_Size)-1)
+        } else {
+            map = GetRandomInt(0, view_as<int>(FirstAddonMapList_Size)-1)
+        }
+        ServerCommand("changelevel %s", c2addonmap == 0 ? L4D2_FirstMaps[map] : L4D2_FirstAddonMaps[map])
         g_bMapChanged = true;
     }
     return Plugin_Stop;

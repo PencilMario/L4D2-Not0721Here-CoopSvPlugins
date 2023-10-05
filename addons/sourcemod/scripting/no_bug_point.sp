@@ -30,6 +30,6 @@ public PlayerPosStatus GetClientPosStatus(int client){
         
     }
     if (compareclient == 0) return POS_CantCheckNow;
-    if (L4D2_VScriptWrapper_NavAreaBuildPath(pos2, pos, GetVectorDistance(pos, pos2)*1.5, false, false, 2, false)) return POS_OK;
+    if (L4D2_VScriptWrapper_NavAreaBuildPath(pos2, pos, 3000.0, false, false, 2, false)) return POS_OK;
     else return POS_Bug;
 }

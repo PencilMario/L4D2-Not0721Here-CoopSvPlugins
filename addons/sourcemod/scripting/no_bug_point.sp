@@ -16,20 +16,30 @@ public Action CMD_ReachAble_Test(int client, int args){
 }
 
 
-public PlayerPosStatus GetClientPosStatus(int client){
+public bool GetClientPosStatus(int client){
     float pos[3], pos2[3];
-    int compareclient = 0;
     GetClientAbsOrigin(client, pos);
-    for (int i = 1; i <= MaxClients; i++){
-        if (!IsClientInGame(i)) continue;
-        if (!IsPlayerAlive(i)) continue;
-        if (GetClientTeam(i) != TEAM_INFECTED) continue;
-        GetClientAbsOrigin(i, pos2);
-        if (GetVectorDistance(pos, pos2) > 2500.0) continue;
-        if (i != client) {compareclient = i;break;}
-        
+    int surt = 0;
+    int inft1 = 0;
+    int inft2 = 0
+    bool result[3];
+    while(surt = 0 || surt == client){
+        if (GetSurvivorCount() == 1) break;
+        surt = GetRandomSurvivor(1);
     }
-    if (compareclient == 0) return POS_CantCheckNow;
-    if (L4D2_VScriptWrapper_NavAreaBuildPath(pos2, pos, 3000.0, false, false, 2, false)) return POS_OK;
-    else return POS_Bug;
+    inft1 = GetRandomInfected(1);
+    inft2 = GetRandomInfected(1);
+    if (surt) {
+        GetClientAbsOrigin(inft1, pos2);
+        result[0] = L4D2_VScriptWrapper_NavAreaBuildPath(pos2, pos, 3000.0, false, false, 2, false);
+    }
+    if (inft1) {
+        GetClientAbsOrigin(inft1, pos2);
+        result[1] = L4D2_VScriptWrapper_NavAreaBuildPath(pos2, pos, 3000.0, false, false, 2, false);
+    }
+    if (inft2) {
+        GetClientAbsOrigin(inft2, pos2);
+        result[2] = L4D2_VScriptWrapper_NavAreaBuildPath(pos2, pos, 3000.0, false, false, 2, false);
+    }
+    return result[0] || result [1] || result[2]
 }

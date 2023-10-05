@@ -23,7 +23,7 @@ public bool GetClientPosStatus(int client){
     int inft1 = 0;
     int inft2 = 0
     bool result[3];
-    while(surt = 0 || surt == client){
+    while(surt == 0 || surt == client){
         if (GetSurvivorCount() == 1) break;
         surt = GetRandomSurvivor(1);
     }

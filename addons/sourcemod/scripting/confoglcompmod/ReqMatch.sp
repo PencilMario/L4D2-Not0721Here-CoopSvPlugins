@@ -203,21 +203,23 @@ static void RM_Match_Load()
 	RM_bIsMatchModeLoaded = true;
 	IsPluginEnabled(true, true);
 
-	//PrintToChatAll("\x01[\x05Confogl\x01] Match mode loaded!");
-	CPrintToChatAll("{blue}[{default}Confogl{blue}]{default} 配置文件已加载!");
+	// PrintToChatAll("\x01[\x05Confogl\x01] Match mode loaded!");
+	CPrintToChatAll("{blue}[{default}Confogl{blue}]{default} Match mode loaded!");
 
 	if (!RM_bIsMapRestarted && RM_hDoRestart.BoolValue)
 	{
 		char sMap[PLATFORM_MAX_PATH];
 		RM_hChangeMap.GetString(sMap, sizeof(sMap));
 
-		if (strlen(sMap) > 0) {
-			CPrintToChatAll("{blue}[{default}Confogl{blue}]{default} 切换地图至 {green}%s{default}!", sMap);
-		} else {
+		if (strlen(sMap) > 0)
+		{
+			CPrintToChatAll("{blue}[{default}Confogl{blue}]{default} Changing map to {green}%s{default}!", sMap);
+		}
+		else {
 			GetCurrentMap(sMap, sizeof(sMap));
 
-			//PrintToChatAll("\x01[\x05Confogl\x01] Restarting map!");
-			CPrintToChatAll("{blue}[{default}Confogl{blue}]{default} 准备重启地图!");
+			// PrintToChatAll("\x01[\x05Confogl\x01] Restarting map!");
+			CPrintToChatAll("{blue}[{default}Confogl{blue}]{default} Restarting map!");
 		}
 
 		DataPack hDp;
@@ -270,8 +272,8 @@ static void RM_Match_Unload(bool bForced = false)
 	Call_StartForward(RM_hFwdMatchUnload);
 	Call_Finish();
 
-	//PrintToChatAll("\x01[\x05Confogl\x01] Match mode unloaded!");
-	CPrintToChatAll("{blue}[{default}Confogl{blue}]{default} 配置已卸载!");
+	// PrintToChatAll("\x01[\x05Confogl\x01] Match mode unloaded!");
+	CPrintToChatAll("{blue}[{default}Confogl{blue}]{default} Match mode unloaded!");
 
 	RM_hConfigFile_Off.GetString(sBuffer, sizeof(sBuffer));
 
@@ -317,9 +319,10 @@ public Action RM_Match_MapRestart_Timer(Handle hTimer, DataPack hDp)
 
 static bool RM_UpdateCfgOn(const char[] cfgfile, bool bIsPrint = true)
 {
-	if (SetCustomCfg(cfgfile)) {
-		//PrintToChatAll("\x01[\x05Confogl\x01] Using \"\x04%s\x01\" config.", cfgfile);
-		CPrintToChatAll("{blue}[{default}Confogl{blue}]{default} 正在加载 '{olive}%s{default}'.", cfgfile);
+	if (SetCustomCfg(cfgfile))
+	{
+		// PrintToChatAll("\x01[\x05Confogl\x01] Using \"\x04%s\x01\" config.", cfgfile);
+		CPrintToChatAll("{blue}[{default}Confogl{blue}]{default} Loading '{olive}%s{default}'.", cfgfile);
 
 		if (RM_DEBUG || IsDebugEnabled())
 		{
@@ -329,9 +332,10 @@ static bool RM_UpdateCfgOn(const char[] cfgfile, bool bIsPrint = true)
 		return true;
 	}
 
-	if (bIsPrint) {
-		//PrintToChatAll("\x01[\x05Confogl\x01] Config \"\x04%s\x01\" not found, using default config!", cfgfile);
-		CPrintToChatAll("{blue}[{default}Confogl{blue}]{default} 配置文件 '{olive}%s{default}' 未找到, 将使用默认配置!", cfgfile);
+	if (bIsPrint)
+	{
+		// PrintToChatAll("\x01[\x05Confogl\x01] Config \"\x04%s\x01\" not found, using default config!", cfgfile);
+		CPrintToChatAll("{blue}[{default}Confogl{blue}]{default} Config '{olive}%s{default}' not found, using default config!", cfgfile);
 	}
 
 	return false;
@@ -452,7 +456,7 @@ public Action RM_CMD_ChangeMatch(int client, int args)
 			PrintToServer("[Confogl] Config %s not found!", sBuffer);
 		}
 		else {
-			CPrintToChat(client, "{blue}[{default}Confogl{blue}]{default} 配置 '{olive}%s{default}' 未找到!", sBuffer);
+			CPrintToChat(client, "{blue}[{default}Confogl{blue}]{default} Config '{olive}%s{default}' not found!", sBuffer);
 		}
 
 		return Plugin_Handled;
@@ -471,7 +475,7 @@ public Action RM_CMD_ChangeMatch(int client, int args)
 				PrintToServer("[Confogl] Map %s not found!", sMap);
 			}
 			else {
-				CPrintToChat(client, "{blue}[{default}Confogl{blue}]{default} 地图 '{olive}%s{default}' 未找到!", sMap);
+				CPrintToChat(client, "{blue}[{default}Confogl{blue}]{default} Map '{olive}%s{default}' not found!", sMap);
 			}
 			return Plugin_Handled;
 		}
@@ -496,7 +500,7 @@ public Action RM_CMD_ChangeMatch(int client, int args)
 	RM_Match_Unload(true);
 
 	// give time to fully finish unloading.
-	CreateTimer(12.0, Timer_DelayToLoadMatchMode);
+	CreateTimer(1.0, Timer_DelayToLoadMatchMode);
 
 	return Plugin_Handled;
 }

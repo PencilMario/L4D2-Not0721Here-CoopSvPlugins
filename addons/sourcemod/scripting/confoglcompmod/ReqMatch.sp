@@ -437,7 +437,7 @@ public Action RM_CMD_ChangeMatch(int client, int args)
 			PrintToServer("[Confogl] Please specify a config to load.");
 		}
 		else {
-			CPrintToChat(client, "{blue}[{default}Confogl{blue}]{default} 请指定一个需要加载的{olive}配置{default}");
+			CPrintToChat(client, "{blue}[{default}Confogl{blue}]{default} Please specify a {olive}config{default} to load.");
 		}
 		return Plugin_Handled;
 	}
@@ -496,7 +496,7 @@ public Action RM_CMD_ChangeMatch(int client, int args)
 	RM_Match_Unload(true);
 
 	// give time to fully finish unloading.
-	CreateTimer(1.0, Timer_DelayToLoadMatchMode);
+	CreateTimer(5.0, Timer_DelayToLoadMatchMode);
 
 	return Plugin_Handled;
 }

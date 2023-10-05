@@ -496,7 +496,7 @@ public Action RM_CMD_ChangeMatch(int client, int args)
 	RM_Match_Unload(true);
 
 	// give time to fully finish unloading.
-	CreateTimer(5.0, Timer_DelayToLoadMatchMode);
+	CreateTimer(12.0, Timer_DelayToLoadMatchMode);
 
 	return Plugin_Handled;
 }

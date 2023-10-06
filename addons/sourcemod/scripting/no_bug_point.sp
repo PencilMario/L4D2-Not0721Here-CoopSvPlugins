@@ -29,17 +29,17 @@ public bool GetClientPosStatus(int client){
     }
     inft1 = GetRandomInfected(1);
     inft2 = GetRandomInfected(1);
-    if (surt) {
+    if (surt != 0) {
         GetClientAbsOrigin(inft1, pos2);
-        result[0] = L4D2_VScriptWrapper_NavAreaBuildPath(pos2, pos, 3000.0, false, false, 2, false);
+        result[0] = L4D2_VScriptWrapper_NavAreaBuildPath(pos2, pos, 1500.0, false, false, 2, false);
     }
-    if (inft1) {
+    if (inft1 != 0) {
         GetClientAbsOrigin(inft1, pos2);
-        result[1] = L4D2_VScriptWrapper_NavAreaBuildPath(pos2, pos, 3000.0, false, false, 2, false);
+        result[1] = L4D2_VScriptWrapper_NavAreaBuildPath(pos2, pos, 1500.0, false, false, 2, false);
     }
-    if (inft2) {
+    if (inft2 != 0) {
         GetClientAbsOrigin(inft2, pos2);
-        result[2] = L4D2_VScriptWrapper_NavAreaBuildPath(pos2, pos, 3000.0, false, false, 2, false);
+        result[2] = L4D2_VScriptWrapper_NavAreaBuildPath(pos2, pos, 1500.0, false, false, 2, false);
     }
     return result[0] || result [1] || result[2]
 }

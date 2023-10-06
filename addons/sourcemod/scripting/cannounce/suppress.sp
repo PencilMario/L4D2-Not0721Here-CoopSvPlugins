@@ -8,7 +8,6 @@
 new Handle:g_CvarShowConnectionMsg = INVALID_HANDLE;
 new Handle:g_CvarShowDisonnectionMsg = INVALID_HANDLE;
 
-#include "chatlogex"
 
 /*****************************************************************
 

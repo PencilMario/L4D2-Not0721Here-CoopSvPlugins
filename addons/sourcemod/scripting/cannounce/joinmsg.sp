@@ -34,7 +34,6 @@ new bool:noSoundPeriod = false;
 #include "cannounce/joinmsg/disallow.sp"
 #include "cannounce/joinmsg/set.sp"
 #include "cannounce/joinmsg/sound.sp"
-#include "chatlogex"
 
 /*****************************************************************
 

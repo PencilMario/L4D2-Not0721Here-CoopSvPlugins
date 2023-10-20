@@ -297,10 +297,11 @@
       * 过关回满血
       </details>
 
-   * *community5_jimen 几门多特*
+   * *realisn_jimen 几门*
       > 施工中 基于coop_base
 
       * 默认刷特：基础6只15s，跳过relax阶段
+      * 写实模式，但倒地即死
       * 特感ai增强
       * 近战范围调整为175
       * 坦克伤害调整为专家20

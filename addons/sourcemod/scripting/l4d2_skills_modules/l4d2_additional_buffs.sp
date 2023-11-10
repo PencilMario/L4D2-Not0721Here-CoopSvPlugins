@@ -266,9 +266,9 @@ public Action timer_think_buffs(Handle timer)
 			if (globals.print)
 			{
 				if (owner != picker)
-					Skills_PrintToChatAll("\x05%N \x04got \x03%s \x04of the \x05%N", picker, buff.name, owner);
+					Skills_PrintToChatAll("\x05%N \x04得到了 \x03%s \x04 给\x05%N", picker, buff.name, owner);
 				else
-					Skills_PrintToChatAll("\x05%N \x04got \x03%s", picker, buff.name);
+					Skills_PrintToChatAll("\x05%N \x04得到了 \x03%s", picker, buff.name);
 			}
 			
 			if (buff.pickupSound[0] != '\0')
@@ -516,8 +516,8 @@ public void OnTeleport(int owner, int picker, Buff buff)
 
 	GetClientAbsOrigin(survivor, dest);
 	TeleportEntity(picker, dest, NULL_VECTOR, NULL_VECTOR);
-	Skills_PrintToChat(picker, "You got teleported to %N", survivor);
-	Skills_PrintToChat(survivor, "%N teleported to you", picker);
+	Skills_PrintToChat(picker, "你得到了传送至 %N", survivor);
+	Skills_PrintToChat(survivor, "%N 传送至你", picker);
 }
 
 public void OnAmmo(int owner, int picker, Buff buff)

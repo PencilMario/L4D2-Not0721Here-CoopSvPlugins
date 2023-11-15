@@ -8,7 +8,7 @@
 #include <l4d2_skills>
 #include <left4dhooks>
 
-#define SKILL_NAME "更多土质"
+#define SKILL_NAME "集束土质"
 
 public Plugin myinfo =
 {
@@ -129,7 +129,7 @@ public Action timer_cooldown( Handle timer, int client )
 		return Plugin_Continue;
 		
 	g_skill[client].active_pipebombs = 0;
-	Skills_PrintToChat(client, "\x05%s \x04can be used \x03again", SKILL_NAME);
+	Skills_PrintToChat(client, "\x05%s \x04冷却完毕", SKILL_NAME);
 	return Plugin_Continue;
 }
 

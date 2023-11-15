@@ -7,7 +7,7 @@
 #include <l4d2_skills>
 #include <left4dhooks>
 
-#define MY_EXPORT_NAME "团队升级"
+#define MY_EXPORT_NAME "Team Upgrades"
 
 #define MAX_UPGRADES 12
 #define UPGRADE_NAME_LENGTH 64
@@ -173,18 +173,18 @@ public int VMenuHandler( Menu menu, MenuAction action, int client, int index )
 
 			if (money - cost < 0)
 			{
-				Skills_PrintToChat(client, "\x03没有足够的 \x04团队积分y");
+				Skills_PrintToChat(client, "\x03Not enough \x04team \x5money");
 				return 0;
 			}
 
 			if (!InvokeUpgradeAction(upgradeID, client))
 			{
-				Skills_PrintToChat(client, "\x04升级 \x03%s \x04已在使用", g_TeamUpgrades[upgradeID].name);
+				Skills_PrintToChat(client, "\x04Upgrade \x03%s \x04is already in \x05use", g_TeamUpgrades[upgradeID].name);
 				return 0;
 			}
 
 			Skills_SetTeamMoney(money - cost);
-			Skills_PrintToChatAll("\x05%N \x04买了 \x03%s \x04团队升级", client, g_TeamUpgrades[upgradeID].name);
+			Skills_PrintToChatAll("\x05%N \x04bought \x03%s \x04team upgrade", client, g_TeamUpgrades[upgradeID].name);
 		}
 	}
 	

@@ -94,7 +94,7 @@ public void Skills_OnStateChangedPrivate( int client, int id, SkillState state )
 	
 	if (Skills_BaseHasMaxLevel(g_skill[client], gExport.base))
 	{
-		Skills_PrintToChat(client, "\x05You \x01have reached max level of \x03" ... SKILL_NAME ... "\x01. \x05You \x01will \x04reflect \x01damage back to \x04attacker\x01!");
+		Skills_PrintToChat(client, "\x05你升满级了 \x03" ... SKILL_NAME ... "\x01. \x05你受到黑枪将反弹\x01!");
 	}
 }
 

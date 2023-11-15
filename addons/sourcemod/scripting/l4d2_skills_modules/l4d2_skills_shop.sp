@@ -80,7 +80,7 @@ void ShowClientShop( int client, int selection = 0 )
 		menu.AddItem(temp, display);
 	}
 	
-	menu.SetTitle("Skills: 超市");
+	menu.SetTitle("Skills: Shop");
 	menu.ExitBackButton = true;
 	menu.ExitButton = true;
 	
@@ -113,7 +113,7 @@ public int VMenuHandler( Menu menu, MenuAction action, int client, int index )
 			
 			if ( money < item.cost )
 			{
-				Skills_PrintToChat(client, "\x05你没有\x04足够的积分");
+				Skills_PrintToChat(client, "\x05You \x04don't \x05have enough \x03money");
 				return 0;
 			}
 			

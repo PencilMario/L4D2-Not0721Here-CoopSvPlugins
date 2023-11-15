@@ -8,7 +8,7 @@
 #include <l4d2_skills>
 #include <left4dhooks>
 
-#define SKILL_NAME "来个马格南"
+#define SKILL_NAME "Sattelite Magnum"
 #define MAX_LEVELS 4
 
 #define SOUND_TRACING	"items/suitchargeok1.wav"
@@ -170,7 +170,7 @@ public Action sm_satellite_info(int client, int args)
 {
 	Skills_ReplyToCommand(client, "\x04Satellite Freeze\x01: \x04cooldown \x01- \x05%.0f\x01, \x04radius \x01- \x05%.0f\x01, \x04duration \x01 - \x05%.0f", gExport.freeze_cooldown, gExport.freeze_radius, gExport.freeze_duration);
 	Skills_ReplyToCommand(client, "\x04Satellite Judgement\x01: \x04cooldown \x01- \x05%.0f\x01, \x04radius \x01- \x05%.0f\x01, \x04damage \x01- \x05%.0f", gExport.judgement_cooldown, gExport.judgement_radius, gExport.judgement_damage_specials);
-	Skills_ReplyToCommand(client, "\x04Satellite Freeze\x01: \x04cooldown \x01- \x05%.0f\x01, \x04radius \x01- \x05%.0f\x01, \x04damage \x01- \x05%.0f", gExport.inferno_cooldown, gExport.inferno_radius, gExport.inferno_damage_specials);
+	Skills_ReplyToCommand(client, "\x04Satellite inferno\x01: \x04cooldown \x01- \x05%.0f\x01, \x04radius \x01- \x05%.0f\x01, \x04damage \x01- \x05%.0f", gExport.inferno_cooldown, gExport.inferno_radius, gExport.inferno_damage_specials);
 	return Plugin_Handled;
 }
 
@@ -195,6 +195,7 @@ public int MenuHandler( Menu menu, MenuAction action, int client, int index )
 			SATELITE_TYPE type = view_as<SATELITE_TYPE>(index);
 			g_Sattelite[client].type = type;
 			Skills_PrintToChat(client, "\x05You \x03have choosen \x04%s \x03type", GetSatelliteFormat(type));
+			StartCooldown(client);
 		}
 	}
 	
@@ -445,7 +446,7 @@ public Action timer_satellite_cooldown(Handle timer, DataPack pack)
 
 	SATELITE_TYPE type = pack.ReadCell();
 
-	Skills_PrintToChat(client, "\x04%s \x05cooldown has ended", GetSatelliteFormat(type));
+	Skills_PrintToChat(client, "\x04%s \x05 冷却结束", GetSatelliteFormat(type));
 	return Plugin_Continue;
 }
 
@@ -627,7 +628,7 @@ public void Skills_OnStateChangedPrivate(int client, int id, SkillState state)
 		if (weapon == -1 || !ClassMatchesComplex(weapon, "weapon_pistol_magnum"))
 			GivePlayerItem(client, "weapon_pistol_magnum");
 
-		Skills_PrintToChat(client, "Use !satellite_change to change satellite type");
+		Skills_PrintToChat(client, "使用!satellite_change切换技能");
 	}
 }
 

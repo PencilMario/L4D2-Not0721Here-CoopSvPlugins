@@ -213,7 +213,7 @@ public void Skills_OnStateChangedPrivate( int client, int id, SkillState state )
 
 	if (gExport.enable_no_fall_damage_on_max_level && Skills_BaseHasMaxLevel(g_clData[client].base, gExport.base))
 	{
-		Skills_PrintToChat(client, "\x05You have reached \x03max \x05level of \x04" ... SKILL_NAME ... "\x01. \x05All fall damage will be \x03nullified\x01!");
+		Skills_PrintToChat(client, "\x05你已经升满级了 \x04" ... SKILL_NAME ... "\x01. \x05你将不会受到摔落伤害!");
 	}
 }
 

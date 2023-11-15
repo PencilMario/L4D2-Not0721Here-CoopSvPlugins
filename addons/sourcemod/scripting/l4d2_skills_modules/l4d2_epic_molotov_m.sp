@@ -8,7 +8,7 @@
 #include <l4d2_skills>
 #include <left4dhooks>
 
-#define SKILL_NAME "更多火瓶"
+#define SKILL_NAME "纵火糕手"
 
 public Plugin myinfo =
 {
@@ -91,7 +91,7 @@ public void molotov_thrown( Event event, const char[] name, bool noReplicate )
 public Action timer_cooldown(Handle timer, int client)
 {
 	if (IsClientInGame(client))
-		Skills_PrintToChat(client, SKILL_NAME ... " can be used again");
+		Skills_PrintToChat(client, SKILL_NAME ... " 冷却完毕");
 
 	g_skill[client].hascooldown = false;
 	return Plugin_Continue;

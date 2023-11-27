@@ -31,6 +31,7 @@ public Action Cmd_StartTest(int client, int args){
     if (args < 1)
 	{
 		PrintToServer("[SM] Usage: sm_spawnspeedtest <sec>");
+        return Plugin_Handled;
     }
     ResetData();
     g_iTimerTime = GetCmdArgInt(1);
@@ -91,6 +92,7 @@ public Action Timer_TestLoop(Handle timer){
         FinishPrint();
         return Plugin_Stop;
     }
+    CreateTimer(1.0, Timer_TestLoop, _, TIMER_FLAG_NO_MAPCHANGE);
     return Plugin_Continue;
 }
 void FinishPrint(){

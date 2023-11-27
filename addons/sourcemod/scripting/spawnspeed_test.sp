@@ -52,6 +52,7 @@ public Action Timer_TestLoop(Handle timer){
         if (!IsClientInGame(i)) continue;
         if (!IsInfected(i)) continue;
         if (!IsFakeClient(i)) continue;
+        if (!IsPlayerAlive(i)) continue;
         SIData.SIcount[L4D2_GetPlayerZombieClass(i)]++;
         SIData.SiInterval[L4D2_GetPlayerZombieClass(i)] = 0;
         SIData.totalSI++;

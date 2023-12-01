@@ -116,13 +116,18 @@ public Action Timer_RestartMap(Handle Timer){
 }
 public Action Timer_ResetSpecialsCountdownTime(Handle Timer)
 {
+	float nowTime = GetEngineTime()
 	for (int i = 1; i < 7; i++)
 	{
 		CountdownTimer SiTimer = L4D2Direct_GetSIClassSpawnTimer(i);
-		if (CTimer_GetCountdownDuration(SiTimer) > 5.0) CTimer_Start(SiTimer, 0.5);
+		if (CTimer_GetCountdownDuration(SiTimer) > 5.0) CTimer_SetTimestamp(SiTimer, nowTime - 18.0);
+		
+		IntervalTimer SITimer2 = L4D2Direct_GetSIClassDeathTimer(i);
+		ITimer_SetTimestamp(SITimer2, nowTime - 18.0);
 	}
 	return Plugin_Continue;
 }
+
 void AutoSetSi()
 {
 	int players = GetConnectedPlayer(0);

@@ -3,6 +3,8 @@
 #include <multicolors>
 #include <left4dhooks>
 #include <sirputil/better_mutations4.sp>
+#include <l4d2util>
+
 ConVar SS_1_SiNum;
 ConVar SS_Time;
 ConVar SS_EnableRelax;
@@ -46,6 +48,7 @@ public void OnPluginStart()
 	HookConVarChange(SS_EnableRelax, OnRelaxChanged);
 	HookConVarChange(g_cEnableM4Fix, OnM4FixChanged)
 }
+
 public void OnMapInit()
 {
 	if (g_cEnableM4Fix.IntValue == 1) CheckValues();
@@ -116,14 +119,24 @@ public Action Timer_RestartMap(Handle Timer){
 }
 public Action Timer_ResetSpecialsCountdownTime(Handle Timer)
 {
-	float nowTime = GetEngineTime()
+	float nowTime;
 	for (int i = 1; i < 7; i++)
 	{
 		CountdownTimer SiTimer = L4D2Direct_GetSIClassSpawnTimer(i);
-		if (CTimer_GetCountdownDuration(SiTimer) > 5.0) CTimer_SetTimestamp(SiTimer, nowTime - 18.0);
+		nowTime = CTimer_GetTimestamp(SiTimer);
+		CTimer_SetTimestamp(SiTimer, nowTime - 20.0);
 		
 		IntervalTimer SITimer2 = L4D2Direct_GetSIClassDeathTimer(i);
-		ITimer_SetTimestamp(SITimer2, nowTime - 18.0);
+		nowTime = ITimer_GetTimestamp(SITimer2);
+		ITimer_SetTimestamp(SITimer2, nowTime - 20.0);
+	}
+
+	for (int i = 1; i <= MaxClients; i++){
+		if (!IsClientInGame(i)) continue;
+		if (!IsFakeClient(i)) continue;
+		if (!IsInfected(i)) continue;
+		if (L4D2_GetPlayerZombieClass(i) == L4D2Infected_Spitter) continue;
+		if (!IsPlayerAlive(i)) KickClient(i);
 	}
 	return Plugin_Continue;
 }

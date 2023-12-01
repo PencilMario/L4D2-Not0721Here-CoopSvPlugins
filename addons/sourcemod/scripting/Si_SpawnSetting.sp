@@ -7,7 +7,7 @@
 
 ConVar SS_1_SiNum;
 ConVar SS_Time;
-ConVar SS_EnableRelax;
+ConVar SS_EnableRelax, SS_EnableFastRespawn;
 ConVar SS_DPSLimit;
 ConVar g_cAutoMode, g_cAutoTime, g_cAutoPerPTimeDe, g_cAutoSiLim, g_cAutoSiPIn;
 ConVar g_cEnableM4Fix;
@@ -30,6 +30,7 @@ public void OnPluginStart()
 	SS_1_SiNum = CreateConVar("sss_1P", "3", "特感数量");
 	SS_Time = CreateConVar("SS_Time", "35", "刷新间隔");
 	SS_EnableRelax = CreateConVar("SS_Relax", "1", "允许relax");
+	SS_EnableFastRespawn = CreateConVar("SS_FastRespawn", "0", "跳过relax时, 是否快速补特");
 	SS_DPSLimit = CreateConVar("SS_DPSSiLimit", "10", "DPS特感数量限制");
 	g_cAutoMode = CreateConVar("sm_ss_automode", "1", "自动调整刷特模式（4+生还玩家）");
 	g_cAutoPerPTimeDe = CreateConVar("sm_ss_autoperdetime", "1", "每多一名生还，特感的复活时间减少多少s");
@@ -130,7 +131,7 @@ public Action Timer_ResetSpecialsCountdownTime(Handle Timer)
 		nowTime = ITimer_GetTimestamp(SITimer2);
 		ITimer_SetTimestamp(SITimer2, nowTime - 20.0);
 	}
-
+	if (SS_EnableFastRespawn.IntValue != 1) return Plugin_Continue;
 	for (int i = 1; i <= MaxClients; i++){
 		if (!IsClientInGame(i)) continue;
 		if (!IsFakeClient(i)) continue;

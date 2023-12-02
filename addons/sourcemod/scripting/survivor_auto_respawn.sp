@@ -524,8 +524,9 @@ Action tmrRespawnSurvivor(Handle timer, int client)
 		{
 			if(!IsFakeClient(client))
 				PrintCenterText(client, "你将在%d秒后复活(还剩%d次)\n你将尝试复活至你正在观看的玩家：%N", g_esPlayer[client].iCountdown, g_iRespawnLimit - g_esPlayer[client].iRespawned, GetClientViewingPlayer(client));
-				if (g_esPlayer[client].iCountdown < 6 && IsClientInGame(GetClientViewingPlayer(client))){
-					PrintHintText(GetClientViewingPlayer(client), "%N 即将尝试在你所在的位置复活(%is)\n请注意控制枪口，保持静止", client, g_esPlayer[client].iCountdown);
+				int viewing = GetClientViewingPlayer(client);
+				if (g_esPlayer[client].iCountdown < 6 && IsClientInGame(viewing) && viewing != -1){
+					PrintHintText(viewing, "%N 即将尝试在你所在的位置复活(%is)\n请注意控制枪口，保持静止", client, g_esPlayer[client].iCountdown);
 				}
 			g_esPlayer[client].iCountdown--;
 		}
@@ -567,7 +568,7 @@ void vRespawnSurvivor(int client)
 }
 int GetClientViewingPlayer(int client){
 	int res = GetEntPropEnt(client, Prop_Send, "m_hObserverTarget");
-	if (res!=1) return res;
+	if (res > 0) return res;
 	else return client;
 
 }

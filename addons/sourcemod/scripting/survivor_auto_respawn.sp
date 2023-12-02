@@ -512,7 +512,17 @@ bool bCalculateRespawnLimit(int client)
 	g_esPlayer[client].iCountdown = g_esPlayer[client].iDynamic;
 	return true;
 }
-
+void SendRespawnedEvent(int player, int helped){
+	Event event = CreateEvent("player_death");
+	if (event == null)
+	{
+		return;
+	}
+	event.SetInt("userid", GetClientUserId(player));
+	event.SetInt("subject", GetClientUserId(helped));
+	event.Fire(true);
+	return;
+}
 Action tmrRespawnSurvivor(Handle timer, int client)
 {
 	if((client = GetClientOfUserId(client)) == 0)
@@ -550,6 +560,7 @@ void vRespawnSurvivor(int client)
 	vRoundRespawn(client);
 	vGiveWeapon(client);
 	vTeleportToSurvivor(client, true, viewing);
+	SendRespawnedEvent(IsClientInGame(viewing) ? viewing : client, client);
 	//vRemoveSurvivorDeathModel(client);
 	g_esPlayer[client].iRespawned += 1;
 

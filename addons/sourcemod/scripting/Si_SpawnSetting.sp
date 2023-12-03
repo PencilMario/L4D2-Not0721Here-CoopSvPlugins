@@ -120,6 +120,7 @@ public Action Timer_RestartMap(Handle Timer){
 }
 public Action Timer_ResetSpecialsCountdownTime(Handle Timer)
 {
+	if (SS_EnableFastRespawn.IntValue < 1) return Plugin_Continue;
 	float nowTime;
 	for (int i = 1; i < 7; i++)
 	{
@@ -131,7 +132,7 @@ public Action Timer_ResetSpecialsCountdownTime(Handle Timer)
 		nowTime = ITimer_GetTimestamp(SITimer2);
 		ITimer_SetTimestamp(SITimer2, nowTime - 20.0);
 	}
-	if (SS_EnableFastRespawn.IntValue != 1) return Plugin_Continue;
+	if (SS_EnableFastRespawn.IntValue < 2) return Plugin_Continue;
 	for (int i = 1; i <= MaxClients; i++){
 		if (!IsClientInGame(i)) continue;
 		if (!IsFakeClient(i)) continue;

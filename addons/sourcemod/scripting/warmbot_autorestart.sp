@@ -37,12 +37,12 @@ char L4D2_FirstMaps[FirstMapList_Size][] = {
 };
 
 char L4D2_FirstAddonMaps[FirstAddonMapList_Size][] = {
-    "bdp_bunker01",
-    "zc_m1",
+    "bdp_bunker01",// 深埋
+    "zc_m1", //增城
     "uf1_boulevard",
     "msd1_town",
     "wfp1_track",
-    "dw_woods",
+    "dw_woods", //黑色木头
 };
 
 public void OnPluginStart(){

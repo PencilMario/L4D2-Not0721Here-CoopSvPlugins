@@ -15,11 +15,7 @@
 
 依次执行以下内容：
 ```
-dpkg --add-architecture i386 
-apt-get update && apt-get upgrade
-apt-get install libc6:i386
-apt-get install lib32z1
-apt-get install screen
+dpkg --add-architecture i386 && apt-get update && apt-get upgrade -y && apt-get install -y libc6:i386 lib32z1 screen
 
 adduser steam
 adduser steam sudo

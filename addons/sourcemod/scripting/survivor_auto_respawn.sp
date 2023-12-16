@@ -513,6 +513,7 @@ bool bCalculateRespawnLimit(int client)
 	return true;
 }
 void SendRespawnedEvent(int player, int helped){
+	return;
 	Event event = CreateEvent("player_death");
 	if (event == null)
 	{

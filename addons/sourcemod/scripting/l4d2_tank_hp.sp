@@ -35,7 +35,7 @@ public void OnPluginStart()
 	g_hTankSwitch		= CreateConVar("l4d2_tank_Switch", 		"1", 	"启用坦克出现时血量跟随存活的幸存者人数而增加? 0=禁用, 1=启用.", CVAR_FLAGS);
 	g_hTankPrompt		= CreateConVar("l4d2_tank_prompt", 		"1", 	"设置坦克出现时的提示类型. 0=禁用, 1=聊天窗, 2=屏幕中下+聊天窗, 3=屏幕中下.", CVAR_FLAGS);
 	g_hMultiples		= CreateConVar("l4d2_tank_Multiples", 	"0.75;1.0;1.5;2.0", "设置游戏难度对应的倍数(留空=使用默认值:1.0).", CVAR_FLAGS);
-	g_hTankHealth		= CreateConVar("l4d2_tank_health", 		"1000", "设置每一个活着的幸存者坦克所增加的血量.", CVAR_FLAGS);
+	g_hTankHealth		= CreateConVar("l4d2_tank_health", 		"1000", "设置每一个幸存者坦克所增加的血量.", CVAR_FLAGS);
 	g_hWitchSwitch		= CreateConVar("l4d2_witch_Switch", 	"1", 	"启用女巫出现时血量设置及提示. 0=禁用, 1=设置女巫血量并提示.", CVAR_FLAGS);
 	g_hWitchHealth		= CreateConVar("l4d2_witch_health", 	"1000",	"女巫血量.", CVAR_FLAGS);
 
@@ -176,9 +176,9 @@ public Action Timer_IsClientPrint(Handle Timer, DataPack hPack)
 	if(IsValidTank(client) && g_iTankPrompt != 0 && !TankSpawnFinaleVehicleLeaving)
 	{
 		if(g_iTankPrompt == 1 || g_iTankPrompt == 2)
-			CPrintToChatAll("{default}[{blue}!{default}] {green}Tank {default}({blue}控制者：%s{default}) 已经生成！\n{default}[{blue}!{default}] {blue}难度:{green}%s {blue}存活生还:{green}%d {blue}血量:{green}%d", GetSurvivorName(client), sName, IsCountPlayersTeam(), GetClientHealth(client));//聊天窗提示.
+			CPrintToChatAll("{default}[{blue}!{default}] {green}Tank {default}({blue}控制者：%s{default}) 已经生成！\n{default}[{blue}!{default}] {blue}难度:{green}%s {blue}生还:{green}%d {blue}血量:{green}%d", GetSurvivorName(client), sName, IsCountPlayersTeam(), GetClientHealth(client));//聊天窗提示.
 		if(g_iTankPrompt == 2 || g_iTankPrompt == 3)
-			PrintHintTextToAll("坦克%s出现！难度:%s 存活生还:%d 血量:%d", GetSurvivorName(client), sName, IsCountPlayersTeam(), GetClientHealth(client));//屏幕中下提示.
+			PrintHintTextToAll("坦克%s出现！难度:%s 生还:%d 血量:%d", GetSurvivorName(client), sName, IsCountPlayersTeam(), GetClientHealth(client));//屏幕中下提示.
 	}
 	delete hPack;
 	return Plugin_Stop;
@@ -232,7 +232,7 @@ int IsCountPlayersTeam()
 	int iCount = 0;
 	for (int i = 1; i <= MaxClients; i++)
 	{
-		if (IsClientInGame(i) && IsPlayerAlive(i) && GetClientTeam(i) == 2)
+		if (IsClientInGame(i)  && GetClientTeam(i) == 2)
 			iCount++;
 	}
 	return iCount;

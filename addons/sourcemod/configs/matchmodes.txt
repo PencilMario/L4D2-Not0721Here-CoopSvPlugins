@@ -82,6 +82,10 @@
 		{
 			"name"		"战役|什么吊图"
 		}
+		"coop_annelike"
+		{
+			"name"		"战役|饼干的Anne改战役"
+		}
 		"community2"
 		{
 			"name"		"感染季节|绝境14特"

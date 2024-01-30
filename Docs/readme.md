@@ -14,7 +14,7 @@
       * 默认刷特：基础3只35s，4人以上每多1人+1只/-2s复活CD，允许Relax阶段
       * 移除牛冲锋减伤，HT空爆伤害为150
       * 生还者AI增强
-      * 限制~~速砍~~，连跳等操作。
+      * 限制~~速砍~~，连跳，闲置躲伤害（将直接旁观）等操作。
       * 特感数量/复活CD/DPS数量/Relax阶段等都可手动调节
       * 可使用!slots设置位置
       * 战役/药抗bug修复系列插件，详见plugins/fix
@@ -362,3 +362,71 @@
    * 绝境不停刷修复
 
       部分地图会无视Relax阶段直接刷特，也有部分地图设置了不合理的Relax时长，这个插件解决了问题本身（
+
+# 通用插件修复
+
+   > generalflxes.cfg的内容
+
+   *  **Requirements** 前置插件，部分插件需要前置才能正常运行
+   *  **bequiet.smx** 隐藏一些没必要显示的提示
+   *  **l4d_skip_intro.smx** 跳过地图开场
+   *  **command_buffer.smx** 修复不正确的cvar值导致的'Cbuf_AddText: buffer overflow' 
+   *  **Tickratefix.smx** 高Tick下开关门速度，重力修正
+   * **l4d2_pistol_delay.smx** 修复在高刷新率下，双手枪开火速度很高
+   * **l4d_votepoll_fix.smx** 更改可投票的玩家数量
+   * **l4d2_lagcomp_manager.smx** 实体延迟补偿（需要启用sv_unlag）
+   * **l4d_console_spam.smx** 防止某些错误/警告信息输出到服务器控制台
+   * **l4d2_script_cmd_swap.smx** 阻止script cmd指令并用一个`logic_script`实体代替执行（否则会导致内存泄漏）
+   * **playermanagement.smx** 可使用指令sm_swap系列指令调整玩家队伍，允许玩家通过!s自行旁观
+   * **l4d2_sound_manipulation.smx** 阻止某些声音（心跳等）
+   * **frozen_tank_fix.smx** 修复某些情况坦克不会死亡
+   * **l4d2_melee_damage_control.smx** 修改近战对特感的伤害，无论击中哪里，都会造成固定伤害。控制近战对牛/坦克的伤害。
+   * ~~**fix_fastmelee.smx** 禁用速砍~~
+   * **l4d2_jockeyed_ladder_fix.smx** 修复被猴子控的生还从梯子上缓慢滑下
+   **l4d2_no_post_jockey_deadstops.smx** 修复被猴子控之后仍然能自己推开
+   **l4d2_jockey_jumpcap_patch.smx** 防止猴子在技能CD时能用普通跳跃控人(?存疑)
+   **l4d2_shadow_removal.smx** 移除影子来防止在某些场景因为影子透视
+   **l4d2_explosiondmg_prev.smx** 环境爆炸伤害将不会影响特感
+   **l4d2_car_alarm_hittable_fix.smx** 当坦克拍警报车时，禁用警报车/确保生还碰到警报车时正确触发警报
+   **l4d2_ai_damagefix.smx** 修复AI HT空爆伤害（玩家HT 150)和牛牛减伤，某些配置禁用
+   **l4d2_ladderblock.smx** 生还能顶开在楼梯上的特感（特感也可顶开生还，防止梯子卡克）
+   **FollowTarget_Detour.smx** 修复CMoveableCamera::FollowTarget崩溃
+   **l4d_fix_deathfall_cam.smx** 修复"point_deathfall_camera" 和 "point_viewcontrol*" 永久锁定视角
+   **l4d_pause_message.smx** 如果服务器不支持暂停，阻止pause指令
+   **l4d2_boomer_shenanigans.smx** 确保胖子被推时无法吐人
+   **sv_consistency_fix.smx** 检查一些文件防止作弊
+   **l4d2_hltv_crash_fix.smx** 防止stv崩服
+   **l4d_checkpoint_rock_patch.smx** 在安全屋的玩家，石头判定更严格
+   **l4d2_ellis_hunter_bandaid_fix.smx** 修复Ellis被HT控有更长的起身
+   * **l4d2_boomer_ladder_fix.smx** 修复胖子跳跃更容易黏在爬行轨迹上
+   * **l4d2_spit_cooldown_frozen_fix.smx** 修复口水技能不进CD
+   * **l4d2_spit_spread_patch.smx** 修复口水的一些[奇怪问题](https://github.com/SirPlease/L4D2-Competitive-Rework/commits/master/addons/sourcemod/scripting/l4d2_spit_spread_patch.sp)
+   * **l4d_fix_punch_block.smx** 修复小僵尸可能挡住克拳头
+   * **l4d_fix_finale_breakable.smx** 修复终章特感无法打破某些墙
+   * **l4d2_fix_firsthit.smx** 修复小僵尸出拳很快
+   * **l4d2_rock_trace_unblock.smx** 防止HT/猴子/某些生还影响石头判定
+   * **l4d_static_punch_getup.smx** 固定被拍后的起身时间
+   * **annoyance_exploit_fix.smx** 修复双重投票
+   * **l4d_fix_shove_duration.smx** 修复游戏不符合z_gun_swing_duration的值
+   * **l4d2_jockey_hitbox_fix.smx** 修复某些情况不能用推救被猴子控的人
+   * **l4d_consistent_escaperoute.smx** 没有随机路线（如c5m3的公墓）
+   * **l4d2_fix_rocketjump.smx** 修复投掷物/口水/榴弹跳
+   * **l4d2_jockey_teleport_fix.smx** 修复虚空猴
+   * **l4d2_charge_target_fix.smx** 修复牛的一些问题
+   * **l4d2_shove_fix.smx** ~~不知道什么用~~
+   * **l4d2_scripted_tank_stage_fix.smx** 修复有的时候终章卡住不刷克
+   * **specrates.smx** 旁观30tick
+   * **l4d2_fix_common_flee.smx** 修复蹲下/跳跃中的小僵尸无法被推的问题（管道战神————）
+   * **Charger_Collision_patch.smx** 修复牛只能撞同模型生还一次
+   * **Defib_Fix.smx** 修复电击器电起错误目标
+   * **l4d_revive_reload_interrupt.smx** 修复换弹时救队友导致卡弹
+   * **l4d_survivor_identity_fix.smx** 修复5+玩家时的装备混乱
+   * **l4d2_ladder_patch.smx** 修复因为梯子导致的游戏崩溃
+   * **l4d2_vocalizebasedmodel.smx** 玩家语音基于玩家所在的模型发出
+   * **lfd_both_fixSG552.smx** 修复SG-552开镜时重新装弹等的fov问题
+   * **lfd_both_fixUpgradePack.smx** 修复5+玩家时弹药包的一些问题
+   * **survivor_afk_fix.smx** 闲置修复
+   * **transition_restore_fix.smx** 多人修复，修复中途进来的玩家接管已在游戏内玩家的bot
+   * **witch_prevent_target_loss.smx** 防止witch的仇恨丢失
+   * **Witch_Target_patch.smx** 修复witch目标错误
+   * **l4d_reload_fix.smx** 修复满弹时，如果修改弹匣数仍然显示换弹动作。修复喷子在15发子弹以后就不再重装子弹。

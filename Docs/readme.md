@@ -299,6 +299,14 @@
       * 过关回满血
       </details>
 
+   *coop_annelike 战役|饼干的Anne改战役*
+      > 基于coop_base
+
+      * 默认刷特：基础6只15s，跳过relax阶段
+      * Tank的血量倍率调整为"1.5;1.5;1.8;2.0"
+      * anne同款AI增强
+      * 过关回满血
+
    * *realisn_jimen 几门*
       > 施工中 基于coop_base
 

@@ -383,21 +383,21 @@
    * **l4d2_melee_damage_control.smx** 修改近战对特感的伤害，无论击中哪里，都会造成固定伤害。控制近战对牛/坦克的伤害。
    * ~~**fix_fastmelee.smx** 禁用速砍~~
    * **l4d2_jockeyed_ladder_fix.smx** 修复被猴子控的生还从梯子上缓慢滑下
-   **l4d2_no_post_jockey_deadstops.smx** 修复被猴子控之后仍然能自己推开
-   **l4d2_jockey_jumpcap_patch.smx** 防止猴子在技能CD时能用普通跳跃控人(?存疑)
-   **l4d2_shadow_removal.smx** 移除影子来防止在某些场景因为影子透视
-   **l4d2_explosiondmg_prev.smx** 环境爆炸伤害将不会影响特感
-   **l4d2_car_alarm_hittable_fix.smx** 当坦克拍警报车时，禁用警报车/确保生还碰到警报车时正确触发警报
-   **l4d2_ai_damagefix.smx** 修复AI HT空爆伤害（玩家HT 150)和牛牛减伤，某些配置禁用
-   **l4d2_ladderblock.smx** 生还能顶开在楼梯上的特感（特感也可顶开生还，防止梯子卡克）
-   **FollowTarget_Detour.smx** 修复CMoveableCamera::FollowTarget崩溃
-   **l4d_fix_deathfall_cam.smx** 修复"point_deathfall_camera" 和 "point_viewcontrol*" 永久锁定视角
-   **l4d_pause_message.smx** 如果服务器不支持暂停，阻止pause指令
-   **l4d2_boomer_shenanigans.smx** 确保胖子被推时无法吐人
-   **sv_consistency_fix.smx** 检查一些文件防止作弊
-   **l4d2_hltv_crash_fix.smx** 防止stv崩服
-   **l4d_checkpoint_rock_patch.smx** 在安全屋的玩家，石头判定更严格
-   **l4d2_ellis_hunter_bandaid_fix.smx** 修复Ellis被HT控有更长的起身
+   * **l4d2_no_post_jockey_deadstops.smx** 修复被猴子控之后仍然能自己推开
+   * **l4d2_jockey_jumpcap_patch.smx** 防止猴子在技能CD时能用普通跳跃控人(?存疑)
+   * **l4d2_shadow_removal.smx** 移除影子来防止在某些场景因为影子透视
+   * **l4d2_explosiondmg_prev.smx** 环境爆炸伤害将不会影响特感
+   * **l4d2_car_alarm_hittable_fix.smx** 当坦克拍警报车时，禁用警报车/确保生还碰到警报车时正确触发警报
+   * **l4d2_ai_damagefix.smx** 修复AI HT空爆伤害（玩家HT 150)和牛牛减伤，某些配置禁用
+   * **l4d2_ladderblock.smx** 生还能顶开在楼梯上的特感（特感也可顶开生还，防止梯子卡克）
+   * **FollowTarget_Detour.smx** 修复CMoveableCamera::FollowTarget崩溃
+   * **l4d_fix_deathfall_cam.smx** 修复"point_deathfall_camera" 和 "point_viewcontrol*" 永久锁定视角
+   * **l4d_pause_message.smx** 如果服务器不支持暂停，阻止pause指令
+   * **l4d2_boomer_shenanigans.smx** 确保胖子被推时无法吐人
+   * **sv_consistency_fix.smx** 检查一些文件防止作弊
+   * **l4d2_hltv_crash_fix.smx** 防止stv崩服
+   * **l4d_checkpoint_rock_patch.smx** 在安全屋的玩家，石头判定更严格
+   * **l4d2_ellis_hunter_bandaid_fix.smx** 修复Ellis被HT控有更长的起身
    * **l4d2_boomer_ladder_fix.smx** 修复胖子跳跃更容易黏在爬行轨迹上
    * **l4d2_spit_cooldown_frozen_fix.smx** 修复口水技能不进CD
    * **l4d2_spit_spread_patch.smx** 修复口水的一些[奇怪问题](https://github.com/SirPlease/L4D2-Competitive-Rework/commits/master/addons/sourcemod/scripting/l4d2_spit_spread_patch.sp)

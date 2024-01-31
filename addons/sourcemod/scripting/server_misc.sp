@@ -1,5 +1,5 @@
 ConVar g_cSmgAmmo, g_cShotGunAmmo, g_cAutoShotGunAmmo, g_cAssrultRifleAmmo, g_cHuntingRifleAmmo, 
-    g_cSinperRifleAmmo, g_cM60Ammo, g_cGrenadeAmmo;
+    g_cSinperRifleAmmo, g_cM60Ammo, g_cGrenadeAmmo, g_cChainsawAmmo;
 
 enum
 {
@@ -10,7 +10,8 @@ enum
     AMMO_HUNTINGRIFLE_MAX = 150,
     AMMO_SNIPERRIFLE_MAX = 150,
     AMMO_M60_MAX = 150,
-    AMMO_GRENADELAUNCHER_MAX = 30
+    AMMO_GRENADELAUNCHER_MAX = 30,
+    AMMO_CHAINSAW_MAX = 20
 }
 
 public Plugin myinfo = {
@@ -30,6 +31,7 @@ public void OnPluginStart(){
     g_cSinperRifleAmmo = FindConVar("ammo_sniperrifle_max");
     g_cM60Ammo = FindConVar("ammo_m60_max");
     g_cGrenadeAmmo = FindConVar("ammo_grenadelauncher_max");
+    g_cChainsawAmmo = FindConVar("ammo_chainsaw_max");
 
     RegServerCmd("sm_setammomulti", Cmd_SetAmmo);
 }
@@ -47,5 +49,6 @@ public Action Cmd_SetAmmo(int args)
     g_cSinperRifleAmmo.IntValue = RoundToNearest(float(AMMO_SNIPERRIFLE_MAX) * multi);
     g_cM60Ammo.IntValue = RoundToNearest(float(AMMO_M60_MAX) * multi);
     g_cGrenadeAmmo.IntValue = RoundToNearest(float(AMMO_GRENADELAUNCHER_MAX) * multi);
+    g_cChainsawAmmo.IntValue = RoundToNearest(float(AMMO_CHAINSAW_MAX) * multi);
     return Plugin_Handled;
 }

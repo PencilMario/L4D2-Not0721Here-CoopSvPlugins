@@ -1,0 +1,60 @@
+"Games"
+{
+	"left4dead"
+	{
+		"Offsets"
+		{
+			"CBaseEntity::MyNextBotPointer"
+			{
+				"linux"			"72"
+				"windows"		"71"
+			}
+
+			"INextBot::GetBodyInterface"
+			{
+				"linux"			"44"
+				"windows"		"43"
+			}
+		}
+		
+		"Signatures"
+		{
+			"ZombieBotBody::SetDesiredPosture"
+			{
+				"library"		"server"
+				"linux"			"@_ZN13ZombieBotBody17SetDesiredPostureEN5IBody11PostureTypeE"
+				"windows"		"\x83\x2A\x2A\x2A\x2A\x8B\x2A\x2A\x2A\x2A\x8B\x2A\xE8\x2A\x2A\x2A\x2A\x83\x2A\x2A\x8B"
+								/* 83 ? ? ? ? 8B ? ? ? ? 8B ? E8 ? ? ? ? 83 ? ? 8B */
+			}
+		}
+	}
+	
+	"left4dead2"
+	{
+		"Offsets"
+		{
+			"CBaseEntity::MyNextBotPointer"
+			{
+				"linux"			"82"
+				"windows"		"81"
+			}
+
+			"INextBot::GetBodyInterface"
+			{
+				"linux"			"49"
+				"windows"		"48"
+			}
+		}
+		
+		"Signatures"
+		{
+			"ZombieBotBody::SetDesiredPosture"
+			{
+				"library"		"server"
+				"linux"			"@_ZN13ZombieBotBody17SetDesiredPostureEN5IBody11PostureTypeE"
+				"windows"		"\x55\x8B\x2A\x83\x2A\x2A\x2A\x8B\x2A\x2A\x2A\x2A\x8B\x2A\xE8\x2A\x2A\x2A\x2A\x8B\x2A\x8B\x2A\x83\x2A\x2A\x74"
+								/* 55 8B ? 83 ? ? ? 8B ? ? ? ? 8B ? E8 ? ? ? ? 8B ? 8B ? 83 ? ? 74 */
+			}
+		}
+	}
+}

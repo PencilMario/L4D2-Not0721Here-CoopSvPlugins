@@ -143,6 +143,21 @@
 				}
 			}
 
+			"L4DD::CTerrorPlayer::OnIncapacitatedAsSurvivor"
+			{
+				"signature"		"CTerrorPlayer::OnIncapacitatedAsSurvivor"
+				"callconv"		"thiscall"
+				"return"		"int"
+				"this"			"entity"
+				"arguments"
+				{
+					"a1"
+					{
+						"type"		"objectptr"
+					}
+				}
+			}
+
 			"L4DD::CTerrorPlayer::OnKnockedDown"
 			{
 				"signature"		"CTerrorPlayer::OnKnockedDown"
@@ -1028,6 +1043,14 @@
 				"this"			"entity"
 			}
 
+			"L4DD::CDirector::CreateRescuableSurvivors"
+			{
+				"signature"		"CDirector::CreateRescuableSurvivors"
+				"callconv"		"thiscall"
+				"return"		"int"
+				"this"			"ignore"
+			}
+
 			"L4DD::CTerrorPlayer::OnStaggered"
 			{
 				"signature"		"CTerrorPlayer::OnStaggered"
@@ -1116,6 +1139,21 @@
 				}
 			}
 
+			"L4DD::CTerrorPlayer::DropWeapons"
+			{
+				"signature"		"CTerrorPlayer::DropWeapons"
+				"callconv"		"thiscall"
+				"return"		"int"
+				"this"			"entity"
+				"arguments"
+				{
+					"a1"
+					{
+						"type"	"bool"
+					}
+				}
+			}
+
 			"L4DD::CInferno::Spread"
 			{
 				"signature"		"CInferno::Spread"
@@ -1165,6 +1203,108 @@
 				}
 			}
 
+			"L4DD::CMolotovProjectile::Create"
+			{
+				"signature"		"CMolotovProjectile::Create"
+				"callconv"		"cdecl"
+				"return"		"cbaseentity"
+				"arguments"
+				{
+					"origin"
+					{
+						"type"		"vectorptr"
+					}
+					"angles"
+					{
+						"type"		"vectorptr"
+					}
+					"velocity"
+					{
+						"type"		"vectorptr"
+					}
+					"rotation"
+					{
+						"type"		"vectorptr"
+					}
+					"owner"
+					{
+						"type"		"cbaseentity"
+					}
+					"duration"
+					{
+						"type"		"float"
+					}
+				}
+			}
+
+			"L4DD::CVomitJarProjectile::Create"
+			{
+				"signature"		"CVomitJarProjectile::Create"
+				"callconv"		"cdecl"
+				"return"		"cbaseentity"
+				"arguments"
+				{
+					"origin"
+					{
+						"type"		"vectorptr"
+					}
+					"angles"
+					{
+						"type"		"vectorptr"
+					}
+					"velocity"
+					{
+						"type"		"vectorptr"
+					}
+					"rotation"
+					{
+						"type"		"vectorptr"
+					}
+					"owner"
+					{
+						"type"		"cbaseentity"
+					}
+					"duration"
+					{
+						"type"		"float"
+					}
+				}
+			}
+
+			"L4DD::CGrenadeLauncher_Projectile::Create"
+			{
+				"signature"		"CGrenadeLauncher_Projectile::Create"
+				"callconv"		"cdecl"
+				"return"		"cbaseentity"
+				"arguments"
+				{
+					"origin"
+					{
+						"type"		"vectorptr"
+					}
+					"angles"
+					{
+						"type"		"vectorptr"
+					}
+					"velocity"
+					{
+						"type"		"vectorptr"
+					}
+					"rotation"
+					{
+						"type"		"vectorptr"
+					}
+					"owner"
+					{
+						"type"		"cbaseentity"
+					}
+					"bIncendiary"
+					{
+						"type"		"int"
+					}
+				}
+			}
+
 			"L4DD::CPipeBombProjectile::Detonate"
 			{
 				"signature"		"CPipeBombProjectile::Detonate"
@@ -1187,6 +1327,25 @@
 				"callconv"		"thiscall"
 				"return"		"int"
 				"this"			"entity"
+			}
+
+			"L4DD::CGrenadeLauncher_Projectile::Explode"
+			{
+				"signature"		"CGrenadeLauncher_Projectile::Explode"
+				"callconv"		"thiscall"
+				"return"		"int"
+				"this"			"entity"
+				"arguments"
+				{
+					"a1"
+					{
+						"type"	"cbaseentity"
+					}
+					"a2"
+					{
+						"type"	"int"
+					}
+				}
 			}
 
 			"L4DD::CTerrorPlayer::Extinguish"
@@ -1299,6 +1458,21 @@
 				}
 			}
 
+			"L4DD::Infected::OnHitByVomitJar"
+			{
+				"signature"		"Infected::OnHitByVomitJar"
+				"callconv"		"thiscall"
+				"return"		"int"
+				"this"			"entity"
+				"arguments"
+				{
+					"a1"
+					{
+						"type"	"cbaseentity"
+					}
+				}
+			}
+
 			"L4DD::CTerrorPlayer::MaterializeFromGhost"
 			{
 				"signature"		"CTerrorPlayer::MaterializeFromGhost"
@@ -1349,17 +1523,17 @@
 				"this"			"entity"
 				"arguments"
 				{
-					"player"
+					"lastTarget"
+					{
+						"type"	"cbaseentity"
+					}
+					"targetScanFlags"
 					{
 						"type"	"int"
 					}
-					"a_char"
+					"ignoreTarget"
 					{
-						"type"	"int"
-					}
-					"character"
-					{
-						"type"	"int"
+						"type"	"cbaseentity"
 					}
 				}
 			}
@@ -1391,9 +1565,24 @@
 					{
 						"type"	"cbaseentity"
 					}
-					"a3"
+					"a2"
 					{
 						"type"	"int"
+					}
+				}
+			}
+
+			"L4DD::CPhysicsProp::OnTakeDamage"
+			{
+				"signature"		"CPhysicsProp::OnTakeDamage"
+				"callconv"		"thiscall"
+				"return"		"int"
+				"this"			"entity"
+				"arguments"
+				{
+					"entity"
+					{
+						"type"	"objectptr"
 					}
 				}
 			}
@@ -1579,6 +1768,19 @@
 		// ====================================================================================================
 		"Addresses"
 		{
+			"ammoDef"
+			{
+				"linux"
+				{
+					"signature"	"ammoDef"
+				}
+				"windows"
+				{
+					"signature"	"CTerrorAmmoDefSystem::Init"
+					"read"		"38"
+				}
+			}
+
 			"CDirector"
 			{
 				"windows"
@@ -2064,7 +2266,7 @@
 				"windows"	"11892" // 2.2.1.3
 				"linux"		"11872" // 2.2.1.3
 			}
-			// Can be found near the text "TANK OFFER: Player %s has %d tickets\n" in that section above, where the line reads "mov     edx, [ebx+30A8h]" - it's this value
+			// Can be found near the text "TANK OFFER: Player %s has %d tickets\n" in that section above, where the line reads "mov		edx, [ebx+30A8h]" - it's this value
 			"m_iTankTickets"
 			{
 				"windows"	"12444" // 2.2.1.3
@@ -2197,11 +2399,11 @@
 			/**
 			 * Search string "#Survival_Spawn_Start_Warning"
 			 * Used in-game to notify players the remaining time before holdout starts
-			 * 
+			 *
 			 * Vscript entry: "DirectorOptions.SurvivalSetupTime"
 			 * ConVar: "director_survival_setup_time"
 			 *
-			 * .text:008AF615   sub     dword ptr [ebx+9Ch], 0Ah
+			 * .text:008AF615   sub		dword ptr [ebx+9Ch], 0Ah
 			 */
 			"CDirectorSurvivalMode::m_iSetupNotifyTime" // integer
 			{
@@ -2274,6 +2476,11 @@
 			{
 				"windows"	"3048"
 				"linux"		"3048"
+			}
+			"L4D2IntWeapon_Type" // Search: "WeaponType" for offset
+			{
+				"windows"	"2196"
+				"linux"		"2196"
 			}
 
 			// L4D2FloatWeapon
@@ -2428,7 +2635,7 @@
 			 * Go to its only xref function, and again, then you are at vtable of "CTerrorPlayerAnimState".
 			 * Double click on the first virtual function "CTerrorPlayerAnimState::ClearAnimationState".
 			 * Go to its function xref 3 times, and you will meet with an enormous constructor function.
-			 * 
+			 *
 			 * 1. Generate pseudocode and you can easily find the offset where the cursor is.
 			 * 2. See the "mov" instruction below the highlighted "call".
 			 */
@@ -2458,6 +2665,20 @@
 		// ====================================================================================================
 		"Signatures"
 		{
+			"ammoDef"
+			{
+				"library"		"server"
+				"linux"			"@_ZL7ammoDef"
+			}
+
+			"CTerrorAmmoDefSystem::Init"
+			{
+				"library"		"server"
+				"windows"		"\xD9\x05\x2A\x2A\x2A\x2A\x6A\x0E\x6A\x0A\x6A\x08\x2A\xD9\x2A\x2A\x68\x2A\x2A\x2A\x2A\x6A\x00\x6A\x00\x6A\x01\x68\x02\x00\x00\x80"
+								/* not actual function beginning, starts at the second call */
+								/* D9 05 ? ? ? ? 6A 0E 6A 0A 6A 08 ? D9 ? ? 68 ? ? ? ? 6A 00 6A 00 6A 01 68 02 00 00 80 */
+			}
+
 			// =========================
 			// SILVERS SIGS
 			// =========================
@@ -2698,6 +2919,18 @@
 				"linux"		"@_ZN19CVomitJarProjectile8DetonateEv"
 				"windows"	"\x2A\x2A\x2A\x2A\x2A\x2A\xA1\x2A\x2A\x2A\x2A\x33\x2A\x89\x2A\x2A\x56\x57\x8B\x2A\xE8\x2A\x2A\x2A\x2A\x8B\x2A\xF6\x2A\x2A\x2A\x0F\x85"
 				/* ? ? ? ? ? ? A1 ? ? ? ? 33 ? 89 ? ? 56 57 8B ? E8 ? ? ? ? 8B ? F6 ? ? ? 0F 85 */
+			}
+
+			/*
+			*  CGrenadeLauncher_Projectile::Explode(CGrenadeLauncher_Projectile *this, CGameTrace *a2, int a3)
+			*  Search: "weapon_grenadelauncher_water"
+			*/
+			"CGrenadeLauncher_Projectile::Explode"
+			{
+				"library"	"server"
+				"linux"		"@_ZN27CGrenadeLauncher_Projectile12ExplodeTouchEP11CBaseEntity"
+				"windows"	"\x2A\x2A\x2A\x2A\x2A\x2A\x2A\x2A\x2A\xA1\x2A\x2A\x2A\x2A\x33\x2A\x89\x2A\x2A\x8B\x2A\x2A\x53\x56\x8B\x2A\x8B\x2A\x2A\x2A\x2A\x2A\xC1\x2A\x2A\x57"
+				/* ? ? ? ? ? ? ? ? ? A1 ? ? ? ? 33 ? 89 ? ? 8B ? ? 53 56 8B ? 8B ? ? ? ? ? C1 ? ? 57 */
 			}
 
 			/*
@@ -3539,6 +3772,16 @@
 				/* Search "#L4D_idle_spectator" xref to VTable, target is function above. */
 			}
 
+			/* CTerrorPlayer::OnIncapacitatedAsSurvivor(CTerrorPlayer *this, const CTakeDamageInfo *) */
+			"CTerrorPlayer::OnIncapacitatedAsSurvivor"
+			{
+				"library"	"server"
+				"linux"		"@_ZN13CTerrorPlayer25OnIncapacitatedAsSurvivorERK15CTakeDamageInfo"
+				"windows"	"\x2A\x2A\x2A\x2A\x2A\x2A\x83\x2A\x2A\x83\x2A\x2A\x55\x8B\x2A\x2A\x89\x2A\x2A\x2A\x8B\x2A\x81\x2A\x2A\x2A\x2A\x2A\xA1\x2A\x2A\x2A\x2A\x33\x2A\x89\x2A\x2A\x56\x57\x8B\x2A\x2A\x6A\x2A\x8B"
+				/* ? ? ? ? ? ? 83 ? ? 83 ? ? 55 8B ? ? 89 ? ? ? 8B ? 81 ? ? ? ? ? A1 ? ? ? ? 33 ? 89 ? ? 56 57 8B ? ? 6A ? 8B */
+				/* Search "PlayerIncapacitated" */
+			}
+
 			/**
 			 *  Witch::SetHarasser(Witch *this, CBaseEntity *)
 			 **/
@@ -3959,6 +4202,18 @@
 			}
 
 			/*
+			* CTerrorPlayer::DropWeapons(CTerrorPlayer *this, bool a2)
+			*/
+			"CTerrorPlayer::DropWeapons"
+			{
+				"library"	"server"
+				"linux"		"@_ZN13CTerrorPlayer11DropWeaponsEb"
+				"windows"	"\x2A\x2A\x2A\x2A\x2A\x2A\x2A\xE8\x2A\x2A\x2A\x2A\x83\x2A\x2A\x74\x2A\x56\x57\x8D"
+				/* ? ? ? ? ? ? ? E8 ? ? ? ? 83 ? ? 74 ? 56 57 8D */
+				/* Search: "Survivor %s changed model from %s to %s via SetModelFromClass". Xref to VTable. 2 entries down. */
+			}
+
+			/*
 			* CInferno::Spread(Vector const&)
 			*/
 			"CInferno::Spread"
@@ -4019,6 +4274,16 @@
 				"windows"		"\x55\x8B\x2A\x81\x2A\x2A\x2A\x2A\x2A\xA1\x2A\x2A\x2A\x2A\x33\x2A\x89\x2A\x2A\x8B\x2A\x2A\x53\x8B\x2A\x2A\x56\x8B\x2A\x8B\x2A\x8B\x2A\x2A\x89"
 				/* 55 8B ? 81 ? ? ? ? ? A1 ? ? ? ? 33 ? 89 ? ? 8B ? ? 53 8B ? ? 56 8B ? 8B ? 8B ? ? 89 */
 				/* Search: "Fire prop detonated %.0f,%.0f,%.0f.  Breaker:%s. Attacker:%s.\n" */
+			}
+
+			/* CPhysicsProp::OnTakeDamage(CPhysicsProp *this, const CTakeDamageInfo) */
+			"CPhysicsProp::OnTakeDamage"
+			{
+				"library"		"server"
+				"linux"			"@_ZN12CPhysicsProp12OnTakeDamageERK15CTakeDamageInfo"
+				"windows"		"\x2A\x2A\x2A\x2A\x2A\x2A\x83\x2A\x2A\x83\x2A\x2A\x55\x8B\x2A\x2A\x89\x2A\x2A\x2A\x8B\x2A\x81\x2A\x2A\x2A\x2A\x2A\xA1\x2A\x2A\x2A\x2A\x33\x2A\x89\x2A\x2A\x56\x57\x8B\x2A\x2A\x8B\x2A\x57\x8D"
+				/* ? ? ? ? ? ? 83 ? ? 83 ? ? 55 8B ? ? 89 ? ? ? 8B ? 81 ? ? ? ? ? A1 ? ? ? ? 33 ? 89 ? ? 56 57 8B ? ? 8B ? 57 8D */
+				/* Search: "prop_fuel_barrel" - There are 2 functions that have this string twice, one of them only contain this string, at the bottom of that one is the target call */
 			}
 
 			/* CGasCan::Event_Killed(CGasCan *this, const CTakeDamageInfo *) */
@@ -4755,7 +5020,7 @@
 			{
 				"library"	"server"
 				"linux"		"@_ZN9CDirector7RematchEv"
-				"windows"    "\x55\x8B\x2A\x51\x56\x8B\x2A\x57\x8D\x2A\x2A\x2A\x2A\x2A\x8B\x2A\xE8\x2A\x2A\x2A\x2A\xD9\x2A\x2A\xD9\x2A\x2A\x83\x2A\x2A\xDF\x2A\xDD\x2A\x9F\xF6\x2A\x2A\x7B\x2A\x8B\x2A\x2A\x8B\x2A\x8D\x2A\x2A\x57\xFF\x2A\xF3\x2A\x2A\x2A\x2A\xF3\x2A\x2A\x2A\x0F\x2A\x2A\x8D\x2A\x2A\x2A\x2A\x2A\xF3\x2A\x2A\x2A\x2A\x2A\x2A\x2A\xF3\x2A\x2A\x2A\x0F\x2E\x2A\x2A\x2A\x2A\x2A\x9F\xF6\x2A\x2A\x7B\x2A\x8B\x2A\x2A\x8B\x2A\x8D\x2A\x2A\x57\xFF\x2A\xF3\x2A\x2A\x2A\x2A\x2A\x2A\x2A\xF3\x2A\x2A\x2A\x8B\x2A\x2A\x2A\x2A\x2A\x85\x2A\x74\x2A\x6A\x2A\xE8\x2A\x2A\x2A\x2A\x8B\x2A\x2A\x2A\x2A\x2A\x85\x2A\x74\x2A\x6A\x2A\xE8\x2A\x2A\x2A\x2A\x8B\x2A\x2A\x2A\x2A\x2A\xE8\x2A\x2A\x2A\x2A\x8B\x2A\x2A\x2A\x2A\x2A\x6A\x2A\xE8\x2A\x2A\x2A\x2A\x66\x2A\x2A\x2A\x2A\x2A\x2A\x2A\x2A\x8B"
+				"windows"	"\x55\x8B\x2A\x51\x56\x8B\x2A\x57\x8D\x2A\x2A\x2A\x2A\x2A\x8B\x2A\xE8\x2A\x2A\x2A\x2A\xD9\x2A\x2A\xD9\x2A\x2A\x83\x2A\x2A\xDF\x2A\xDD\x2A\x9F\xF6\x2A\x2A\x7B\x2A\x8B\x2A\x2A\x8B\x2A\x8D\x2A\x2A\x57\xFF\x2A\xF3\x2A\x2A\x2A\x2A\xF3\x2A\x2A\x2A\x0F\x2A\x2A\x8D\x2A\x2A\x2A\x2A\x2A\xF3\x2A\x2A\x2A\x2A\x2A\x2A\x2A\xF3\x2A\x2A\x2A\x0F\x2E\x2A\x2A\x2A\x2A\x2A\x9F\xF6\x2A\x2A\x7B\x2A\x8B\x2A\x2A\x8B\x2A\x8D\x2A\x2A\x57\xFF\x2A\xF3\x2A\x2A\x2A\x2A\x2A\x2A\x2A\xF3\x2A\x2A\x2A\x8B\x2A\x2A\x2A\x2A\x2A\x85\x2A\x74\x2A\x6A\x2A\xE8\x2A\x2A\x2A\x2A\x8B\x2A\x2A\x2A\x2A\x2A\x85\x2A\x74\x2A\x6A\x2A\xE8\x2A\x2A\x2A\x2A\x8B\x2A\x2A\x2A\x2A\x2A\xE8\x2A\x2A\x2A\x2A\x8B\x2A\x2A\x2A\x2A\x2A\x6A\x2A\xE8\x2A\x2A\x2A\x2A\x66\x2A\x2A\x2A\x2A\x2A\x2A\x2A\x2A\x8B"
 				/* 55 8B ? 51 56 8B ? 57 8D ? ? ? ? ? 8B ? E8 ? ? ? ? D9 ? ? D9 ? ? 83 ? ? DF ? DD ? 9F F6 ? ? 7B ? 8B ? ? 8B ? 8D ? ? 57 FF ? F3 ? ? ? ? F3 ? ? ? 0F ? ? 8D ? ? ? ? ? F3 ? ? ? ? ? ? ? F3 ? ? ? 0F 2E ? ? ? ? ? 9F F6 ? ? 7B ? 8B ? ? 8B ? 8D ? ? 57 FF ? F3 ? ? ? ? ? ? ? F3 ? ? ? 8B ? ? ? ? ? 85 ? 74 ? 6A ? E8 ? ? ? ? 8B ? ? ? ? ? 85 ? 74 ? 6A ? E8 ? ? ? ? 8B ? ? ? ? ? E8 ? ? ? ? 8B ? ? ? ? ? 6A ? E8 ? ? ? ? 66 ? ? ? ? ? ? ? ? 8B */
 				/* Search: "PZEndGamePanelMsg" - xref this function, the function checking "if == 1" at the bottom, probably the first call, calls our target within that if statement, the first call if == 1 */
 			}
@@ -5123,13 +5388,13 @@
 			* Instruction where CBaseServer::FillServerInfo saves the result of the "Game/vanilla" check to member variable.
 			* Should be near instructions filling member variables with "L" or "W"
 			* Linux:
-                        * mov     [esi+55h], al
-			* mov     dword ptr [esp], 'L' ; c
+			* mov	[esi+55h], al
+			* mov	dword ptr [esp], 'L' ; c
 			* Windows:
-			* MOV        byte ptr [EDI + 0x5d],BL
-        		* MOV        dword ptr [EDI + 0x8c],DAT_10678ec8
-			* MOV        dword ptr [EDI + 0x90],DAT_10678dc0
-        		* MOV        byte ptr [EDI + 0x5f],'W'
+			* MOV	byte ptr [EDI + 0x5d],BL
+			* MOV	dword ptr [EDI + 0x8c],DAT_10678ec8
+			* MOV	dword ptr [EDI + 0x90],DAT_10678dc0
+			* MOV	byte ptr [EDI + 0x5f],'W'
 			*/
 			"VanillaModeOffset"
 			{

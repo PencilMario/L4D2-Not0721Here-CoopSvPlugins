@@ -138,7 +138,7 @@ public void Event_PlayerDeath(Event event, const char[] name, bool dontbroadcast
 			TeleportEntity(coin, CoinPos, CoinAngle, force);
 		}
 	}
-	PrintToChatAll("%s \x04老逼登 \x03%N \x04爆金币啦!",SP_TAG, victim);
+	CPrintToChatAll("%s \x04老逼登 \x03%N \x04爆金币啦!",SP_TAG, victim);
 }
 
 ////////////////////////////////  sdkhook相关   ////////////////////////////////

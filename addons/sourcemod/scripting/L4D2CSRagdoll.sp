@@ -88,7 +88,7 @@ public void OnPluginStart()
 		
 		if (g_bLateLoad)
 		{
-			for (int i = 1; i <= MAXPLAYERS; i++)
+			for (int i = 1; i < MaxClients; i++)
 			{
 				if (!IsClientInGame(i) || !IsSurvivor(i)) continue;
 				

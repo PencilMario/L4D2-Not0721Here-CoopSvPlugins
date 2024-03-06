@@ -5,6 +5,8 @@
  *	v1.1 optional: appending melee attack only; 2-4-22
  *	v1.1.1 fix my stupid 'logic and' error; 2-4-22
  */
+
+// https://developer.valvesoftware.com/wiki/Damage_types
 #pragma semicolon 1
 #pragma newdecls required
 
@@ -33,7 +35,7 @@ public void OnPluginStart() {
 	Enabled = CreateConVar("damage_type_append_enable", "1", "Enable 'Damage Type Append'", FCVAR_NOTIFY);
 	Type_apply = CreateConVar("damage_type_append_apply", "64", "Damage Type you want to Append 64=DMG_BLAST", FCVAR_NOTIFY);
 	Type_specifies = CreateConVar("damage_type_append_specifies", "128", "Which specified types for Append 128=DMG_CLUB", FCVAR_NOTIFY);
-	Type_targets = CreateConVar("damage_type_append_targets", "224", "Which Target should be Append, 1=Smoker, 2=Boomer, 4=Hunter, 8=Spitter, 16=Jockey, 32=Charger, 64=Witch, 128=Tank, 256=Survivor, 511=All. Add numbers together.", FCVAR_NOTIFY);
+	Type_targets = CreateConVar("damage_type_append_targets", "255", "Which Target should be Append, 1=Smoker, 2=Boomer, 4=Hunter, 8=Spitter, 16=Jockey, 32=Charger, 64=Witch, 128=Tank, 256=Survivor, 511=All. Add numbers together.", FCVAR_NOTIFY);
 	Melee_only = CreateConVar("damage_type_append_melee_only", "1", "append type only using melee", FCVAR_NOTIFY);
 
 	AutoExecConfig(true, "l4d_damage_type_append");

@@ -11,23 +11,30 @@ public void OnMapStart(){
 
 public Action Timer_CheckAllBot(Handle t){
     bool go = false;
+    float speed = 1.0;
     for (int i = 1; i <= MaxClients; i++){
         if (IsClientInGame(i) && !IsFakeClient(i) && IsPlayerAlive(i)){go = true;break;}
     }
     for (int i = 1; i <= MaxClients; i++){
         if (IsClientInGame(i)){
-            if (IsFakeClient(i)){
-                if (!Player_IsVisible_To_AnyPlayer(i) && go){
-                    if (GetClosetSurvivorDistance(i, -1, true) > 1200)  setClientSpeed(i, 1.6);
-                    else setClientSpeed(i, 1.25);
+            if (IsFakeClient(i) && GetClientTeam(i) == TEAM_SURVIVOR && IsPlayerAlive(i)){
+                speed = 1.0;
+                int cl = GetClosetSurvivor(i, -1, true);
+                int te = GetClosetSurvivorDistance(i, cl, true);
+                if (!Player_IsVisible_To_AnyPlayer(i, true) && go){
+                    speed += 0.1;
                 }
-                else setClientSpeed(i, 1.0);
+                speed += whatSpeedNeed(te);
+                setClientSpeed(i, speed);
             }
         }
     }
     return Plugin_Continue;
 }
+float whatSpeedNeed(int distance){
+    return float(distance) / 10000;
+}
 float setClientSpeed(int client, float speedmulti){
-	SetEntPropFloat(client, Prop_Send, "m_flLaggedMovementValue", speedmulti);
-	return speedmulti;
+    SetEntPropFloat(client, Prop_Send, "m_flLaggedMovementValue", speedmulti);
+    return speedmulti;
 }

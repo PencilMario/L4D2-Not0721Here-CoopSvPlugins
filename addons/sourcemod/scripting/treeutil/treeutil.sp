@@ -1,3 +1,6 @@
+#include <sourcemod>
+#include <sdktools>
+
 // 团队类型
 enum
 {
@@ -308,6 +311,7 @@ stock int GetClosetMobileSurvivor(int client, int exclude_client = -1, bool exce
 			// 找到了一个有效玩家
 			if (IsValidSurvivor(newTarget) && IsPlayerAlive(newTarget) && !IsClientIncapped(newTarget) &&!IsClientPinned(newTarget) && newTarget != client && newTarget != exclude_client && except_bot ? !IsFakeClient(newTarget):true)
 			{
+				if (except_bot) {if (IsFakeClient(newTarget)) continue;}
 				GetClientAbsOrigin(newTarget, targetPos);
 				float dist = GetVectorDistance(selfPos, targetPos);
 				targetList.Set(targetList.Push(dist), newTarget, 1);
@@ -337,6 +341,7 @@ stock int GetClosetSurvivor(int client, int exclude_client = -1, bool except_bot
 	for (int newTarget = 1; newTarget <= MaxClients; newTarget++)
 	{
 		if (!IsClientInGame(newTarget) || !IsPlayerAlive(newTarget) || GetClientTeam(newTarget) != TEAM_SURVIVOR || newTarget == exclude_client) { continue; }
+		if (except_bot) {if (IsFakeClient(newTarget)) continue;}
 		GetClientAbsOrigin(newTarget, targetPos);
 		targetList.Set(targetList.Push(GetVectorDistance(selfPos, targetPos)), newTarget, 1);
 	}
@@ -481,13 +486,14 @@ stock bool Player_IsVisible_To(int client, int target)
 	return false;
 }
 // 检测某个玩家是否能看到任意生还者，能看见返回 true，不能看见则返回 false
-stock bool Player_IsVisible_To_AnyPlayer(int client)
+stock bool Player_IsVisible_To_AnyPlayer(int client, bool except_bot = false)
 {
 	float self_pos[3] = {0.0};
 	GetClientEyePosition(client, self_pos);
 	for (int i = 1; i <= MaxClients; i++)
 	{
-		if (IsClientConnected(i) && IsClientInGame(i) && GetClientTeam(i) == view_as<int>(TEAM_SURVIVOR) && IsPlayerAlive(i))
+		if (!IsClientInGame(i)) continue;
+		if (GetClientTeam(i) == view_as<int>(TEAM_SURVIVOR) && IsPlayerAlive(i) && except_bot ? !IsFakeClient(i): true)
 		{
 			float target_pos[3] = {0.0};
 			GetClientEyePosition(i, target_pos);

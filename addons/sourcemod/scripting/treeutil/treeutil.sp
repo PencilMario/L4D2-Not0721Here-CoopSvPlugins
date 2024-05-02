@@ -294,7 +294,7 @@ stock int GetRandomSurvivorAndValid(int excludeSurvivor = -1, bool valid)
 	return i;
 }
 // 获取距离某玩家最近的有效（未死亡，未倒地，未被控）生还者，如有则返回生还者 id，玩家无效或未找到则返回 0
-stock int GetClosetMobileSurvivor(int client, int exclude_client = -1)
+stock int GetClosetMobileSurvivor(int client, int exclude_client = -1, bool except_bot = false)
 {
 	if (IsValidClient(client))
 	{
@@ -306,7 +306,7 @@ stock int GetClosetMobileSurvivor(int client, int exclude_client = -1)
 		for (int newTarget = 1; newTarget <= MaxClients; newTarget++)
 		{
 			// 找到了一个有效玩家
-			if (IsValidSurvivor(newTarget) && IsPlayerAlive(newTarget) && !IsClientIncapped(newTarget) &&!IsClientPinned(newTarget) && newTarget != client && newTarget != exclude_client)
+			if (IsValidSurvivor(newTarget) && IsPlayerAlive(newTarget) && !IsClientIncapped(newTarget) &&!IsClientPinned(newTarget) && newTarget != client && newTarget != exclude_client && except_bot ? !IsFakeClient(newTarget):true)
 			{
 				GetClientAbsOrigin(newTarget, targetPos);
 				float dist = GetVectorDistance(selfPos, targetPos);
@@ -326,7 +326,7 @@ stock int GetClosetMobileSurvivor(int client, int exclude_client = -1)
 	return 0;
 }
 // 获取距离某玩家最近的生还者，不无视倒地，被控，如有则返回生还者 id，玩家无效或未找到则返回 0
-stock int GetClosetSurvivor(int client, int exclude_client = -1)
+stock int GetClosetSurvivor(int client, int exclude_client = -1, bool except_bot = false)
 {
 	if (!IsValidClient(client)) { return 0; }
 	static int target;
@@ -360,14 +360,14 @@ stock int GetClientDistance(int source, int dest)
 	return RoundToNearest(GetVectorDistance(selfPos, targetPos));
 }
 // 获取某玩家到最近或指定生还者的距离，如果存在有效最近或指定生还者则返回距离，无则返回 -1
-stock int GetClosetSurvivorDistance(int client, int specific_survivor = -1)
+stock int GetClosetSurvivorDistance(int client, int specific_survivor = -1, bool except_bot = false)
 {
 	if (!IsValidClient(client)) { return -1; }
 	float selfPos[3] = {0.0}, targetPos[3] = {0.0};
 	int target = -1;
 	GetClientAbsOrigin(client, selfPos);
-	if (IsValidSurvivor(specific_survivor)) { target = specific_survivor; }
-	else { target = GetClosetMobileSurvivor(client); }
+	if (IsValidSurvivor(specific_survivor)) { target = specific_survivor;}
+	else { target = GetClosetMobileSurvivor(client, -1, except_bot);}
 	if (!IsValidSurvivor(target)) { return -1; }
 	GetEntPropVector(target, Prop_Send, "m_vecOrigin", targetPos);
 	return RoundToNearest(GetVectorDistance(selfPos, targetPos));

@@ -18,7 +18,7 @@ public Action Timer_CheckAllBot(Handle t){
         if (IsClientInGame(i)){
             if (IsFakeClient(i)){
                 if (!Player_IsVisible_To_AnyPlayer(i) && go){
-                    if (GetClosetSurvivor(i, -1, true) > 1200)  setClientSpeed(i, 1.6);
+                    if (GetClosetSurvivorDistance(i, -1, true) > 1200)  setClientSpeed(i, 1.6);
                     else setClientSpeed(i, 1.25);
                 }
                 else setClientSpeed(i, 1.0);

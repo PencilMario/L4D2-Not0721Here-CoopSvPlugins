@@ -1,0 +1,75 @@
+"Games"
+{
+	"#default"
+	{
+		"#supported"
+		{
+			"game"	"tf"
+			"game"	"left4dead2"
+		}
+
+		"Signatures"
+		{
+			"CGameClient::ShouldSendMessages"
+			{
+				"library"			"engine"
+				"linux"				"@_ZN11CGameClient18ShouldSendMessagesEv"
+			}
+			"CGameServer::SendClientMessages"
+			{
+				"library"			"engine"
+				"linux"				"@_ZN11CGameServer18SendClientMessagesEb"
+			}
+			"SV_ComputeClientPacks"
+			{
+				"library"			"engine"
+				"linux"				"@_Z21SV_ComputeClientPacksiPP11CGameClientP14CFrameSnapshot"
+			}
+		}
+	}
+	"tf"
+	{
+		"Signatures"
+		{
+			"CGameClient::ShouldSendMessages"
+			{
+				"library"			"engine"
+				"windows"			"\x55\x8B\xEC\x51\x56\x8B\xF1\x80\xBE\x94\x00\x00\x00\x00"
+			}
+			"CGameServer::SendClientMessages"
+			{
+				"library"			"engine"
+				"windows"			"\x55\x8B\xEC\x81\xEC\x30\x04\x00\x00\x53\x56\x57\x33\xDB"
+			}
+			"SV_ComputeClientPacks"
+			{
+				"library"			"engine"
+				"windows"			"\x55\x8B\xEC\x83\xEC\x38\x8B\x0D\x2A\x2A\x2A\x2A\x53\x33\xDB"
+			}
+		}
+	}
+	"csgo"
+	{
+		"Signatures"
+		{
+			"CGameClient::ShouldSendMessages"
+			{
+				"library"			"engine"
+				"windows"			"\x55\x8B\xEC\x51\x57\x8B\xF9\x80\xBF\xEC\x01\x00\x00\x00"
+				"linux"				"\x55\x89\xE5\x83\xEC\x28\x89\x5D\xF8\x8B\x5D\x08\x89\x75\xFC\x80\xBB\xD8\x01\x00\x00\x00"
+			}
+			"CGameServer::SendClientMessages"
+			{
+				"library"			"engine"
+				"windows"			"\x55\x8B\xEC\x83\xE4\xF8\x81\xEC\xFC\x07\x00\x00"
+				"linux"				"\x55\x89\xE5\x57\x56\x53\x81\xEC\x1C\x08\x00\x00"
+			}
+			"SV_ComputeClientPacks"
+			{
+				"library"			"engine"
+				"windows"			"\x55\x8B\xEC\x83\xEC\x10\x53\x8B\xD9\x89\x55\xFC"
+				"linux"				"\x55\x89\xE5\x57\x56\x53\x83\xEC\x3C\x8B\x0D\x2A\x2A\x2A\x2A\x8B\x75\x0C"
+			}
+		}
+	}
+}

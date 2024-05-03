@@ -7,7 +7,7 @@
 
 #include <l4d2_skills>
 
-#define SKILL_NAME "带刺枪托"
+#define SKILL_NAME "牢大肘击"
 
 public Plugin myinfo =
 {
@@ -85,8 +85,8 @@ public void Skills_OnGetSettings( KeyValues kv )
 	EXPORT_START(SKILL_NAME);
 	
 	EXPORT_SKILL_COST(gExport.base, 5000.0);
-	EXPORT_FLOAT_DEFAULT("damage_for_specials", gExport.damage_for_specials, 375.0);
-	EXPORT_FLOAT_DEFAULT("damage_for_infected", gExport.damage_for_infected, 50.0);
+	EXPORT_FLOAT_DEFAULT("damage_for_specials", gExport.damage_for_specials, 600.0);
+	EXPORT_FLOAT_DEFAULT("damage_for_infected", gExport.damage_for_infected, 100.0);
 
 	EXPORT_FINISH();
 }

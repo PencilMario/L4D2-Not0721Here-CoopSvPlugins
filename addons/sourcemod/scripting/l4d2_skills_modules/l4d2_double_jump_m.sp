@@ -144,7 +144,7 @@ stock void ReJump( int client )
 		float vVel[3];
 		GetEntPropVector(client, Prop_Data, "m_vecVelocity", vVel);
 		
-		vVel[2] = GetJumpPower(client);
+		vVel[2] += GetJumpPower(client);
 		
 		TeleportEntity(client, NULL_VECTOR, NULL_VECTOR, vVel);
 	}
@@ -200,8 +200,8 @@ public void Skills_OnGetSettings( KeyValues kv )
 	EXPORT_SKILL_UPGRADE_COSTS(gExport.base, { 1500.0, 2500.0, 5000.0 });
 
 	EXPORT_INT_ARRAY_DEFAULT("number_of_jumps_for_levels", gExport.number_of_jumps_for_levels, gExport.base.maxlevel, { 1, 2, 2 } );
-	EXPORT_FLOAT_ARRAY_DEFAULT("power_of_jumps_for_levels", gExport.power_of_jumps_for_levels, gExport.base.maxlevel, { 75.0, 145.0, 210.0 } );
-	EXPORT_FLOAT_DEFAULT("power_first_level", gExport.power_first_level, 100.0);
+	EXPORT_FLOAT_ARRAY_DEFAULT("power_of_jumps_for_levels", gExport.power_of_jumps_for_levels, gExport.base.maxlevel, { 350.0, 500.0, 750.0 } );
+	EXPORT_FLOAT_DEFAULT("power_first_level", gExport.power_first_level, 250.0);
 	EXPORT_BOOL_DEFAULT("enable_no_fall_damage_on_max_level", gExport.enable_no_fall_damage_on_max_level, true);
 	
 	EXPORT_SKILL_FINISH();

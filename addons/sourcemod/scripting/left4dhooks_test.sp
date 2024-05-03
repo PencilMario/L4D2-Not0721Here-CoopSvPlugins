@@ -1,6 +1,6 @@
 /*
 *	Left 4 DHooks Direct - TESTER
-*	Copyright (C) 2023 Silvers
+*	Copyright (C) 2024 Silvers
 *
 *	This program is free software: you can redistribute it and/or modify
 *	it under the terms of the GNU General Public License as published by
@@ -18,7 +18,7 @@
 
 
 
-#define PLUGIN_VERSION		"1.135"
+#define PLUGIN_VERSION		"1.144"
 
 /*=======================================================================================
 	Plugin Info:
@@ -54,6 +54,7 @@ bool g_bLibraryActive;
 bool g_bTestForwards =		true;	// To enable forwards testing
 int g_iForwardsMax;					// Total forwards we expect to see
 int g_iForwards;
+float g_fPipeBomb[2048];
 
 
 
@@ -81,9 +82,9 @@ public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max
 	}
 
 	if( g_bLeft4Dead2 )
-		g_iForwardsMax = 178;
+		g_iForwardsMax = 199;
 	else
-		g_iForwardsMax = 126;
+		g_iForwardsMax = 139;
 
 	return APLRes_Success;
 }
@@ -122,6 +123,8 @@ public void OnPluginStart()
 
 
 
+
+
 // ====================================================================================================
 // ADDRESSES - Demonstrating when addresses are valid for use with certain natives (documented in left4dhooks.inc)
 // ====================================================================================================
@@ -152,8 +155,10 @@ void OnFrameStart()
 
 
 
+
+
 // ====================================================================================================
-// PIPEBOMB PROJECTILE - Fuse and Light particles
+// PIPEBOMB PROJECTILE - Fuse and Light particles (no longer require separately the "L4D_PipeBombPrj" native has a optional param to create these)
 // ====================================================================================================
 #define PARTICLE_FUSE						"weapon_pipebomb_fuse"
 #define PARTICLE_LIGHT						"weapon_pipebomb_blinking_light"
@@ -269,7 +274,7 @@ Action OnAnimPost(int client, int &anim)
 
 		switch( model[29] )
 		{
-			// case 'c': { Format(model, sizeof(model), "coach");		anim = -1; }
+			// case 'c': { FormatEx(model, sizeof(model), "coach");		anim = -1; }
 			case 'b': { anim = 631; }	// gambler
 			case 'h': { anim = 636; }	// mechanic
 			case 'd': { anim = 639; }	// producer
@@ -350,6 +355,130 @@ Action sm_l4dd(int client, int args)
 
 
 
+	// L4D_StopBeingRevived(client);
+	// PrintToChatAll("L4D_IsInLastCheckpoint: %d", L4D_IsInLastCheckpoint(client));
+
+
+
+	// PrintToServer("L4D_IsPlayerStaggering %d", L4D_IsPlayerStaggering(client));
+
+
+
+	/* GRENADES TEST:
+	// Throws in direction player is looking
+	float vPos[3];
+	float vAng[3];
+	float vVel[3];
+	float vRot[3];
+
+	GetClientEyeAngles(client, vAng);
+	GetClientEyePosition(client, vPos);
+	vPos[2] -= 5.0;
+
+	// Set velocity
+	GetAngleVectors(vAng, vVel, NULL_VECTOR, NULL_VECTOR);
+	NormalizeVector(vVel, vVel);
+	ScaleVector(vVel, 10.0); // Scale to ~ 250+ for projectiles other than the Grenade Launcher
+
+	// Random spin
+	vRot[0] = GetRandomFloat(300.0, 500.0);
+	vRot[1] = GetRandomFloat(300.0, 500.0);
+	vRot[2] = GetRandomFloat(-500.0, 500.0);
+
+	// int entity = L4D_PipeBombPrj(client, vPos, vAng, true, vVel, vRot); // With particles
+	// int entity = L4D_PipeBombPrj(client, vPos, vAng, false); // Without particles
+	// int entity = L4D_PipeBombPrj(client, vPos, vAng, true, vVel, vRot);
+	// int entity = L4D_MolotovPrj(client, vPos, vAng, vVel, vRot);
+	// int entity = L4D2_VomitJarPrj(client, vPos, vAng, vVel, vRot);
+	// int entity = L4D2_SpitterPrj(client, vPos, vAng, vVel, vRot);
+	int entity = L4D2_GrenadeLauncherPrj(client, vPos, vAng, vVel, vRot);
+
+	L4D_RemoveEntityDelay(entity, 5.0);
+	// */
+
+
+
+	/*
+	int target = GetRandomSurvivor(1, -1);
+	if( target )
+	{
+		int weapon = GetPlayerWeaponSlot(client, L4D_WEAPON_SLOT_PRIMARY);
+		if( weapon != -1 )
+		{
+			char sClass[32];
+			GetEdictClassname(weapon, sClass, sizeof(sClass));
+
+			// Get max ammo
+			int ammoType = GetEntProp(weapon, Prop_Send, "m_iPrimaryAmmoType");
+			Ammo_t ammo = AmmoDef.GetAmmoOfIndex(ammoType);
+
+			PrintToServer("MAX AMMO BEFORE: (%s) %d %d", sClass, AmmoDef.MaxCarry(ammoType), ammo.pMaxCarry);
+
+			ammo.pMaxCarry = -1;
+			PrintToServer("MAX AMMO AFTER: (%s) %d %d", sClass, AmmoDef.MaxCarry(ammoType), ammo.pMaxCarry);
+
+			ammo.pMaxCarryCVar.GetSMHandle().IntValue = 727;
+			PrintToServer("MAX AMMO AFTER CVAR: (%s) %d %d", sClass, AmmoDef.MaxCarry(ammoType), ammo.pMaxCarry);
+
+			// Change weapon damage type to fire bullets
+			PrintToServer("DamageType Before: (%s) %d", sClass, AmmoDef.DamageType(ammoType));
+
+			ammo.nDamageType = 8;
+			PrintToServer("DamageType After: (%s) %d", sClass, AmmoDef.DamageType(ammoType));
+		}
+	}
+	// */
+
+
+
+	/*
+	WeaponType type;
+
+	type = L4D2_GetIntWeaponAttribute("weapon_pistol", L4D2IWA_WeaponType);
+	PrintToServer("L4D2_GetIntWeaponAttribute weapon_pistol (Weapon Type): %d %s", type, g_sWeaponTypes[type]);
+
+	type = L4D2_GetIntWeaponAttribute("weapon_rifle", L4D2IWA_WeaponType);
+	PrintToServer("L4D2_GetIntWeaponAttribute weapon_rifle (Weapon Type): %d %s", type, g_sWeaponTypes[type]);
+	// */
+
+
+
+	// L4D_PrecacheParticle("fuse"); // This should be in OnMapStart() - Only here for testing
+
+
+
+	/* PIPEBOMB TEST:
+	// Throws in direction player is looking
+	float vPos[3];
+	float vAng[3];
+	float vVel[3];
+	float vRot[3];
+
+	GetClientEyeAngles(client, vAng);
+	GetClientEyePosition(client, vPos);
+	vPos[2] -= 5.0;
+
+	// Set velocity
+	GetAngleVectors(vAng, vVel, NULL_VECTOR, NULL_VECTOR);
+	NormalizeVector(vVel, vVel);
+	ScaleVector(vVel, 750.0);
+
+	// Random spin
+	vRot[0] = GetRandomFloat(300.0, 500.0);
+	vRot[1] = GetRandomFloat(300.0, 500.0);
+	vRot[2] = GetRandomFloat(-500.0, 500.0);
+
+	// int entity = L4D_PipeBombPrj(client, vPos, NULL_VECTOR); // No fuse/light particles
+	int entity = L4D_PipeBombPrj(client, vPos, vAng, true, vVel, vRot); // With particles
+
+	// TeleportEntity(entity, NULL_VECTOR, NULL_VECTOR, vAng);
+	// L4D_AngularVelocity(entity, vAng);
+
+	L4D_RemoveEntityDelay(entity, 5.0); // WORKS
+	// */
+
+
+
 	// PrintToServer("L4D_HasMapStarted %d", L4D_HasMapStarted()); // WORKS
 
 
@@ -368,7 +497,7 @@ Action sm_l4dd(int client, int args)
 		if( !anim.m_bIsCustomSequence )
 		{
 			static bool time_to_restart = false;
-			
+
 			if( time_to_restart )
 			{
 				anim.ResetMainActivity();
@@ -509,7 +638,7 @@ Action sm_l4dd(int client, int args)
 		// VScript test
 		// -----
 		L4D_GetNavAreaPos(targ, vEnd);
-		Format(code, sizeof(code), "ret <- NavMesh.GetNavArea(Vector(%f, %f, %f), 500.000000); tst <- NavMesh.GetNavArea(Vector(%f, %f, %f), 50.000000); if (ret && tst) <RETURN>ret.IsConnected(tst, 4)</RETURN>;", vEnd[0], vEnd[1], vEnd[2], vPos[0], vPos[1], vPos[2]);
+		FormatEx(code, sizeof(code), "ret <- NavMesh.GetNavArea(Vector(%f, %f, %f), 500.000000); tst <- NavMesh.GetNavArea(Vector(%f, %f, %f), 50.000000); if (ret && tst) <RETURN>ret.IsConnected(tst, 4)</RETURN>;", vEnd[0], vEnd[1], vEnd[2], vPos[0], vPos[1], vPos[2]);
 		buffer[0] = 0;
 		L4D2_GetVScriptOutput(code, buffer, sizeof(buffer));
 		if( buffer[0] )
@@ -1349,12 +1478,12 @@ Action sm_l4dd(int client, int args)
 		if( client )
 		{
 			// Seems to always return 0. VScript problems.
-			Format(buffer, sizeof(buffer), "GetCurrentFlowPercentForPlayer(%d)", client);
+			FormatEx(buffer, sizeof(buffer), "GetCurrentFlowPercentForPlayer(%d)", client);
 			if( L4D2_GetVScriptOutput(buffer, buffer, sizeof(buffer)) )
 				PrintToServer("VScript: GetCurrentFlowPercentForPlayer(%d) = %s", client, buffer);
 
 			// Seems to always return 0. VScript problems.
-			Format(buffer, sizeof(buffer), "GetCurrentFlowDistanceForPlayer(%d)", client);
+			FormatEx(buffer, sizeof(buffer), "GetCurrentFlowDistanceForPlayer(%d)", client);
 			if( L4D2_GetVScriptOutput(buffer, buffer, sizeof(buffer)) )
 				PrintToServer("VScript: GetCurrentFlowDistanceForPlayer(%d) = %s", client, buffer);
 		}
@@ -1373,7 +1502,7 @@ Action sm_l4dd(int client, int args)
 
 		// WORKS
 		int a = 14, b = 300;
-		Format(buffer, sizeof(buffer), "test_a <- %d; test_b <- %d; <RETURN>test_a + test_b</RETURN>", a, b);
+		FormatEx(buffer, sizeof(buffer), "test_a <- %d; test_b <- %d; <RETURN>test_a + test_b</RETURN>", a, b);
 		if( L4D2_GetVScriptOutput(buffer, buffer, sizeof(buffer)) )
 			PrintToServer("VScript: Math test_A = %s", buffer);
 
@@ -1381,7 +1510,7 @@ Action sm_l4dd(int client, int args)
 		// Example of multi-line code strings. The string must end with a backslash "\" to work.
 		float A = 107.0;
 		float G = 0.8682;
-		Format(buffer, sizeof(buffer), "test_a <- %f;\
+		FormatEx(buffer, sizeof(buffer), "test_a <- %f;\
 			test_b <- %f;\
 			<RETURN>test_a + test_b</RETURN>", A, G);
 		if( L4D2_GetVScriptOutput(buffer, buffer, sizeof(buffer)) )
@@ -1576,6 +1705,8 @@ Action sm_l4dd(int client, int args)
 	// WORKS
 	// The "Fuse" + "Light" particles must be manually added in your plugin.
 	// I intentionally did not include this in left4dhooks in case you wanted to create an activated PipeBomb projectile without the particles.
+	// Since Left4DHooks version 1.139 you can create particles simply with the native call adding true to the end: L4D_PipeBombPrj(client, vPos, vAng, true);
+	// Or set to false for no particles.
 	int projectile = L4D_PipeBombPrj(client, vPos, vAng);
 
 	// Create particles
@@ -3436,7 +3567,7 @@ public Action L4D_OnLedgeGrabbed(int client)
 		if( called == 0 ) g_iForwards++;
 		called++;
 
-		ForwardCalled("\"L4D_OnLedgeGrabbed\" %d", client);
+		ForwardCalled("\"L4D_OnLedgeGrabbed\" %d (%N)", client, client);
 	}
 
 	// WORKS
@@ -3453,7 +3584,7 @@ public void L4D_OnLedgeGrabbed_Post(int client)
 		if( called == 0 ) g_iForwards++;
 		called++;
 
-		ForwardCalled("\"L4D_OnLedgeGrabbed_Post\" %d", client);
+		ForwardCalled("\"L4D_OnLedgeGrabbed_Post\" %d (%N)", client, client);
 	}
 }
 
@@ -3465,7 +3596,7 @@ public void L4D_OnLedgeGrabbed_PostHandled(int client)
 		if( called == 0 ) g_iForwards++;
 		called++;
 
-		ForwardCalled("\"L4D_OnLedgeGrabbed_PostHandled\" %d", client);
+		ForwardCalled("\"L4D_OnLedgeGrabbed_PostHandled\" %d (%N)", client, client);
 	}
 }
 
@@ -3477,7 +3608,7 @@ public void L4D2_OnRevived(int client)
 		if( called == 0 ) g_iForwards++;
 		called++;
 
-		ForwardCalled("\"L4D2_OnRevived\" %d", client);
+		ForwardCalled("\"L4D2_OnRevived\" %d (%N)", client, client);
 	}
 }
 
@@ -3530,7 +3661,7 @@ public void L4D_OnSwingStart(int client, int weapon)
 		if( called == 0 ) g_iForwards++;
 		called++;
 
-		ForwardCalled("\"L4D_OnSwingStart\" %N %d", client, weapon);
+		ForwardCalled("\"L4D_OnSwingStart\" %d (%N) %d", client, client, weapon);
 	}
 }
 
@@ -3962,7 +4093,7 @@ public Action L4D2_OnHitByVomitJar(int victim, int &attacker)
 		if( called == 0 ) g_iForwards++;
 		called++;
 
-		ForwardCalled("\"L4D2_OnHitByVomitJar\" %d > %d)", victim, attacker);
+		ForwardCalled("\"L4D2_OnHitByVomitJar\" %d > %d", victim, attacker);
 	}
 
 	// attacker = victim;
@@ -3982,7 +4113,7 @@ public void L4D2_OnHitByVomitJar_Post(int victim, int attacker)
 		if( called == 0 ) g_iForwards++;
 		called++;
 
-		ForwardCalled("\"L4D2_OnHitByVomitJar_Post\" %d > %d)", victim, attacker);
+		ForwardCalled("\"L4D2_OnHitByVomitJar_Post\" %d > %d", victim, attacker);
 	}
 }
 
@@ -3994,7 +4125,51 @@ public void L4D2_OnHitByVomitJar_PostHandled(int victim, int attacker)
 		if( called == 0 ) g_iForwards++;
 		called++;
 
-		ForwardCalled("\"L4D2_OnHitByVomitJar_PostHandled\" %d > %d)", victim, attacker);
+		ForwardCalled("\"L4D2_OnHitByVomitJar_PostHandled\" %d > %d", victim, attacker);
+	}
+}
+
+public Action L4D2_Infected_HitByVomitJar(int victim, int &attacker)
+{
+	static int called;
+	if( called < MAX_CALLS )
+	{
+		if( called == 0 ) g_iForwards++;
+		called++;
+
+		ForwardCalled("\"L4D2_Infected_HitByVomitJar\" %d > %d", victim, attacker);
+	}
+
+	// attacker = victim;
+	// return Plugin_Changed;
+
+	// WORKS
+	// return Plugin_Handled;
+
+	return Plugin_Continue;
+}
+
+public void L4D2_Infected_HitByVomitJar_Post(int victim, int attacker)
+{
+	static int called;
+	if( called < MAX_CALLS )
+	{
+		if( called == 0 ) g_iForwards++;
+		called++;
+
+		ForwardCalled("\"L4D2_Infected_HitByVomitJar_Post\" %d > %d", victim, attacker);
+	}
+}
+
+public void L4D2_Infected_HitByVomitJar_PostHandled(int victim, int attacker)
+{
+	static int called;
+	if( called < MAX_CALLS )
+	{
+		if( called == 0 ) g_iForwards++;
+		called++;
+
+		ForwardCalled("\"L4D2_Infected_HitByVomitJar_PostHandled\" %d > %d", victim, attacker);
 	}
 }
 
@@ -4047,7 +4222,7 @@ public Action L4D_PipeBombProjectile_Pre(int client, float vecPos[3], float vecA
 		if( called == 0 ) g_iForwards++;
 		called++;
 
-		ForwardCalled("\"L4D_PipeBombProjectile_Pre\" %d", client);
+		ForwardCalled("\"L4D_PipeBombProjectile_Pre\" %d pos(%0.1f %0.1f %0.1f) ang(%0.1f %0.1f %0.1f) vel(%0.1f %0.1f %0.1f) rot(%0.1f %0.1f %0.1f)", client, vecPos[0], vecPos[1], vecPos[2], vecAng[0], vecAng[1], vecAng[2], vecVel[0], vecVel[1], vecVel[2], vecRot[0], vecRot[1], vecRot[2]);
 	}
 
 
@@ -4094,6 +4269,8 @@ public void L4D_PipeBombProjectile_Post(int client, int projectile, const float 
 
 		ForwardCalled("\"L4D_PipeBombProjectile_Post\" %d (Grenade = %d) pos(%0.1f %0.1f %0.1f) ang(%0.1f %0.1f %0.1f) vel(%0.1f %0.1f %0.1f) rot(%0.1f %0.1f %0.1f)", client, projectile, vecPos[0], vecPos[1], vecPos[2], vecAng[0], vecAng[1], vecAng[2], vecVel[0], vecVel[1], vecVel[2], vecRot[0], vecRot[1], vecRot[2]);
 	}
+
+	g_fPipeBomb[projectile] = GetGameTime(); // Used to track if the forwards "L4D_PipeBomb_Detonate*" are triggered from an actual PipeBomb or from a breakable prop (propane tank, oxygen tank etc)
 }
 
 public void L4D_PipeBombProjectile_PostHandled(int client, int projectile, const float vecPos[3], const float vecAng[3], const float vecVel[3], const float vecRot[3])
@@ -4105,6 +4282,139 @@ public void L4D_PipeBombProjectile_PostHandled(int client, int projectile, const
 		called++;
 
 		ForwardCalled("\"L4D_PipeBombProjectile_PostHandled\" %d (Grenade = %d) pos(%0.1f %0.1f %0.1f) ang(%0.1f %0.1f %0.1f) vel(%0.1f %0.1f %0.1f) rot(%0.1f %0.1f %0.1f)", client, projectile, vecPos[0], vecPos[1], vecPos[2], vecAng[0], vecAng[1], vecAng[2], vecVel[0], vecVel[1], vecVel[2], vecRot[0], vecRot[1], vecRot[2]);
+	}
+}
+
+public Action L4D_MolotovProjectile_Pre(int client, float vecPos[3], float vecAng[3], float vecVel[3], float vecRot[3])
+{
+	static int called;
+	if( called < MAX_CALLS )
+	{
+		if( called == 0 ) g_iForwards++;
+		called++;
+
+		ForwardCalled("\"L4D_MolotovProjectile_Pre\" %d pos(%0.1f %0.1f %0.1f) ang(%0.1f %0.1f %0.1f) vel(%0.1f %0.1f %0.1f) rot(%0.1f %0.1f %0.1f)", client, vecPos[0], vecPos[1], vecPos[2], vecAng[0], vecAng[1], vecAng[2], vecVel[0], vecVel[1], vecVel[2], vecRot[0], vecRot[1], vecRot[2]);
+	}
+
+	// See the "L4D_PipeBombProjectile_Pre" forward for details on changing params.
+
+	// WORKS - Blocks grenade creation
+	// return Plugin_Handled;
+
+	return Plugin_Continue;
+}
+
+public void L4D_MolotovProjectile_Post(int client, int projectile, const float vecPos[3], const float vecAng[3], const float vecVel[3], const float vecRot[3])
+{
+	static int called;
+	if( called < MAX_CALLS )
+	{
+		if( called == 0 ) g_iForwards++;
+		called++;
+
+		ForwardCalled("\"L4D_MolotovProjectile_Post\" %d (Grenade = %d) pos(%0.1f %0.1f %0.1f) ang(%0.1f %0.1f %0.1f) vel(%0.1f %0.1f %0.1f) rot(%0.1f %0.1f %0.1f)", client, projectile, vecPos[0], vecPos[1], vecPos[2], vecAng[0], vecAng[1], vecAng[2], vecVel[0], vecVel[1], vecVel[2], vecRot[0], vecRot[1], vecRot[2]);
+	}
+}
+
+public void L4D_MolotovProjectile_PostHandled(int client, int projectile, const float vecPos[3], const float vecAng[3], const float vecVel[3], const float vecRot[3])
+{
+	static int called;
+	if( called < MAX_CALLS )
+	{
+		if( called == 0 ) g_iForwards++;
+		called++;
+
+		ForwardCalled("\"L4D_MolotovProjectile_PostHandled\" %d (Grenade = %d) pos(%0.1f %0.1f %0.1f) ang(%0.1f %0.1f %0.1f) vel(%0.1f %0.1f %0.1f) rot(%0.1f %0.1f %0.1f)", client, projectile, vecPos[0], vecPos[1], vecPos[2], vecAng[0], vecAng[1], vecAng[2], vecVel[0], vecVel[1], vecVel[2], vecRot[0], vecRot[1], vecRot[2]);
+	}
+}
+
+public Action L4D2_VomitJarProjectile_Pre(int client, float vecPos[3], float vecAng[3], float vecVel[3], float vecRot[3])
+{
+	static int called;
+	if( called < MAX_CALLS )
+	{
+		if( called == 0 ) g_iForwards++;
+		called++;
+
+		ForwardCalled("\"L4D2_VomitJarProjectile_Pre\" %d pos(%0.1f %0.1f %0.1f) ang(%0.1f %0.1f %0.1f) vel(%0.1f %0.1f %0.1f) rot(%0.1f %0.1f %0.1f)", client, vecPos[0], vecPos[1], vecPos[2], vecAng[0], vecAng[1], vecAng[2], vecVel[0], vecVel[1], vecVel[2], vecRot[0], vecRot[1], vecRot[2]);
+	}
+
+	// See the "L4D_PipeBombProjectile_Pre" forward for details on changing params.
+
+	// WORKS - Blocks grenade creation
+	// return Plugin_Handled;
+
+	return Plugin_Continue;
+}
+
+public void L4D2_VomitJarProjectile_Post(int client, int projectile, const float vecPos[3], const float vecAng[3], const float vecVel[3], const float vecRot[3])
+{
+	static int called;
+	if( called < MAX_CALLS )
+	{
+		if( called == 0 ) g_iForwards++;
+		called++;
+
+		ForwardCalled("\"L4D2_VomitJarProjectile_Post\" %d (Grenade = %d) pos(%0.1f %0.1f %0.1f) ang(%0.1f %0.1f %0.1f) vel(%0.1f %0.1f %0.1f) rot(%0.1f %0.1f %0.1f)", client, projectile, vecPos[0], vecPos[1], vecPos[2], vecAng[0], vecAng[1], vecAng[2], vecVel[0], vecVel[1], vecVel[2], vecRot[0], vecRot[1], vecRot[2]);
+	}
+}
+
+public void L4D2_VomitJarProjectile_PostHandled(int client, int projectile, const float vecPos[3], const float vecAng[3], const float vecVel[3], const float vecRot[3])
+{
+	static int called;
+	if( called < MAX_CALLS )
+	{
+		if( called == 0 ) g_iForwards++;
+		called++;
+
+		ForwardCalled("\"L4D2_VomitJarProjectile_PostHandled\" %d (Grenade = %d) pos(%0.1f %0.1f %0.1f) ang(%0.1f %0.1f %0.1f) vel(%0.1f %0.1f %0.1f) rot(%0.1f %0.1f %0.1f)", client, projectile, vecPos[0], vecPos[1], vecPos[2], vecAng[0], vecAng[1], vecAng[2], vecVel[0], vecVel[1], vecVel[2], vecRot[0], vecRot[1], vecRot[2]);
+	}
+}
+
+public Action L4D2_GrenadeLauncherProjectile_Pre(int client, float vecPos[3], float vecAng[3], float vecVel[3], float vecRot[3], bool &bIncendiary)
+{
+	static int called;
+	if( called < MAX_CALLS )
+	{
+		if( called == 0 ) g_iForwards++;
+		called++;
+
+		ForwardCalled("\"L4D2_GrenadeLauncherProjectile_Pre\" %d pos(%0.1f %0.1f %0.1f) ang(%0.1f %0.1f %0.1f) vel(%0.1f %0.1f %0.1f) rot(%0.1f %0.1f %0.1f) Incendiary: %d", client, vecPos[0], vecPos[1], vecPos[2], vecAng[0], vecAng[1], vecAng[2], vecVel[0], vecVel[1], vecVel[2], vecRot[0], vecRot[1], vecRot[2], bIncendiary);
+	}
+
+	// See the "L4D_PipeBombProjectile_Pre" forward for details on changing params.
+
+	// WORKS - Adds incendiary ammo type to last
+	// bIncendiary = true;
+	// return Plugin_Changed;
+
+	// WORKS - Blocks grenade creation
+	// return Plugin_Handled;
+
+	return Plugin_Continue;
+}
+
+public void L4D2_GrenadeLauncherProjectile_Post(int client, int projectile, const float vecPos[3], const float vecAng[3], const float vecVel[3], const float vecRot[3], bool bIncendiary)
+{
+	static int called;
+	if( called < MAX_CALLS )
+	{
+		if( called == 0 ) g_iForwards++;
+		called++;
+
+		ForwardCalled("\"L4D2_GrenadeLauncherProjectile_Post\" %d (Grenade = %d) pos(%0.1f %0.1f %0.1f) ang(%0.1f %0.1f %0.1f) vel(%0.1f %0.1f %0.1f) rot(%0.1f %0.1f %0.1f). Incendiary: %d", client, projectile, vecPos[0], vecPos[1], vecPos[2], vecAng[0], vecAng[1], vecAng[2], vecVel[0], vecVel[1], vecVel[2], vecRot[0], vecRot[1], vecRot[2], bIncendiary);
+	}
+}
+
+public void L4D2_GrenadeLauncherProjectile_PostHandled(int client, int projectile, const float vecPos[3], const float vecAng[3], const float vecVel[3], const float vecRot[3], bool bIncendiary)
+{
+	static int called;
+	if( called < MAX_CALLS )
+	{
+		if( called == 0 ) g_iForwards++;
+		called++;
+
+		ForwardCalled("\"L4D2_GrenadeLauncherProjectile_PostHandled\" %d (Grenade = %d) pos(%0.1f %0.1f %0.1f) ang(%0.1f %0.1f %0.1f) vel(%0.1f %0.1f %0.1f) rot(%0.1f %0.1f %0.1f). Incendiary: %d", client, projectile, vecPos[0], vecPos[1], vecPos[2], vecAng[0], vecAng[1], vecAng[2], vecVel[0], vecVel[1], vecVel[2], vecRot[0], vecRot[1], vecRot[2], bIncendiary);
 	}
 }
 
@@ -4160,6 +4470,24 @@ public Action L4D_PipeBomb_Detonate(int entity, int client)
 		ForwardCalled("\"L4D_PipeBomb_Detonate\" %d (%N) (Grenade = %d)", client, client > 0 && client <= MaxClients ? client : 0, entity);
 	}
 
+
+
+	// Detect if a PipeBomb or breakable prop (propane tank, oxygen tank etc) has exploded
+	// /*
+	if( g_fPipeBomb[entity] + 0.1 >= GetGameTime() ) // Matching the time with == is probably fine, but in case of rare moments when detonation happens slightly later, we can do this with 0.1 seconds leeway
+	{
+		// Breakable prop detonating
+		PrintToServer(" > L4DD: \"L4D_PipeBomb_Detonate\" %d (%N) (Grenade = %d) - Breakable Prop explosion", client, client > 0 && client <= MaxClients ? client : 0, entity);
+	}
+	else
+	{
+		PrintToServer(" > L4DD: \"L4D_PipeBomb_Detonate\" %d (%N) (Grenade = %d) - PipeBomb explosion", client, client > 0 && client <= MaxClients ? client : 0, entity);
+		// Grenade detonating
+	}
+	// */
+
+
+
 	// WORKS - block grenade detonating
 	// return Plugin_Handled;
 
@@ -4176,6 +4504,24 @@ public void L4D_PipeBomb_Detonate_Post(int entity, int client)
 
 		ForwardCalled("\"L4D_PipeBomb_Detonate_Post\" %d (%N) (Grenade = %d)", client, client > 0 && client <= MaxClients ? client : 0, entity);
 	}
+
+
+
+	// Detect if a PipeBomb or breakable prop (propane tank, oxygen tank etc) has exploded
+	// /*
+	if( g_fPipeBomb[entity] + 0.1 >= GetGameTime() ) // Matching the time with == is probably fine, but in case of rare moments when detonation happens slightly later, we can do this with 0.1 seconds leeway
+	{
+		// Breakable prop detonating
+		PrintToServer(" > L4DD: \"L4D_PipeBomb_Detonate_Post\" %d (%N) (Grenade = %d) - Breakable Prop explosion", client, client > 0 && client <= MaxClients ? client : 0, entity);
+	}
+	else
+	{
+		PrintToServer(" > L4DD: \"L4D_PipeBomb_Detonate_Post\" %d (%N) (Grenade = %d) - PipeBomb explosion", client, client > 0 && client <= MaxClients ? client : 0, entity);
+		// Grenade detonating
+	}
+
+	g_fPipeBomb[entity] = 0.0;
+	// */
 }
 
 public void L4D_PipeBomb_Detonate_PostHandled(int entity, int client)
@@ -4188,6 +4534,24 @@ public void L4D_PipeBomb_Detonate_PostHandled(int entity, int client)
 
 		ForwardCalled("\"L4D_PipeBomb_Detonate_PostHandled\" %d (%N) (Grenade = %d)", client, client > 0 && client <= MaxClients ? client : 0, entity);
 	}
+
+
+
+	// Detect if a PipeBomb or breakable prop (propane tank, oxygen tank etc) has exploded
+	// /*
+	if( g_fPipeBomb[entity] + 0.1 >= GetGameTime() ) // Matching the time with == is probably fine, but in case of rare moments when detonation happens slightly later, we can do this with 0.1 seconds leeway
+	{
+		// Breakable prop detonating
+		PrintToServer(" > L4DD: \"L4D_PipeBomb_Detonate_PostHandled\" %d (%N) (Grenade = %d) - Breakable Prop explosion", client, client > 0 && client <= MaxClients ? client : 0, entity);
+	}
+	else
+	{
+		PrintToServer(" > L4DD: \"L4D_PipeBomb_Detonate_PostHandled\" %d (%N) (Grenade = %d) - PipeBomb explosion", client, client > 0 && client <= MaxClients ? client : 0, entity);
+		// Grenade detonating
+	}
+
+	g_fPipeBomb[entity] = 0.0;
+	// */
 }
 
 public Action L4D2_VomitJar_Detonate(int entity, int client)
@@ -4228,6 +4592,47 @@ public void L4D2_VomitJar_Detonate_PostHandled(int entity, int client)
 		called++;
 
 		ForwardCalled("\"L4D2_VomitJar_Detonate_PostHandled\" %d (%N) (Grenade = %d)", client, client > 0 && client <= MaxClients ? client : 0, entity);
+	}
+}
+
+public Action L4D2_GrenadeLauncher_Detonate(int entity, int client)
+{
+	static int called;
+	if( called < MAX_CALLS )
+	{
+		if( called == 0 ) g_iForwards++;
+		called++;
+
+		ForwardCalled("\"L4D2_GrenadeLauncher_Detonate\" %d (%N) (Grenade = %d)", client, client > 0 && client <= MaxClients ? client : 0, entity);
+	}
+
+	// WORKS - block grenade detonating
+	// return Plugin_Handled;
+
+	return Plugin_Continue;
+}
+
+public void L4D2_GrenadeLauncher_Detonate_Post(int entity, int client)
+{
+	static int called;
+	if( called < MAX_CALLS )
+	{
+		if( called == 0 ) g_iForwards++;
+		called++;
+
+		ForwardCalled("\"L4D2_GrenadeLauncher_Detonate_Post\" %d (%N) (Grenade = %d)", client, client > 0 && client <= MaxClients ? client : 0, entity);
+	}
+}
+
+public void L4D2_GrenadeLauncher_Detonate_PostHandled(int entity, int client)
+{
+	static int called;
+	if( called < MAX_CALLS )
+	{
+		if( called == 0 ) g_iForwards++;
+		called++;
+
+		ForwardCalled("\"L4D2_GrenadeLauncher_Detonate_PostHandled\" %d (%N) (Grenade = %d)", client, client > 0 && client <= MaxClients ? client : 0, entity);
 	}
 }
 
@@ -4301,7 +4706,7 @@ public void L4D1_FirstAidKit_StartHealing_Post(int client, int entity)
 		int target = GetEntPropEnt(client, Prop_Send, "m_healTarget"); // Target is only valid in post hook
 		if( target == -1 ) target = 0;
 
-		ForwardCalled("\"L4D2_BackpackItem_StartAction_Post\" %d (%N) - MedKit = %d. Healing: %d (%N)", client, client, entity, target, target);
+		ForwardCalled("\"L4D1_FirstAidKit_StartHealing_Post\" %d (%N) - MedKit = %d. Healing: %d (%N)", client, client, entity, target, target);
 	}
 
 	// Reset healing duration:
@@ -4318,6 +4723,62 @@ public void L4D1_FirstAidKit_StartHealing_PostHandled(int client, int entity)
 		called++;
 
 		ForwardCalled("\"L4D1_FirstAidKit_StartHealing_PostHandled\" %d (%N) - MedKit = %d", client, client, entity);
+	}
+}
+
+public Action L4D2_OnStartUseAction(any action, int client, int target)
+{
+	static int called;
+	if( called < MAX_CALLS )
+	{
+		if( called == 0 ) g_iForwards++;
+		called++;
+
+		if( action == L4D2UseAction_DeployIncendiary || action == L4D2UseAction_DeployExplosive )
+		{
+			target = GetEntPropEnt(client, Prop_Send, "m_hActiveWeapon");
+		}
+
+		ForwardCalled("\"L4D2_OnStartUseAction\" %d (%N) - Target: %d. Action: %d", client, client, target, action);
+	}
+
+	// WORKS - Block action
+	// return Plugin_Handled;
+
+	return Plugin_Continue;
+}
+
+public void L4D2_OnStartUseAction_Post(any action, int client, int target)
+{
+	static int called;
+	if( called < MAX_CALLS )
+	{
+		if( called == 0 ) g_iForwards++;
+		called++;
+
+		if( action == L4D2UseAction_DeployIncendiary || action == L4D2UseAction_DeployExplosive )
+		{
+			target = GetEntPropEnt(client, Prop_Send, "m_hActiveWeapon");
+		}
+
+		ForwardCalled("\"L4D2_OnStartUseAction_Post\" %d (%N) - Target: %d. Action: %d", client, client, target, action);
+	}
+}
+
+public void L4D2_OnStartUseAction_PostHandled(any action, int client, int target)
+{
+	static int called;
+	if( called < MAX_CALLS )
+	{
+		if( called == 0 ) g_iForwards++;
+		called++;
+
+		if( action == L4D2UseAction_DeployIncendiary || action == L4D2UseAction_DeployExplosive )
+		{
+			target = GetEntPropEnt(client, Prop_Send, "m_hActiveWeapon");
+		}
+
+		ForwardCalled("\"L4D2_OnStartUseAction_PostHandled\" %d (%N) - Target: %d. Action: %d", client, client, target, action);
 	}
 }
 
@@ -4402,7 +4863,7 @@ public Action L4D2_BackpackItem_StartAction(int client, int entity, any type)
 		case L4D2WeaponId_IncendiaryAmmo:		FindConVar("upgrade_pack_use_duration").FloatValue = 5.0;
 		case L4D2WeaponId_ColaBottles:			FindConVar("cola_bottles_use_duration").FloatValue = 5.0;
 		case L4D2WeaponId_Gascan:				FindConVar("gas_can_use_duration").FloatValue = 5.0;
-	}					
+	}
 	// */
 
 	return Plugin_Continue;
@@ -4624,7 +5085,7 @@ public Action L4D2_CInsectSwarm_CanHarm(int acid, int spitter, int entity)
 		if( called == 0 ) g_iForwards++;
 		called++;
 
-		ForwardCalled("\"L4D2_CInsectSwarm_CanHarm\" %d %N > Acid: %d > Ent: %d", spitter, spitter < 1 ? 0 : spitter, acid, entity);
+		ForwardCalled("\"L4D2_CInsectSwarm_CanHarm\" %d (%N) > Acid: %d > Ent: %d", spitter, spitter < 1 ? 0 : spitter, acid, entity);
 	}
 
 	// WORKS
@@ -4641,8 +5102,35 @@ public void L4D2_CInsectSwarm_CanHarm_Post(int acid, int spitter, int entity)
 		if( called == 0 ) g_iForwards++;
 		called++;
 
-		ForwardCalled("\"L4D2_CInsectSwarm_CanHarm_Post\" %d %N > Acid: %d > Ent: %d", spitter, spitter < 1 ? 0 : spitter, acid, entity);
+		ForwardCalled("\"L4D2_CInsectSwarm_CanHarm_Post\" %d (%N) > Acid: %d > Ent: %d", spitter, spitter < 1 ? 0 : spitter, acid, entity);
 	}
+}
+
+// public Action L4D2_OnChooseVictim_Pre(int specialInfected, int &lastTarget, int &targetScanFlags, int &ignoreTarget) // For a future update
+public Action L4D2_OnChooseVictim_Pre(int specialInfected, int &lastTarget)
+{
+	static int called;
+	if( called < MAX_CALLS )
+	{
+		if( called == 0 ) g_iForwards++;
+		called++;
+
+		ForwardCalled("\"L4D2_OnChooseVictim_Pre\" %d > %d", specialInfected, lastTarget);
+	}
+
+	/* For a future update:
+	lastTarget = 0;
+	ignoreTarget = 1;
+	return Plugin_Changed;
+	// */
+
+	// lastTarget = 2;
+	// return Plugin_Changed;
+
+	// No target - the special will stand still.
+	// return Plugin_Handled;
+
+	return Plugin_Continue;
 }
 
 public Action L4D2_OnChooseVictim(int specialInfected, int &curTarget)
@@ -4660,7 +5148,7 @@ public Action L4D2_OnChooseVictim(int specialInfected, int &curTarget)
 	// curTarget = 2; // Must be valid client index, 0 = crash.
 	// return Plugin_Changed;
 
-	// ATTACK THEMSELVES (no target) - the special will stand still.
+	// No target - the special will stand still.
 	// return Plugin_Handled;
 
 	return Plugin_Continue;
@@ -5381,7 +5869,6 @@ public void L4D2_OnPlayerFling_PostHandled(int client, int attacker, const float
 	}
 }
 
-/*
 public Action L4D_OnMotionControlledXY(int client, int activity)
 {
 	static int called;
@@ -5390,7 +5877,7 @@ public Action L4D_OnMotionControlledXY(int client, int activity)
 		if( called == 0 ) g_iForwards++;
 		called++;
 
-		ForwardCalled("\"L4D_IsMotionControlledXY\" %d %N - %d", client, client, activity);
+		ForwardCalled("\"L4D_IsMotionControlledXY\" %d (%N) - %d", client, client, activity);
 	}
 
 	// WORKING
@@ -5398,7 +5885,6 @@ public Action L4D_OnMotionControlledXY(int client, int activity)
 
 	return Plugin_Continue;
 }
-*/
 
 public Action L4D_OnFatalFalling(int client, int camera)
 {
@@ -5408,7 +5894,7 @@ public Action L4D_OnFatalFalling(int client, int camera)
 		if( called == 0 ) g_iForwards++;
 		called++;
 
-		ForwardCalled("\"L4D_OnFatalFalling\" %d %N (cam: %d)", client, client, camera);
+		ForwardCalled("\"L4D_OnFatalFalling\" %d (%N) (cam: %d)", client, client, camera);
 	}
 
 	// WORKS - Block death fall camera
@@ -5425,7 +5911,7 @@ public void L4D_OnFalling(int client)
 		if( called == 0 ) g_iForwards++;
 		called++;
 
-		ForwardCalled("\"L4D_OnFalling\" %d %N", client, client);
+		ForwardCalled("\"L4D_OnFalling\" %d (%N)", client, client);
 	}
 }
 
@@ -5437,7 +5923,7 @@ public Action L4D_OnPlayerCough(int client, int attacker)
 		if( called == 0 ) g_iForwards++;
 		called++;
 
-		ForwardCalled("\"L4D_OnPlayerCough\" %d %N (caused by %d %N)", client, client, attacker, attacker);
+		ForwardCalled("\"L4D_OnPlayerCough\" %d (%N). Caused by %d (%N)", client, client, attacker, attacker);
 	}
 
 	// WORKS - Block cough
@@ -5454,7 +5940,7 @@ public void L4D_OnPlayerCough_Post(int client, int attacker)
 		if( called == 0 ) g_iForwards++;
 		called++;
 
-		ForwardCalled("\"L4D_OnPlayerCough_Post\" %d %N (caused by %d %N)", client, client, attacker, attacker);
+		ForwardCalled("\"L4D_OnPlayerCough_Post\" %d (%N). Caused by %d (%N)", client, client, attacker, attacker);
 	}
 }
 
@@ -5466,7 +5952,60 @@ public void L4D_OnPlayerCough_PostHandled(int client, int attacker)
 		if( called == 0 ) g_iForwards++;
 		called++;
 
-		ForwardCalled("\"L4D_OnPlayerCough_PostHandled\" %d %N (caused by %d %N)", client, client, attacker, attacker);
+		ForwardCalled("\"L4D_OnPlayerCough_PostHandled\" %d (%N). Caused by %d (%N)", client, client, attacker, attacker);
+	}
+}
+
+public Action L4D_OnIncapacitated(int client, int &inflictor, int &attacker, float &damage, int &damagetype)
+{
+	static int called;
+	if( called < MAX_CALLS )
+	{
+		if( called == 0 ) g_iForwards++;
+		called++;
+
+		ForwardCalled("\"L4D_OnIncapacitated\" %d (%N). Inflictor: (Inf=%d) (Att=%d). Dmg: %f. DmgType: %d", client, client, inflictor, attacker, damage, damagetype);
+	}
+
+	// WORKS - Block player being incapacitated
+	// return Plugin_Handled;
+
+	return Plugin_Continue;
+}
+
+public void L4D_OnIncapacitated_Post(int client, int inflictor, int attacker, float damage, int damagetype)
+{
+	static int called;
+	if( called < MAX_CALLS )
+	{
+		if( called == 0 ) g_iForwards++;
+		called++;
+
+		ForwardCalled("\"L4D_OnIncapacitated_Post\" %d (%N). Inflictor: (Inf=%d) (Att=%d). Dmg: %f. DmgType: %d", client, client, inflictor, attacker, damage, damagetype);
+	}
+}
+
+public void L4D_OnIncapacitated_PostHandled(int client, int inflictor, int attacker, float damage, int damagetype)
+{
+	static int called;
+	if( called < MAX_CALLS )
+	{
+		if( called == 0 ) g_iForwards++;
+		called++;
+
+		ForwardCalled("\"L4D_OnIncapacitated_PostHandled\" %d (%N). Inflictor: (Inf=%d) (Att=%d). Dmg: %f. DmgType: %d", client, client, inflictor, attacker, damage, damagetype);
+	}
+}
+
+public void L4D_OnDeathDroppedWeapons(int client, int weapons[6])
+{
+	static int called;
+	if( called < MAX_CALLS )
+	{
+		if( called == 0 ) g_iForwards++;
+		called++;
+
+		ForwardCalled("\"L4D_OnDeathDroppedWeapons\" %d (%N) [%d %d %d %d %d %d]", client, client, weapons[0], weapons[1], weapons[2], weapons[3], weapons[4], weapons[5]);
 	}
 }
 
@@ -5478,7 +6017,7 @@ public void L4D_OnWitchSetHarasser(int witch, int victim)
 		if( called == 0 ) g_iForwards++;
 		called++;
 
-		ForwardCalled("\"L4D_OnWitchSetHarasser\" %d > %d %N", witch, victim, victim);
+		ForwardCalled("\"L4D_OnWitchSetHarasser\" %d > %d (%N)", witch, victim, victim);
 	}
 }
 
@@ -5490,7 +6029,7 @@ public void L4D_OnEnterStasis(int tank)
 		if( called == 0 ) g_iForwards++;
 		called++;
 
-		ForwardCalled("\"L4D_OnEnterStasis\" %d %N", tank, tank);
+		ForwardCalled("\"L4D_OnEnterStasis\" %d (%N)", tank, tank);
 	}
 }
 
@@ -5502,7 +6041,7 @@ public void L4D_OnLeaveStasis(int tank)
 		if( called == 0 ) g_iForwards++;
 		called++;
 
-		ForwardCalled("\"L4D_OnLeaveStasis\" %d %N", tank, tank);
+		ForwardCalled("\"L4D_OnLeaveStasis\" %d (%N)", tank, tank);
 	}
 }
 

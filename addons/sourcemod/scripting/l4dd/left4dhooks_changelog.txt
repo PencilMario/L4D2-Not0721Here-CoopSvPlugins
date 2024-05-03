@@ -1,10 +1,84 @@
+1.147 (30-Apr-2024)
+	- Fixed the "L4D_CancelStagger" not working on Special Infected (hackish fix, the SDKCall does not appear to work). Thanks to "Forgetest" for a solution.
+	- Changed "left4dhooks_silver.inc" include file to include the main "left4dhooks.inc" include, required by some functions. Thanks to "Forgetest" for reporting.
+	- Moved bool block variables within the forwards to the top, preventing wrongly firing the "*PostHandled" forwards, in case of any error before being set to false.
+
+	- Updated: Plugin.
+	- Updated: "/scripting/include/left4dhooks.inc" include file.
+	- Updated: "/scripting/include/left4dhooks_silver.inc" include file.
+	- Updated: "/scripting/l4dd/l4dd_forwards.sp" project file.
+	- Updated: "/scripting/l4dd/l4dd_natives.sp" project file.
+
+1.146 (21-Apr-2024)
+	- Fixed a memory leak from the Animation hooks system. Thanks to "HarryPotter" for reporting.
+	- Fixed native "L4D_WriteMemoryString" buffer length. Thanks to "HarryPotter" for reporting.
+	- Changed natives "L4D_Dissolve" and "L4D_TankRockPrj" to return -1 if the entity failed to be created. Thanks to "ReCreator" for reporting.
+
+1.145 (03-Apr-2024)
+	- Changed natives "L4D_IsPositionInFirstCheckpoint" and "L4D_IsPositionInLastCheckpoint" to scan for the nearest visible NavArea to prevent finding those outside saferooms, and accurately return true.
+	- Fixed target filters that match specific Survivors not working for multiples of the same characters in L4D1. Thanks to "HarryPotter" for reporting.
+	- Fixed native "L4D_IsCoopMode" in L4D2 reporting true for Realism mode. Thanks to "HarryPotter" for reporting.
+	- Really fixed forward "L4D2_OnChooseVictim_Pre" throwing errors in L4D1 (for some reason the changes in gamedata did not carry over to release version).
+
+1.144 (05-Mar-2024)
+	- Added forwards: "L4D2_OnStartUseAction", "L4D2_OnStartUseAction_Post" and "L4D2_OnStartUseAction_PostHandled" to trigger on actions, see "L4D2UseAction" enum from "left4dhooks_stocks.inc" include file. Requested by "Machine".
+	- Added native "L4D_IsTouchingTrigger" to detect if an entity is touching a trigger.
+	- Added native "L4D_StopBeingRevived" to stop a player being revived from incapacitated state.
+	- Fixed native "L4D_IsInLastCheckpoint" to check if a player is within the "info_changelevel" area of the last checkpoint. Thanks to "Shadowysn" for help pointing out some information to make it work accurately.
+	- Fixed native "AnimHookDisable" not completely working under some circumstances. Thanks to "Forgetest" for finding and fixing.
+	- Fixed forward "L4D2_OnChooseVictim_Pre" throwing errors in L4D1.
+
+1.143 (25-Jan-2024)
+	- Added examples for the "L4D_PipeBomb_Detonate*" forwards to the test plugin for differentiating PipeBomb and breakable prop (propane tank, oxygen tank etc) explosions.
+	- Clarified forwards "L4D_PipeBomb_Detonate" notes within the include file for differentiating PipeBomb and breakable prop explosions. Thanks to "HarryPotter" for reporting.
+	- Changed the Spitter Acid bug fix to play the sound from the victim, instead of from the acid source location. Thanks to "JustMadMan" for reporting.
+	- Fixed forward "L4D_TankRock_OnRelease" from possibly given an invalid Tank owner index. Thanks to "Re:Creator" for reporting.
+	- Fixed memory leak from clearing animation hook arrays. Thanks to "yongeni" for reporting and "HarryPotter" for fixing.
+
+1.142 (12-Jan-2024)
+	- Fixed the last update breaking on Linux servers. Thanks to "Hawkins" for reporting and testing.
+
+1.141 (11-Jan-2024)
+	- Added forwards "L4D_MolotovProjectile*", "L4D2_VomitJarProjectile*" and "L4D2_GrenadeLauncherProjectile*" to trigger when various grenade projectiles are created. Requested by "Kerouha".
+	- Added forward "L4D2_OnChooseVictim_Pre" which shows the previously targeted entity. Requested by "Forgetest".
+	- Added "AmmoDef" and "Ammo_t" methodmaps and natives for ammo definitions. Thanks to "Forgetest" for writing and providing.
+	- Changed stock "L4D_IsPlayerStaggering" to be more accurate. Plugins using this stock should be recompiled. Thanks to "HarryPotter" for updating.
+	- Changed forward "L4D2_OnChooseVictim" when using return Plugin_Handled to block the function, bots will stand still only instead of targeting themselves and attacking while standing still.
+	- Changed natives "L4D_PipeBombPrj", "L4D2_VomitJarPrj", "L4D_MolotovPrj", "L4D2_GrenadeLauncherPrj", "L4D2_SpitterPrj" and "L4D_TankRockPrj" to allow specifying the velocity and rotation. Thanks to "Forgetest" for changing.
+
+1.140 (03-Dec-2023)
+	- Added forwards "L4D_OnIncapacitated", "L4D_OnIncapacitated_Post" and "L4D_OnIncapacitated_PostHandled" to trigger when a Survivor is incapacitated. Requested by "HarryPotter".
+	- Fixed forwards "L4D2_OnPounceOrLeapStumble*" in L4D1 from throwing errors. Thanks to "HarryPotter" for reporting.
+	- Increased the Spitter Acid bug fix volume. Thanks to "Marttt" and "KadabraZz" for reporting.
+
+1.139 (25-Oct-2023)
+	- Added new attribute "L4D2IWA_WeaponType" for use with the "L4D2_GetIntWeaponAttribute" native. Thanks to "Forgetest" for providing.
+	- Added new enum "WeaponType" for use with the "L4D2IWA_WeaponType" attribute. Thanks to "Forgetest" for providing.
+
+	- Added forward "L4D_OnMotionControlledXY" which is called when staggering or other motion controlled animations. Requested by "Forgetest".
+	- Added forward "L4D_OnDeathDroppedWeapons" to list weapon indexes dropped on player death. Requested by "Forgetest".
+	- Added forwards "L4D2_GrenadeLauncher_Detonate", "L4D2_GrenadeLauncher_Detonate_Post" and "L4D2_GrenadeLauncher_Detonate_PostHandled" when a Grenade Launcher projectile detonates.
+
+	- Added native "L4D_PrecacheParticle" to precache particle effects.
+	- Added native "L4D_RemoveEntityDelay" to remove an entity after a specified amount of time.
+	- Added native "L4D_WriteMemoryString" to write a string to a memory address.
+
+	- Changed native "L4D_PipeBombPrj" to optionally create the PipeBomb fuse/light particles. Requested by "Eyal282".
+	- Fixed native "L4D2_IsRealismMode" from returning values other than 0 and 1. Thanks to "Eyal282" for reporting.
+	- Fixed forward "L4D2_OnFindScavengeItem*" to stop passing invalid entities. Thanks to "kochiurun119" for reporting.
+
+1.138 (25-Sep-2023)
+	- Fixed the "L4D2_CGasCan_EventKilled*" forwards not triggering when a gascan had not been picked up. Thanks to "Mystik Spiral" for reporting.
+
+1.137 (23-Sep-2023)
+	- Added forwards "L4D2_Infected_HitByVomitJar", "L4D2_Infected_HitByVomitJar_Post" and "L4D2_Infected_HitByVomitJar_PostHandled" to trigger when common infected are hit with a VomitJar. Requested by "Eyal282".
+	- Incorporated the Spitter Acid no sound fix for when clients disconnected. Thanks to "Marttt" for reporting.
+	- Now also flashes red like the game should when taking damage from this bugged entity. Thanks to "Marttt" for reporting.
+	- Updated to the latest version of the "lux_library" include file. Thanks to "Lux" for reporting.
+
 1.136 (05-Sep-2023)
 	- Fixed the last update logging an error in L4D1. Thanks to "HarryPotter" for reporting.
 	- Fixed forward "L4D_TankClaw_DoSwing_Post" having the wrong name and not activating. Thanks to "Forgetest" for reporting.
-
-	- Updated: Plugin.
-	- Updated: "/scripting/l4dd/l4dd_forwards.sp" project file.
-	- Updated: "/scripting/l4dd/l4dd_gamedata.sp" project file.
 
 1.135 (18-Aug-2023)
 	- Added a ton of natives for "PlayerAnimState" in L4D2 only. See the "methodmap PlayerAnimState" section of the "left4dhooks.inc" include file. Thanks to "Forgetest" for the code and "A1m`" for various stuff.

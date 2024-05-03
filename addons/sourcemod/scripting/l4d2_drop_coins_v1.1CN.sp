@@ -24,7 +24,7 @@ public Plugin myinfo = {
 	name 		= "死亡爆金币,死亡掉落装备冒金光",
 	author 		= "CD意识STEAM_1:0:211123334 (Alliedmods:kazya3)",
 	description = "老逼登爆装备",
-	version 	= "1.1",
+	version 	= "1.2",
 	url 		= "https://steamcommunity.com/profiles/76561198382512396/"
 }
 
@@ -33,7 +33,7 @@ public OnPluginStart(){
 	Coin_Drop_Num			= CreateConVar("L4D2_Coin_Drop_Num", 			"15", 			"死亡后掉落多少金币",							FCVAR_NOTIFY, true, 0.0, true, 999.0);
 	Coin_Drop_Model_Case	= CreateConVar("L4D2_Coin_Drop_Model_Case", 	"3", 			"金币模型,0:金币1:金砖:2:钞票3:随机",			 FCVAR_NOTIFY, true, 0.0, true, 3.0);
 	Coin_Drop_Model_Alpha	= CreateConVar("L4D2_Coin_Drop_Model_Alpha", 	"255", 			"金币透明度",									FCVAR_NOTIFY, true, 0.0, true, 255.0);
-	Coin_Drop_Clear_Time	= CreateConVar("L4D2_Coin_Drop_Clear_Time", 	"5", 			"金币清理时间",									FCVAR_NOTIFY, true, 0.0, true, 999.0);
+	Coin_Drop_Clear_Time	= CreateConVar("L4D2_Coin_Drop_Clear_Time", 	"10", 			"金币清理时间",									FCVAR_NOTIFY, true, 0.0, true, 999.0);
 	Coin_Glow_Switch		= CreateConVar("L4D2_Coin_Glow_Switch", 		"0", 			"金币是否发光描边",								FCVAR_NOTIFY, true, 0.0, true, 1.0);
 	Coin_Glow_Color			= CreateConVar("L4D2_Coin_Glow_Color", 			"255 170 0", 	"金币发光描边颜色",					 			FCVAR_NOTIFY);
 	Coin_Glow_Range			= CreateConVar("L4D2_Coin_Glow_Range", 			"2000", 		"金币发光范围",									FCVAR_NOTIFY, true, 0.0, true, 9999.0);
@@ -54,10 +54,12 @@ public OnPluginStart(){
 	Coin_Glow_Switch.AddChangeHook(ConVarChanges); 
 	Coin_Glow_Color.AddChangeHook(ConVarChanges); 
 	Coin_Glow_Range.AddChangeHook(ConVarChanges);
-
+	Weapon_Drop_Glow_Switch.AddChangeHook(ConVarChanges);
+	Weapon_Drop_Glow_Color.AddChangeHook(ConVarChanges);
+	Weapon_Drop_Glow_Range.AddChangeHook(ConVarChanges);
 	HookEvent("player_death",				Event_PlayerDeath);
 
-	AutoExecConfig(true, "l4d2_drop_coins_v1.1");
+	//AutoExecConfig(true, "l4d2_drop_coins_v1.2");
 }
 //////////////////////////////////////////初始化相关//////////////////////////////////////////
 public void ConVarChanges(ConVar convar, const char[] oldValue, const char[] newValue){
@@ -75,7 +77,7 @@ void GetCvars(){
 		GetConVarString(Coin_Glow_Color, g_Coin_Glow_Color, sizeof(g_Coin_Glow_Color));
 	}
 	g_Weapon_Drop_Glow_Switch = GetConVarBool(Weapon_Drop_Glow_Switch);
-	if(g_Coin_Glow_Switch){
+	if(g_Weapon_Drop_Glow_Switch){
 		g_Weapon_Drop_Glow_Range	= GetConVarInt(Weapon_Drop_Glow_Range); 
 		GetConVarString(Weapon_Drop_Glow_Color, g_Weapon_Drop_Glow_Color, sizeof(g_Weapon_Drop_Glow_Color));
 	}
@@ -115,11 +117,14 @@ public void Event_PlayerDeath(Event event, const char[] name, bool dontbroadcast
 			SetEntityRenderMode(coin, RENDER_TRANSCOLOR);
 			if(g_Coin_Drop_Clear_Time >= 3){
 				char io2[64];
-				FormatEx(io2, sizeof(io2), "OnUser1 !self:AddOutput:renderfx 6:%d.0:-1", g_Coin_Drop_Clear_Time - 3);
+				// FormatEx(io2, sizeof(io2), "OnUser1 !self:AddOutput:renderfx 6:%d.0:-1", g_Coin_Drop_Clear_Time - 3);
+				FormatEx(io2, sizeof(io2), "OnUser1 !self:FireUser2::%d.0:-1", g_Coin_Drop_Clear_Time - 3);
 				SetVariantString(io2);
 				AcceptEntityInput(coin, "AddOutput");
+				HookSingleEntityOutput(coin, "OnUser2", FadeOut_OnUser2);
 			}
 			AcceptEntityInput(coin, "FireUser1");
+
 			if(g_Coin_Drop_Model_Alpha < 255){
 				// SetEntityRenderMode(coin, RenderMode:3);
 				SetEntityRenderColor(coin, 255, 255, 255, g_Coin_Drop_Model_Alpha);
@@ -138,9 +143,18 @@ public void Event_PlayerDeath(Event event, const char[] name, bool dontbroadcast
 			TeleportEntity(coin, CoinPos, CoinAngle, force);
 		}
 	}
-	CPrintToChatAll("%s \x04老逼登 \x03%N \x04爆金币啦!",SP_TAG, victim);
+	PrintToChatAll("\x04老逼登 \x03%N \x04爆金币啦!", victim);
 }
 
+public FadeOut_OnUser2(const char[] name, caller, activator, float delay)
+{
+	if(IsValidEnt(caller)){
+		SetEntityRenderFx(caller, RENDERFX_FADE_FAST);
+		// 我不确定需不需要在实体被删除前unhook，不知道删除时候会不会自动脱钩
+		// i dont know is this necessary or will automatic unhook when entity be killed？
+		UnhookSingleEntityOutput(caller, "OnUser2", FadeOut_OnUser2);
+	}
+}
 ////////////////////////////////  sdkhook相关   ////////////////////////////////
 public void OnClientPutInServer(int client)
 {

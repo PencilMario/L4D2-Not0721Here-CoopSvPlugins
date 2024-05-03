@@ -1,0 +1,108 @@
+"Phrases"
+{
+	// Valid colors: {orange} {green} {cyan} {white}
+	"GrenadeMenu_Title"
+	{
+		"zho"			"Prototype Grenades(炸彈超人插件)"
+	}
+	"GrenadeMenu_Invalid"
+	{
+		"zho"			"{orange}[{green}炸彈超人{orange}] {orange}你需要一個投擲物品."
+	}
+	"GrenadeMod_Mode"
+	{
+		"zho"			"{orange}[{green}炸彈超人{orange}] {orange}模式:{orange}"
+	}
+	"GrenadeMod_Hint"
+	{
+		"zho"			"{orange}[{green}炸彈超人{orange}] {orange}拿投擲物品時按住 {green}開槍({white}左鍵{orange}) + {green}推開 ({white}右鍵{orange}) 轉換模式."
+	}
+	"GrenadeMod_Hint2"
+	{
+		"zho"			"{orange}[{green}炸彈超人{orange}] {orange}使用指令 {orange}!grenade {green}轉換模式."
+	}
+	"GrenadeMod_Title_0"
+	{
+		"zho"			"標準"
+	}
+	"GrenadeMod_Title_1"
+	{
+		"zho"			"炸彈客"
+	}
+	"GrenadeMod_Title_2"
+	{
+		"zho"			"連鎖爆炸"
+	}
+	"GrenadeMod_Title_3"
+	{
+		"zho"			"煙火彈"
+	}
+	"GrenadeMod_Title_4"
+	{
+		"zho"			"煙霧彈"
+	}
+	"GrenadeMod_Title_5"
+	{
+		"zho"			"黑洞"
+	}
+	"GrenadeMod_Title_6"
+	{
+		"zho"			"閃光彈"
+	}
+	"GrenadeMod_Title_7"
+	{
+		"zho"			"防護盾(區域內不受任何傷害)"
+	}
+	"GrenadeMod_Title_8"
+	{
+		"zho"			"雷射激光"
+	}
+	"GrenadeMod_Title_9"
+	{
+		"zho"			"沼澤地獄"
+	}
+	"GrenadeMod_Title_10"
+	{
+		"zho"			"冰凍彈"
+	}
+	"GrenadeMod_Title_11"
+	{
+		"zho"			"急救噴霧劑"
+	}
+	"GrenadeMod_Title_12"
+	{
+		"zho"			"人間蒸發器"
+	}
+	"GrenadeMod_Title_13"
+	{
+		"zho"			"水之呼吸 - 滅火"
+	}
+	"GrenadeMod_Title_14"
+	{
+		"zho"			"螢光劑"
+	}
+	"GrenadeMod_Title_15"
+	{
+		"zho"			"反重力裝置"
+	}
+	"GrenadeMod_Title_16"
+	{
+		"zho"			"火雲邪神"
+	}
+	"GrenadeMod_Title_17"
+	{
+		"zho"			"機槍彈"
+	}
+	"GrenadeMod_Title_18"
+	{
+		"zho"			"防空炮"
+	}
+	"GrenadeMod_Title_19"
+	{
+		"zho"			"空襲"
+	}
+	"GrenadeMod_Title_20"
+	{
+		"zho"			"武器"
+	}
+}

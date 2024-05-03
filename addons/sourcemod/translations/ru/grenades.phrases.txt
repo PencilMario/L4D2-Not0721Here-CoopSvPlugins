@@ -1,0 +1,108 @@
+"Phrases"
+{
+	// Valid colors: {orange} {green} {cyan} {white}
+	"GrenadeMenu_Title"
+	{
+		"ru"			"Прототипы гранат"
+	}
+	"GrenadeMenu_Invalid"
+	{
+		"ru"			"{orange}[{green}Grenade{orange}] {orange}У вас нет гранаты."
+	}
+	"GrenadeMod_Mode"
+	{
+		"ru"			"{orange}[{green}Граната{orange}] {green}в режиме:{orange}"
+	}
+	"GrenadeMod_Hint"
+	{
+		"ru"			"{orange}[{green}Граната{orange}] {green}смена режима: {white}зажать {orange}Огонь{white} + {orange}Приклад{white}."
+	}
+	"GrenadeMod_Hint2"
+	{
+		"ru"			"{orange}[{green}Граната{orange}] {green}смена режима: {white}наберите {orange}!grenade {white}в чат."
+	}
+	"GrenadeMod_Title_0"
+	{
+		"ru"			"Обычная"
+	}
+	"GrenadeMod_Title_1"
+	{
+		"ru"			"Бомба"
+	}
+	"GrenadeMod_Title_2"
+	{
+		"ru"			"Кластерная"
+	}
+	"GrenadeMod_Title_3"
+	{
+		"ru"			"Фейерверк"
+	}
+	"GrenadeMod_Title_4"
+	{
+		"ru"			"Дымовая"
+	}
+	"GrenadeMod_Title_5"
+	{
+		"ru"			"Чёрная дыра"
+	}
+	"GrenadeMod_Title_6"
+	{
+		"ru"			"Вспышка"
+	}
+	"GrenadeMod_Title_7"
+	{
+		"ru"			"Щит"
+	}
+	"GrenadeMod_Title_8"
+	{
+		"ru"			"Тесла"
+	}
+	"GrenadeMod_Title_9"
+	{
+		"ru"			"Химическая"
+	}
+	"GrenadeMod_Title_10"
+	{
+		"ru"			"Заморозка"
+	}
+	"GrenadeMod_Title_11"
+	{
+		"ru"			"Медик"
+	}
+	"GrenadeMod_Title_12"
+	{
+		"ru"			"Испаритель"
+	}
+	"GrenadeMod_Title_13"
+	{
+		"ru"			"Огнетушитель"
+	}
+	"GrenadeMod_Title_14"
+	{
+		"ru"			"Сияющая"
+	}
+	"GrenadeMod_Title_15"
+	{
+		"ru"			"Антиграв"
+	}
+	"GrenadeMod_Title_16"
+	{
+		"ru"			"Огне-кластерная"
+	}
+	"GrenadeMod_Title_17"
+	{
+		"ru"			"Пули"
+	}
+	"GrenadeMod_Title_18"
+	{
+		"ru"			"Aртиллерия"
+	}
+	"GrenadeMod_Title_19"
+	{
+		"ru"			"Авиаудар"
+	}
+	"GrenadeMod_Title_20"
+	{
+		"ru"			"Оружие"
+	}
+}

@@ -1,0 +1,108 @@
+"Phrases"
+{
+	// Valid colors: {orange} {green} {cyan} {white}
+	"GrenadeMenu_Title"
+	{
+		"en"			"Prototype Grenades"
+	}
+	"GrenadeMenu_Invalid"
+	{
+		"en"			"{orange}[{green}Grenade{orange}] {orange}You need a grenade."
+	}
+	"GrenadeMod_Mode"
+	{
+		"en"			"{orange}[{green}Grenade{orange}] {green}Mode:{orange}"
+	}
+	"GrenadeMod_Hint"
+	{
+		"en"			"{orange}[{green}Grenade{orange}] {green}To change: {white}equip and hold {orange}Shoot{white} + press {orange}Shove{white}."
+	}
+	"GrenadeMod_Hint2"
+	{
+		"en"			"{orange}[{green}Grenade{orange}] {green}To change: {white}use command {orange}!grenade."
+	}
+	"GrenadeMod_Title_0"
+	{
+		"en"			"Stock"
+	}
+	"GrenadeMod_Title_1"
+	{
+		"en"			"Bomb"
+	}
+	"GrenadeMod_Title_2"
+	{
+		"en"			"Cluster"
+	}
+	"GrenadeMod_Title_3"
+	{
+		"en"			"Firework"
+	}
+	"GrenadeMod_Title_4"
+	{
+		"en"			"Smoke"
+	}
+	"GrenadeMod_Title_5"
+	{
+		"en"			"Black Hole"
+	}
+	"GrenadeMod_Title_6"
+	{
+		"en"			"Flashbang"
+	}
+	"GrenadeMod_Title_7"
+	{
+		"en"			"Shield"
+	}
+	"GrenadeMod_Title_8"
+	{
+		"en"			"Tesla"
+	}
+	"GrenadeMod_Title_9"
+	{
+		"en"			"Chemical"
+	}
+	"GrenadeMod_Title_10"
+	{
+		"en"			"Freezer"
+	}
+	"GrenadeMod_Title_11"
+	{
+		"en"			"Medic"
+	}
+	"GrenadeMod_Title_12"
+	{
+		"en"			"Vaporizer"
+	}
+	"GrenadeMod_Title_13"
+	{
+		"en"			"Extinguisher"
+	}
+	"GrenadeMod_Title_14"
+	{
+		"en"			"Glow"
+	}
+	"GrenadeMod_Title_15"
+	{
+		"en"			"Anti-Gravity"
+	}
+	"GrenadeMod_Title_16"
+	{
+		"en"			"Fire Cluster"
+	}
+	"GrenadeMod_Title_17"
+	{
+		"en"			"Bullets"
+	}
+	"GrenadeMod_Title_18"
+	{
+		"en"			"Flak"
+	}
+	"GrenadeMod_Title_19"
+	{
+		"en"			"Airstrike"
+	}
+	"GrenadeMod_Title_20"
+	{
+		"en"			"Weapon"
+	}
+}

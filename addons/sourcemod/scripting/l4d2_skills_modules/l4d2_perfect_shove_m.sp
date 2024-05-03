@@ -84,9 +84,9 @@ public void Skills_OnGetSettings( KeyValues kv )
 {
 	EXPORT_START(SKILL_NAME);
 	
-	EXPORT_SKILL_COST(gExport.base, 2500.0);
-	EXPORT_FLOAT_DEFAULT("damage_for_specials", gExport.damage_for_specials, 250.0);
-	EXPORT_FLOAT_DEFAULT("damage_for_infected", gExport.damage_for_infected, 25.0);
+	EXPORT_SKILL_COST(gExport.base, 5000.0);
+	EXPORT_FLOAT_DEFAULT("damage_for_specials", gExport.damage_for_specials, 375.0);
+	EXPORT_FLOAT_DEFAULT("damage_for_infected", gExport.damage_for_infected, 50.0);
 
 	EXPORT_FINISH();
 }

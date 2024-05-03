@@ -144,7 +144,7 @@ stock void ReJump( int client )
 		float vVel[3];
 		GetEntPropVector(client, Prop_Data, "m_vecVelocity", vVel);
 		
-		vVel[2] += GetJumpPower(client);
+		vVel[2] = GetJumpPower(client);
 		
 		TeleportEntity(client, NULL_VECTOR, NULL_VECTOR, vVel);
 	}

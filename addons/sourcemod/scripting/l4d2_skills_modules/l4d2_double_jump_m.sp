@@ -171,6 +171,7 @@ int GetClientJumps(int client)
 float GetJumpPower(int client)
 {
 	int level = Skills_BaseGetLevel(g_clData[client].base);
+	PrintToConsoleAll("GetJumpPower:%.2f, power_first_level%.2f + power_of_jumps_for_levels%.2f", gExport.power_first_level + gExport.power_of_jumps_for_levels[level],gExport.power_first_level,gExport.power_of_jumps_for_levels[level]);
 	return gExport.power_first_level + gExport.power_of_jumps_for_levels[level]; 
 }
 

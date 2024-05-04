@@ -98,8 +98,7 @@ public void OnAllPluginsLoaded()
 
 	Skills_AddMenuItem("skills_team_upgrades", "Team Upgrades", ItemMenuCallback);
 	
-	if (g_bLateLoad)
-		Skills_RequestConfigReload();
+	Skills_RequestConfigReload();
 }
 
 public void OnPluginEnd()
@@ -144,7 +143,7 @@ void ShowClientShop( int client, int selection = 0 )
 
 	menu.ExitBackButton = true;
 	menu.ExitButton = true;
-	menu.SetTitle("Skills: Shop");
+	menu.SetTitle("Skills: 团队加成");
 	menu.DisplayAt(client, selection, MENU_TIME_FOREVER);
 }
 
@@ -173,18 +172,18 @@ public int VMenuHandler( Menu menu, MenuAction action, int client, int index )
 
 			if (money - cost < 0)
 			{
-				Skills_PrintToChat(client, "\x03Not enough \x04team \x5money");
+				Skills_PrintToChat(client, "\x03没有足够的 \x04团队\x5积分");
 				return 0;
 			}
 
 			if (!InvokeUpgradeAction(upgradeID, client))
 			{
-				Skills_PrintToChat(client, "\x04Upgrade \x03%s \x04is already in \x05use", g_TeamUpgrades[upgradeID].name);
+				Skills_PrintToChat(client, "\x04升级 \x03%s \x04正在\x05使用中", g_TeamUpgrades[upgradeID].name);
 				return 0;
 			}
 
 			Skills_SetTeamMoney(money - cost);
-			Skills_PrintToChatAll("\x05%N \x04bought \x03%s \x04team upgrade", client, g_TeamUpgrades[upgradeID].name);
+			Skills_PrintToChatAll("\x05%N \x04买了 \x03%s \x04团队升级", client, g_TeamUpgrades[upgradeID].name);
 		}
 	}
 	
@@ -195,14 +194,14 @@ public void Skills_OnGetSettings( KeyValues kv )
 {
 	EXPORT_START(MY_EXPORT_NAME);
 
-	EXPORT_SECTION_START("More Health")
+	EXPORT_SECTION_START("基础生命")
 	{
 		g_SettingsManager.ExportInt(kv, "more_health_add", 15);
-		RegisterUpgrade(kv, "More Health", OnHealthUpgrade);
+		RegisterUpgrade(kv, "基础生命", OnHealthUpgrade);
 		EXPORT_SECTION_END();
 	}
 
-	EXPORT_SECTION_START("Increased Crouch Speed")
+	EXPORT_SECTION_START("提高蹲下移速")
 	{
 		g_SettingsManager.ExportFloat(kv, "crouch_speed", 300.0);
 		g_SettingsManager.ExportFloat(kv, "crouch_duration", 120.0);
@@ -210,19 +209,19 @@ public void Skills_OnGetSettings( KeyValues kv )
 		EXPORT_SECTION_END();
 	}
 
-	EXPORT_SECTION_START("Adrenaline Team")
+	EXPORT_SECTION_START("全队肾上腺素")
 	{
 		g_SettingsManager.ExportFloat(kv, "adrenaline_team_duration", 30.0);
 		g_SettingsManager.ExportInt(kv, "adrenaline_team_heal", 1);
-		RegisterUpgrade(kv, "Adrenaline Team", OnAdrenalineTeam);
+		RegisterUpgrade(kv, "全队肾上腺素", OnAdrenalineTeam);
 		EXPORT_SECTION_END();
 	}
 
 	if (g_bAirdropAvailable)
 	{
-		EXPORT_SECTION_START("Airdrop")
+		EXPORT_SECTION_START("呼叫空投")
 		{
-			RegisterUpgrade(kv, "Airdrop", OnAirdrop);
+			RegisterUpgrade(kv, "呼叫空投", OnAirdrop);
 			EXPORT_SECTION_END();
 		}
 	}

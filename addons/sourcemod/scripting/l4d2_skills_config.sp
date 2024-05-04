@@ -17,7 +17,7 @@ public Plugin myinfo =
 
 KeyValues g_hSettings;
 GlobalForward g_hFwdOnGetSettings;
-bool g_bLateload;
+//bool g_bLateload;
 
 public any NAT_Skills_ExportIntByName(Handle plugin, int numparams)
 {
@@ -166,7 +166,7 @@ public any NAT_Skills_RequestConfigReload(Handle plugin, int numparams)
 
 public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int errormax) 
 {
-	g_bLateload = late;
+	//g_bLateload = late;
 	
 	CreateNative("Skills_ExportIntByName", NAT_Skills_ExportIntByName);
 	CreateNative("Skills_ExportFloatByName", NAT_Skills_ExportFloatByName);
@@ -180,16 +180,14 @@ public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int errorma
 	
 public void OnPluginStart()
 {
-	GetSkillSettings();
-	
 	RegAdminCmd("sm_skills_config_reload", sm_skills_config_reload, ADMFLAG_RCON);
 	RegAdminCmd("sm_skills_config_reload_hard", sm_skills_config_reload_hard, ADMFLAG_RCON);
 }
 
 public void OnAllPluginsLoaded()
 {
-	if ( g_bLateload )
-		NotifySkillSettings();
+	GetSkillSettings();
+	NotifySkillSettings();
 }
 
 public void Skills_OnRegistered( const char[] name, SkillType type )

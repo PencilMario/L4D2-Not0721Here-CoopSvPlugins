@@ -7,7 +7,7 @@
 #include <l4d2_skills>
 #include <left4dhooks>
 
-#define MY_EXPORT_NAME "Team Upgrades"
+#define MY_EXPORT_NAME "团队升级"
 
 #define MAX_UPGRADES 12
 #define UPGRADE_NAME_LENGTH 64

@@ -56,12 +56,12 @@ public OnPluginStart()
 { 
 	GameCheck(); 
 	//L4D2Version=false;
-	l4d_defi_damage_directhit = CreateConVar("l4d_defi_damage_directhit", "125.0",  "hit damage  ");
+	l4d_defi_damage_directhit = CreateConVar("l4d_defi_damage_directhit", "70.0",  "hit damage  ");
 	
-	l4d_defi_damage_explode = CreateConVar("l4d_defi_damage_explode", "325.0",  "explode damage" );
-	l4d_defi_radius_explode = CreateConVar("l4d_defi_radius_explode", "150.0",  "explode  radius" );	
+	l4d_defi_damage_explode = CreateConVar("l4d_defi_damage_explode", "250.0",  "explode damage" );
+	l4d_defi_radius_explode = CreateConVar("l4d_defi_radius_explode", "100.0",  "explode  radius" );	
 	
-	l4d_defi_damage_electricshock = CreateConVar("l4d_defi_damage_electricshock", "250.0",  "electricshock damage " );
+	l4d_defi_damage_electricshock = CreateConVar("l4d_defi_damage_electricshock", "125.0",  "electricshock damage " );
 	l4d_defi_radius_electricshock = CreateConVar("l4d_defi_radius_electricshock", "200.0",  "electricshock radius" );	
 	
 	l4d_defi_charge_duration = CreateConVar("l4d_defi_charge_duration", "5.0",  "charge_duration [5.0, -]seconds"); 
@@ -69,9 +69,8 @@ public OnPluginStart()
 	l4d_defi_charge_count_level = CreateConVar("l4d_defi_charge_count_level", "5", "[1, 5]");
 	l4d_defi_friendly_damage = CreateConVar("l4d_defi_friendly_damage", "-25.0",  "damage for teamate [-1.0, 100.0] ");	
  	
-	AutoExecConfig(true, "defibrillator_l4d");
+	//AutoExecConfig(true, "defibrillator_l4d");
 
-	HookEvent("weapon_reload", player_use);
 	HookEvent("player_use", player_use2);  
 	HookEvent("round_end", round_end);
 	HookEvent("round_start", round_end); 
@@ -615,18 +614,7 @@ ResetClientState(client)
 	ShotTime[client]=0.0;
 	Reloading[client]=false;
 }
-public Action:player_use(Handle:event, const String:name[], bool:dontBroadcast)
-{  
-	new client = GetClientOfUserId(GetEventInt(event, "userid"));
-	if(client>0 && GetClientTeam(client)==2)
-	{ 	   
-		new ent=GetPlayerWeaponSlot(client, 3);
-		if(IsDefiWeapon(ent))
-		{ 
-			Start(client);
-		} 
-	}	
-} 
+
 public Action:player_use2(Handle:event, const String:name[], bool:dontBroadcast)
 {  
 	new client = GetClientOfUserId(GetEventInt(event, "userid"));
@@ -636,7 +624,7 @@ public Action:player_use2(Handle:event, const String:name[], bool:dontBroadcast)
 		if(IsDefiWeapon(ent))
 		{ 
 			Start(client);
-			PrintToChat(client,"按R开始充电，开火单体/中键范围/蹲下中键爆炸");
+			PrintToChat(client,"电击器需对任意物品按E以后激活，按R提升等级，开火单体低伤/中键大范围中伤/蹲下中键爆炸高伤");
 		} 
 	}	
 } 

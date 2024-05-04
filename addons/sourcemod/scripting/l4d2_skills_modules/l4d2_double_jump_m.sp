@@ -171,8 +171,11 @@ int GetClientJumps(int client)
 float GetJumpPower(int client)
 {
 	int level = Skills_BaseGetLevel(g_clData[client].base);
-	PrintToConsoleAll("GetJumpPower:%.2f, power_first_level%.2f + power_of_jumps_for_levels%.2f", gExport.power_first_level + gExport.power_of_jumps_for_levels[level],gExport.power_first_level,gExport.power_of_jumps_for_levels[level]);
-	return gExport.power_first_level + gExport.power_of_jumps_for_levels[level]; 
+	float power_first_level = gExport.power_first_level;
+	float power_of_jumps_for_levels = level != 3 ? gExport.power_of_jumps_for_levels[level] : gExport.power_of_jumps_for_levels[level-1];
+	float total = power_first_level + power_of_jumps_for_levels;
+	//PrintToConsoleAll("GetJumpPower:%.2f, power_first_level%.2f + power_of_jumps_for_levels%.2f, level%i", total, power_first_level, power_of_jumps_for_levels, level);
+	return total; 
 }
 
 bool HasSkill(int client)
@@ -201,8 +204,8 @@ public void Skills_OnGetSettings( KeyValues kv )
 	EXPORT_SKILL_UPGRADE_COSTS(gExport.base, { 1500.0, 2500.0, 5000.0 });
 
 	EXPORT_INT_ARRAY_DEFAULT("number_of_jumps_for_levels", gExport.number_of_jumps_for_levels, gExport.base.maxlevel, { 1, 2, 2 } );
-	EXPORT_FLOAT_ARRAY_DEFAULT("power_of_jumps_for_levels", gExport.power_of_jumps_for_levels, gExport.base.maxlevel, { 100.0, 200.0, 300.0 } );
-	EXPORT_FLOAT_DEFAULT("power_first_level", gExport.power_first_level, 75.0);
+	EXPORT_FLOAT_ARRAY_DEFAULT("power_of_jumps_for_levels", gExport.power_of_jumps_for_levels, gExport.base.maxlevel, { 100.0, 200.0, 320.0} );
+	EXPORT_FLOAT_DEFAULT("power_first_level", gExport.power_first_level, 150.0);
 	EXPORT_BOOL_DEFAULT("enable_no_fall_damage_on_max_level", gExport.enable_no_fall_damage_on_max_level, true);
 	
 	EXPORT_SKILL_FINISH();

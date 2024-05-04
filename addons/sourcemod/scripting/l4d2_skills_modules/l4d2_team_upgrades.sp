@@ -96,7 +96,7 @@ public void OnAllPluginsLoaded()
 {
 	g_bAirdropAvailable = GetFeatureStatus(FeatureType_Native, "CreateAirdrop") == FeatureStatus_Available;
 
-	Skills_AddMenuItem("skills_team_upgrades", "Team Upgrades", ItemMenuCallback);
+	Skills_AddMenuItem("skills_team_upgrades", "团队强化", ItemMenuCallback);
 	
 	Skills_RequestConfigReload();
 }
@@ -205,7 +205,7 @@ public void Skills_OnGetSettings( KeyValues kv )
 	{
 		g_SettingsManager.ExportFloat(kv, "crouch_speed", 300.0);
 		g_SettingsManager.ExportFloat(kv, "crouch_duration", 120.0);
-		RegisterUpgrade(kv, "Increased Crouch Speed", OnCrouchUpgrade);
+		RegisterUpgrade(kv, "提高蹲下移速", OnCrouchUpgrade);
 		EXPORT_SECTION_END();
 	}
 
@@ -311,7 +311,7 @@ bool UseClientAdrenaline(int cl)
 
 public Action timer_reset_crouch_speed(Handle timer)
 {
-	Skills_PrintToChatAll("\x03Increased crouch speed \x04upgrade has \x05ended");
+	Skills_PrintToChatAll("\x03提高蹲下移速 \x04效果加成\x05已结束");
 	survivor_crouch_speed.FloatValue = survivor_crouch_speed_default;
 	return Plugin_Continue;
 }

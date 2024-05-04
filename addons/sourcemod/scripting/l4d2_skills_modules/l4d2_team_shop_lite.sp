@@ -535,9 +535,12 @@ void PrintMeleeSelect(int client)
 public Action Timer_AutoGive(Handle timer, any client)
 {
     float money = Skills_GetTeamMoney(); 
-    if (money < 250.0){
+    if (money < 250.0 && ClientMelee[client]){
         Skills_PrintToChat(client, "\x05你的队伍 \x04没有足够的 \x03积分\x05，无法发放出门近战喽");
         return Plugin_Continue;
+    }else
+    {
+        Skills_SetTeamMoney(money-250.0);
     }
     if (ClientMelee[client] == 1)
     {
@@ -599,7 +602,7 @@ public Action Timer_AutoGive(Handle timer, any client)
         DeleteMelee(client);
         GiveCommand(client, "pistol");
     }
-    Skills_SetTeamMoney(money-250.0);
+    
     return Plugin_Continue;
 }
 

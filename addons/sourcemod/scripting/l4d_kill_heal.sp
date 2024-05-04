@@ -43,14 +43,15 @@ public int GetPlayerTempHealth(int player){
 }
 
 public void SetPlayerHealth(int player, int health){
-	if (health >= 200) health=200;
+	int maxhealth = GetEntProp(player, Prop_Send, "m_iMaxHealth") + 100;
+	if (health >= maxhealth) health=maxhealth;
 	new h2;
 	h2 = GetPlayerTempHealth(player);
-	if(h2 + health < 200){
+	if(h2 + health < maxhealth){
 		SetEntityHealth(player, health);
 	}
 	else{
-		SetEntityHealth(player, 200-h2);
+		SetEntityHealth(player, maxhealth-h2);
 	}
 }
 

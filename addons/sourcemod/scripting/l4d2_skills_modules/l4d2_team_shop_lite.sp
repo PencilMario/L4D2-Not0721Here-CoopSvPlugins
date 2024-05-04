@@ -285,7 +285,7 @@ public int ItemMenu_back(Menu menu, MenuAction action, int client, int num)
                 GiveCommand(client, "pistol_magnum");
             }
         }
-        Skills_SetTeamMoney(-4000.0);
+        Skills_SetTeamMoney(money-4000.0);
     }
     else if (action == MenuAction_End)	
         delete menu;
@@ -339,7 +339,7 @@ public int WeaponMenu_back(Menu menu, MenuAction action, int client, int num)
                 GiveCommand(client, "rifle_m60");
             }
         }
-        Skills_SetTeamMoney(-2000.0);
+        Skills_SetTeamMoney(money-2000.0);
     }
     if (action == MenuAction_End)	
         delete menu;
@@ -417,7 +417,7 @@ public int MeleeMenu_back(Menu menu, MenuAction action, int client, int num)
                 GiveCommand(client, "shovel");
             }
         }
-        Skills_SetTeamMoney(-500.0);
+        Skills_SetTeamMoney(money-500.0);
     }
     if (action == MenuAction_End)	
         delete menu;

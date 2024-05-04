@@ -56,12 +56,12 @@ public OnPluginStart()
 { 
 	GameCheck(); 
 	//L4D2Version=false;
-	l4d_defi_damage_directhit = CreateConVar("l4d_defi_damage_directhit", "250.0",  "hit damage  ");
+	l4d_defi_damage_directhit = CreateConVar("l4d_defi_damage_directhit", "125.0",  "hit damage  ");
 	
-	l4d_defi_damage_explode = CreateConVar("l4d_defi_damage_explode", "275.0",  "explode damage" );
+	l4d_defi_damage_explode = CreateConVar("l4d_defi_damage_explode", "325.0",  "explode damage" );
 	l4d_defi_radius_explode = CreateConVar("l4d_defi_radius_explode", "150.0",  "explode  radius" );	
 	
-	l4d_defi_damage_electricshock = CreateConVar("l4d_defi_damage_electricshock", "375.0",  "electricshock damage " );
+	l4d_defi_damage_electricshock = CreateConVar("l4d_defi_damage_electricshock", "250.0",  "electricshock damage " );
 	l4d_defi_radius_electricshock = CreateConVar("l4d_defi_radius_electricshock", "200.0",  "electricshock radius" );	
 	
 	l4d_defi_charge_duration = CreateConVar("l4d_defi_charge_duration", "5.0",  "charge_duration [5.0, -]seconds"); 
@@ -70,8 +70,9 @@ public OnPluginStart()
 	l4d_defi_friendly_damage = CreateConVar("l4d_defi_friendly_damage", "-25.0",  "damage for teamate [-1.0, 100.0] ");	
  	
 	AutoExecConfig(true, "defibrillator_l4d");
-	
-	HookEvent("player_use", player_use);  
+
+	HookEvent("weapon_reload", player_use);
+	HookEvent("player_use", player_use2);  
 	HookEvent("round_end", round_end);
 	HookEvent("round_start", round_end); 
 	HookEvent("map_transition", round_end);	
@@ -626,6 +627,20 @@ public Action:player_use(Handle:event, const String:name[], bool:dontBroadcast)
 		} 
 	}	
 } 
+public Action:player_use2(Handle:event, const String:name[], bool:dontBroadcast)
+{  
+	new client = GetClientOfUserId(GetEventInt(event, "userid"));
+	if(client>0 && GetClientTeam(client)==2)
+	{ 	   
+		new ent=GetPlayerWeaponSlot(client, 3);
+		if(IsDefiWeapon(ent))
+		{ 
+			Start(client);
+			PrintToChat(client,"按R开始充电，开火单体/中键范围/蹲下中键爆炸");
+		} 
+	}	
+} 
+
 bool:IsDefiWeapon(ent)
 {
 	if(ent>0 && IsValidEdict(ent) && IsValidEntity(ent))

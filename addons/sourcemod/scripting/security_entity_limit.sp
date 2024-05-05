@@ -186,11 +186,11 @@ public void OnGameFrame()
 		{
 			SetHudTextParams(0.035, 0.15, 400.0, 255, 255, 255, 255);
 			if (g_bCriticalState)
-				ShowSyncHudText(i, g_hCounterHud,"[SEL]!!!警告，服务器实体数量已接近崩溃值!!! (阻止实体生成清理垃圾实体) 当前地图实体: %i/2048", iCounter);
+				PrintHintText(i,"[SEL]!!!警告，服务器实体数量已接近崩溃值!!! (阻止实体生成清理垃圾实体) 当前地图实体: %i/2048", iCounter);
 			else if (g_bCleaningMode)
-				ShowSyncHudText(i, g_hCounterHud,"[SEL]服务器实体已接近上限值!(清理中) 当前地图实体: %i/2000", iCounter);
+				PrintHintText(i,"[SEL]服务器实体已接近上限值!(清理中) 当前地图实体: %i/2000", iCounter);
 			else
-				ShowSyncHudText(i, g_hCounterHud,"[SEL]当前地图实体: %i", iCounter);
+				PrintHintText(i,"[SEL]当前地图实体: %i", iCounter);
 		}
 	}
 }

@@ -56,18 +56,18 @@ public OnPluginStart()
 { 
 	GameCheck(); 
 	//L4D2Version=false;
-	l4d_defi_damage_directhit = CreateConVar("l4d_defi_damage_directhit", "70.0",  "hit damage  ");
+	l4d_defi_damage_directhit = CreateConVar("l4d_defi_damage_directhit", "50.0",  "直击伤害");
 	
-	l4d_defi_damage_explode = CreateConVar("l4d_defi_damage_explode", "250.0",  "explode damage" );
-	l4d_defi_radius_explode = CreateConVar("l4d_defi_radius_explode", "100.0",  "explode  radius" );	
+	l4d_defi_damage_explode = CreateConVar("l4d_defi_damage_explode", "375.0",  "explode damage" );
+	l4d_defi_radius_explode = CreateConVar("l4d_defi_radius_explode", "150.0",  "explode  radius" );	
 	
-	l4d_defi_damage_electricshock = CreateConVar("l4d_defi_damage_electricshock", "125.0",  "electricshock damage " );
-	l4d_defi_radius_electricshock = CreateConVar("l4d_defi_radius_electricshock", "200.0",  "electricshock radius" );	
+	l4d_defi_damage_electricshock = CreateConVar("l4d_defi_damage_electricshock", "30.0",  "扩散电击伤害，使用鼠标中键时*6" );
+	l4d_defi_radius_electricshock = CreateConVar("l4d_defi_radius_electricshock", "200.0",  "扩散电击索敌范围" );	
 	
 	l4d_defi_charge_duration = CreateConVar("l4d_defi_charge_duration", "5.0",  "charge_duration [5.0, -]seconds"); 
 	l4d_defi_charge_count_shot = CreateConVar("l4d_defi_charge_count_shot", "8",  "[5, 10]");
 	l4d_defi_charge_count_level = CreateConVar("l4d_defi_charge_count_level", "5", "[1, 5]");
-	l4d_defi_friendly_damage = CreateConVar("l4d_defi_friendly_damage", "-25.0",  "damage for teamate [-1.0, 100.0] ");	
+	l4d_defi_friendly_damage = CreateConVar("l4d_defi_friendly_damage", "-5.0",  "damage for teamate [-1.0, 100.0] ");	
  	
 	//AutoExecConfig(true, "defibrillator_l4d");
 
@@ -118,6 +118,9 @@ public ClientThink(client)
 	new Float:lastTime=LastTime[client];
 	LastTime[client]=time;
 	new shotButton=IN_ATTACK; 
+	new bool:shot1=false;
+	new bool:shot2=false;
+
 	if(L4D2Version==false)shotButton=IN_ATTACK2; 
 	if(weapon!=LastWeapon[client])
 	{ 
@@ -149,7 +152,7 @@ public ClientThink(client)
 			{
 				Energe[client]=chargeDuration;
 				EmitSoundToAll(Sound_charge, client, SNDCHAN_AUTO, SNDLEVEL_NORMAL, SND_NOFLAGS, 1.0, SNDPITCH_NORMAL, -1, NULL_VECTOR, NULL_VECTOR, true, 0.0);
-				Reloading[client]=false;
+				//Reloading[client]=false;
 			}
 		}
 		if((button & IN_RELOAD ) && !(lastButton & IN_RELOAD))
@@ -175,10 +178,8 @@ public ClientThink(client)
 		  
 		new shotcount = RoundFloat((Energe[client]/GetConVarFloat(l4d_defi_charge_duration))*GetConVarFloat(l4d_defi_charge_count_shot));
 
-		new bool:shot1=false;
 		if((button & shotButton) && !(lastButton & shotButton) )shot1=true;
 	 
-		new bool:shot2=false;
 		if((button & IN_ZOOM) && !(lastButton & IN_ZOOM))shot2=true;
 		if(shot1 || shot2)
 		{
@@ -210,25 +211,29 @@ public ClientThink(client)
 	}
 	 
 	new count=EnemyCount[client];
+	int TargetMax[MAXPLAYERS];
 	if(count>0)
 	{ 
+		TargetMax[client] = !shot1 ? 9999 : 2;
 		new index=ScanIndex[client];
 		if(index<count)
 		{
 			new enemy=Enemys[client][index]; 
 			
 			new Float:enemyPos[3];
-			if(IsValidEnemy(client, enemy,enemyPos))
+			if(IsValidEnemy(client, enemy,enemyPos) && TargetMax[client] > 0)
 			{
 				//if(time-ShockTime[client]>0.2)
 				{
 					CreateElec2(ShockCenterPos[client], enemyPos);
 					CopyVector(enemyPos, ShockStartPos[client]);
 					EmitSoundToAll(Sound_hit, enemy, SNDCHAN_AUTO, SNDLEVEL_NORMAL, SND_NOFLAGS, 1.0, SNDPITCH_NORMAL, -1, enemyPos, NULL_VECTOR, true, 0.0);
-					DoPointHurtForInfected(enemy, client, GetConVarFloat(l4d_defi_damage_electricshock) );
+					float multi = 1.0;
+					if (!shot1) multi = 4.0;
+					DoPointHurtForInfected(enemy, client, GetConVarFloat(l4d_defi_damage_electricshock) * multi );
 					ScanIndex[client]++;
 					ShockTime[client]=time;
-					
+					if (shot1) TargetMax[client]--;
 				}
 			} 
 			else
@@ -347,6 +352,7 @@ StartElecShock(client, mode)
 	}
 	if(mode==2)
 	{
+		ScanEnemys(client, hitpos);
 		Energe[client]-=GetConVarFloat(l4d_defi_charge_duration)/GetConVarFloat(l4d_defi_charge_count_shot);
 	}
 	else
@@ -355,7 +361,7 @@ StartElecShock(client, mode)
 	}
 	ShotTime[client]=GetEngineTime();
 	ShockTime[client]=ShotTime[client];
-	Reloading[client]=false;
+	//Reloading[client]=false;
 	new Float:v=1.0;
 	if(mode==2 && L4D2Version==true)v=0.4;
 	EmitSoundToAll(Sound_defibrillator_use, client, SNDCHAN_AUTO, SNDLEVEL_NORMAL, SND_NOFLAGS, v, SNDPITCH_NORMAL, -1, pos, NULL_VECTOR, true, 0.0);

@@ -41,6 +41,7 @@ new EnemyCount[MAXPLAYERS+1];
 new ScanIndex[MAXPLAYERS+1] ; 
 new DWeapon[MAXPLAYERS+1]; 
 new Bullent[MAXPLAYERS+1];
+int TargetMax[MAXPLAYERS];
 new g_sprite=0;
 public Plugin:myinfo = 
 {
@@ -61,13 +62,13 @@ public OnPluginStart()
 	l4d_defi_damage_explode = CreateConVar("l4d_defi_damage_explode", "375.0",  "explode damage" );
 	l4d_defi_radius_explode = CreateConVar("l4d_defi_radius_explode", "150.0",  "explode  radius" );	
 	
-	l4d_defi_damage_electricshock = CreateConVar("l4d_defi_damage_electricshock", "30.0",  "扩散电击伤害，使用鼠标中键时*6" );
+	l4d_defi_damage_electricshock = CreateConVar("l4d_defi_damage_electricshock", "25.0",  "扩散电击伤害，使用鼠标中键时*10" );
 	l4d_defi_radius_electricshock = CreateConVar("l4d_defi_radius_electricshock", "200.0",  "扩散电击索敌范围" );	
 	
 	l4d_defi_charge_duration = CreateConVar("l4d_defi_charge_duration", "5.0",  "charge_duration [5.0, -]seconds"); 
 	l4d_defi_charge_count_shot = CreateConVar("l4d_defi_charge_count_shot", "8",  "[5, 10]");
 	l4d_defi_charge_count_level = CreateConVar("l4d_defi_charge_count_level", "5", "[1, 5]");
-	l4d_defi_friendly_damage = CreateConVar("l4d_defi_friendly_damage", "-5.0",  "damage for teamate [-1.0, 100.0] ");	
+	l4d_defi_friendly_damage = CreateConVar("l4d_defi_friendly_damage", "-3.0",  "damage for teamate [-1.0, 100.0] ");	
  	
 	//AutoExecConfig(true, "defibrillator_l4d");
 
@@ -211,13 +212,15 @@ public ClientThink(client)
 	}
 	 
 	new count=EnemyCount[client];
-	int TargetMax[MAXPLAYERS];
+	
 	if(count>0)
 	{ 
-		TargetMax[client] = !shot1 ? 9999 : 2;
+		
 		new index=ScanIndex[client];
 		if(index<count)
 		{
+			// 平A 尿分叉数量
+			if (TargetMax[client] == -1) TargetMax[client] = shot1 ? 2 : 9992;
 			new enemy=Enemys[client][index]; 
 			
 			new Float:enemyPos[3];
@@ -228,12 +231,12 @@ public ClientThink(client)
 					CreateElec2(ShockCenterPos[client], enemyPos);
 					CopyVector(enemyPos, ShockStartPos[client]);
 					EmitSoundToAll(Sound_hit, enemy, SNDCHAN_AUTO, SNDLEVEL_NORMAL, SND_NOFLAGS, 1.0, SNDPITCH_NORMAL, -1, enemyPos, NULL_VECTOR, true, 0.0);
-					float multi = 1.0;
-					if (!shot1) multi = 4.0;
+					float multi = 10.0;
+					if (shot1) multi = 1.0;
 					DoPointHurtForInfected(enemy, client, GetConVarFloat(l4d_defi_damage_electricshock) * multi );
 					ScanIndex[client]++;
 					ShockTime[client]=time;
-					if (shot1) TargetMax[client]--;
+					if (TargetMax[client] > 0) TargetMax[client]--;
 				}
 			} 
 			else
@@ -245,8 +248,10 @@ public ClientThink(client)
 		{
 			EnemyCount[client]=0;
 			ScanIndex[client]=0;
+			TargetMax[client] = -1;
 		} 
 	}
+	
 }
 ShowHud(client, shot)
 {	 

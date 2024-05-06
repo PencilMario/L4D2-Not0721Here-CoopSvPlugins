@@ -326,17 +326,17 @@ StartElecShock(client, mode)
 	GetClientEyePosition(client, pos);
 	GetClientEyeAngles(client , angle);	 
 	new victim=GetEnt(client, hitpos ,MASK_SHOT); 
-	if(mode!=2)
-	{
-		new Float:distance=GetVectorDistance(pos, hitpos);
-		if(distance<GetConVarFloat(l4d_defi_radius_explode) )
-		{
-			PrintHintText(client, "It is too dangerous to shot");
-			EmitSoundToAll(Sound_denny, client, SNDCHAN_AUTO, SNDLEVEL_NORMAL, SND_NOFLAGS, 1.0, SNDPITCH_NORMAL, -1, pos, NULL_VECTOR, true, 0.0);
-			
-			return;
-		} 
-	}
+	//if(mode!=2)
+	//{
+	//	new Float:distance=GetVectorDistance(pos, hitpos);
+	//	if(distance<GetConVarFloat(l4d_defi_radius_explode) )
+	//	{
+	//		PrintHintText(client, "It is too dangerous to shot");
+	//		EmitSoundToAll(Sound_denny, client, SNDCHAN_AUTO, SNDLEVEL_NORMAL, SND_NOFLAGS, 1.0, SNDPITCH_NORMAL, -1, pos, NULL_VECTOR, true, 0.0);
+	//		
+	//		return;
+	//	} 
+	//}
 	CreateElec(client, pos, hitpos, angle, mode!=2); 
 	if(victim>0)
 	{ 

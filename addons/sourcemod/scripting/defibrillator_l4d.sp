@@ -232,7 +232,7 @@ public ClientThink(client)
 					CopyVector(enemyPos, ShockStartPos[client]);
 					EmitSoundToAll(Sound_hit, enemy, SNDCHAN_AUTO, SNDLEVEL_NORMAL, SND_NOFLAGS, 1.0, SNDPITCH_NORMAL, -1, enemyPos, NULL_VECTOR, true, 0.0);
 					float multi = 10.0;
-					if (shot1) multi = 1.0;
+					if (!shot1) multi = 1.0;
 					DoPointHurtForInfected(enemy, client, GetConVarFloat(l4d_defi_damage_electricshock) * multi );
 					ScanIndex[client]++;
 					ShockTime[client]=time;

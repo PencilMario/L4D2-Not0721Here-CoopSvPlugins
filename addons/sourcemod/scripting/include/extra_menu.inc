@@ -224,7 +224,7 @@ methodmap ExtraMenu
 	/**
 	 * 添加一行可选文字，行为类似于开关
 	 * 
-	 * @param text 	所显示的文字
+	 * @param text 	所显示的文字, '_OPT_' 将被替换为 [ ] / [X]
 	 * @param close 在选择选项后关闭菜单。
 	 * @param default_value 默认值
 	 * @return		成功时为该可选项的index，否则为 -1（可能在菜单不可用时）。
@@ -237,7 +237,7 @@ methodmap ExtraMenu
 	/**
 	 * 添加一行可选文字，控制对应变量的值（给定区间的变化范围）
 	 * 
-	 * @param text 	所显示的文字
+	 * @param text 	所显示的文字, '_OPT_' 将被替换为当前的value
 	 * @param close 在选择选项后关闭菜单。
 	 * @param default_value 默认值
 	 * @param add_value 	每次调整的变化量
@@ -253,7 +253,7 @@ methodmap ExtraMenu
 	/**
 	 * 添加一行可选文字，控制对应变量的值（给定的选项）
 	 * 
-	 * @param text 	所显示的文字
+	 * @param text 	所显示的文字, '_OPT_' 将被替换为当前的value
 	 * @param select 可选择的文本，使用'|'进行分隔
 	 * @param close 在选择选项后关闭菜单。
 	 * @return		成功时为该可选项的index，否则为 -1（可能在菜单不可用时）。

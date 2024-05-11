@@ -190,7 +190,7 @@ methodmap Logger __nullable__
     public void critical(const char[] message, any ...)
     {
         if (view_as<LogType>(this.IgnoreLevel) > view_as<LogType>(LogType_Critical)) return;
-        char buffer[MAX_LOG_LINE];
+        char buffer[MAX_LOG_LINE]
         VFormat(buffer, sizeof(buffer), message, 3);
         PrintToServer("[%s]%s",LogTypeStr[LogType_Critical],buffer);
         if (this.LogObjectType == LoggerType_NewLogFile) this.WritetoLogFile(LogType_Critical, buffer)

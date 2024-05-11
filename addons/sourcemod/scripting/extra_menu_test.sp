@@ -46,13 +46,14 @@
 
 #include <sourcemod>
 #include <extra_menu>
-
+#include <logger>
 #pragma semicolon 1
 #pragma newdecls required
 
 
 int g_iMenuID;
 ExtraMenu g_Extramenu;
+Logger log;
 
 
 
@@ -75,6 +76,8 @@ public Plugin myinfo =
 // ====================================================================================================
 public void OnPluginStart()
 {
+	log = new Logger("extra_test", LoggerType_NewLogFile);
+	log.lograw("========================================");
 	RegAdminCmd("sm_menutest", CmdMenuTest, ADMFLAG_ROOT);
 }
 
@@ -138,7 +141,7 @@ public void OnLibraryAdded(const char[] name)
 		g_Extramenu = ExtraMenu(false, "", buttons_nums);
 		g_Extramenu.AddEntry		("VARIOUS OPTIONS:");
 		g_Extramenu.AddEntryText	(" ");
-		g_Extramenu.AddEntrySwitch	("1. God Mode: _OPT_");
+		log.info("菜单1God Mode index：%i", g_Extramenu.AddEntrySwitch	("1. God Mode: _OPT_"));
 		g_Extramenu.AddEntrySwitch	("2. No Clip: _OPT_");
 		g_Extramenu.AddEntrySwitch	("3. Beam Ring: _OPT_");
 		g_Extramenu.AddEntryAdd		("4. Player Speed: _OPT_", 	false, 250, 10, 100, 400);
@@ -149,8 +152,8 @@ public void OnLibraryAdded(const char[] name)
 		g_Extramenu.AddEntry		(" ");
 		g_Extramenu.AddEntry		("INSTANT CMDS:");
 		g_Extramenu.AddEntryOnly	("7. Slay Self");
-		g_Extramenu.AddEntrySwitch	("8. Default On: _OPT_", false, 100);
-		g_Extramenu.AddEntryOnly	("9. Close After Use", true);
+		g_Extramenu.AddEntrySwitch	("8. Default On: _OPT_", false, 1);
+		log.info("菜单9Close After Use index：%i", g_Extramenu.AddEntryOnly	("9. Close After Use", true));
 		g_Extramenu.AddEntry		("	");
 		g_Extramenu.AddEntrySelect	("10. Meter: _OPT_", "□□□□□□□□□□|■□□□□□□□□□|■■□□□□□□□□|■■■□□□□□□□|■■■■□□□□□□|■■■■■□□□□□|■■■■■■□□□□|■■■■■■■□□□|■■■■■■■■□□|■■■■■■■■■□|■■■■■■■■■■");
 		g_Extramenu.NewPage();
@@ -190,23 +193,23 @@ Action CmdMenuTest(int client, int args)
 // Menu selection handling
 public void ExtraMenu_OnSelect(int client, int menu_id, int option, int value)
 {
-	if( menu_id == g_iMenuID && menu_id == g_Extramenu._index)
+	if( menu_id == g_iMenuID || menu_id == g_Extramenu._index)
 	{
 		PrintToChatAll("SELECTED %N Option: %d Value: %d", client, option, value);
 
 		switch( option )
 		{
-			case 0: ClientCommand(client, "sm_godmode @me");
-			case 1: ClientCommand(client, "sm_noclip @me");
-			case 2: ClientCommand(client, "sm_beacon @me");
-			case 3: PrintToChat(client, "Speed changed to %d", value);
-			case 4: PrintToChat(client, "Difficulty to %d", value);
-			case 5: PrintToChat(client, "Tester to %d", value);
-			case 6: FakeClientCommand(client, "sm_slay @me");
-			case 7: PrintToChat(client, "Default value changed to %d", value);
-			case 8: PrintToChat(client, "Close after use %d", value);
-			case 9: PrintToChat(client, "Meter value %d", value);
-			case 10, 11, 12: PrintToChat(client, "Second page option %d", option - 9);
+			case 0: PrintToChatAll("sm_godmode @me");
+			case 1: PrintToChatAll("sm_noclip @me");
+			case 2: PrintToChatAll("sm_beacon @me");
+			case 3: PrintToChatAll("Speed changed to %d", value);
+			case 4: PrintToChatAll("Difficulty to %d", value);
+			case 5: PrintToChatAll("Tester to %d", value);
+			case 6: PrintToChatAll("sm_slay @me");
+			case 7: PrintToChatAll("Default value changed to %d", value);
+			case 8: PrintToChatAll("Close after use %d", value);
+			case 9: PrintToChatAll("Meter value %d", value);
+			case 10, 11, 12: PrintToChatAll("Second page option %d", option - 9);
 		}
 	}
 }

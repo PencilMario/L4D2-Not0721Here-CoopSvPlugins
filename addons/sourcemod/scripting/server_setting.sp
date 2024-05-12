@@ -79,46 +79,45 @@ public void OnLibraryAdded(const char[] name)
 {
     if( strcmp(name, "extra_menu") == 0 )
     {
+        g_Extramenu = ExtraMenu(false, "", false);
+        g_Extramenu.AddEntry                         ("<服务器控制菜单 Page1>");
+        g_Extramenu.AddEntry                         ("使用W/S选择选项, A/D进行调整");
+        g_Extramenu.AddEntry                         ("  ");
+        g_Extramenu.AddEntry                         ("A. 服务器控制");
+        g_RemoveLobby = g_Extramenu.AddEntryOnly     ("1. 移除大厅匹配");
+        g_nbUpdate = g_Extramenu.AddEntryAdd         ("2. 小僵尸刷新率: 0.0_OPT_", false, GetConvarFloattoIntEx("nb_update_frequency", 1000.0), 5, 10, 100);
+        g_byPassSteam = g_Extramenu.AddEntrySwitch   ("3. 跳过steam验证 _OPT_", false, 0);
+        g_Extramenu.AddEntry                         ("  ");
+        g_Extramenu.AddEntry                         ("B. 多特控制");
+        g_Auto = g_Extramenu.AddEntrySwitch          ("1. 自动调节刷特: _OPT_", false, GetConvarIntEx("sm_ss_automode"));
+        g_Snum = g_Extramenu.AddEntryAdd             ("2. 特感刷新数量: 最高同屏_OPT_只", false, GetConvarIntEx("sss_1P"), 1, 0, 28);
+        g_Stime = g_Extramenu.AddEntryAdd            ("3. 特感刷新时间: 每个Slot_OPT_s", false, GetConvarIntEx("SS_Time"), 5, 0, 80);
+        g_SDPSlim = g_Extramenu.AddEntryAdd          ("4. DPS特感最大数: _OPT_只", false, GetConvarIntEx("SS_DPSSiLimit"), 1, 0, 28);
+        g_STP = g_Extramenu.AddEntrySwitch           ("5. 不可见特感自动传送 _OPT_", false, GetConvarIntEx("teleport_enable"));
+        g_Extramenu.NewPage();
+        g_Extramenu.AddEntry                         ("<服务器控制菜单 Page2>");
+        g_Extramenu.AddEntry                         ("使用W/S选择选项, A/D进行调整");
+        g_Extramenu.AddEntry                         ("  ");
+    
+        g_Extramenu.AddEntry                         ("C. 多特Relax阶段控制");
+        g_Relax = g_Extramenu.AddEntrySwitch         ("1. Relax阶段 _OPT_", false, GetConvarIntEx("SS_Relax"));
+        g_RelaxFast = g_Extramenu.AddEntrySelect     ("2. 快速补特： _OPT_", "关闭|特感类CD锁定1s|特感类CD锁定1s*踢出死亡特感");
+        g_Fixm4 = g_Extramenu.AddEntrySwitch         ("3. 绝境不停刷修复 _OPT_", false, GetConvarIntEx("sm_ss_fixm4spawn"));
+            
+        g_Extramenu.AddEntry                         ("  ");
+        g_Extramenu.AddEntry                         ("D. 舒适设置");
+        g_FF = g_Extramenu.AddEntrySwitch            ("1. 阻止友伤 _OPT_",false, GetConvarIntEx("nff_enable"));
+        g_MultiAmmo = g_Extramenu.AddEntryAdd        ("2. 设置备弹 *_OPT_", false, 1, 1, 1, 100);
+        g_MultiMed = g_Extramenu.AddEntryAdd         ("3. 设置医疗物品 *_OPT_", false, 1, 1, 100);
+        g_TP = g_Extramenu.AddEntryAdd               ("4. 传送全体生还至 ->_OPT_%", false, 0, 3, 0, 110);
+        g_KB = g_Extramenu.AddEntryOnly              ("5. 踢出Bot");
+        g_Healsys = g_Extramenu.AddEntrySwitch       ("6. 呼吸回血+击杀回血 _OPT_", false, GetConvarIntEx("automatic_healing_enable"));
+        g_weaponrule = g_Extramenu.AddEntrySelect    ("7. 调整武器配置强度 _OPT_", "v1|v2|v3");
+        g_killback = g_Extramenu.AddEntrySwitch      ("8. 特感血条和击杀反馈 _OPT_", false, GetConvarIntEx("l4d_infectedhp"));
+
     }
 }
-void BuildMenu(){
-    g_Extramenu = ExtraMenu(false, "", false);
-    g_Extramenu.AddEntry                         ("<服务器控制菜单 Page1>");
-    g_Extramenu.AddEntry                         ("使用W/S选择选项, A/D进行调整");
-    g_Extramenu.AddEntry                         ("  ");
-    g_Extramenu.AddEntry                         ("A. 服务器控制");
-    g_RemoveLobby = g_Extramenu.AddEntryOnly     ("1. 移除大厅匹配");
-    g_nbUpdate = g_Extramenu.AddEntryAdd         ("2. 小僵尸刷新率: 0.0_OPT_", false, GetConvarFloattoIntEx("nb_update_frequency", 1000.0), 5, 10, 100);
-    g_byPassSteam = g_Extramenu.AddEntrySwitch   ("3. 跳过steam验证 _OPT_", false, 0);
-    g_Extramenu.AddEntry                         ("  ");
-    g_Extramenu.AddEntry                         ("B. 多特控制");
-    g_Auto = g_Extramenu.AddEntrySwitch          ("1. 自动调节刷特: _OPT_", false, GetConvarIntEx("sm_ss_automode"));
-    g_Snum = g_Extramenu.AddEntryAdd             ("2. 特感刷新数量: 最高同屏_OPT_只", false, GetConvarIntEx("sss_1P"), 1, 0, 28);
-    g_Stime = g_Extramenu.AddEntryAdd            ("3. 特感刷新时间: 每个Slot_OPT_s", false, GetConvarIntEx("SS_Time"), 5, 0, 80);
-    g_SDPSlim = g_Extramenu.AddEntryAdd          ("4. DPS特感最大数: _OPT_只", false, GetConvarIntEx("SS_DPSSiLimit"), 1, 0, 28);
-    g_STP = g_Extramenu.AddEntrySwitch           ("5. 不可见特感自动传送 _OPT_", false, GetConvarIntEx("teleport_enable"));
-    g_Extramenu.NewPage();
-    g_Extramenu.AddEntry                         ("<服务器控制菜单 Page2>");
-    g_Extramenu.AddEntry                         ("使用W/S选择选项, A/D进行调整");
-    g_Extramenu.AddEntry                         ("  ");
 
-    g_Extramenu.AddEntry                         ("C. 多特Relax阶段控制");
-    g_Relax = g_Extramenu.AddEntrySwitch         ("1. Relax阶段 _OPT_", false, GetConvarIntEx("SS_Relax"));
-    g_RelaxFast = g_Extramenu.AddEntrySelect     ("2. 快速补特： _OPT_", "关闭|特感类CD锁定1s|特感类CD锁定1s*踢出死亡特感");
-    g_Fixm4 = g_Extramenu.AddEntrySwitch         ("3. 绝境不停刷修复 _OPT_", false, GetConvarIntEx("sm_ss_fixm4spawn"));
-        
-    g_Extramenu.AddEntry                         ("  ");
-    g_Extramenu.AddEntry                         ("D. 舒适设置");
-    g_FF = g_Extramenu.AddEntrySwitch            ("1. 阻止友伤 _OPT_",false, GetConvarIntEx("nff_enable"));
-    g_MultiAmmo = g_Extramenu.AddEntryAdd        ("2. 设置备弹 *_OPT_", false, 1, 1, 1, 100);
-    g_MultiMed = g_Extramenu.AddEntryAdd         ("3. 设置医疗物品 *_OPT_", false, 1, 1, 100);
-    g_TP = g_Extramenu.AddEntryAdd               ("4. 传送全体生还至 ->_OPT_%", false, 0, 3, 0, 110);
-    g_KB = g_Extramenu.AddEntryOnly              ("5. 踢出Bot");
-    g_Healsys = g_Extramenu.AddEntrySwitch       ("6. 呼吸回血+击杀回血 _OPT_", false, GetConvarIntEx("automatic_healing_enable"));
-    g_weaponrule = g_Extramenu.AddEntrySelect    ("7. 调整武器配置强度 _OPT_", "v1|v2|v3");
-    g_killback = g_Extramenu.AddEntrySwitch      ("8. 特感血条和击杀反馈 _OPT_", false, GetConvarIntEx("l4d_infectedhp"));
-
-}
 public void OnLibraryRemoved(const char[] name)
 {
     if( strcmp(name, "extra_menu") == 0 )

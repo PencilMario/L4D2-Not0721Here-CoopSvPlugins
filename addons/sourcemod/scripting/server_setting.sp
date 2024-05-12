@@ -46,11 +46,13 @@
 
 #include <sourcemod>
 #include <extra_menu>
+#include <adminmenu>
 #pragma semicolon 1
 #pragma newdecls required
 
 
 ExtraMenu g_Extramenu;
+Handle hAdminMenu;
 
 int g_RemoveLobby,g_nbUpdate,g_byPassSteam, g_Auto, g_Snum, g_Stime, g_SDPSlim, g_STP,
     g_Relax, g_RelaxFast, g_Fixm4,
@@ -121,6 +123,31 @@ public void OnLibraryRemoved(const char[] name)
     if( strcmp(name, "extra_menu") == 0 )
     {
         OnPluginEnd();
+    }
+}
+public void OnAdminMenuReady(Handle menu) {
+    /* If the category is third party, it will have its own unique name. */
+    TopMenuObject sv_commands = FindTopMenuCategory(menu, ADMINMENU_SERVERCOMMANDS);
+    if (menu == hAdminMenu && sv_commands != INVALID_TOPMENUOBJECT)
+    {
+      return;
+    }
+    AddToTopMenu(menu, "游戏规则设置", TopMenuObject_Item, Menu_CategoryHandler, sv_commands);
+    hAdminMenu = menu;
+}
+public void Menu_CategoryHandler(Handle topmenu, TopMenuAction action, TopMenuObject object_id, int client, char[] buffer, int maxlength) {
+	switch (action)
+    {    
+        case TopMenuAction_DisplayOption:
+        {
+          strcopy(buffer, maxlength, "游戏规则设置项");
+        }
+        case TopMenuAction_SelectOption , TopMenuAction_DrawOption:
+        {
+          //do
+            //BuildMenu()
+            g_Extramenu.Show(client);
+        }
     }
 }
 

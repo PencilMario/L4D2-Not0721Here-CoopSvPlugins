@@ -143,7 +143,6 @@ forward void ExtraMenu_OnSelect(int client, int menu_id, int option, int value);
  * 这个methodmap只是对native的包装，你仍然需要对ExtraMenu_OnSelect进行处理
  */
 
-int ExtraMenuIndex[100];
 
 /**
 * @brief 创建一个菜单
@@ -154,6 +153,9 @@ int ExtraMenuIndex[100];
 *
 * @noreturn
 */
+
+ArrayList extraMenuEntryIndex;
+int extraMenuCount;
 methodmap ExtraMenu
 {
 	/**
@@ -167,8 +169,11 @@ methodmap ExtraMenu
 	*/
 	public ExtraMenu(bool back = false, char[] translation ="", bool button_usenum = false)
 	{
+		if (extraMenuEntryIndex == INVALID_HANDLE) extraMenuEntryIndex = new ArrayList();
 		int menu_id = ExtraMenu_Create(back, translation, button_usenum);
-		ExtraMenuIndex[menu_id] = 0;
+		if (extraMenuEntryIndex.Length <= menu_id) extraMenuEntryIndex.Resize(menu_id+1);
+		extraMenuEntryIndex.Set(menu_id, 0);
+		extraMenuCount++;
 		return view_as<ExtraMenu>(menu_id);
 	}
 	/**
@@ -284,6 +289,11 @@ methodmap ExtraMenu
 	 */
 	public bool Close()
 	{
+		this._entryIndex = 0;
+		if (--extraMenuCount <= 0) {
+			CloseHandle(extraMenuEntryIndex);
+			extraMenuEntryIndex = INVALID_HANDLE;
+		}
 		return ExtraMenu_Delete(this._index);
 	}
 
@@ -296,12 +306,12 @@ methodmap ExtraMenu
 	 */
 	public bool Show(int client, int int_time = MENU_TIME_FOREVER)
 	{
-		return ExtraMenu_Display(view_as<int>(this), client, int_time);
+		return ExtraMenu_Display(client, view_as<int>(this), int_time);
 	}
 
 	property int _entryIndex{
-		public get(){ return ExtraMenuIndex[this._index];}
-		public set(int value){ExtraMenuIndex[this._index] = value;}
+		public get(){ return extraMenuEntryIndex.Get(this._index);}
+		public set(int value){extraMenuEntryIndex.Set(this._index, value);}
 	}
 
 	property int _index{

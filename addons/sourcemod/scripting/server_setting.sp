@@ -21,7 +21,7 @@
 #define PLUGIN_VERSION 		"1.4"
 
 /*======================================================================================
-	Plugin Info:
+    Plugin Info:
 
 *	Name	:	[ANY] Extra Menu API - Test Plugin
 *	Author	:	SilverShot
@@ -30,16 +30,16 @@
 *	Plugins	:	https://sourcemod.net/plugins.php?exact=exact&sortby=title&search=1&author=Silvers
 
 ========================================================================================
-	Change Log:
+    Change Log:
 
 1.4 (15-Oct-2022)
-	- Added the alternative buttons demonstration to the "ExtraMenu_Create" native.
+    - Added the alternative buttons demonstration to the "ExtraMenu_Create" native.
 
 1.2 (15-Aug-2022)
-	- Added a "meter" options demonstration.
+    - Added a "meter" options demonstration.
 
 1.0 (30-Jul-2022)
-	- Initial release.
+    - Initial release.
 
 ======================================================================================*/
 
@@ -50,7 +50,6 @@
 #pragma newdecls required
 
 
-int g_iMenuID;
 ExtraMenu g_Extramenu;
 
 int g_RemoveLobby,g_nbUpdate,g_byPassSteam, g_Auto, g_Snum, g_Stime, g_SDPSlim, g_STP,
@@ -69,79 +68,73 @@ int g_RemoveLobby,g_nbUpdate,g_byPassSteam, g_Auto, g_Snum, g_Stime, g_SDPSlim, 
 // ====================================================================================================
 public void OnPluginStart()
 {
-	RegAdminCmd("sm_setmenu", CmdMenuTest, ADMFLAG_ROOT);
+    RegAdminCmd("sm_setmenu", CmdMenuTest, ADMFLAG_ROOT);
 }
-
+public void OnAllPluginsLoaded(){
+	if (LibraryExists("extra_menu")) OnLibraryAdded("extra_menu");
+}
 public void OnLibraryAdded(const char[] name)
 {
-	if( strcmp(name, "extra_menu") == 0 )
-	{
-		// Menu movement type: False = W/A/S/D. True = 1/3/4/5
-		bool buttons_nums = true;
-		// bool buttons_nums = false;
+    if( strcmp(name, "extra_menu") == 0 )
+    {
+        g_Extramenu = ExtraMenu(false, "", false);
+        g_Extramenu.AddEntry                         ("<服务器控制菜单 Page1>");
+        g_Extramenu.AddEntry                         ("使用W/S选择选项, A/D进行调整");
+        g_Extramenu.AddEntry                         ("  ");
+        g_Extramenu.AddEntry                         ("A. 服务器控制");
+        g_RemoveLobby = g_Extramenu.AddEntryOnly     ("1. 移除大厅匹配");
+        g_nbUpdate = g_Extramenu.AddEntryAdd         ("2. 小僵尸刷新率: 0.0_OPT_", false, GetConvarFloattoIntEx("nb_update_frequency", 1000.0), 5, 10, 100);
+        g_byPassSteam = g_Extramenu.AddEntrySwitch   ("3. 跳过steam验证 _OPT_", false, 0);
+        g_Extramenu.AddEntry                         ("  ");
+        g_Extramenu.AddEntry                         ("B. 多特控制");
+        g_Auto = g_Extramenu.AddEntrySwitch          ("1. 自动调节刷特: _OPT_", false, GetConvarIntEx("sm_ss_automode"));
+        g_Snum = g_Extramenu.AddEntryAdd             ("2. 特感刷新数量: 最高同屏_OPT_只", false, GetConvarIntEx("sss_1P"), 1, 0, 28);
+        g_Stime = g_Extramenu.AddEntryAdd            ("3. 特感刷新时间: 每个Slot_OPT_s", false, GetConvarIntEx("SS_Time"), 5, 0, 80);
+        g_SDPSlim = g_Extramenu.AddEntryAdd          ("4. DPS特感最大数: _OPT_只", false, GetConvarIntEx("SS_DPSSiLimit"), 1, 0, 28);
+        g_STP = g_Extramenu.AddEntrySwitch           ("5. 不可见特感自动传送 _OPT_", false, GetConvarIntEx("teleport_enable"));
+        g_Extramenu.NewPage();
+        g_Extramenu.AddEntry                         ("<服务器控制菜单 Page2>");
+        g_Extramenu.AddEntry                         ("使用W/S选择选项, A/D进行调整");
+        g_Extramenu.AddEntry                         ("  ");
 
-		// Create a new menu
-		int menu_id;
+        g_Extramenu.AddEntry                         ("C. 多特Relax阶段控制");
+        g_Relax = g_Extramenu.AddEntrySwitch         ("1. Relax阶段 _OPT_", false, GetConvarIntEx("SS_Relax"));
+        g_RelaxFast = g_Extramenu.AddEntrySelect     ("2. 快速补特： _OPT_", "关闭|特感类CD锁定1s|特感类CD锁定1s*踢出死亡特感");
+        g_Fixm4 = g_Extramenu.AddEntrySwitch         ("3. 绝境不停刷修复 _OPT_", false, GetConvarIntEx("sm_ss_fixm4spawn"));
+        
+        g_Extramenu.AddEntry                         ("  ");
+        g_Extramenu.AddEntry                         ("D. 舒适设置");
+        g_FF = g_Extramenu.AddEntrySwitch            ("1. 阻止友伤 _OPT_",false, GetConvarIntEx("nff_enable"));
+        g_MultiAmmo = g_Extramenu.AddEntryAdd        ("2. 设置备弹 *_OPT_", false, 1, 1, 1, 100);
+        g_MultiMed = g_Extramenu.AddEntryAdd         ("3. 设置医疗物品 *_OPT_", false, 1, 1, 100);
+        g_TP = g_Extramenu.AddEntryAdd               ("4. 传送全体生还至 ->_OPT_%", false, 0, 3, 0, 110);
+        g_KB = g_Extramenu.AddEntryOnly              ("5. 踢出Bot");
+        g_Healsys = g_Extramenu.AddEntrySwitch       ("6. 呼吸回血+击杀回血 _OPT_", false, GetConvarIntEx("automatic_healing_enable"));
+        g_weaponrule = g_Extramenu.AddEntrySelect    ("7. 调整武器配置强度 _OPT_", "v1|v2|v3");
+        g_killback = g_Extramenu.AddEntrySwitch      ("8. 特感血条和击杀反馈 _OPT_", false, GetConvarIntEx("l4d_infectedhp"));
 
-		if( buttons_nums )
-			menu_id = ExtraMenu_Create(false, "", buttons_nums); // No back button, no translation, 1/2/3/4 type selection menu
-		else
-			menu_id = ExtraMenu_Create(); // W/A/S/D type selection menu
-
-		g_Extramenu = ExtraMenu(false, "", false);
-    	g_Extramenu.AddEntry                         ("<服务器控制菜单 Page1>");
-    	g_Extramenu.AddEntry                         ("使用W/S选择选项, A/D进行调整");
-    	g_Extramenu.AddEntry                         ("  ");
-    	g_Extramenu.AddEntry                         ("A. 服务器控制");
-    	g_RemoveLobby = g_Extramenu.AddEntryOnly     ("1. 移除大厅匹配");
-    	g_nbUpdate = g_Extramenu.AddEntryAdd         ("2. 小僵尸刷新率: 0.0_OPT_", false, GetConvarFloattoIntEx("nb_update_frequency", 1000.0), 5, 10, 100);
-    	g_byPassSteam = g_Extramenu.AddEntrySwitch   ("3. 跳过steam验证", false, 0);
-    	g_Extramenu.AddEntry                         ("  ");
-    	g_Extramenu.AddEntry                         ("B. 多特控制");
-    	g_Auto = g_Extramenu.AddEntrySwitch          ("1. 自动调节刷特: _OPT_", false, GetConvarIntEx("sm_ss_automode"));
-    	g_Snum = g_Extramenu.AddEntryAdd             ("2. 特感刷新数量: 最高同屏_OPT_只", false, GetConvarIntEx("sss_1P"), 1, 0, 28);
-    	g_Stime = g_Extramenu.AddEntryAdd            ("3. 特感刷新时间: 每个Slot_OPT_s", false, GetConvarIntEx("SS_Time"), 5, 0, 80);
-    	g_SDPSlim = g_Extramenu.AddEntryAdd          ("4. DPS特感最大数: _OPT_只", false, GetConvarIntEx("SS_DPSSiLimit"), 1, 0, 28);
-    	g_STP = g_Extramenu.AddEntrySwitch           ("5. 不可见特感自动传送 _OPT_", false, GetConvarIntEx("teleport_enable"));
-    	g_Extramenu.AddEntry                         ("  ");
-    	g_Extramenu.AddEntry                         ("C. 多特Relax阶段控制");
-    	g_Relax = g_Extramenu.AddEntrySwitch         ("1. Relax阶段 _OPT_", false, GetConvarIntEx("SS_Relax"));
-    	g_RelaxFast = g_Extramenu.AddEntrySelect     ("2. 快速补特： _OPT_", "关闭|特感类CD锁定1s|特感类CD锁定1s*踢出死亡特感");
-    	g_Fixm4 = g_Extramenu.AddEntrySwitch         ("3. 绝境不停刷修复 _OPT_", false, GetConvarIntEx("sm_ss_fixm4spawn"));
-    	g_Extramenu.NewPage();
-	
-    	g_Extramenu.AddEntry                         ("D. 舒适设置");
-    	g_FF = g_Extramenu.AddEntrySwitch            ("1. 阻止友伤 _OPT_",false, GetConvarIntEx("nff_enable"));
-    	g_MultiAmmo = g_Extramenu.AddEntryAdd        ("2. 设置备弹 *_OPT_", false, 1, 1, 1, 100);
-    	g_MultiMed = g_Extramenu.AddEntryAdd         ("3. 设置医疗物品 *_OPT_", false, 1, 1, 100);
-    	g_TP = g_Extramenu.AddEntryAdd               ("4. 传送全体生还至 ->_OPT_%", false, 0, 3, 0, 110);
-    	g_KB = g_Extramenu.AddEntryOnly              ("5. 踢出Bot");
-    	g_Healsys = g_Extramenu.AddEntrySwitch       ("6. 呼吸回血+击杀回血 _OPT_", false, GetConvarIntEx("automatic_healing_enable"));
-    	g_weaponrule = g_Extramenu.AddEntrySelect    ("7. 调整武器配置强度 _OPT_", "v1|v2|v3");
-    	g_killback = g_Extramenu.AddEntrySwitch      ("8. 特感血条和击杀反馈 _OPT_", false, GetConvarIntEx("l4d_infectedhp"));
-
-	}
+    }
 }
 
 public void OnLibraryRemoved(const char[] name)
 {
-	if( strcmp(name, "extra_menu") == 0 )
-	{
-		OnPluginEnd();
-	}
+    if( strcmp(name, "extra_menu") == 0 )
+    {
+        OnPluginEnd();
+    }
 }
 
 // Always clean up the menu when finished
 public void OnPluginEnd()
 {
-	g_Extramenu.Close();
+    g_Extramenu.Close();
 }
 
 // Display menu
 Action CmdMenuTest(int client, int args)
 {
-	g_Extramenu.Show(client, MENU_TIME_FOREVER);
-	return Plugin_Handled;
+    g_Extramenu.Show(client, MENU_TIME_FOREVER);
+    return Plugin_Handled;
 }
 
 public void ExtraMenu_OnSelect(int client, int menu_id, int option, int value){
@@ -150,7 +143,7 @@ public void ExtraMenu_OnSelect(int client, int menu_id, int option, int value){
         ServerCommand("sm_unreserve;sm_cvar sv_force_unreserved 1; sm_cvar sv_tags hidden; sm_cvar sv_steamgroup 0");
     }
     else if (option == g_nbUpdate) {
-        ServerCommand("sm_cvar nb_update_frequency %.2f", float(value) / 1000.0);
+        ServerCommand("sm_cvar nb_update_frequency %.4f", float(value) / 1000.0);
     }
     else if (option == g_byPassSteam) {
         ServerCommand("sm_cvar sv_steam_bypass %i", value);

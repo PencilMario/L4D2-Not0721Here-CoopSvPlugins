@@ -163,6 +163,8 @@ public void OnLibraryAdded(const char[] name)
 		g_Extramenu.AddEntrySwitch	("1. Test1: _OPT_");
 		g_Extramenu.AddEntrySwitch	("2. Test2: _OPT_");
 		g_Extramenu.AddEntrySwitch	("3. Test3: _OPT_");
+		g_Extramenu.AddEntryAdd		("4. Test: _OPT_", 	false, 0, 0.01, 0.0, 1.0);
+
 		g_Extramenu.AddEntry		(" ");
 	}
 }
@@ -210,6 +212,7 @@ public void ExtraMenu_OnSelect(int client, int menu_id, int option, int value)
 			case 8: PrintToChatAll("Close after use %d", value);
 			case 9: PrintToChatAll("Meter value %d", value);
 			case 10, 11, 12: PrintToChatAll("Second page option %d", option - 9);
+			case 13: PrintToChatAll("Second page option %d", option - 9);
 		}
 	}
 }

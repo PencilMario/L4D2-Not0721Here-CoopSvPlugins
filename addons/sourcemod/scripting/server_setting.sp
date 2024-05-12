@@ -71,6 +71,12 @@ int g_RemoveLobby,g_nbUpdate,g_byPassSteam, g_Auto, g_Snum, g_Stime, g_SDPSlim, 
 public void OnPluginStart()
 {
     RegAdminCmd("sm_setmenu", CmdMenuTest, ADMFLAG_ROOT);
+    TopMenu topmenu;
+    if (LibraryExists("adminmenu") && ((topmenu = GetAdminTopMenu()) != null))
+    {
+      /* If so, manually fire the callback */
+      OnAdminMenuReady(topmenu);
+    }
 }
 public void OnAllPluginsLoaded(){
 	if (LibraryExists("extra_menu")) OnLibraryAdded("extra_menu");

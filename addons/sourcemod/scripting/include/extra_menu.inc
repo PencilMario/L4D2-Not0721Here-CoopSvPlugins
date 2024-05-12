@@ -245,7 +245,7 @@ methodmap ExtraMenu
 	 * @param add_max 		最大值
 	 * @return		成功时为该可选项的index，否则为 -1（可能在菜单不可用时）。
 	 */
-	public int AddEntryAdd(char[] text, bool close = false, int default_value = 0, any add_value = 0, any add_min = -999999, any add_max = 999999){
+	public int AddEntryAdd(char[] text, bool close = false, int default_value = 0, int add_value = 0, int add_min = -999999, int add_max = 999999){
 		if (!this.__AddIntry(text, MENU_SELECT_ADD, close, default_value, add_value, add_min, add_max)) return -1;
 		return this._entryIndex++;
 	}

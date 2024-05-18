@@ -667,11 +667,10 @@ stock void DisplayAskConnectBox(int client, float time, const char[] ip, const c
 native int EntIndexToEntRef(int entity);
 
 /**
- * Retrieves the entity index from a reference or validates an entity index.
- * The input ref is checked that it is still valid and refers to the same entity.
+ * Retrieves the entity index from a reference.
  *
- * @param ref           Entity reference or index.
- * @return              Entity index or returns INVALID_ENT_REFERENCE if ref is invalid.
+ * @param ref           Entity reference.
+ * @return              Entity index or -1 on invalid reference.
  */
 native int EntRefToEntIndex(int ref);
 

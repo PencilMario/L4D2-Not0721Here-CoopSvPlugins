@@ -19,23 +19,20 @@
 			"GetTEName"
 			{
 				"windows"	"4"
-				"windows64"	"8"
 				"linux"		"4"
-				"linux64"	"8"
+				"mac"		"4"
 			}
 			"GetTENext"
 			{
 				"windows"	"8"
-				"windows64"	"16"
 				"linux"		"8"
-				"linux64"	"16"
+				"mac"		"8"
 			}
 			"TE_GetServerClass"
 			{
 				"windows"	"0"
-				"windows64"	"0"
 				"linux"		"0"
-				"linux64"	"0"
+				"mac"		"0"
 			}
 		}
 	}
@@ -62,7 +59,6 @@
 			"sv"
 			{
 				"windows"	"7"
-				"windows64"	"7"
 			}
 		}
 
@@ -73,7 +69,7 @@
 			{
 				"library"	"engine"
 				"linux"		"@sv"
-				"linux64"	"@sv"
+				"mac"		"@sv"
 			}
 		}
 	}
@@ -91,12 +87,10 @@
 		{
 			"FireOutput"
 			{
-				/* String: "(%0.2f) output: (%s,%s) -> (%s,%s)(%s)" */
 				"library"	"server"
 				"windows"	"\x55\x8B\xEC\x81\xEC\x2A\x2A\x2A\x2A\x53\x8B\xC1"
-				"windows64"	"\x48\x8B\xC4\x48\x89\x50\x10\x48\x89\x48\x08\x41\x54"
 				"linux"		"@_ZN17CBaseEntityOutput10FireOutputE9variant_tP11CBaseEntityS2_f"
-				"linux64"	"@_ZN17CBaseEntityOutput10FireOutputE9variant_tP11CBaseEntityS2_f"
+				"mac"		"@_ZN17CBaseEntityOutput10FireOutputE9variant_tP11CBaseEntityS2_f"
 			}
 		}
 	}
@@ -122,9 +116,8 @@
 			"SetUserCvar"
 			{
 				"windows"	"18"
-				"windows64"	"18"
 				"linux"		"58"
-				"linux64"	"58"
+				"mac"		"58"
 			}
 			/**
 			 * CBaseClient::SetName(char  const*);
@@ -134,9 +127,8 @@
 			"SetClientName"
 			{
 				"windows"	"17"
-				"windows64"	"17"
 				"linux"		"57"
-				"linux64"	"57"
+				"mac"		"57"
 			}
 			/**
 			 * Offset into CBaseClient - Used by CBaseServer::UpdateUserSettings to determine when changes have been made.
@@ -147,9 +139,8 @@
 			"InfoChanged"
 			{
 				"windows"	"140"
-				"windows64"	"140"
 				"linux"		"140"
-				"linux64"	"160"
+				"mac"		"140"
 			}
 		}
 	}

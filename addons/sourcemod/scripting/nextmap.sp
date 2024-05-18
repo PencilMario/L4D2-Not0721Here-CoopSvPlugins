@@ -67,8 +67,7 @@ public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max
 			|| StrEqual(game, "swarm", false)
 			|| StrEqual(game, "reactivedrop", false)
 			|| engine == Engine_Insurgency
-			|| engine == Engine_DOI
-			|| engine == Engine_MCV)
+			|| engine == Engine_DOI)
 	{
 		strcopy(error, err_max, "Nextmap is incompatible with this game");
 		return APLRes_SilentFailure;
@@ -88,9 +87,7 @@ public void OnPluginStart()
 	RegAdminCmd("sm_maphistory", Command_MapHistory, ADMFLAG_CHANGEMAP, "Shows the most recent maps played");
 	RegConsoleCmd("listmaps", Command_List);
 
-	HookEventEx("server_changelevel_failed", OnChangelevelFailed, EventHookMode_Pre);
-
-	// Set to the current map so OnConfigsExecuted() will know what to do
+	// Set to the current map so OnMapStart() will know what to do
 	char currentMap[PLATFORM_MAX_PATH];
 	GetCurrentMap(currentMap, sizeof(currentMap));
 	SetNextMap(currentMap);
@@ -112,16 +109,8 @@ public void OnConfigsExecuted()
 	// not in mapcyclefile. So we keep it set to the last expected nextmap. - ferret
 	if (strcmp(lastMap, currentMap) == 0)
 	{
-		FindAndSetNextMap(currentMap);
+		FindAndSetNextMap();
 	}
-}
-
-public void OnChangelevelFailed(Event event, const char[] name, bool dontBroadcast)
-{
-	char failedMap[PLATFORM_MAX_PATH];
-	event.GetString("levelname", failedMap, sizeof(failedMap));
-
-	FindAndSetNextMap(failedMap);
 }
 
 public Action Command_List(int client, int args) 
@@ -139,7 +128,7 @@ public Action Command_List(int client, int args)
 	return Plugin_Handled;
 }
   
-void FindAndSetNextMap(char[] currentMap)
+void FindAndSetNextMap()
 {
 	if (ReadMapList(g_MapList, 
 			g_MapListSerial, 
@@ -159,11 +148,14 @@ void FindAndSetNextMap(char[] currentMap)
 	
 	if (g_MapPos == -1)
 	{
+		char current[PLATFORM_MAX_PATH];
+		GetCurrentMap(current, sizeof(current));
+
 		for (int i = 0; i < mapCount; i++)
 		{
 			g_MapList.GetString(i, mapName, sizeof(mapName));
 			if (FindMap(mapName, mapName, sizeof(mapName)) != FindMap_NotFound && 
-				strcmp(currentMap, mapName, false) == 0)
+				strcmp(current, mapName, false) == 0)
 			{
 				g_MapPos = i;
 				break;
@@ -198,11 +190,11 @@ public Action Command_MapHistory(int client, int args)
 	
 	int lastMapStartTime = g_CurrentMapStartTime;
 	
-	PrintToConsole(client, "%t:\n", "Map History");
-	PrintToConsole(client, "%t : %t : %t : %t", "Map", "Started", "Played Time", "Reason");
+	PrintToConsole(client, "Map History:\n");
+	PrintToConsole(client, "Map : Started : Played Time : Reason for ending");
 	
 	GetCurrentMap(mapName, sizeof(mapName));
-	PrintToConsole(client, "%02i. %s (%t)", 0, mapName, "Current Map");
+	PrintToConsole(client, "%02i. %s (Current Map)", 0, mapName);
 	
 	for (int i=0; i<mapCount; i++)
 	{

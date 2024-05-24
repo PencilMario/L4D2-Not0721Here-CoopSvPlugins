@@ -1403,7 +1403,7 @@ bool Loc_DecodeFile(char[] sFile, int &iFileSize)
 
 bool Loc_ConvertFile_UTF16LE_UTF8(char[] sourceFile, char[] targetFile)
 {
-	//PrintToServer("Decode: %s", sourceFile);
+	//LogError("Decode: %s", sourceFile);
 	
 	bool use_valve_fs = !(g_iLcEngine == Engine_CSGO); // walkaround CSGO engine (SM?) ERROR_HANDLE_EOF bug #1567
 

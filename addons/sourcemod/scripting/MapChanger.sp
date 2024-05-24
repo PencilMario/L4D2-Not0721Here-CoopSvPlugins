@@ -1,10 +1,11 @@
-#define PLUGIN_VERSION "2.21"
+#define PLUGIN_VERSION "3.7"
 
 #pragma semicolon 1
 #pragma newdecls required
 
 #include <sourcemod>
 #include <sdktools>
+#include <localizer>
 #undef REQUIRE_PLUGIN
 #tryinclude <hx_stats>
 #tryinclude <vip_core>
@@ -20,12 +21,20 @@ const int MAP_GROUP_ANY = -1;
 
 public Plugin myinfo = 
 {
-	name = "[L4D1 & L4D2] Map Changer",
+	name = "[L4D] Map Changer",
 	author = "Alex Dragokas",
 	description = "Campaign and map chooser with rating system, groups and sorting",
 	version = PLUGIN_VERSION,
 	url = "https://github.com/dragokas/"
 };
+
+enum NEXT_MAP_METHOD
+{
+	NEXT_MAP_METHOD_STANDARD 		= 0,
+	NEXT_MAP_METHOD_STANDARD_RANDOM = 1,
+	NEXT_MAP_METHOD_CUSTOM 			= 2,
+	NEXT_MAP_METHOD_CUSTOM_RANDOM 	= 3
+}
 
 enum
 {
@@ -51,14 +60,18 @@ char GAME_TYPE_STR[][] =
 	"survival"
 };
 
-KeyValues kv;
-KeyValues kvinfo;
+KeyValues g_kv;
+KeyValues g_kvinfo;
+KeyValues g_kvdef;
 
 UserMsg StatsCrawlMsgId;
 
-char mapListPath[PLATFORM_MAX_PATH];
-char mapInfoPath[PLATFORM_MAX_PATH];
-char voteBlockPath[PLATFORM_MAX_PATH];
+GAME_TYPE g_eGameType;
+
+char g_sMapListPath[PLATFORM_MAX_PATH];
+char g_sMapInfoPath[PLATFORM_MAX_PATH];
+char g_sVoteBlockPath[PLATFORM_MAX_PATH];
+char g_sCycleBlockPath[PLATFORM_MAX_PATH];
 char g_sLog[PLATFORM_MAX_PATH];
 char g_Campaign[MAXPLAYERS+1][MAX_CAMPAIGN_TITLE];
 char g_sCurMap[MAX_MAP_NAME];
@@ -71,6 +84,7 @@ int g_iMenuPage[MAXPLAYERS+1];
 int g_iVoteMark;
 
 float g_fLastTime[MAXPLAYERS+1];
+float g_fLastTimeMark[MAXPLAYERS+1];
 
 int iNumCampaignsGroup[3];
 int iNumCampaignsCustom;
@@ -87,6 +101,8 @@ bool g_bDedicated;
 bool g_bVipCoreLib;
 bool g_bEmptyMapCycleCustom;
 bool g_bMapStarted;
+bool g_iAsyncAwaitCount;
+bool g_bIsFinale;
 
 StringMap g_hNameByMap;
 StringMap g_hNameByMapCustom;
@@ -96,8 +112,10 @@ StringMap g_hMapStamp;
 
 ArrayList g_aMapOrder;
 ArrayList g_aMapCustomOrder;
+ArrayList g_aMapStandardFirst;
 ArrayList g_aMapCustomFirst;
 ArrayList g_hArrayVoteBlock;
+ArrayList g_hArrayCycleBlock;
 
 ConVar g_hConVarGameMode;
 ConVar g_hCvarDelay;
@@ -105,14 +123,17 @@ ConVar g_hCvarTimeout;
 ConVar g_hCvarAnnounceDelay;
 ConVar g_hCvarServerNameShort;
 ConVar g_hCvarVoteMarkMinPlayers;
+ConVar g_hCvarVoteMarkFlag;
 ConVar g_hCvarMapVoteAccessDef;
 ConVar g_hCvarMapVoteAccessCustom;
 ConVar g_hCvarMapVoteAccessVip;
 ConVar g_hConVarHostName;
 ConVar g_hCvarAllowDefault;
 ConVar g_hCvarAllowCustom;
-ConVar g_hCvarFinMapRandom;
+ConVar g_hCvarNextMapOnStandard;
+ConVar g_hCvarNextMapOnCustom;
 ConVar g_hCvarVetoFlag;
+ConVar g_hCvarRemoveMarkFlag;
 ConVar g_hCvarChapterList;
 ConVar g_hCvarFinaleChangeType;
 ConVar g_hCvarServerPrintInfo;
@@ -120,6 +141,9 @@ ConVar g_hCvarNativeVoteChangeMissionAllow;
 ConVar g_hCvarNativeVoteChangeChapterAllow;
 ConVar g_hCvarNativeVoteRestartGameAllow;
 ConVar g_hCvarNativeVoteReturnLobbyAllow;
+ConVar g_hCvarMapChangeNotifyTime;
+
+Localizer loc;
 
 #if defined _hxstats_included
 	bool g_bHxStatsAvail;
@@ -149,31 +173,38 @@ public void OnPluginStart()
 {
 	LoadTranslations("MapChanger.phrases");
 	
-	CreateConVar("mapchanger_version", PLUGIN_VERSION, "MapChanger Version", FCVAR_DONTRECORD | CVAR_FLAGS);
-	g_hCvarDelay = CreateConVar(				"l4d_mapchanger_delay",					"60",		"两次投票的间隔时间", CVAR_FLAGS );
-	g_hCvarTimeout = CreateConVar(				"l4d_mapchanger_timeout",				"10",		"投票会持续多久", CVAR_FLAGS );
-	g_hCvarAnnounceDelay = CreateConVar(		"l4d_mapchanger_announcedelay",			"2.0",		"公告和投票菜单之间的延迟（秒）", CVAR_FLAGS );
-	g_hCvarAllowDefault = CreateConVar(			"l4d_mapchanger_allow_default",			"1",		"是否显示默认地图菜单项？（1-是，0-否）", CVAR_FLAGS );
-	g_hCvarAllowCustom = CreateConVar(			"l4d_mapchanger_allow_custom",			"1",		"是否显示自定义地图菜单项？（1-是，0-否）", CVAR_FLAGS );
-	g_hCvarServerNameShort = CreateConVar(		"l4d_mapchanger_servername_short", 		"", 		"自定义服务器名字", CVAR_FLAGS);
-	g_hCvarVoteMarkMinPlayers = CreateConVar(	"l4d_mapchanger_votemark_minplayers", 	"3", 		"允许开始为分数（评级）投票的最少玩家数量", CVAR_FLAGS);
-	g_hCvarMapVoteAccessDef = CreateConVar(		"l4d_mapchanger_default_voteaccess", 	"kp", 		"允许访问更改默认地图投票的权限", CVAR_FLAGS);
-	g_hCvarMapVoteAccessCustom = CreateConVar(	"l4d_mapchanger_custom_voteaccess", 	"k", 		"允许访问更改自定义地图投票的权限", CVAR_FLAGS);
-	g_hCvarMapVoteAccessVip = CreateConVar(		"l4d_mapchanger_vip_voteaccess", 		"1", 		"允许VIP玩家更改地图？（1-是，0-否）", CVAR_FLAGS);
-	g_hCvarVetoFlag = CreateConVar(				"l4d_mapchanger_vetoaccess",			"d",		"允许否决/投票的权限", CVAR_FLAGS );
-	g_hCvarFinMapRandom = CreateConVar(			"l4d_mapchanger_fin_map_random", 		"1", 		"随机选择下一个自定义活动地图？（1-是，0-否）", CVAR_FLAGS);
-	g_hCvarChapterList = CreateConVar(			"l4d_mapchanger_show_chapter_list", 	"1", 		"是否显示活动中的章节列表？（1-是，0-否）", CVAR_FLAGS);
-	g_hCvarFinaleChangeType = CreateConVar(		"l4d_mapchanger_finale_change_type", 	"12", 		"0-不更改最终章节（放置到大厅）；1-车辆离开时的瞬间；2-在决赛中瞬间获胜；4-等待信用屏幕出现；8-等待积分屏幕结束", CVAR_FLAGS);
-	g_hCvarServerPrintInfo = CreateConVar(		"l4d_mapchanger_server_print_info", 	"1", 		"是否将地图更改信息打印到服务器控制台？(1 - 是, 0 - 否)", CVAR_FLAGS);
+	loc = new Localizer();
+	loc.Delegate_InitCompleted(OnPhrasesReady);
 	
-	g_hCvarNativeVoteChangeMissionAllow = CreateConVar(	"l4d_native_vote_allow_change_mission", 	"0", 	"允许使用本地投票来改变地图？（0-否，替换为地图转换器菜单；1-是）。禁用它以提高安全性！", CVAR_FLAGS);
-	g_hCvarNativeVoteChangeChapterAllow = CreateConVar(	"l4d_native_vote_allow_change_chapter", 	"0", 	"允许使用本地投票更改游戏章节？（0-否，替换为地图转换器菜单；1-是）。禁用它以提高安全性！", CVAR_FLAGS);
-	g_hCvarNativeVoteRestartGameAllow = CreateConVar(	"l4d_native_vote_allow_restart_game", 		"0", 	"允许使用本地投票重新开始对局？（0-否，替换为地图转换器菜单；1-是）。禁用它以提高安全性！", CVAR_FLAGS);
-	g_hCvarNativeVoteReturnLobbyAllow = CreateConVar(	"l4d_native_vote_allow_return_lobby", 		"0", 	"允许使用本地选票返回大厅？（0-否，替换为地图转换器菜单；1-是）。禁用它以提高安全性！", CVAR_FLAGS);
+	CreateConVar("mapchanger_version", PLUGIN_VERSION, "MapChanger Version", FCVAR_DONTRECORD | CVAR_FLAGS);
+	g_hCvarDelay = CreateConVar(				"l4d_mapchanger_delay",					"60",		"Minimum delay (in sec.) allowed between votes", CVAR_FLAGS );
+	g_hCvarTimeout = CreateConVar(				"l4d_mapchanger_timeout",				"10",		"How long (in sec.) does the vote last", CVAR_FLAGS );
+	g_hCvarAnnounceDelay = CreateConVar(		"l4d_mapchanger_announcedelay",			"2.0",		"Delay (in sec.) between announce and vote menu appearing", CVAR_FLAGS );
+	g_hCvarAllowDefault = CreateConVar(			"l4d_mapchanger_allow_default",			"1",		"Display standard maps menu items? (1 - Yes, 0 - No)", CVAR_FLAGS );
+	g_hCvarAllowCustom = CreateConVar(			"l4d_mapchanger_allow_custom",			"1",		"Display custom maps menu items? (1 - Yes, 0 - No)", CVAR_FLAGS );
+	g_hCvarServerNameShort = CreateConVar(		"l4d_mapchanger_servername_short", 		"", 		"Short name of your server (specify it, if you want custom campaign name will be prepended to it)", CVAR_FLAGS);
+	g_hCvarVoteMarkMinPlayers = CreateConVar(	"l4d_mapchanger_votemark_minplayers", 	"3", 		"Minimum number of players to allow starting the vote for mark (rating)", CVAR_FLAGS);
+	g_hCvarVoteMarkFlag = CreateConVar(			"l4d_mapchanger_votemark_access",		"",			"Flag(s) allowed to start the vote for mark (rating). Leave empty to allow everybody.", CVAR_FLAGS );
+	g_hCvarRemoveMarkFlag = CreateConVar(		"l4d_mapchanger_remove_mark_access",	"z",		"Flag(s) allowed to remove the mark (rating)", CVAR_FLAGS );
+	g_hCvarMapVoteAccessDef = CreateConVar(		"l4d_mapchanger_default_voteaccess", 	"kp", 		"Flag(s) allowed to access the vote for change to standard maps. Leave empty to allow everybody.", CVAR_FLAGS);
+	g_hCvarMapVoteAccessCustom = CreateConVar(	"l4d_mapchanger_custom_voteaccess", 	"k", 		"Flag(s) allowed to access the vote for change to custom maps. Leave empty to allow everybody.", CVAR_FLAGS);
+	g_hCvarMapVoteAccessVip = CreateConVar(		"l4d_mapchanger_vip_voteaccess", 		"1", 		"Allow VIP players to change the map? (1 - Yes, 0 - No)", CVAR_FLAGS);
+	g_hCvarVetoFlag = CreateConVar(				"l4d_mapchanger_vetoaccess",			"d",		"Flag(s) allowed to veto/votepass the vote", CVAR_FLAGS );
+	g_hCvarNextMapOnStandard = CreateConVar(	"l4d_mapchanger_nextmap_on_standard", 	"1", 		"Which next campaign to use (on finale chapter of standard campaign)? (0 - next standard, 1 - random standard)", CVAR_FLAGS);
+	g_hCvarNextMapOnCustom = CreateConVar(		"l4d_mapchanger_nextmap_on_custom", 	"1", 		"Which next campaign to use (on finale chapter of custom campaign)? (0 - next standard, 1 - random standard, 2 - next custom, 3 - random custom)", CVAR_FLAGS);
+	g_hCvarChapterList = CreateConVar(			"l4d_mapchanger_show_chapter_list", 	"1", 		"Show the list of chapters within campaign? (1 - Yes, 0 - No)", CVAR_FLAGS);
+	g_hCvarFinaleChangeType = CreateConVar(		"l4d_mapchanger_finale_change_type", 	"12", 		"0 - Don't change finale map (drop to lobby); 1 - instant on vehicle leaving; 2 - instant on finale win; 4 - Wait till credits screen appear; 8 - Wait till credits screen ends", CVAR_FLAGS);
+	g_hCvarServerPrintInfo = CreateConVar(		"l4d_mapchanger_server_print_info", 	"1", 		"Print map change info to server console? (1 - Yes, 0 - No)", CVAR_FLAGS);
+	g_hCvarMapChangeNotifyTime = CreateConVar(	"l4d_mapchanger_mapchange_notify_time", "2", 		"Number of seconds to display notify message before the actual change map", CVAR_FLAGS);
+	
+	g_hCvarNativeVoteChangeMissionAllow = CreateConVar(	"l4d_native_vote_allow_change_mission", 	"0", 	"Allow to use native votes to change mission? (0 - No, replace by MapChanger menu; 1 - Yes). Disable it to improve security!", CVAR_FLAGS);
+	g_hCvarNativeVoteChangeChapterAllow = CreateConVar(	"l4d_native_vote_allow_change_chapter", 	"0", 	"Allow to use native votes to change chapter? (0 - No, replace by MapChanger menu; 1 - Yes). Disable it to improve security!", CVAR_FLAGS);
+	g_hCvarNativeVoteRestartGameAllow = CreateConVar(	"l4d_native_vote_allow_restart_game", 		"0", 	"Allow to use native votes to restart game? (0 - No, replace by MapChanger menu; 1 - Yes). Disable it to improve security!", CVAR_FLAGS);
+	g_hCvarNativeVoteReturnLobbyAllow = CreateConVar(	"l4d_native_vote_allow_return_lobby", 		"0", 	"Allow to use native votes to return to lobby? (0 - No, replace by MapChanger menu; 1 - Yes). Disable it to improve security!", CVAR_FLAGS);
 	
 	#if defined _hxstats_included
-		g_hCvarVoteStatPoints = CreateConVar(		"l4d_mapchanger_vote_stat_points",		"10000",	"统计系统中允许开始投票所需的最低分数", CVAR_FLAGS );
-		g_hCvarVoteStatPlayTime = CreateConVar(		"l4d_mapchanger_vote_stat_playtime",	"600",		"允许开始投票所需的统计系统中的最小播放时间（分钟）", CVAR_FLAGS );
+		g_hCvarVoteStatPoints = CreateConVar(		"l4d_mapchanger_vote_stat_points",		"10000",	"Minimum points in statistics system required to allow start the vote", CVAR_FLAGS );
+		g_hCvarVoteStatPlayTime = CreateConVar(		"l4d_mapchanger_vote_stat_playtime",	"600",		"Minimum play time (in minutes) in statistics system required to allow start the vote", CVAR_FLAGS );
 		
 		if( g_bLateload )
 		{
@@ -200,124 +231,48 @@ public void OnPluginStart()
 	g_hConVarGameMode = FindConVar("mp_gamemode");
 	g_hConVarHostName = FindConVar("hostname");
 	
-	g_hConVarGameMode.AddChangeHook(ConVarChangedCallback);
-	g_hConVarGameMode.GetString(g_sGameMode, sizeof(g_sGameMode));
+	g_hConVarGameMode.AddChangeHook(ConVarChanged_GameMode);
+	GetGameType();
 	
-	RegConsoleCmd("sm_maps", 		Command_MapChoose, 					"Show map list to begin vote for changelevel / set mark etc.");
+	g_hCvarServerNameShort.AddChangeHook(ConVarChanged_ServerNameCustom);
+	
+	RegConsoleCmd("sm_maps", 		Command_MapChoose, 					"Show map list to begin vote for changelevel / set mark (rating) etc.");
+	//TODO
+	//RegConsoleCmd("sm_rtv", 		Command_VoteNext, 					"Start vote for the next campaign");
+	//RegConsoleCmd("sm_vnext", 	Command_VoteNext, 					"Start vote for the next campaign"); // alias
+	//RegConsoleCmd("sm_votenext", 	Command_VoteNext, 					"Start vote for the next campaign"); // alias
+	
 	RegConsoleCmd("sm_veto", 		Command_Veto, 		 				"Allow admin to veto current vote.");
 	RegConsoleCmd("sm_votepass", 	Command_Votepass, 	 				"Allow admin to bypass current vote.");
 	
+	RegAdminCmd("sm_mapnext", 		CmdNextMap, 		ADMFLAG_ROOT, 	"Force change level to the next map");
+	RegAdminCmd("sm_next", 			CmdNextMap, 		ADMFLAG_ROOT, 	"Force change level to the next map"); // alias
 	RegAdminCmd("sm_maps_reload", 	Command_ReloadMaps, ADMFLAG_ROOT, 	"Refresh the list of maps");
 	
-	HookEvent("round_start", 			Event_RoundStart);
+	HookEvent("round_start", 			Event_RoundStart, 		EventHookMode_PostNoCopy);
 	HookEvent("finale_win", 			Event_FinaleWin, 		EventHookMode_PostNoCopy);
 	HookEvent("finale_vehicle_leaving",	Event_VehicleLeaving,	EventHookMode_PostNoCopy);
 	
-	BuildPath(Path_SM, mapListPath, PLATFORM_MAX_PATH, "configs/%s", g_bLeft4Dead2 ? "MapChanger.l4d2.txt" : "MapChanger.l4d1.txt");
-	BuildPath(Path_SM, mapInfoPath, PLATFORM_MAX_PATH, "configs/MapChanger_info.txt");
-	BuildPath(Path_SM, voteBlockPath, PLATFORM_MAX_PATH, "data/mapchanger_vote_block.txt");
-	BuildPath(Path_SM, g_sLog, sizeof(g_sLog), "logs/vote_map.log");
+	BuildPath(Path_SM, g_sMapListPath, 		PLATFORM_MAX_PATH, "configs/%s", g_bLeft4Dead2 ? "MapChanger.l4d2.txt" : "MapChanger.l4d1.txt");
+	BuildPath(Path_SM, g_sMapInfoPath, 		PLATFORM_MAX_PATH, "configs/MapChanger_info.txt");
+	BuildPath(Path_SM, g_sVoteBlockPath, 	PLATFORM_MAX_PATH, "data/mapchanger_vote_block.txt");
+	BuildPath(Path_SM, g_sCycleBlockPath, 	PLATFORM_MAX_PATH, "data/mapchanger_black_cycle.txt");
+	BuildPath(Path_SM, g_sLog, 				PLATFORM_MAX_PATH, "logs/vote_map.log");
 	
-	g_aMapOrder = new ArrayList(ByteCountToCells(MAX_MAP_NAME));
-	g_aMapCustomOrder = new ArrayList(ByteCountToCells(MAX_MAP_NAME));
-	g_aMapCustomFirst = new ArrayList(ByteCountToCells(MAX_MAP_NAME));
-	g_hArrayVoteBlock = new ArrayList(ByteCountToCells(MAX_NAME_LENGTH));
+	g_aMapOrder 		= new ArrayList(ByteCountToCells(MAX_MAP_NAME));
+	g_aMapCustomOrder 	= new ArrayList(ByteCountToCells(MAX_MAP_NAME));
+	g_aMapStandardFirst = new ArrayList(ByteCountToCells(MAX_MAP_NAME));
+	g_aMapCustomFirst 	= new ArrayList(ByteCountToCells(MAX_MAP_NAME));
+	g_hArrayVoteBlock 	= new ArrayList(ByteCountToCells(MAX_NAME_LENGTH));
+	g_hArrayCycleBlock  = new ArrayList(ByteCountToCells(MAX_MAP_NAME));
 	
-	g_hNameByMap = new StringMap();
-	g_hNameByMapCustom = new StringMap();
-	g_hCampaignByMap = new StringMap();
-	g_hCampaignByMapCustom = new StringMap();
-	g_hMapStamp = new StringMap();
+	g_hNameByMap 			= new StringMap();
+	g_hNameByMapCustom 		= new StringMap();
+	g_hCampaignByMap 		= new StringMap();
+	g_hCampaignByMapCustom 	= new StringMap();
+	g_hMapStamp 			= new StringMap();
 	
-	if( g_bLeft4Dead2 ) {
-		AddMap("#L4D360UI_CampaignName_C1", "#L4D360UI_LevelName_COOP_C1M1", "c1m1_hotel");
-		AddMap("#L4D360UI_CampaignName_C1", "#L4D360UI_LevelName_COOP_C1M2", "c1m2_streets");
-		AddMap("#L4D360UI_CampaignName_C1", "#L4D360UI_LevelName_COOP_C1M3", "c1m3_mall");
-		AddMap("#L4D360UI_CampaignName_C1", "#L4D360UI_LevelName_COOP_C1M4", "c1m4_atrium");
-		AddMap("#L4D360UI_CampaignName_C2", "#L4D360UI_LevelName_COOP_C2M1", "c2m1_highway");
-		AddMap("#L4D360UI_CampaignName_C2", "#L4D360UI_LevelName_COOP_C2M2", "c2m2_fairgrounds");
-		AddMap("#L4D360UI_CampaignName_C2", "#L4D360UI_LevelName_COOP_C2M3", "c2m3_coaster");
-		AddMap("#L4D360UI_CampaignName_C2", "#L4D360UI_LevelName_COOP_C2M4", "c2m4_barns");
-		AddMap("#L4D360UI_CampaignName_C2", "#L4D360UI_LevelName_COOP_C2M5", "c2m5_concert");
-		AddMap("#L4D360UI_CampaignName_C3", "#L4D360UI_LevelName_COOP_C3M1", "c3m1_plankcountry");
-		AddMap("#L4D360UI_CampaignName_C3", "#L4D360UI_LevelName_COOP_C3M2", "c3m2_swamp");
-		AddMap("#L4D360UI_CampaignName_C3", "#L4D360UI_LevelName_COOP_C3M3", "c3m3_shantytown");
-		AddMap("#L4D360UI_CampaignName_C3", "#L4D360UI_LevelName_COOP_C3M4", "c3m4_plantation");
-		AddMap("#L4D360UI_CampaignName_C4", "#L4D360UI_LevelName_COOP_C4M1", "c4m1_milltown_a");
-		AddMap("#L4D360UI_CampaignName_C4", "#L4D360UI_LevelName_COOP_C4M2", "c4m2_sugarmill_a");
-		AddMap("#L4D360UI_CampaignName_C4", "#L4D360UI_LevelName_COOP_C4M3", "c4m3_sugarmill_b");
-		AddMap("#L4D360UI_CampaignName_C4", "#L4D360UI_LevelName_COOP_C4M4", "c4m4_milltown_b");
-		AddMap("#L4D360UI_CampaignName_C4", "#L4D360UI_LevelName_COOP_C4M5", "c4m5_milltown_escape");
-		AddMap("#L4D360UI_CampaignName_C5", "#L4D360UI_LevelName_COOP_C5M1", "c5m1_waterfront");
-		AddMap("#L4D360UI_CampaignName_C5", "#L4D360UI_LevelName_COOP_C5M2", "c5m2_park");
-		AddMap("#L4D360UI_CampaignName_C5", "#L4D360UI_LevelName_COOP_C5M3", "c5m3_cemetery");
-		AddMap("#L4D360UI_CampaignName_C5", "#L4D360UI_LevelName_COOP_C5M4", "c5m4_quarter");
-		AddMap("#L4D360UI_CampaignName_C5", "#L4D360UI_LevelName_COOP_C5M5", "c5m5_bridge");
-		AddMap("#L4D360UI_CampaignName_C6", "#L4D360UI_LevelName_COOP_C6M1", "c6m1_riverbank");
-		AddMap("#L4D360UI_CampaignName_C6", "#L4D360UI_LevelName_COOP_C6M2", "c6m2_bedlam");
-		AddMap("#L4D360UI_CampaignName_C6", "#L4D360UI_LevelName_COOP_C6M3", "c6m3_port");
-		AddMap("#L4D360UI_CampaignName_C7", "#L4D360UI_LevelName_COOP_C7M1", "c7m1_docks");
-		AddMap("#L4D360UI_CampaignName_C7", "#L4D360UI_LevelName_COOP_C7M2", "c7m2_barge");
-		AddMap("#L4D360UI_CampaignName_C7", "#L4D360UI_LevelName_COOP_C7M3", "c7m3_port");
-		AddMap("#L4D360UI_CampaignName_C8", "#L4D360UI_LevelName_COOP_C8M1", "c8m1_apartment");
-		AddMap("#L4D360UI_CampaignName_C8", "#L4D360UI_LevelName_COOP_C8M2", "c8m2_subway");
-		AddMap("#L4D360UI_CampaignName_C8", "#L4D360UI_LevelName_COOP_C8M3", "c8m3_sewers");
-		AddMap("#L4D360UI_CampaignName_C8", "#L4D360UI_LevelName_COOP_C8M4", "c8m4_interior");
-		AddMap("#L4D360UI_CampaignName_C8", "#L4D360UI_LevelName_COOP_C8M5", "c8m5_rooftop");
-		AddMap("#L4D360UI_CampaignName_C9", "#L4D360UI_LevelName_COOP_C9M1", "c9m1_alleys");
-		AddMap("#L4D360UI_CampaignName_C9", "#L4D360UI_LevelName_COOP_C9M2", "c9m2_lots");
-		AddMap("#L4D360UI_CampaignName_C10", "#L4D360UI_LevelName_COOP_C10M1", "c10m1_caves");
-		AddMap("#L4D360UI_CampaignName_C10", "#L4D360UI_LevelName_COOP_C10M2", "c10m2_drainage");
-		AddMap("#L4D360UI_CampaignName_C10", "#L4D360UI_LevelName_COOP_C10M3", "c10m3_ranchhouse");
-		AddMap("#L4D360UI_CampaignName_C10", "#L4D360UI_LevelName_COOP_C10M4", "c10m4_mainstreet");
-		AddMap("#L4D360UI_CampaignName_C10", "#L4D360UI_LevelName_COOP_C10M5", "c10m5_houseboat");
-		AddMap("#L4D360UI_CampaignName_C11", "#L4D360UI_LevelName_COOP_C11M1", "c11m1_greenhouse");
-		AddMap("#L4D360UI_CampaignName_C11", "#L4D360UI_LevelName_COOP_C11M2", "c11m2_offices");
-		AddMap("#L4D360UI_CampaignName_C11", "#L4D360UI_LevelName_COOP_C11M3", "c11m3_garage");
-		AddMap("#L4D360UI_CampaignName_C11", "#L4D360UI_LevelName_COOP_C11M4", "c11m4_terminal");
-		AddMap("#L4D360UI_CampaignName_C11", "#L4D360UI_LevelName_COOP_C11M5", "c11m5_runway");
-		AddMap("#L4D360UI_CampaignName_C12", "#L4D360UI_LevelName_COOP_C12M1", "C12m1_hilltop");
-		AddMap("#L4D360UI_CampaignName_C12", "#L4D360UI_LevelName_COOP_C12M2", "C12m2_traintunnel");
-		AddMap("#L4D360UI_CampaignName_C12", "#L4D360UI_LevelName_COOP_C12M3", "C12m3_bridge");
-		AddMap("#L4D360UI_CampaignName_C12", "#L4D360UI_LevelName_COOP_C12M4", "C12m4_barn");
-		AddMap("#L4D360UI_CampaignName_C12", "#L4D360UI_LevelName_COOP_C12M5", "C12m5_cornfield");
-		AddMap("#L4D360UI_CampaignName_C13", "#L4D360UI_LevelName_COOP_C13M1", "c13m1_alpinecreek");
-		AddMap("#L4D360UI_CampaignName_C13", "#L4D360UI_LevelName_COOP_C13M2", "c13m2_southpinestream");
-		AddMap("#L4D360UI_CampaignName_C13", "#L4D360UI_LevelName_COOP_C13M3", "c13m3_memorialbridge");
-		AddMap("#L4D360UI_CampaignName_C13", "#L4D360UI_LevelName_COOP_C13M4", "c13m4_cutthroatcreek");
-		AddMap("#L4D360UI_CampaignName_C14", "#L4D360UI_LevelName_COOP_C14M1", "c14m1_junkyard");
-		AddMap("#L4D360UI_CampaignName_C14", "#L4D360UI_LevelName_COOP_C14M2", "c14m2_lighthouse");
-	}
-	else {
-		AddMap("No_Mercy", "#L4D360UI_Chapter_01_1", "l4d_hospital01_apartment");
-		AddMap("No_Mercy", "#L4D360UI_Chapter_01_2", "l4d_hospital02_subway");
-		AddMap("No_Mercy", "#L4D360UI_Chapter_01_3", "l4d_hospital03_sewers");
-		AddMap("No_Mercy", "#L4D360UI_Chapter_01_4", "l4d_hospital04_interior");
-		AddMap("No_Mercy", "#L4D360UI_Chapter_01_5", "l4d_hospital05_rooftop");
-		AddMap("Crash_Course", "#L4D360UI_Chapter_02_1", "l4d_garage01_alleys");
-		AddMap("Crash_Course", "#L4D360UI_Chapter_02_2", "l4d_garage02_lots");
-		AddMap("Death_Toll", "#L4D360UI_Chapter_03_1", "l4d_smalltown01_caves");
-		AddMap("Death_Toll", "#L4D360UI_Chapter_03_2", "l4d_smalltown02_drainage");
-		AddMap("Death_Toll", "#L4D360UI_Chapter_03_3", "l4d_smalltown03_ranchhouse");
-		AddMap("Death_Toll", "#L4D360UI_Chapter_03_4", "l4d_smalltown04_mainstreet");
-		AddMap("Death_Toll", "#L4D360UI_Chapter_03_5", "l4d_smalltown05_houseboat");
-		AddMap("Dead_Air", "#L4D360UI_Chapter_04_1", "l4d_airport01_greenhouse");
-		AddMap("Dead_Air", "#L4D360UI_Chapter_04_2", "l4d_airport02_offices");
-		AddMap("Dead_Air", "#L4D360UI_Chapter_04_3", "l4d_airport03_garage");
-		AddMap("Dead_Air", "#L4D360UI_Chapter_04_4", "l4d_airport04_terminal");
-		AddMap("Dead_Air", "#L4D360UI_Chapter_04_5", "l4d_airport05_runway");
-		AddMap("Blood_Harvest", "#L4D360UI_Chapter_05_1", "l4d_farm01_hilltop");
-		AddMap("Blood_Harvest", "#L4D360UI_Chapter_05_2", "l4d_farm02_traintunnel");
-		AddMap("Blood_Harvest", "#L4D360UI_Chapter_05_3", "l4d_farm03_bridge");
-		AddMap("Blood_Harvest", "#L4D360UI_Chapter_05_4", "l4d_farm04_barn");
-		AddMap("Blood_Harvest", "#L4D360UI_Chapter_05_5", "l4d_farm05_cornfield");
-		AddMap("Sacrifice", "#L4D360UI_Chapter_06_1", "l4d_river01_docks");
-		AddMap("Sacrifice", "#L4D360UI_Chapter_06_2", "l4d_river02_barge");
-		AddMap("Sacrifice", "#L4D360UI_Chapter_06_3", "l4d_river03_port");
-		//AddMap("Last_Stand", "#L4D360UI_Chapter_07_1", "l4d_sv_lighthouse");
-	}
-	
-	RegAdminCmd("sm_mapnext", CmdNextMap, ADMFLAG_ROOT, "Force change level to the next map");
+	GetMissions();
 	
 	HookUserMessage(GetUserMessageId("DisconnectToLobby"), OnDisconnectToLobby, true);
 }
@@ -348,7 +303,7 @@ stock void SetCvarSilent(ConVar cv, char[] value)
 public Action CmdNextMap(int client, int args)
 {
 	g_bMapStarted = true;
-	GotoNextMap(false);
+	GotoNextMap();
 	return Plugin_Handled;
 }
 
@@ -383,6 +338,64 @@ public void OnLibraryRemoved(const char[] name)
 		g_bVipCoreLib = false;
 	}
 	#endif
+}
+
+public void OnPhrasesReady()
+{
+	PrecachePhrasesKV(g_kv);
+	PrecachePhrasesKV(g_kvdef);
+}
+
+void PrecachePhrasesKV(KeyValues kv)
+{
+	kv.Rewind();
+	if( kv.GotoFirstSubKey() )
+	{
+		RequestFrame(PrecachePhrasesKV_Frame, kv);
+		++ g_iAsyncAwaitCount;
+	}
+}
+
+void PrecachePhrasesKV_Frame(KeyValues kv)
+{
+	char sCampaign[MAX_CAMPAIGN_TITLE], DisplayName[MAX_MAP_TITLE];
+	//do
+	{
+		kv.GetSectionName(sCampaign, sizeof(sCampaign));
+		if( sCampaign[0] == '#' )
+		{
+			loc.PrecachePhrase(sCampaign);
+		}
+		
+		if( kv.GotoFirstSubKey() ) // game mode
+		{
+			do
+			{
+				if( kv.GotoFirstSubKey() ) { // index
+					do
+					{
+						kv.GetString("DisplayName", DisplayName, sizeof(DisplayName));
+						if( DisplayName[0] == '#' )
+						{
+							loc.PrecachePhrase(DisplayName);
+						}
+					} while( kv.GotoNextKey() );
+					kv.GoBack();
+				}
+			} while( kv.GotoNextKey() );
+			kv.GoBack();
+			if( kv.GotoNextKey() )
+			{
+				RequestFrame(PrecachePhrasesKV_Frame, kv);
+			}
+			else {
+				-- g_iAsyncAwaitCount;
+			}
+		}
+		else {
+			-- g_iAsyncAwaitCount;
+		}
+	} //while( kv.GotoNextKey() );
 }
 
 public void Event_RoundStart(Event event, const char[] name, bool dontBroadcast)
@@ -430,15 +443,20 @@ public Action OnCreditsScreen(UserMsg msg_id, BfRead hMsg, const int[] players, 
 {
 	UnhookUserMessage(StatsCrawlMsgId, OnCreditsScreen, false);
 	g_bUMHooked = false;
-	FinaleMapChange();
+	FinaleMapChange_Frame(); // walkaround for "Could not send a usermessage" in PrintToChat
 	return Plugin_Continue;
+}
+
+void FinaleMapChange_Frame()
+{
+	RequestFrame(FinaleMapChange);
 }
 
 public Action OnDisconnectToLobby(UserMsg msg_id, BfRead hMsg, const int[] players, int playersNum, bool reliable, bool init)
 {
 	if( g_hCvarFinaleChangeType.IntValue & FINALE_CHANGE_CREDITS_END )
 	{
-		FinaleMapChange();
+		GotoNextMap(true);
 		return Plugin_Handled;
 	}
 	return Plugin_Continue;
@@ -457,7 +475,10 @@ void ReadFileToArrayList(char[] sPath, ArrayList list)
 		while( !hFile.EndOfFile() && hFile.ReadLine(str, sizeof(str)) )
 		{
 			TrimString(str);
-			list.PushString(str);
+			if( str[0] != '/' )
+			{
+				list.PushString(str);
+			}
 		}
 		delete hFile;
 	}
@@ -465,18 +486,41 @@ void ReadFileToArrayList(char[] sPath, ArrayList list)
 
 public void OnMapStart()
 {
-	static int ft_block;
+	static int ft_block, ft_blackcycle, ft_addonlist;
 	
 	g_bMapStarted = true;
 	
-	int ft = GetFileTime(voteBlockPath, FileTime_LastChange);
+	int ft = GetFileTime(g_sVoteBlockPath, FileTime_LastChange);
 	if( ft != ft_block )
 	{
 		ft_block = ft;
-		ReadFileToArrayList(voteBlockPath, g_hArrayVoteBlock);
+		ReadFileToArrayList(g_sVoteBlockPath, g_hArrayVoteBlock);
 	}
 	
-	Command_ReloadMaps(0, 0);
+	ft = GetFileTime(g_sCycleBlockPath, FileTime_LastChange);
+	if( ft != ft_blackcycle )
+	{
+		ft_blackcycle = ft;
+		ReadFileToArrayList(g_sCycleBlockPath, g_hArrayCycleBlock);
+	}
+	
+	bool bForceReload = false;
+	static bool bFirstUpdate = true;
+	if( FileExists("addonlist.txt") )
+	{
+		ft = GetFileTime("addonlist.txt", FileTime_LastChange);
+		if( ft != ft_addonlist )
+		{
+			ft_addonlist = ft;
+			if( !bFirstUpdate )
+			{
+				bForceReload = true; // force full map list re-read & check if user de/activated it
+			}
+		}
+		bFirstUpdate = false;
+	}
+	
+	ReloadMaps(bForceReload);
 	GetCurrentMap(g_sCurMap, sizeof(g_sCurMap));
 	
 	if( g_hCvarServerPrintInfo.BoolValue )
@@ -485,6 +529,8 @@ public void OnMapStart()
 	}
 	CreateTimer(5.0, Timer_ChangeHostName, _, TIMER_FLAG_NO_MAPCHANGE);
 	g_bUMHooked = false;
+	
+	g_bIsFinale = IsFinaleMap(g_sCurMap); // assume, database is already populated
 }
 
 public Action Timer_ChangeHostName(Handle timer)
@@ -560,19 +606,36 @@ public Action CheckVote(int client, char[] command, int args)
 	return Plugin_Continue;
 }
 
-public void ConVarChangedCallback (ConVar convar, const char[] oldValue, const char[] newValue)
+public void ConVarChanged_ServerNameCustom (ConVar convar, const char[] oldValue, const char[] newValue)
 {
-	strcopy(g_sGameMode, sizeof(g_sGameMode), newValue);
-	Command_ReloadMaps(0, 0);
+	Timer_ChangeHostName(null);
 }
 
-void AddMap(char[] sCampaign, char[] sDisplay, char[] sMap)
+public void ConVarChanged_GameMode (ConVar convar, const char[] oldValue, const char[] newValue)
 {
-	if( IsMapValidEx(sMap) )
+	if( strcmp(g_sGameMode, newValue, false) != 0 )
 	{
-		g_hNameByMap.SetString(sMap, sDisplay, false);
-		g_hCampaignByMap.SetString(sMap, sCampaign, false);
-		g_aMapOrder.PushString(sMap);
+		GetGameType();
+		ReloadMaps(true);
+		GetMissions();
+	}
+}
+
+void GetGameType()
+{
+	g_hConVarGameMode.GetString(g_sGameMode, sizeof(g_sGameMode));
+	
+	if( strcmp(g_sGameMode, "coop", false) == 0 )
+	{
+		g_eGameType = GAME_TYPE_COOP;
+	}
+	else if( strcmp(g_sGameMode, "versus", false) == 0 )
+	{
+		g_eGameType = GAME_TYPE_VERSUS;
+	}
+	else if( strcmp(g_sGameMode, "survival", false) == 0 )
+	{
+		g_eGameType = GAME_TYPE_SURVIVAL;
 	}
 }
 
@@ -616,24 +679,37 @@ public Action Command_Votepass(int client, int args)
 
 public Action Command_ReloadMaps(int client, int args)
 {
-	if( IsAddonChanged() )
+	client = iGetListenServerHost(client, g_bDedicated);
+	
+	if( !loc.IsReady() || g_iAsyncAwaitCount )
+	{
+		ReplyToCommand(client, "\x03[MapChanger]\x05 Sorry, database is not yet ready. Wait 1 minute more.");
+		return Plugin_Handled;
+	}
+	ReloadMaps(false);
+	ReplyToCommand(client, "\x03[MapChanger]\x05 Maps reloaded.");
+	return Plugin_Handled;
+}
+
+void ReloadMaps(bool bForce)
+{
+	if( bForce || IsAddonChanged() )
 	{
 		GetAddonMissions();
 	}
-	if( !kv )
+	if( !g_kv )
 	{
-		kv = new KeyValues("campaigns");
+		g_kv = new KeyValues("campaigns");
 	}
-	kvinfo = new KeyValues("info");
-	if( FileExists(mapInfoPath) )
+	g_kvinfo = new KeyValues("info");
+	if( FileExists(g_sMapInfoPath) )
 	{
-		if( !kvinfo.ImportFromFile(mapInfoPath) )
+		if( !g_kvinfo.ImportFromFile(g_sMapInfoPath) )
 		{
-			SetFailState("[SM] ERROR: MapChanger - Incorrectly formatted file, '%s'", mapInfoPath);
+			SetFailState("[SM] ERROR: MapChanger - Incorrectly formatted file, '%s'", g_sMapInfoPath);
 		}
 	}
 	Actualize_MapChangerInfo();
-	return Plugin_Handled;
 }
 
 bool IsAddonChanged()
@@ -678,23 +754,23 @@ bool IsAddonChanged()
 
 void Actualize_MapChangerInfo()
 {
-	kv.Rewind();
-	kv.GotoFirstSubKey();
+	g_kv.Rewind();
+	g_kv.GotoFirstSubKey();
 	
 	static char sCampaign[MAX_CAMPAIGN_TITLE], map[MAX_MAP_NAME], DisplayName[MAX_MAP_TITLE];
 	ArrayList Compaigns = new ArrayList(50, 50);
 	bool fWrite = false;
 
-	kvinfo.Rewind();
-	if( kvinfo.JumpToKey("campaigns") )
+	g_kvinfo.Rewind();
 	{
-		if( kvinfo.GotoFirstSubKey() )
+		if( g_kvinfo.GotoFirstSubKey() )
 		{
 			do
 			{
-				kvinfo.GetSectionName(sCampaign, sizeof(sCampaign)); // retrieve campaign names
+				g_kvinfo.GetSectionName(sCampaign, sizeof(sCampaign)); // retrieve campaign names
 				Compaigns.PushString(sCampaign);
-			} while( kvinfo.GotoNextKey() );
+				
+			} while( g_kvinfo.GotoNextKey() );
 		}
 	}
 	
@@ -704,80 +780,94 @@ void Actualize_MapChangerInfo()
 	for( int i = 0; i < sizeof(iNumCampaignsGroup); i++ )
 		iNumCampaignsGroup[i] = 0;
 	
+	g_aMapOrder.Clear();
 	g_aMapCustomOrder.Clear();
 	g_aMapCustomFirst.Clear();
+	g_aMapStandardFirst.Clear();
 	
+	// fill standard
+	g_kvdef.Rewind();
+	g_kvdef.GotoFirstSubKey();
 	do
 	{
-		kv.GetSectionName(sCampaign, sizeof(sCampaign)); // compare to full list
-
-		kvinfo.GoBack();
-		kvinfo.JumpToKey(sCampaign, true);
+		if( IsValidMapKv(g_kvdef) )
+		{
+			FillStandardCampaignOrder();
+		}
+	} while( g_kvdef.GotoNextKey() );
+	
+	// fill custom
+	do
+	{
+		g_kv.GetSectionName(sCampaign, sizeof(sCampaign)); // compare to full list
+		
+		g_kvinfo.GoBack();
+		g_kvinfo.JumpToKey(sCampaign, true);
 		
 		if( -1 == Compaigns.FindString(sCampaign) )
 		{
-			kvinfo.SetString("group", "0");
-			kvinfo.SetString("mark", "0");
+			g_kvinfo.SetString("group", "0");
+			g_kvinfo.SetString("mark", "0");
 			iGrp = 0;
 			fWrite = true;
 		}
 		else {
-			kvinfo.GetString("group", sGrp, sizeof(sGrp), "0");
+			g_kvinfo.GetString("group", sGrp, sizeof(sGrp), "0");
 			iGrp = StringToInt(sGrp);
 		}
 		
-		if( IsValidMapKv() )
+		if( IsValidMapKv(g_kv) )
 		{
 			FillCustomCampaignOrder();
 			iNumCampaignsGroup[iGrp]++;
 		}
 		
-	} while( kv.GotoNextKey() );
+	} while( g_kv.GotoNextKey() );
 	delete Compaigns;
 	
 	g_bEmptyMapCycleCustom = g_aMapCustomFirst.Length == 0;
 	
 	if( fWrite )
 	{
-		kvinfo.Rewind();
-		kvinfo.ExportToFile(mapInfoPath);
+		g_kvinfo.Rewind();
+		g_kvinfo.ExportToFile(g_sMapInfoPath);
 	}
 	
 	for( int i = 0; i < sizeof(iNumCampaignsGroup); i++ )
 		iNumCampaignsCustom += iNumCampaignsGroup[i];
 	
 	// fill StringMaps
-	kv.Rewind();
-	kv.GotoFirstSubKey();
+	g_kv.Rewind();
+	g_kv.GotoFirstSubKey();
 	do
 	{
-		kv.GetSectionName(sCampaign, sizeof(sCampaign));
+		g_kv.GetSectionName(sCampaign, sizeof(sCampaign));
 		
-		if( !kv.JumpToKey(g_sGameMode) )
+		if( !g_kv.JumpToKey(g_sGameMode) )
 		{
-			if( !kv.JumpToKey("coop") ) // default
+			if( !g_kv.JumpToKey("coop") ) // default
 				continue;
 		}
 		
-		if( kv.GotoFirstSubKey() ) {
+		if( g_kv.GotoFirstSubKey() ) {
 			do
 			{
-				kv.GetString("Map", map, sizeof(map), "@");
+				g_kv.GetString("Map", map, sizeof(map), "@");
 				if( strcmp(map, "@") != 0 )
 				{
-					kv.GetString("DisplayName", DisplayName, sizeof(DisplayName), "@");
+					g_kv.GetString("DisplayName", DisplayName, sizeof(DisplayName), "@");
 					if( strcmp(DisplayName, "@") != 0 )
 					{
 						g_hNameByMapCustom.SetString(map, DisplayName, false);
 						g_hCampaignByMapCustom.SetString(map, sCampaign, false);
 					}
 				}
-			} while( kv.GotoNextKey() );
-			kv.GoBack();
+			} while( g_kv.GotoNextKey() );
+			g_kv.GoBack();
 		}
-		kv.GoBack();
+		g_kv.GoBack();
 		
-	} while( kv.GotoNextKey() );
+	} while( g_kv.GotoNextKey() );
 }
 
 stock char[] Translate(int client, const char[] format, any ...)
@@ -790,33 +880,53 @@ stock char[] Translate(int client, const char[] format, any ...)
 
 public Action Command_MapChoose(int client, int args)
 {
-	static char sDisplay[MAX_CAMPAIGN_TITLE], sDisplayTr[MAX_CAMPAIGN_TITLE], sCampaign[MAX_CAMPAIGN_TITLE], sCampaignTr[MAX_CAMPAIGN_TITLE];
-	int iCurMapNumber, iTotalMapsNumber;
-	bool bCustom = false;
-	
 	client = iGetListenServerHost(client, g_bDedicated);
+	Menu_ChooseMap(client);
+	return Plugin_Handled;
+}
+
+void Menu_ChooseMap(int client)
+{
+	if( !loc.IsReady() || g_iAsyncAwaitCount )
+	{
+		ReplyToCommand(client, "\x03[MapChanger]\x05 Sorry, database is not yet ready. Wait 1 minute more.");
+		return;
+	}
+	
+	static char sMapDisplay[MAX_CAMPAIGN_TITLE], sMapDisplayTr[MAX_CAMPAIGN_TITLE], sCampaign[MAX_CAMPAIGN_TITLE], sCampaignTr[MAX_CAMPAIGN_TITLE];
+	int iCurMapNumber, iTotalMapsNumber;
 	
 	Menu menu = new Menu(Menu_MapTypeHandler, MENU_ACTIONS_DEFAULT);
 	
 	if( g_hCampaignByMap.GetString(g_sCurMap, sCampaign, sizeof(sCampaign)) )
 	{
-		g_hNameByMap.GetString(g_sCurMap, sDisplay, sizeof(sDisplay));
-		FormatEx(sCampaignTr, sizeof(sCampaignTr), "%T", sCampaign, client);
-		FormatEx(sDisplayTr, sizeof(sDisplayTr), "%T", sDisplay, client);
+		g_hNameByMap.GetString(g_sCurMap, sMapDisplay, sizeof(sMapDisplay));
+	}
+	else { // custom map
+		g_hCampaignByMapCustom.GetString(g_sCurMap, sCampaign, sizeof(sCampaign));
+		g_hNameByMapCustom.GetString(g_sCurMap, sMapDisplay, sizeof(sMapDisplay));
+	}
+	if( sCampaign[0] == '#' )
+	{
+		loc.PhraseTranslateToLang(sCampaign, sCampaignTr, sizeof(sCampaignTr), client, _, _, sCampaign);
 	}
 	else {
-		g_hCampaignByMapCustom.GetString(g_sCurMap, sCampaignTr, sizeof(sCampaignTr));
-		g_hNameByMapCustom.GetString(g_sCurMap, sDisplayTr, sizeof(sDisplayTr));
-		GetMapNumber(sCampaignTr, g_sCurMap, iCurMapNumber, iTotalMapsNumber);
-		bCustom = true;
+		strcopy(sCampaignTr, sizeof(sCampaignTr), sCampaign);
+	}
+	if( sMapDisplay[0] == '#' )
+	{
+		loc.PhraseTranslateToLang(sMapDisplay, sMapDisplayTr, sizeof(sMapDisplayTr), client, _, _, sMapDisplay);
+		ClearDisplayName(sMapDisplayTr, sizeof(sMapDisplayTr));
+	}
+	else {
+		strcopy(sMapDisplayTr, sizeof(sMapDisplayTr), sMapDisplay);
 	}
 	
-	if( bCustom ) {
-		menu.SetTitle( "%T: [%i/%i] %s - %s", "Current_map", client, iCurMapNumber, iTotalMapsNumber, sCampaignTr, sDisplayTr); // Current map: %s - %s
-	}
-	else {
-		menu.SetTitle( "%T: %s - %s", "Current_map", client, sCampaignTr, sDisplayTr); // Current map: %s - %s
-	}
+	GetMapNumber(sCampaign, g_sCurMap, iCurMapNumber, iTotalMapsNumber);
+	NormalizeName(sCampaignTr);
+	NormalizeName(sMapDisplayTr);
+	
+	menu.SetTitle("%T: [%i/%i] %s - %s", "Current_map", client, iCurMapNumber, iTotalMapsNumber, sCampaignTr, sMapDisplayTr);
 	
 	if( g_hCvarAllowDefault.BoolValue )
 	{
@@ -841,8 +951,6 @@ public Action Command_MapChoose(int client, int args)
 			menu.AddItem("rating", Translate(client, "%t", "By_rating")); 		// По рейтингу
 	}
 	menu.DisplayAt(client, 0, MENU_TIME_FOREVER);
-	
-	return Plugin_Handled;
 }
 
 public int Menu_MapTypeHandler(Menu menu, MenuAction action, int client, int ItemIndex)
@@ -861,7 +969,7 @@ public int Menu_MapTypeHandler(Menu menu, MenuAction action, int client, int Ite
 				g_MapGroup[client] = MAP_GROUP_ANY;
 				g_Rating[client] = MAP_RATING_ANY;
 				g_RatingMenu[client] = false;
-				CreateDefcampaignMenu(client);
+				CreateMenu_DefCampaign(client);
 			}
 			else if( strcmp(sgroup, "rating") == 0 ) {
 				g_MapGroup[client] = MAP_GROUP_ANY;
@@ -921,7 +1029,7 @@ public int Menu_RatingHandler(Menu menu, MenuAction action, int client, int Item
 
 		case MenuAction_Cancel:
 			if( ItemIndex == MenuCancel_ExitBack )
-				Command_MapChoose(client, 0);
+				Menu_ChooseMap(client);
 		
 		case MenuAction_Select:
 		{
@@ -951,9 +1059,6 @@ void CreateMenuCampaigns(int client, int ChosenGroup, int ChosenRating, int menu
 	FormatEx(Value, sizeof(Value), "%T", "Choose_campaign", client); // - Выберите кампанию -
 	menu.SetTitle(Value);
 	
-	kv.Rewind();
-	kv.GotoFirstSubKey();
-	
 	ArrayList asort, arand;
 	asort = new ArrayList(ByteCountToCells(MAX_CAMPAIGN_TITLE));
 	arand = new ArrayList(ByteCountToCells(MAX_CAMPAIGN_TITLE));
@@ -962,41 +1067,49 @@ void CreateMenuCampaigns(int client, int ChosenGroup, int ChosenRating, int menu
 	static char campaign_current[MAX_CAMPAIGN_TITLE];
 	static char name[MAX_MAP_TITLE];
 	
-	GetCampaignDisplay(g_sCurMap, campaign_current, sizeof(campaign_current));
+	GetCampaignDisplay(g_sCurMap, campaign_current, sizeof(campaign_current), _, _, false);
 	
 	int group = 0, mark = 0;
 	bool bAtLeastOne = false;
+	g_kv.Rewind();
+	g_kv.GotoFirstSubKey();
 	do
 	{
-		kv.GetSectionName(campaign, sizeof(campaign));
+		g_kv.GetSectionName(campaign, sizeof(campaign));
+		NormalizeName(campaign);
 		asort.PushString(campaign);
-	} while( kv.GotoNextKey() );
+	} while( g_kv.GotoNextKey() );
 	
-	asort.Sort(Sort_Ascending, Sort_String);
+	asort.Sort(Sort_Ascending, Sort_String); // Sort list of campaigns by alphabet
 	
-	kvinfo.Rewind();
-	kvinfo.JumpToKey("campaigns");
+	g_kvinfo.Rewind();
+	//g_kvinfo.JumpToKey("campaigns");
 	
 	for( int i = 0; i < asort.Length; i++ )
 	{
 		asort.GetString(i, campaign, sizeof(campaign));
-	
-		if( kvinfo.JumpToKey(campaign) )
+		
+		if( g_kvinfo.JumpToKey(campaign) )
 		{
-			group = kvinfo.GetNum("group", 0);
-			mark = kvinfo.GetNum("mark", 0);
-			kvinfo.GoBack();
+			group = g_kvinfo.GetNum("group", 0);
+			mark = g_kvinfo.GetNum("mark", 0);
+			g_kvinfo.GoBack();
 		}
 		if( (ChosenGroup == -1 || group == ChosenGroup) && (ChosenRating == -1 || mark == ChosenRating) )
 		{
-			if( IsValidMapKv() ) {
-				FormatEx(name, sizeof(name), "%s%s   %s", StrRepeat(BlackStar, LEN_BLACK_STAR, mark), StrRepeat(WhiteStar, LEN_WHITE_STAR, MAX_MARK - mark), campaign);
-				menu.AddItem(campaign, name);
-				if( strcmp(campaign, campaign_current) != 0 )
-				{
-					arand.PushString(campaign);
+			g_kv.Rewind();
+			if( g_kv.JumpToKey(campaign) )
+			{
+				if( IsValidMapKv(g_kv) ) {
+					loc.Format(name, sizeof(name), "%s%s   %s", StrRepeat(BlackStar, LEN_BLACK_STAR, mark), StrRepeat(WhiteStar, LEN_WHITE_STAR, MAX_MARK - mark), campaign);
+					
+					if( strcmp(campaign, campaign_current, false) != 0 )
+					{
+						arand.PushString(campaign);
+					}
+					menu.AddItem(campaign, name);
+					bAtLeastOne = true;
 				}
-				bAtLeastOne = true;
 			}
 		}
 	}
@@ -1013,27 +1126,27 @@ void CreateMenuCampaigns(int client, int ChosenGroup, int ChosenRating, int menu
 	if( bAtLeastOne )
 	{
 		menu.DisplayAt(client, menuIndex, MENU_TIME_FOREVER);
-	} 
+	}
 	else {
 		if( g_RatingMenu[client] )
 		{
 			FormatEx(Value, sizeof(Value), "%T", "No_maps_rating", client); // Карт с такой оценкой ещё нет.
-			PrintToChat(client, "\x03[MapChanger] \x05%s", Value);
+			PrintToChat(client, "\x03[MapChanger]\x05 %s", Value);
 			CreateMenuRating(client);
 		} else {
 			FormatEx(Value, sizeof(Value), "%T", "No_maps_in_group", client); // В этой группе ещё нет карт.
-			PrintToChat(client, "\x03[MapChanger] \x05%s", Value);
-			Command_MapChoose(client, 0);
+			PrintToChat(client, "\x03[MapChanger]\x05 %s", Value);
+			Menu_ChooseMap(client);
 		}
 	}
 }
 
 // in. - KeyValue in position of concrete campaign section
-bool IsValidMapKv()
+bool IsValidMapKv(KeyValues kv)
 {
 	char map[MAX_MAP_NAME];
 	bool bValid = false;
-
+	
 	// get the first map of campaign to check is it exist
 	if( !kv.JumpToKey(g_sGameMode) )
 	{
@@ -1053,22 +1166,60 @@ bool IsValidMapKv()
 	return bValid;
 }
 
+void FillStandardCampaignOrder()
+{
+	char map[MAX_MAP_NAME];
+	bool bFirstMap = true;
+
+	// get the first map of campaign to check is it exist
+	if( !g_kvdef.JumpToKey(g_sGameMode) )
+	{
+		if( !g_kvdef.JumpToKey("coop") ) // default
+			return;
+	}
+	if( g_kvdef.GotoFirstSubKey() )
+	{
+		do
+		{
+			g_kvdef.GetString("Map", map, sizeof(map), "@");
+			if( strcmp(map, "@") != 0 )
+			{
+				if( IsMapValidEx(map) )
+				{
+					g_aMapOrder.PushString(map);
+
+					if( bFirstMap )
+					{
+						bFirstMap = false;
+						if( !IsBlackListedCycleMap(map) )
+						{
+							g_aMapStandardFirst.PushString(map);
+						}
+					}
+				}
+			}
+		} while( g_kvdef.GotoNextKey() );
+		g_kvdef.GoBack();
+	}
+	g_kvdef.GoBack();
+}
+
 void FillCustomCampaignOrder()
 {
 	char map[MAX_MAP_NAME];
 	bool bFirstMap = true;
 
 	// get the first map of campaign to check is it exist
-	if( !kv.JumpToKey(g_sGameMode) )
+	if( !g_kv.JumpToKey(g_sGameMode) )
 	{
-		if( !kv.JumpToKey("coop") ) // default
+		if( !g_kv.JumpToKey("coop") ) // default
 			return;
 	}
-	if( kv.GotoFirstSubKey() )
+	if( g_kv.GotoFirstSubKey() )
 	{
 		do
 		{
-			kv.GetString("Map", map, sizeof(map), "@");
+			g_kv.GetString("Map", map, sizeof(map), "@");
 			if( strcmp(map, "@") != 0 )
 			{
 				if( IsMapValidEx(map) )
@@ -1078,22 +1229,23 @@ void FillCustomCampaignOrder()
 					if( bFirstMap )
 					{
 						bFirstMap = false;
-						g_aMapCustomFirst.PushString(map);
+						if( !IsBlackListedCycleMap(map) )
+						{
+							g_aMapCustomFirst.PushString(map);
+						}
 					}
 				}
 			}
-		} while( kv.GotoNextKey() );
-		kv.GoBack();
+		} while( g_kv.GotoNextKey() );
+		g_kv.GoBack();
 	}
-	kv.GoBack();
+	g_kv.GoBack();
 }
 
 char[] StrRepeat(char[] text, int maxlength, int times)
 {
 	char NewStr[MAX_MAP_TITLE];
-
 //	char[] NewStr = new char[times*maxlength];
-
 	for( int i = 0; i < times*maxlength; i+= maxlength )
 		for( int j = 0; j < maxlength; j++ ) {
 			NewStr[i + j] = text[j];
@@ -1105,28 +1257,24 @@ char[] StrRepeat(char[] text, int maxlength, int times)
 	return NewStr;
 }
 
-void CreateDefcampaignMenu(int client, int itemIndex = 0)
+void CreateMenu_DefCampaign(int client, int itemIndex = 0)
 {
+	static char sCampaign[MAX_CAMPAIGN_TITLE], sCampaignTr[MAX_CAMPAIGN_TITLE];
+
 	Menu menu = new Menu(Menu_DefCampaignHandler, MENU_ACTIONS_DEFAULT);
 	menu.SetTitle("%T", "Choose_campaign", client); // - Выберите кампанию -
 	
-	// extract uniq. campaign names
-	ArrayList aUniq = new ArrayList(ByteCountToCells(64));
-	StringMapSnapshot hSnap = g_hCampaignByMap.Snapshot();
-	static char sMap[MAX_MAP_NAME], sCampaign[MAX_CAMPAIGN_TITLE], sCampaignTr[MAX_CAMPAIGN_TITLE];
-	
-	for( int i = 0; i < hSnap.Length; i++ )
+	g_kvdef.Rewind();
+	g_kvdef.GotoFirstSubKey();
+	do
 	{
-		hSnap.GetKey(i, sMap, sizeof(sMap));
-		g_hCampaignByMap.GetString(sMap, sCampaign, sizeof(sCampaign));
-		if( aUniq.FindString(sCampaign) == -1 ) {
-			aUniq.PushString(sCampaign);
-			FormatEx(sCampaignTr, sizeof(sCampaignTr), "%T", sCampaign, client);
-			menu.AddItem(sCampaign, sCampaignTr, ITEMDRAW_DEFAULT);
-		}
-	}
-	delete hSnap;
-	delete aUniq;
+		g_kvdef.GetSectionName(sCampaign, sizeof(sCampaign));
+		loc.PhraseTranslateToLang(sCampaign, sCampaignTr, sizeof(sCampaignTr), client, _, _, sCampaign);
+		NormalizeName(sCampaignTr);
+		menu.AddItem(sCampaign, sCampaignTr);
+		
+	} while( g_kvdef.GotoNextKey() );
+	
 	menu.ExitBackButton = true;
 	menu.DisplayAt(client, itemIndex, MENU_TIME_FOREVER);
 }
@@ -1140,7 +1288,7 @@ public int Menu_DefCampaignHandler(Menu menu, MenuAction action, int client, int
 
 		case MenuAction_Cancel:
 			if( ItemIndex == MenuCancel_ExitBack )
-				Command_MapChoose(client, 0);
+				Menu_ChooseMap(client);
 		
 		case MenuAction_Select:
 		{
@@ -1148,73 +1296,62 @@ public int Menu_DefCampaignHandler(Menu menu, MenuAction action, int client, int
 			static char campaign_title[MAX_MAP_TITLE];
 			menu.GetItem(ItemIndex, campaign, sizeof(campaign), _, campaign_title, sizeof(campaign_title));
 			
-			CreateDefmapMenu(client, campaign, campaign_title);
+			CreateMenu_DefMaps(client, campaign, campaign_title);
 			g_iMenuPage[client] = menu.Selection;
 		}
 	}
 	return 0;
 }
 
-void CreateDefmapMenu(int client, char[] campaign, char[] campaign_title)
+void CreateMenu_DefMaps(int client, char[] campaign, char[] campaign_title)
 {
-	Menu menu = new Menu(Menu_DefMapHandler, MENU_ACTIONS_DEFAULT);
-	menu.SetTitle("- %T [%s] -", "Choose_map", client, campaign_title);  // Выберите карту
-	
-	// extract all campaign maps
-	StringMapSnapshot hSnap = g_hCampaignByMap.Snapshot();
-	static char sMap[MAX_MAP_NAME], sCampaign[MAX_CAMPAIGN_TITLE], sDisplay[MAX_MAP_TITLE], sDisplayTr[MAX_MAP_TITLE], firstmap[MAX_MAP_NAME];
-	
-	char[][] sOrder = new char[hSnap.Length][MAX_MAP_TITLE];
-	int arrSize = 0;
-	
-	for( int i = 0; i < hSnap.Length; i++ )
+	g_kvdef.Rewind();
+	if( g_kvdef.JumpToKey(campaign) )
 	{
-		hSnap.GetKey(i, sMap, sizeof(sMap));
-		
-		g_hCampaignByMap.GetString(sMap, sCampaign, sizeof(sCampaign));
-		
-		if( strcmp(sCampaign, campaign) == 0 )
+		if( !g_kvdef.JumpToKey(g_sGameMode) )
 		{
-			g_hNameByMap.GetString(sMap, sDisplay, sizeof(sDisplay));
-			strcopy(sOrder[arrSize], sizeof(sDisplay), sDisplay);
-			arrSize++;
-		}
-	}
-	delete hSnap;
-	
-	// StringMap snapshot order is sorted by hash, so I need to put this shit
-	SortStrings(sOrder, arrSize, Sort_Ascending);
-
-	hSnap = g_hNameByMap.Snapshot();
-	
-	for( int i = 0; i < arrSize; i++ )
-	{
-		for( int j = 0; j < hSnap.Length; j++ )
-		{
-			hSnap.GetKey(j, sMap, sizeof(sMap));
-			g_hNameByMap.GetString(sMap, sDisplay, sizeof(sDisplay));
-			
-			if( strcmp(sOrder[i], sDisplay) == 0 )
-			{
-				FormatEx(sDisplayTr, sizeof(sDisplayTr), "%T", sDisplay, client);
-				menu.AddItem(sMap, sDisplayTr);
-				if( firstmap[0] == 0 )
-				{
-					strcopy(firstmap, sizeof(firstmap), sMap);
-				}
+			if( !g_kvdef.JumpToKey("coop") ) { // default
+				CPrintToChat(client, "\x03[MapChanger]\x05 %T %s!", "no_maps_for_mode", client, g_sGameMode); // Не найдено карт в кофигурации для режима
+				return;
 			}
 		}
+		static char map[MAX_MAP_NAME];
+		static char DisplayName[MAX_MAP_TITLE];
+		
+		if( !g_hCvarChapterList.BoolValue )
+		{
+			g_kvdef.GotoFirstSubKey();
+			g_kvdef.GetString("Map", map, sizeof(map), "@");
+			CheckVoteMap(client, map, false);
+			return;
+		}
+		
+		Menu menu = new Menu(Menu_DefMapHandler, MENU_ACTIONS_DEFAULT);
+		menu.SetTitle("- %T [%s] -", "Choose_map", client, campaign_title);  // Выберите карту
+		
+		g_kvdef.GotoFirstSubKey();
+		do
+		{
+			g_kvdef.GetString("Map", map, sizeof(map), "@");
+			if( strcmp(map, "@") != 0 )
+			{
+				g_kvdef.GetString("DisplayName", DisplayName, sizeof(DisplayName), "@");
+				if( strcmp(DisplayName, "@") != 0 )
+				{
+					if( DisplayName[0] == '#' )
+					{
+						strcopy(DisplayName, sizeof(DisplayName), Loc_Translate(client, DisplayName));
+						ClearDisplayName(DisplayName, sizeof(DisplayName));
+					}
+					NormalizeName(DisplayName);
+					menu.AddItem(map, DisplayName, ITEMDRAW_DEFAULT);
+				}
+			}
+		} while( g_kvdef.GotoNextKey() );
+		
+		menu.ExitBackButton = true;
+		menu.DisplayAt(client, 0, MENU_TIME_FOREVER);
 	}
-	delete hSnap;
-	
-	if( !g_hCvarChapterList.BoolValue )
-	{
-		delete menu;
-		CheckVoteMap(client, firstmap, false);
-		return;
-	}
-	menu.ExitBackButton = true;
-	menu.DisplayAt(client, 0, MENU_TIME_FOREVER);
 }
 
 public int Menu_DefMapHandler(Menu menu, MenuAction action, int client, int ItemIndex)
@@ -1226,7 +1363,7 @@ public int Menu_DefMapHandler(Menu menu, MenuAction action, int client, int Item
 
 		case MenuAction_Cancel:
 			if( ItemIndex == MenuCancel_ExitBack )
-				CreateDefcampaignMenu(client, g_iMenuPage[client]);
+				CreateMenu_DefCampaign(client, g_iMenuPage[client]);
 		
 		case MenuAction_Select:
 		{
@@ -1277,12 +1414,16 @@ public int Menu_GroupHandler(Menu menu, MenuAction action, int client, int ItemI
 			menu.GetItem(ItemIndex, sGroup, sizeof(sGroup));
 			int group = StringToInt(sGroup);
 			
-			kvinfo.Rewind();
-			kvinfo.JumpToKey("campaigns");
-			kvinfo.JumpToKey(g_Campaign[client], true);
-			kvinfo.SetNum("group", group);
-			kvinfo.Rewind();
-			kvinfo.ExportToFile(mapInfoPath);
+			g_kvinfo.Rewind();
+			//if( g_kvinfo.JumpToKey("campaigns") )
+			{
+				if( g_kvinfo.JumpToKey(g_Campaign[client], true) )
+				{
+					g_kvinfo.SetNum("group", group);
+				}
+			}
+			g_kvinfo.Rewind();
+			g_kvinfo.ExportToFile(g_sMapInfoPath);
 			Actualize_MapChangerInfo();
 			CreateMenuCampaigns(client, g_MapGroup[client], g_Rating[client]);
 		}
@@ -1300,7 +1441,7 @@ void CreateMenuMark(int client)
 	menu.AddItem("4", Translate(client, "%t", "Rating_4")); // балла (неплохая)
 	menu.AddItem("5", Translate(client, "%t", "Rating_5")); // баллов (очень хорошая)
 	menu.AddItem("6", Translate(client, "%t", "Rating_6")); // баллов (блестящая)
-	if( IsClientRootAdmin(client) )
+	if( HasRemoveRatingAccess(client) )
 		menu.AddItem("0", Translate(client, "%t", "Rating_remove")); // Удалить рейтинг
 	menu.ExitBackButton = true;
 	menu.DisplayAt( client, 0, MENU_TIME_FOREVER);
@@ -1324,16 +1465,11 @@ public int Menu_MarkHandler(Menu menu, MenuAction action, int client, int ItemIn
 			g_iVoteMark = StringToInt(sMark);
 			
 			if (g_iVoteMark == 0) {
-				SetRating(g_Campaign[client], 0); // Remove rating is intended for admin only
+				SetRating(g_Campaign[client], 0); // "Remove rating" is intended for admin only
 				CreateMenuCampaigns(client, g_MapGroup[client], g_Rating[client]);
 			}
 			else {
-				if( IsClientRootAdmin(client) ) {
-					StartVoteMark(client, g_Campaign[client]);
-				}
-				else {
-					CPrintToChat(client, "\04%t", "no_access");
-				}
+				StartVoteMark(client, g_Campaign[client]);
 			}
 		}
 	}
@@ -1352,7 +1488,7 @@ public int Menu_CampaignHandler(Menu menu, MenuAction action, int client, int It
 				if (g_RatingMenu[client])
 					CreateMenuRating(client);
 				else
-					Command_MapChoose(client, 0);
+					Menu_ChooseMap(client);
 		
 		case MenuAction_Select:
 		{
@@ -1368,13 +1504,13 @@ public int Menu_CampaignHandler(Menu menu, MenuAction action, int client, int It
 
 void CreateCustomMapMenu(int client, char[] campaign)
 {
-	kv.Rewind();
-	if( kv.JumpToKey(campaign) )
+	g_kv.Rewind();
+	if( g_kv.JumpToKey(campaign) )
 	{
-		if( !kv.JumpToKey(g_sGameMode) )
+		if( !g_kv.JumpToKey(g_sGameMode) )
 		{
-			if( !kv.JumpToKey("coop") ) { // default
-				CPrintToChat(client, "\x03[MapChanger] %T %s!", "no_maps_for_mode", client, g_sGameMode); // Не найдено карт в кофигурации для режима
+			if( !g_kv.JumpToKey("coop") ) { // default
+				CPrintToChat(client, "\x03[MapChanger]\x05 %T %s!", "no_maps_for_mode", client, g_sGameMode); // Не найдено карт в кофигурации для режима
 				return;
 			}
 		}
@@ -1383,8 +1519,8 @@ void CreateCustomMapMenu(int client, char[] campaign)
 		
 		if( !g_hCvarChapterList.BoolValue )
 		{
-			kv.GotoFirstSubKey();
-			kv.GetString("Map", map, sizeof(map), "@");
+			g_kv.GotoFirstSubKey();
+			g_kv.GetString("Map", map, sizeof(map), "@");
 			LogVoteAction(client, "[TRY] Change map to: %s from %s", map, g_sCurMap);
 			CheckVoteMap(client, map, true);
 			return;
@@ -1393,19 +1529,25 @@ void CreateCustomMapMenu(int client, char[] campaign)
 		Menu menu = new Menu(Menu_MapHandler, MENU_ACTIONS_DEFAULT);
 		menu.SetTitle("- %T [%s] -", "Choose_map", client, campaign);  // Выберите карту
 		
-		kv.GotoFirstSubKey();
+		g_kv.GotoFirstSubKey();
 		do
 		{
-			kv.GetString("Map", map, sizeof(map), "@");
+			g_kv.GetString("Map", map, sizeof(map), "@");
 			if( strcmp(map, "@") != 0 )
 			{
-				kv.GetString("DisplayName", DisplayName, sizeof(DisplayName), "@");
+				g_kv.GetString("DisplayName", DisplayName, sizeof(DisplayName), "@");
 				if( strcmp(DisplayName, "@") != 0 )
 				{
+					if( DisplayName[0] == '#' )
+					{
+						strcopy(DisplayName, sizeof(DisplayName), Loc_Translate(client, DisplayName));
+						ClearDisplayName(DisplayName, sizeof(DisplayName));
+					}
+					NormalizeName(DisplayName);
 					menu.AddItem(map, DisplayName, ITEMDRAW_DEFAULT);
 				}
 			}
-		} while( kv.GotoNextKey() );
+		} while( g_kv.GotoNextKey() );
 		
 		if( IsClientRootAdmin(client) ) {
 			menu.AddItem("group", Translate(client, "%t", "Move_map_type"));  // Переместить в другую группу
@@ -1442,13 +1584,19 @@ public int Menu_MapHandler(Menu menu, MenuAction action, int client, int ItemInd
 
 			if( strcmp(map, "mark") == 0 )
 			{
-				if( GetRealClientCount() >= g_hCvarVoteMarkMinPlayers.IntValue || IsClientRootAdmin(client) ) 
+				if( HasVoteRatingAccess(client) )
 				{
-					CreateMenuMark(client);
+					if( GetRealClientCount() >= g_hCvarVoteMarkMinPlayers.IntValue || IsClientRootAdmin(client) ) 
+					{
+						CreateMenuMark(client);
+					}
+					else {
+						CPrintToChat(client, "%t", "Not_enough_votemark_players", g_hCvarVoteMarkMinPlayers.IntValue); // Not enough clients to start vote for mark (should be %i+)
+						CreateCustomMapMenu(client, g_Campaign[client]);
+					}
 				}
 				else {
-					CPrintToChat(client, "%t", "Not_enough_votemark_players", g_hCvarVoteMarkMinPlayers.IntValue); // Not enough clients to start vote for mark (should be %i+)
-					CreateCustomMapMenu(client, g_Campaign[client]);
+					CPrintToChat(client, "%t", "no_access");
 				}
 			}
 			else if( strcmp(map, "group") == 0 )
@@ -1482,7 +1630,7 @@ void CheckVoteMap(int client, char[] map, bool bIsCustom)
 			if( g_fLastTime[client] != 0 && !IsClientRootAdmin(client) )
 			{
 				if ( g_fLastTime[client] + g_hCvarDelay.FloatValue > fCurTime ) {
-					PrintToChat(client, "\x03[MapChanger] %t", "too_often"); // "You can't vote too often!"
+					PrintToChat(client, "\x03[MapChanger]\x05 %t", "too_often"); // "You can't vote too often!"
 					LogVoteAction(client, "[DELAY] Attempt to vote too often. Time left: %i sec.", (g_fLastTime[client] + g_hCvarDelay.FloatValue) - fCurTime);
 					return;
 				}
@@ -1497,7 +1645,7 @@ void CheckVoteMap(int client, char[] map, bool bIsCustom)
 		}
 	} else {
 		if( client ) {
-			PrintToChat(client, "\x03[MapChanger] %t %s %t", "map", map, "not_exist");  // Карта XXX больше не существует на сервере!
+			PrintToChat(client, "\x03[MapChanger]\x05 %t %s %t", "map", map, "not_exist");  // Карта XXX больше не существует на сервере!
 		}
 		LogVoteAction(client, "[DENY] Map is not exist.");
 	}
@@ -1550,7 +1698,7 @@ Action Timer_VoteDelayed(Handle timer, Menu menu)
 
 public int Handle_VoteMapMenu(Menu menu, MenuAction action, int param1, int param2)
 {
-	char display[MAX_CAMPAIGN_TITLE], buffer[MAX_CAMPAIGN_TITLE];
+	char display[MAX_CAMPAIGN_TITLE], buffer[MAX_CAMPAIGN_TITLE + MAX_MAP_TITLE];
 	int client = param1;
 
 	switch( action )
@@ -1594,13 +1742,32 @@ public int Handle_VoteMapMenu(Menu menu, MenuAction action, int param1, int para
 	return 0;
 }
 
+void ShowChangeLevelNotify(char[] map)
+{
+	char mapDisplay[MAX_MAP_TITLE], campaignDisplay[MAX_CAMPAIGN_TITLE], sCampaign[MAX_CAMPAIGN_TITLE];
+	int iIndexMap, iTotalMaps;
+	
+	GetCampaignDisplay(map, sCampaign, sizeof(sCampaign), false);
+	GetMapNumber(sCampaign, map, iIndexMap, iTotalMaps);
+	
+	for( int i = 1; i <= MaxClients; i++ )
+	{
+		if( IsClientInGame(i) && !IsFakeClient(i) )
+		{
+			GetCampaignDisplay(map, campaignDisplay, sizeof(campaignDisplay), true, i);
+			GetMapDisplay(map, mapDisplay, sizeof(mapDisplay), true, i);
+			//ClearDisplayName(mapDisplay, sizeof(mapDisplay));
+			
+			CPrintToChat(i, "%t", "vote_success", campaignDisplay, mapDisplay, iIndexMap, iTotalMaps);
+		}
+	}
+}
+
 void Handler_PostVoteAction(bool bVoteSuccess)
 {
 	if( bVoteSuccess )
 	{
 		LogVoteAction(-1, "[ACCEPTED] Vote for map: %s", g_sVoteResult);
-		CPrintToChatAll("%t", "vote_success");
-		
 		L4D_ChangeLevel(g_sVoteResult);
 	}
 	else {
@@ -1616,6 +1783,19 @@ void StartVoteMark(int client, char[] sCampaign)
 		PrintToChat(client, "%t", "vote_in_progress"); // Другое голосование ещё не закончилось!
 		return;
 	}
+	
+	float fCurTime = GetEngineTime();
+	
+	if( g_fLastTimeMark[client] != 0 && !HasRemoveRatingAccess(client) )
+	{
+		if ( g_fLastTimeMark[client] + g_hCvarDelay.FloatValue > fCurTime ) {
+			PrintToChat(client, "\x03[MapChanger]\x05 %t", "too_often"); // "You can't vote too often!"
+			LogVoteAction(client, "[DELAY] Attempt to vote too often. Time left: %i sec.", (g_fLastTimeMark[client] + g_hCvarDelay.FloatValue) - fCurTime);
+			return;
+		}
+	}
+	g_fLastTimeMark[client] = fCurTime;
+	
 	Menu menu = new Menu(Handle_VoteMarkMenu, MenuAction_DisplayItem | MenuAction_Display);
 	menu.AddItem(sCampaign, "Yes");
 	menu.AddItem("", "No");
@@ -1628,7 +1808,7 @@ void StartVoteMark(int client, char[] sCampaign)
 
 public int Handle_VoteMarkMenu(Menu menu, MenuAction action, int param1, int param2)
 {
-	static char display[MAX_CAMPAIGN_TITLE], buffer[MAX_CAMPAIGN_TITLE], sCampaign[MAX_CAMPAIGN_TITLE], sRate[32];
+	static char display[MAX_CAMPAIGN_TITLE], buffer[MAX_CAMPAIGN_TITLE*2], sCampaign[MAX_CAMPAIGN_TITLE], sRate[32];
 	int client = param1;
 	
 	switch( action )
@@ -1641,9 +1821,12 @@ public int Handle_VoteMarkMenu(Menu menu, MenuAction action, int param1, int par
 			if( (param1 == 0 || g_bVotepass) && !g_bVeto ) {
 				menu.GetItem(0, sCampaign, sizeof(sCampaign));
 				SetRating(sCampaign, g_iVoteMark);
+				FormatEx(sRate, sizeof(sRate), "Rating_%i", g_iVoteMark);				
+				CPrintToChatAll("%t", "mark_set_success", g_iVoteMark, sRate, sCampaign);
 				LogVoteAction(-1, "[ACCEPTED] Vote for mark.");
 			}
 			else {
+				CPrintToChatAll("%t", "vote_mark_failed");
 				LogVoteAction(-1, "[NOT ACCEPTED] Vote for mark.");
 			}
 		}
@@ -1666,20 +1849,24 @@ public int Handle_VoteMarkMenu(Menu menu, MenuAction action, int param1, int par
 
 void SetRating(char[] sCampaign, int iMark)
 {
-	kvinfo.Rewind();
-	kvinfo.JumpToKey("campaigns");
-	kvinfo.JumpToKey(sCampaign, true);
-	kvinfo.SetNum("mark", iMark);
-	kvinfo.Rewind();
-	kvinfo.ExportToFile(mapInfoPath);
+	g_kvinfo.Rewind();
+	//if( g_kvinfo.JumpToKey("campaigns") )
+	{
+		if( g_kvinfo.JumpToKey(sCampaign, true) )
+		{
+			g_kvinfo.SetNum("mark", iMark);
+		}
+	}
+	g_kvinfo.Rewind();
+	g_kvinfo.ExportToFile(g_sMapInfoPath);
 }
 
 stock void ReplaceColor(char[] message, int maxLen)
 {
-	ReplaceString(message, maxLen, "{white}", "\x01", false);
-	ReplaceString(message, maxLen, "{cyan}", "\x03", false);
-	ReplaceString(message, maxLen, "{orange}", "\x04", false);
-	ReplaceString(message, maxLen, "{green}", "\x05", false);
+	ReplaceString(message, maxLen, "{white}", 	"\x01", false);
+	ReplaceString(message, maxLen, "{cyan}", 	"\x03", false);
+	ReplaceString(message, maxLen, "{orange}", 	"\x04", false);
+	ReplaceString(message, maxLen, "{green}", 	"\x05", false);
 }
 
 stock void CPrintToChat(int iClient, const char[] format, any ...)
@@ -1750,37 +1937,63 @@ void LogVoteAction(int client, const char[] format, any ...)
 	}
 }
 
-bool L4D_ChangeLevel(char[] sMapName)
+Action Timer_ChangeLevel(Handle timer, DataPack dp)
+{
+	char sMapName[MAX_MAP_NAME];
+	dp.Reset();
+	dp.ReadString(sMapName, sizeof(sMapName));
+	
+	if( g_hCvarServerPrintInfo.BoolValue )
+	{
+		PrintToServer("[MapChanger] Changing map to: %s ...", sMapName);
+	}
+	g_bMapStarted = false;
+	ForceChangeLevel(sMapName, "Map Vote");
+	return Plugin_Continue;
+}
+
+bool L4D_ChangeLevel(char[] sMapName, bool bInstantChange = false)
 {
 	if( !g_bMapStarted )
 	{
-		PrintToChatAll("Cannot change the map when no map is started!");
+		if( !bInstantChange )
+		{
+			CPrintToChatAll("Cannot change the map when no map is started!");
+		}
 		return false;
 	}
 
 	if( !IsMapValidEx(sMapName) )
 	{
 		RemoveBrokenMap(sMapName);
-		CPrintToChatAll("%t: %s", "invalid_map", sMapName); // Cannot change map. Invalid:
+		if( !bInstantChange )
+		{
+			CPrintToChatAll("%t: %s", "invalid_map", sMapName); // Cannot change map. Invalid:
+		}
 		return false;
 	}
 	
-	if( g_hCvarServerPrintInfo.BoolValue )
+	if( bInstantChange ) // don't request frame or timer atm of disconnection to lobby
 	{
-		PrintToServer("[MapChanger] Changing map to: %s ...", sMapName);
+		g_bMapStarted = false;
+		ForceChangeLevel(sMapName, "Map Vote");
+		return true;
 	}
 	
-	g_bMapStarted = false;
-	ForceChangeLevel(sMapName, "Map Vote");
+	ShowChangeLevelNotify(sMapName);
+	
+	DataPack dp = new DataPack();
+	dp.WriteString(sMapName);
+	CreateTimer(g_hCvarMapChangeNotifyTime.FloatValue, Timer_ChangeLevel, dp, TIMER_FLAG_NO_MAPCHANGE);
 	return true;
 }
 
 void FinaleMapChange()
 {
-	GotoNextMap(g_hCvarFinMapRandom.BoolValue);
+	GotoNextMap();
 }
 
-void GotoNextMap(bool bRandomOrder)
+void GotoNextMap(bool bInstantChange = false)
 {
 	static int iLastTime;
 	if( iLastTime != 0 && GetTime() - iLastTime <= 5 ) // don't allow to run faster than 5 sec.
@@ -1794,29 +2007,74 @@ void GotoNextMap(bool bRandomOrder)
 
 	if( idx != -1 ) // is it default map?
 	{
-		idx++;
-		if( idx >= g_aMapOrder.Length )
+		if ( view_as<NEXT_MAP_METHOD>(g_hCvarNextMapOnStandard.IntValue) == NEXT_MAP_METHOD_STANDARD_RANDOM && g_bIsFinale )
 		{
-			idx = 0;
+			GetRandomFirstMap_Standard(sMapName, sizeof(sMapName));
 		}
-		g_aMapOrder.GetString(idx, sMapName, sizeof(sMapName));
+		else {
+			idx++;
+			if( idx >= g_aMapOrder.Length )
+			{
+				idx = 0;
+			}
+			g_aMapOrder.GetString(idx, sMapName, sizeof(sMapName));
+			
+			if( IsBlackListedCycleMap(sMapName) ) // temporarily solution
+			{
+				GetRandomFirstMap_Standard(sMapName, sizeof(sMapName));
+			}
+		}
 	}
 	else { // custom map
 		idx = g_aMapCustomOrder.FindString(g_sCurMap); // search custom maps
 		
 		if( idx != -1 )
 		{
-			if( bRandomOrder ) // select first map randomly
+			if( g_bIsFinale )
 			{
-				GetRandomFirstMap_Custom(sMapName, sizeof(sMapName));
+				switch( view_as<NEXT_MAP_METHOD>(g_hCvarNextMapOnCustom.IntValue) )
+				{
+					case NEXT_MAP_METHOD_STANDARD: {
+						g_aMapOrder.GetString(0, sMapName, sizeof(sMapName));
+						
+						if( IsBlackListedCycleMap(sMapName) ) // temporarily solution
+						{
+							GetRandomFirstMap_Standard(sMapName, sizeof(sMapName));
+						}
+					}
+					case NEXT_MAP_METHOD_STANDARD_RANDOM: {
+						GetRandomFirstMap_Standard(sMapName, sizeof(sMapName));
+					}
+					case NEXT_MAP_METHOD_CUSTOM: {
+						idx++;
+						if( idx >= g_aMapCustomOrder.Length )
+						{
+							idx = 0;
+						}
+						g_aMapCustomOrder.GetString(idx, sMapName, sizeof(sMapName));
+						
+						if( IsBlackListedCycleMap(sMapName) ) // temporarily solution
+						{
+							GetRandomFirstMap_Custom(sMapName, sizeof(sMapName));
+						}
+					}
+					case NEXT_MAP_METHOD_CUSTOM_RANDOM: {
+						GetRandomFirstMap_Custom(sMapName, sizeof(sMapName));
+					}
+				}
 			}
-			else { // select next map, it will be first because the current one is the latest in campaign
+			else {
 				idx++;
 				if( idx >= g_aMapCustomOrder.Length )
 				{
 					idx = 0;
 				}
 				g_aMapCustomOrder.GetString(idx, sMapName, sizeof(sMapName));
+				
+				if( IsBlackListedCycleMap(sMapName) ) // temporarily solution
+				{
+					GetRandomFirstMap_Custom(sMapName, sizeof(sMapName));
+				}
 			}
 		}
 		else {
@@ -1838,7 +2096,7 @@ void GotoNextMap(bool bRandomOrder)
 	
 	iLastTime = GetTime();
 	
-	L4D_ChangeLevel(sMapName);
+	L4D_ChangeLevel(sMapName, bInstantChange);
 }
 
 bool GetRandomFirstMap_Custom(char[] map, int maxlen)
@@ -1857,8 +2115,64 @@ bool GetRandomFirstMap_Custom(char[] map, int maxlen)
 		delete uniqMaps;
 		uniqMaps = g_aMapCustomFirst.Clone();
 	}
+	if( uniqMaps.Length == 0 )
+	{
+		return false;
+	}
 	
 	GetFirstMap_Custom(g_sCurMap, firstMap, sizeof(firstMap));
+	
+	int idxFirst = uniqMaps.FindString(firstMap);
+	if( idxFirst != -1 )
+	{
+		uniqMaps.Erase(idxFirst); // exclude current map from cycle to make "random" be a real random.
+	}
+	if( uniqMaps.Length == 0 ) // no maps elapsed => populate array again.
+	{
+		delete uniqMaps;
+		uniqMaps = g_aMapCustomFirst.Clone();
+		
+		idxFirst = uniqMaps.FindString(firstMap); // repeat the step which disallowing current map to appear in cycle too early
+		if( idxFirst != -1 )
+		{
+			uniqMaps.Erase(idxFirst);
+			
+			if( uniqMaps.Length == 0 ) // final check, in case cycle contains only 1 campaign
+			{
+				delete uniqMaps;
+				uniqMaps = g_aMapCustomFirst.Clone();
+			}
+		}
+	}
+	if( uniqMaps.Length != 0 )
+	{
+		int idx = GetRandomInt(0, uniqMaps.Length - 1);
+		uniqMaps.GetString(idx, map, maxlen);
+		uniqMaps.Erase(idx);
+	}
+	return map[0] != 0;
+}
+
+bool GetRandomFirstMap_Standard(char[] map, int maxlen)
+{
+	static char firstMap[MAX_MAP_NAME];
+	static ArrayList uniqMaps;
+	
+	if( !uniqMaps )
+	{
+		uniqMaps = g_aMapStandardFirst.Clone();
+	}
+	if( uniqMaps.Length == 0 )
+	{
+		delete uniqMaps;
+		uniqMaps = g_aMapStandardFirst.Clone();
+	}
+	if( uniqMaps.Length == 0 )
+	{
+		return false;
+	}
+	
+	GetFirstMap_Standard(g_sCurMap, firstMap, sizeof(firstMap));
 	
 	int idxFirst = uniqMaps.FindString(firstMap);
 	if( idxFirst != -1 )
@@ -1917,10 +2231,50 @@ bool IsMapValidEx(char[] map)
 	return FindMap(map, path, sizeof(path)) == FindMap_Found;
 }
 
+void GetMissions()
+{
+	delete g_kvdef;
+	g_kvdef = new KeyValues("campaigns");
+	g_hNameByMap.Clear();
+	g_hCampaignByMap.Clear();
+	g_aMapOrder.Clear();
+	
+	if( g_bLeft4Dead2 )
+	{
+		char missionFile[64];
+		FileType fileType;
+		DirectoryListing hDir = OpenDirectory("missions", true, ".");
+		if( hDir )
+		{
+			while( hDir.GetNext(missionFile, PLATFORM_MAX_PATH, fileType) )
+			{
+				if( fileType == FileType_File )
+				{
+					if( strncmp(missionFile, "campaign", 8) == 0 )
+					{
+						Format(missionFile, sizeof(missionFile), "missions/%s", missionFile);
+						ParseMissionFile(missionFile, false);
+					}
+				}
+			}
+			delete hDir;
+		}
+	}
+	else {
+		ParseMissionFile("missions/hospital.txt", false);
+		ParseMissionFile("missions/garage.txt", false);
+		ParseMissionFile("missions/smalltown.txt", false);
+		ParseMissionFile("missions/airport.txt", false);
+		ParseMissionFile("missions/farm.txt", false);
+		ParseMissionFile("missions/river.txt", false); // dlc3
+		ParseMissionFile("missions/lighthouse.txt", false);
+	}
+}
+
 void GetAddonMissions()
 {
-	delete kv;
-	kv = new KeyValues("campaigns");
+	delete g_kv;
+	g_kv = new KeyValues("campaigns");
 	
 	char missionFile[64];
 	StringMap hMapDef = new StringMap();
@@ -1965,7 +2319,7 @@ void GetAddonMissions()
 				if( !StringMap_KeyExists(hMapDef, missionFile) )
 				{
 					Format(missionFile, sizeof(missionFile), "missions/%s", missionFile);
-					ParseMissionFile(missionFile);
+					ParseMissionFile(missionFile, true);
 				}
 			}
 		}
@@ -1980,7 +2334,7 @@ bool StringMap_KeyExists(StringMap hMap, char[] key)
 	return hMap.GetValue(key, v);
 }
 
-bool ParseMissionFile(char[] missionFile)
+bool ParseMissionFile(char[] missionFile, bool bIsAddon)
 {
 	File hFile = OpenFile(missionFile, "r", true, NULL_STRING);
 	if( hFile == null )
@@ -2018,7 +2372,7 @@ bool ParseMissionFile(char[] missionFile)
 		{
 			if( eCurGameType != GAME_TYPE_NONE && sPrevMap[0] != 0 )
 			{
-				AddCustomMap(sCampaign, eCurGameType, sPrevMap, sPrevMapDisplay);
+				AddMapTemplate(bIsAddon, sCampaign, eCurGameType, sPrevMap, sPrevMapDisplay);
 				sPrevMap[0] = 0;
 				sPrevMapDisplay[0] = 0;
 			}
@@ -2040,7 +2394,7 @@ bool ParseMissionFile(char[] missionFile)
 			{
 				if( sPrevMap[0] != 0 ) // dump map info when the next "map" key is met
 				{
-					AddCustomMap(sCampaign, eCurGameType, sPrevMap, sPrevMapDisplay);
+					AddMapTemplate(bIsAddon, sCampaign, eCurGameType, sPrevMap, sPrevMapDisplay);
 					sPrevMapDisplay[0] = 0;
 				}
 				strcopy(sPrevMap, sizeof(sPrevMap), sMap);
@@ -2054,14 +2408,50 @@ bool ParseMissionFile(char[] missionFile)
 	}
 	if( sPrevMap[0] != 0 ) // dump the leftover
 	{
-		AddCustomMap(sCampaign, eCurGameType, sPrevMap, sPrevMapDisplay);
+		AddMapTemplate(bIsAddon, sCampaign, eCurGameType, sPrevMap, sPrevMapDisplay);
 	}
-	kv.Rewind();
-	kv.ExportToFile(mapListPath);
+	if( bIsAddon )
+	{
+		g_kv.Rewind();
+		g_kv.ExportToFile(g_sMapListPath);
+	}
 	return true;
 }
 
-void AddCustomMap(char[] sCampaign, GAME_TYPE eType, char[] sMap, char[] sMapDisplay)
+void AddMapTemplate(bool bIsAddon, char[] sCampaign, GAME_TYPE eType, char[] sMap, char[] sMapDisplay)
+{
+	if( sCampaign[0] != '#' )
+	{
+		ClearStringMB(sCampaign);
+		NormalizeName(sCampaign);
+	}
+	if( sMapDisplay[0] != '#' )
+	{
+		NormalizeName(sMapDisplay);
+	}
+	
+	if( bIsAddon )
+	{
+		if( IsMapValidEx(sMap) )
+		{
+			AddMapToKV(g_kv, sCampaign, eType, sMap, sMapDisplay);
+		}
+	}
+	else {
+		if( g_eGameType == eType )
+		{
+			if( IsMapValidEx(sMap) )
+			{
+				AddMapToKV(g_kvdef, sCampaign, eType, sMap, sMapDisplay);
+				g_hNameByMap.SetString(sMap, sMapDisplay, false);
+				g_hCampaignByMap.SetString(sMap, sCampaign, false);
+				//g_aMapOrder.PushString(sMap); // moded to -> FillStandardCampaignOrder
+			}
+		}
+	}
+}
+
+void AddMapToKV(KeyValues kv, char[] sCampaign, GAME_TYPE eType, char[] sMap, char[] sMapDisplay)
 {
 	int num;
 	char sKey[4];
@@ -2073,6 +2463,7 @@ void AddCustomMap(char[] sCampaign, GAME_TYPE eType, char[] sMap, char[] sMapDis
 		{
 			if( kv.GotoFirstSubKey(true) )
 			{
+				// calculate current count in list
 				do
 				{
 					++num;
@@ -2172,57 +2563,289 @@ char[] UnQuote(char[] Str)
 	return buf;
 }
 
+void ClearStringMB(char[] sName) // Removes all multi-byte letters, except those from RU & UA ANSI mapping
+{
+	if( sName[0] == 0 )
+		return;
+	
+	int i = 0, j = 0, bytes;
+	
+	if( !IsCharAlpha(sName[i]) && !IsCharNumeric(sName[i]) )
+	{
+		i++;
+	}
+	while( sName[i] )
+	{
+		bytes = GetCharBytes(sName[i]);
+		
+		if( bytes == 1 )
+		{
+			if( sName[i] >= 32 )
+			{
+				if( j == 0 && !IsCharAlpha(sName[i]) && !IsCharNumeric(sName[i]) )
+				{
+					// don't print special character as 1st letter
+				}
+				else {
+					sName[j++] = sName[i];
+				}
+			}
+		}
+		else if( bytes == 2 )
+		{
+			if( sName[i] == 208 || sName[i] == 209 ) // RU, UA & perhaps, other ANSI
+			{
+				sName[j++] = sName[i++];
+				sName[j++] = sName[i];
+			}
+		}
+		i++;
+	}
+	sName[j] = 0;
+}
+
 void ClearDisplayName(char[] str, int size) // trim numbering, like: "1. Mission name" / "1: Mission name"
 {
-	int pos;
+	int pos = 0;
 	if( size > 3 )
 	{
 		if( IsCharNumeric(str[0]) )
 		{
-			if( !IsCharNumeric(str[1]) )
-				pos = 1;
+			++ pos;
 			
-			if( str[1] == '.' || str[1] == ':' || str[1] == ')' )
+			if( IsCharNumeric(str[pos]) )
+				++ pos;
+			
+			//if( str[pos] == '.' || str[pos] == ':' || str[pos] == ')' || str[pos] == '-' )
+			if( !IsCharAlpha(str[pos]) )
 			{
-				pos = 2;
-				if( str[2] == ' ' )
+				++ pos;
+				if( str[pos] == ' ' )
 				{
-					pos = 3;
+					++ pos;
 				}
+				/*
+				if( !IsCharAlpha(str[pos]) )
+				{
+					++ pos;
+				}
+				*/
 			}
 			Format(str, size, str[pos]);
 		}
 	}
 }
 
-stock bool GetCampaignDisplay(char[] map, char[] name, int maxlen, bool bTranslate = false, int client = 0)
+void NormalizeName(char[] str)
+{
+	if( !str[0] )
+		return;
+	
+	UTF8CharToUpper(str, 0, GetCharBytes(str[0]));
+	
+	int bytesToProcess, startByte = GetCharBytes(str[0]), max_len = strlen(str);
+	
+	// start from 2nd letter
+	for( int i = startByte; i < max_len; i += GetCharBytes(str[i]) )
+	{
+		if( IsCharSpace(str[i]) )
+		{
+			if( bytesToProcess )
+			{
+				UTF8CharToLower(str, startByte, startByte + bytesToProcess);
+			}
+			// skip first letter of next words
+			startByte = i + 1;
+			if( startByte < max_len )
+			{
+				startByte += GetCharBytes(str[i+1]);
+			}
+			bytesToProcess = 0;
+			++i;
+		}
+		else {
+			bytesToProcess += GetCharBytes(str[i]);
+		}
+	}
+	if( bytesToProcess ) // process leftovers
+	{
+		UTF8CharToLower(str, startByte, startByte + bytesToProcess);
+	}
+}
+
+// Made by komashchenko: https://hlmod.ru/resources/inc-utf8-string.898/
+// Forked.
+/**
+ * Делает с нижнего регистра верхний.
+ *
+ * @param string			строка для конвертации.
+ * @param int				начальный байт обработки.
+ * @param end				конечный байт обработки.
+ * @return		количество символов которые были переведены в верхний регистр	
+ */
+stock int UTF8CharToUpper(char[] string, int start = 0, int end = -1)
+{
+	int I = start, O = end == -1 ? strlen(string) : end, Byte, K;
+	while(I < O)
+	{
+		Byte = string[I];
+		if(Byte >= 128)
+		{
+			if(Byte >= 240)
+			{
+				if(strlen(string[I]) < 4) break; 
+				else I += 4; 
+			}
+			else if(Byte >= 224)
+			{
+				if(strlen(string[I]) < 3) break; 
+				else I += 3; 
+			}
+			else if(Byte >= 192)
+			{
+				if(strlen(string[I]) < 2) break;
+				Byte = (Byte % 32) * 64; 
+				Byte += (string[I+1] % 64);
+				if(1072 <= Byte <= 1103 || Byte == 1105 || 1110 <= Byte <= 1111 || Byte == 1169)
+				{
+					if(1105 <= Byte <= 1111) Byte = Byte-80;
+					else if(Byte != 1169) Byte = Byte-32;
+					else Byte--;
+					string[I]   = 192 + RoundToFloor(float(Byte / 64));
+					string[I+1] = 128 + (Byte % 64);
+					K++;
+				}
+				I += 2;
+			}
+			else break;
+		}
+		else
+		{
+			if(97 <= Byte <= 122)
+			{
+				string[I] = Byte-32;
+				K++;
+			}
+			I += 1;
+		}
+	}
+	return K;
+}
+
+// Made by komashchenko: https://hlmod.ru/resources/inc-utf8-string.898/
+// Forked.
+/**
+ * Делает с верхнего регистра нижний.
+ *
+ * @param string			строка для конвертации.
+ * @param int				начальный байт обработки.
+ * @param end				конечный байт обработки.
+ * @return		количество символов которые были переведены в нижний регистр	
+ */
+stock int UTF8CharToLower(char[] string, int start = 0, int end = -1)
+{
+	int I = start, O = end == -1 ? strlen(string) : end, Byte, K;
+	while(I < O)
+	{
+		Byte = string[I];
+		if(Byte >= 128)
+		{
+			if(Byte >= 240)
+			{
+				if(strlen(string[I]) < 4) break; 
+				else I += 4; 
+			}
+			else if(Byte >= 224)
+			{
+				if(strlen(string[I]) < 3) break; 
+				else I += 3; 
+			}
+			else if(Byte >= 192)
+			{
+				if(strlen(string[I]) < 2) break;
+				Byte = (Byte % 32) * 64; 
+				Byte += (string[I+1] % 64);
+				if(1040 <= Byte <= 1071 || Byte == 1025 || 1030 <= Byte <= 1031 || Byte == 1168) 
+				{
+					if(1025 <= Byte <= 1031) Byte = Byte+80;
+					else if(Byte != 1168) Byte = Byte+32;
+					else Byte++;
+					string[I]   = 192 + RoundToFloor(float(Byte / 64));
+					string[I+1] = 128 + (Byte % 64);
+					K++;
+				}
+				I += 2;
+			}
+			else break;
+		}
+		else
+		{
+			if(65 <= Byte <= 90)
+			{
+				string[I] = Byte+32;
+				K++;
+			}
+			I++;
+		}
+	}
+	return K;
+}
+
+stock bool GetCampaignDisplay(char[] map, char[] name, int maxlen, bool bTranslate = false, int client = 0, bool normalize = true)
 {
 	if( g_hCampaignByMap.GetString(map, name, maxlen) )
 	{
 		if( bTranslate )
 		{
-			Format(name, maxlen, "%T", name, client);
+			//Format(name, maxlen, "%T", name, client);
+			strcopy(name, maxlen, Loc_Translate(client, name));
+		}
+		if( normalize )
+		{
+			NormalizeName(name);
 		}
 		return true;
 	}
 	else {
 		g_hCampaignByMapCustom.GetString(map, name, maxlen);
+		if( bTranslate )
+		{
+			strcopy(name, maxlen, Loc_Translate(client, name));
+		}
+		if( normalize )
+		{
+			NormalizeName(name);
+		}
 		return true;
 	}
 }
 
-stock bool GetMapDisplay(char[] map, char[] name, int maxlen, bool bTranslate = false, int client = 0)
+stock bool GetMapDisplay(char[] map, char[] name, int maxlen, bool bTranslate = false, int client = 0, bool normalize = true)
 {
 	if( g_hNameByMap.GetString(map, name, maxlen) )
 	{
 		if( bTranslate )
 		{
-			Format(name, maxlen, "%T", name, client);
+			strcopy(name, maxlen, Loc_Translate(client, name));
+			ClearDisplayName(name, sizeof(maxlen));
+		}
+		if( normalize )
+		{
+			//NormalizeName(name); // overkill
 		}
 		return true;
 	}
 	else {
 		g_hNameByMapCustom.GetString(map, name, maxlen);
+		if( bTranslate )
+		{
+			strcopy(name, maxlen, Loc_Translate(client, name));
+			ClearDisplayName(name, sizeof(maxlen));
+		}
+		if( normalize )
+		{
+			//NormalizeName(name); // overkill
+		}
 		return true;
 	}
 }
@@ -2234,6 +2857,15 @@ stock bool IsCustomMap(char[] map)
 }
 
 stock bool GetMapNumber(const char[] campaign, const char[] sMap, int &iCurNumber, int &iTotalNumber)
+{
+	if( !GetMapNumberEx(g_kv, campaign, sMap, iCurNumber, iTotalNumber) )
+	{
+		return GetMapNumberEx(g_kvdef, campaign, sMap, iCurNumber, iTotalNumber);
+	}
+	return true;
+}
+
+stock bool GetMapNumberEx(KeyValues kv, const char[] campaign, const char[] checkMap, int &iCurNumber, int &iTotalNumber)
 {
 	static char map[MAX_MAP_NAME];
 	iTotalNumber = 0;
@@ -2253,11 +2885,14 @@ stock bool GetMapNumber(const char[] campaign, const char[] sMap, int &iCurNumbe
 			kv.GetString("Map", map, sizeof(map), "@");
 			if( strcmp(map, "@") != 0 )
 			{
-				iTotalNumber++;
-				
-				if( strcmp(map, sMap) == 0 )
+				if( IsMapValidEx(map) )
 				{
-					iCurNumber = iTotalNumber;
+					iTotalNumber++;
+					
+					if( strcmp(map, checkMap) == 0 )
+					{
+						iCurNumber = iTotalNumber;
+					}
 				}
 			}
 		} while( kv.GotoNextKey() );
@@ -2265,7 +2900,7 @@ stock bool GetMapNumber(const char[] campaign, const char[] sMap, int &iCurNumbe
 	return iTotalNumber != 0;
 }
 
-stock void GetFirstMap_Custom(char[] mapOfCampaign, char[] firstMap, int maxlen)
+stock void GetFirstMapEx(KeyValues kv, char[] mapOfCampaign, char[] firstMap, int maxlen)
 {
 	static char campaign[MAX_CAMPAIGN_TITLE];
 	firstMap[0] = 0;
@@ -2284,7 +2919,17 @@ stock void GetFirstMap_Custom(char[] mapOfCampaign, char[] firstMap, int maxlen)
 	}
 }
 
-stock void GetLastMap_Custom(char[] mapOfCampaign, char[] lastMap, int maxlen)
+stock void GetFirstMap_Standard(char[] mapOfCampaign, char[] firstMap, int maxlen)
+{
+	GetFirstMapEx(g_kvdef, mapOfCampaign, firstMap, maxlen);
+}
+
+stock void GetFirstMap_Custom(char[] mapOfCampaign, char[] firstMap, int maxlen)
+{
+	GetFirstMapEx(g_kv, mapOfCampaign, firstMap, maxlen);
+}
+
+stock void GetLastMapEx(KeyValues kv, char[] mapOfCampaign, char[] lastMap, int maxlen)
 {
 	static char campaign[MAX_CAMPAIGN_TITLE];
 	lastMap[0] = 0;
@@ -2304,6 +2949,30 @@ stock void GetLastMap_Custom(char[] mapOfCampaign, char[] lastMap, int maxlen)
 			}
 		}
 	}
+}
+
+stock void GetLastMap_Standard(char[] mapOfCampaign, char[] lastMap, int maxlen)
+{
+	GetLastMapEx(g_kvdef, mapOfCampaign, lastMap, maxlen);
+}
+
+stock void GetLastMap_Custom(char[] mapOfCampaign, char[] lastMap, int maxlen)
+{
+	GetLastMapEx(g_kv, mapOfCampaign, lastMap, maxlen);
+}
+
+stock bool IsFinaleMap(char[] map)
+{
+	char sCampaign[MAX_CAMPAIGN_TITLE];
+	int iIndexMap, iTotalMaps;
+	GetCampaignDisplay(map, sCampaign, sizeof(sCampaign), false);
+	GetMapNumber(sCampaign, map, iIndexMap, iTotalMaps);
+	return iIndexMap == iTotalMaps;
+}
+
+bool IsBlackListedCycleMap(char[] map)
+{
+	return g_hArrayCycleBlock.FindString(map) != -1;
 }
 
 bool InDenyFile(int client, ArrayList list)
@@ -2414,6 +3083,32 @@ bool HasVetoAccessFlag(int client)
 	
 	char sReq[32];
 	g_hCvarVetoFlag.GetString(sReq, sizeof(sReq));
+	if( strlen(sReq) == 0 ) return true;
+	
+	int iReqFlags = ReadFlagString(sReq);
+	return (iUserFlag & iReqFlags != 0);
+}
+
+bool HasVoteRatingAccess(int client)
+{
+	int iUserFlag = GetUserFlagBits(client);
+	if( iUserFlag & ADMFLAG_ROOT != 0 ) return true;
+	
+	char sReq[32];
+	g_hCvarVoteMarkFlag.GetString(sReq, sizeof(sReq));
+	if( strlen(sReq) == 0 ) return true;
+	
+	int iReqFlags = ReadFlagString(sReq);
+	return (iUserFlag & iReqFlags != 0);
+}
+
+bool HasRemoveRatingAccess(int client)
+{
+	int iUserFlag = GetUserFlagBits(client);
+	if( iUserFlag & ADMFLAG_ROOT != 0 ) return true;
+	
+	char sReq[32];
+	g_hCvarRemoveMarkFlag.GetString(sReq, sizeof(sReq));
 	if( strlen(sReq) == 0 ) return true;
 	
 	int iReqFlags = ReadFlagString(sReq);

@@ -12,6 +12,7 @@
 	{
 		"en"		"Current map"
 		"ru"		"Текущая карта"
+		"ua"		"Поточна карта"
 		"zho"		"目前地圖"
 		"chi"		"当前地图"
 	}
@@ -19,6 +20,7 @@
 	{
 		"en"		"Default maps"
 		"ru"		"Стандартные карты"
+		"ua"		"Стандартні карты"
 		"zho"		"官方地圖"
 		"chi"		"官方地图"
 	}
@@ -26,6 +28,7 @@
 	{
 		"en"		"Custom maps << set # 1 >>"
 		"ru"		"Доп. карты  << набор № 1 >>"
+		"ua"		"Додаткові карти  << набір № 1 >>"
 		"zho"		"第三方地圖 << set # 1 >>"
 		"chi"		"第三方地图 << set # 1 >>"
 	}
@@ -33,6 +36,7 @@
 	{
 		"en"		"Custom maps << set # 2 >>"
 		"ru"		"Доп. карты  << набор № 2 >>"
+		"ua"		"Додаткові карты  << набір № 2 >>"
 		"zho"		"第三方地圖 << set # 2 >>"
 		"chi"		"第三方地图 << set # 2 >>"
 	}
@@ -40,13 +44,15 @@
 	{
 		"en"		"Test maps"
 		"ru"		"Тестовые карты"
+		"ua"		"Тестові карти"
 		"zho"		"測試地圖"
-		"chi"		"第三方地图"
+		"chi"		"测试地图"
 	}
 	"All_maps"
 	{
 		"en"		"All maps"
 		"ru"		"Все карты"
+		"ua"		"Всі карти"
 		"zho"		"全部地圖"
 		"chi"		"全部地图"
 	}
@@ -54,6 +60,7 @@
 	{
 		"en"		"By rating"
 		"ru"		"По рейтингу"
+		"ua"		"По рейтингу"
 		"zho"		"按評價"
 		"chi"		"评分"
 	}
@@ -61,6 +68,7 @@
 	{
 		"en"		"- What rating to show map with ? -"
 		"ru"		"- Кампании с каким рейтингом показать? -"
+		"ua"		"- Кампанії з яким рейтингом показати? -"
 		"zho"		"- 顯示地圖的評價是多少 ? -"
 		"chi"		"- 显示地图的评分是多少 ? -"
 	}
@@ -68,13 +76,15 @@
 	{
 		"en"		"point (shoking)"
 		"ru"		"балл (отвратительная)"
+		"ua"		"бал (огидна)"
 		"zho"		"一顆星 (非常差)"
 		"chi"		"一颗星 (非常差)"
 	}
 	"Rating_2"
 	{
 		"en"		"points (bad)"
-		"ru"		"балла (не очень)"
+		"ru"		"балла (плохая)"
+		"ua"		"бала (погана)"
 		"zho"		"二顆星 (很差)"
 		"chi"		"两颗星 (很差)"
 	}
@@ -82,20 +92,23 @@
 	{
 		"en"		"points (mediocre)"
 		"ru"		"балла (средненькая)"
+		"ua"		"бала (середня)"
 		"zho"		"三顆星 (普通)"
 		"chi"		"三颗星 (普通)"
 	}
 	"Rating_4"
 	{
 		"en"		"points (pretty good)"
-		"ru"		"балла (неплохая)"
+		"ru"		"балла (хорошая)"
+		"ua"		"бала (хороша)"
 		"zho"		"四顆星 (很好)"
 		"chi"		"四颗星 (很好)"
 	}
 	"Rating_5"
 	{
 		"en"		"points (nice)"
-		"ru"		"баллов (очень хорошая)"
+		"ru"		"баллов (очень классная)"
+		"ua"		"балів (дуже чудова)"
 		"zho"		"五顆星 (非常好)"
 		"chi"		"五颗星 (非常好)"
 	}
@@ -103,6 +116,7 @@
 	{
 		"en"		"points (excellent)"
 		"ru"		"баллов (блестящая)"
+		"ua"		"балів (блискуча)"
 		"zho"		"六顆星 (完美)"
 		"chi"		"六颗星 (完美)"
 	}
@@ -110,6 +124,7 @@
 	{
 		"en"		"Not yet rated"
 		"ru"		"Ещё без оценки"
+		"ua"		"Ще без оцінки"
 		"zho"		"尚未評價"
 		"chi"		"尚未评分"
 	}
@@ -117,6 +132,7 @@
 	{
 		"en"		"- Choose the campaign -"
 		"ru"		"- Выберите кампанию -"
+		"ua"		"- Оберіть кампанію -"
 		"zho"		"- 請選擇地圖 -"
 		"chi"		"- 请选择地图 -"
 	}
@@ -124,6 +140,7 @@
 	{
 		"en"		"No maps with such rating yet."
 		"ru"		"Карт с такой оценкой ещё нет."
+		"ua"		"Карт з такою оцінкою ще немає."
 		"zho"		"尚無此類評價的地圖"
 		"chi"		"尚无此类评分的地图"
 	}
@@ -131,749 +148,23 @@
 	{
 		"en"		"No maps in this group yet."
 		"ru"		"В этой группе ещё нет карт."
+		"ua"		"У цій групі ще немає карт."
 		"zho"		"此分類中沒有地圖"
 		"chi"		"此分类中没有地图"
-	}
-	"No_Mercy"
-	{
-		"en"		"No Mercy"
-		"ru"		"Нет милосердию"
-		"zho"		"毫不留情"
-		"chi"		"毫不留情"
-	}
-	"Crash_Course"
-	{
-		"en"		"Crash Course"
-		"ru"		"Роковой полёт"
-		"zho"		"墜機險途"
-		"chi"		"坠机险途"
-	}
-	"Death_Toll"
-	{
-		"en"		"Death Toll"
-		"ru"		"Похоронный звон"
-		"zho"		"死亡喪鐘"
-		"chi"		"死亡丧钟"
-	}
-	"Dead_Air"
-	{
-		"en"		"Dead Air"
-		"ru"		"Смерть в воздухе"
-		"en"		"死亡機場"
-		"chi"		"寂静时分"
-	}
-	"Blood_Harvest"
-	{
-		"en"		"Blood Harvest"
-		"ru"		"Кровавая жатва"
-		"zho"		"嗜血豐收"
-		"chi"		"血腥收获"
-	}
-	"Sacrifice"
-	{
-		"en"		"Sacrifice"
-		"ru"		"Жертва"
-		"zho"		"犧牲"
-		"chi"		"牺牲"
-	}
-	"Last_Stand"
-	{
-		"en"		"Last Stand"
-		"ru"		"Маяк (режим выживания)"
-		"zho"		"最後一刻"
-		"chi"		"临死一搏"
 	}
 	"Choose_map"
 	{
 		"en"		"Choose the map"
 		"ru"		"Выберите карту"
+		"ua"		"Оберіть карту"
 		"zho"		"選擇地圖"
 		"chi"		"选择地图"
 	}
-	"#L4D360UI_Chapter_01_1"
-	{
-		"en"		"Apartments"
-		"ru"		"Апартаменты"
-		"zho"		"公寓"
-		"chi"		"公寓"
-	}
-	"#L4D360UI_Chapter_01_2"
-	{
-		"en"		"Subway"
-		"ru"		"Метро"
-		"zho"		"地下鐵"
-		"chi"		"地铁"
-	}
-	"#L4D360UI_Chapter_01_3"
-	{
-		"en"		"Sewer"
-		"ru"		"Канализация"
-		"zho"		"下水道"
-		"chi"		"下水道"
-	}
-	"#L4D360UI_Chapter_01_4"
-	{
-		"en"		"Hospital"
-		"ru"		"Госпиталь"
-		"zho"		"醫院"
-		"chi"		"医院"
-	}
-	"#L4D360UI_Chapter_01_5"
-	{
-		"en"		"Rooftop"
-		"ru"		"Крыша"
-		"zho"		"屋頂"
-		"chi"		"屋顶"
-	}
-	"#L4D360UI_Chapter_02_1"
-	{
-		"en"		"Alleys"
-		"ru"		"Переулки"
-		"zho"		"小巷"
-		"chi"		"小巷"
-	}
-	"#L4D360UI_Chapter_02_2"
-	{
-		"en"		"Lots"
-		"ru"		"Гараж"
-		"zho"		"卡車車庫最終章"
-		"chi"		"卡车车库终章"
-	}
-	"#L4D360UI_Chapter_03_1"
-	{
-		"en"		"Caves"
-		"ru"		"Ограждение"
-		"zho"		"高速公路"
-		"chi"		"高速公路"
-	}
-	"#L4D360UI_Chapter_03_2"
-	{
-		"en"		"Drainage"
-		"ru"		"Водосток"
-		"zho"		"排水管"
-		"chi"		"排水管"
-	}
-	"#L4D360UI_Chapter_03_3"
-	{
-		"en"		"Ranchhouse"
-		"ru"		"Церковь"
-		"zho"		"教堂"
-		"chi"		"教堂"
-	}
-	"#L4D360UI_Chapter_03_4"
-	{
-		"en"		"Main street"
-		"ru"		"Город"
-		"zho"		"小鎮"
-		"chi"		"小镇"
-	}
-	"#L4D360UI_Chapter_03_5"
-	{
-		"en"		"Houseboat"
-		"ru"		"Лодочная станция"
-		"zho"		"船屋最終章"
-		"chi"		"船坞终章"
-	}
-	"#L4D360UI_Chapter_04_1"
-	{
-		"en"		"Greenhouse"
-		"ru"		"Теплица"
-		"zho"		"溫室"
-		"chi"		"花房"
-	}
-	"#L4D360UI_Chapter_04_2"
-	{
-		"en"		"Offices"
-		"ru"		"Кран"
-		"zho"		"起重機"
-		"chi"		"起重机"
-	}
-	"#L4D360UI_Chapter_04_3"
-	{
-		"en"		"Garage"
-		"ru"		"Стройка"
-		"zho"		"建築工地"
-		"chi"		"建筑工地"
-	}
-	"#L4D360UI_Chapter_04_4"
-	{
-		"en"		"Terminal"
-		"ru"		"Терминал"
-		"zho"		"航空站"
-		"chi"		"航天站"
-	}
-	"#L4D360UI_Chapter_04_5"
-	{
-		"en"		"Runway"
-		"ru"		"Взлётная полоса"
-		"zho"		"跑道最終章"
-		"chi"		"跑道终章"
-	}
-	"#L4D360UI_Chapter_05_1"
-	{
-		"en"		"Hilltop"
-		"ru"		"Леса"
-		"zho"		"森林"
-		"chi"		"森林"
-	}
-	"#L4D360UI_Chapter_05_2"
-	{
-		"en"		"Train tunnel"
-		"ru"		"Тоннель"
-		"zho"		"隧道"
-		"chi"		"隧道"
-	}
-	"#L4D360UI_Chapter_05_3"
-	{
-		"en"		"Bridge"
-		"ru"		"Мост"
-		"zho"		"橋"
-		"chi"		"桥"
-	}
-	"#L4D360UI_Chapter_05_4"
-	{
-		"en"		"Barn"
-		"ru"		"Ж/д станция"
-		"zho"		"火車站"
-		"chi"		"火车站"
-	}
-	"#L4D360UI_Chapter_05_5"
-	{
-		"en"		"Cornfield"
-		"ru"		"Ферма"
-		"zho"		"農場最終章"
-		"chi"		"农场终章"
-	}
-	"#L4D360UI_Chapter_06_1"
-	{
-		"en"		"Docks"
-		"ru"		"Доки"
-		"zho"		"碼頭"
-		"chi"		"码头"
-	}
-	"#L4D360UI_Chapter_06_2"
-	{
-		"en"		"Barge"
-		"ru"		"Баржа"
-		"zho"		"駁船"
-		"chi"		"驳船"
-	}
-	"#L4D360UI_Chapter_06_3"
-	{
-		"en"		"Port"
-		"ru"		"Порт"
-		"zho"		"港口"
-		"chi"		"港口"
-	}
-	"#L4D360UI_Chapter_07_1"
-	{
-		"en"		"Lighthouse"
-		"ru"		"Маяк"
-		"zho"		"燈塔"
-		"chi"		"灯塔"
-	}
-	"#L4D360UI_CampaignName_C1"
-	{
-		"en"		"Dead Center"
-		"ru"		"Вымерший центр"
-		"zho"		"死亡都心"
-		"chi"		"死亡中心"
-	}
-	"#L4D360UI_CampaignName_C2"
-	{
-		"en"		"Dark Carnival"
-		"ru"		"Мрачный карнавал"
-		"zho"		"黑色嘉年華"
-		"chi"		"黑色狂欢节"
-	}
-	"#L4D360UI_CampaignName_C3"
-	{
-		"en"		"Swamp Fever"
-		"ru"		"Болотная лихорадка"
-		"zho"		"沼澤瘧疾"
-		"chi"		"沼泽激战"
-	}
-	"#L4D360UI_CampaignName_C4"
-	{
-		"en"		"Hard Rain"
-		"ru"		"Ужасный ливень"
-		"zho"		"大雨"
-		"chi"		"暴风骤雨"
-	}
-	"#L4D360UI_CampaignName_C5"
-	{
-		"en"		"The Parish"
-		"ru"		"Приход"
-		"zho"		"教區"
-		"chi"		"教区"
-	}
-	"#L4D360UI_CampaignName_C6"
-	{
-		"en"		"The Passing"
-		"ru"		"Переход"
-		"zho"		"短暫之時"
-		"chi"		"短暂时刻"
-	}
-	"#L4D360UI_CampaignName_C7"
-	{
-		"en"		"The Sacrifice"
-		"ru"		"Жертва"
-		"zho"		"犧牲"
-		"chi"		"牺牲"
-	}
-	"#L4D360UI_CampaignName_C8"
-	{
-		"en"		"No Mercy"
-		"ru"		"Нет милосердию"
-		"zho"		"毫不留情"
-		"chi"		"毫不留情"
-	}
-	"#L4D360UI_CampaignName_C9"
-	{
-		"en"		"Crash Course"
-		"ru"		"Роковой полет"
-		"zho"		"墜機險途(速成課程)"
-		"chi"		"坠机险途"
-	}
-	"#L4D360UI_CampaignName_C10"
-	{
-		"en"		"Death Toll"
-		"ru"		"Похоронный звон"
-		"zho"		"死亡喪鐘"
-		"chi"		"死亡丧钟"
-	}
-	"#L4D360UI_CampaignName_C11"
-	{
-		"en"		"Dead Air"
-		"ru"		"Смерть в воздухе"
-		"zho"		"死亡機場"
-		"chi"		"寂静时分"
-	}
-	"#L4D360UI_CampaignName_C12"
-	{
-		"en"		"Blood Harvest"
-		"ru"		"Кровавая жатва"
-		"zho"		"嗜血豐收"
-		"chi"		"血腥收获"
-	}
-	"#L4D360UI_CampaignName_C13"
-	{
-		"en"		"Cold Stream"
-		"ru"		"Холодный ручей"
-		"zho"		"冷澗溪流"
-		"chi"		"刺骨寒溪"
-	}
-	"#L4D360UI_CampaignName_C14"
-	{
-		"en"		"Last Stand"
-		"ru"		"Последний рубеж"
-		"zho"		"最後一刻"
-		"chi"		"临死一搏"
-	}
-	"#L4D360UI_LevelName_COOP_C1M1"
-	{
-		"en"		"Hotel"
-		"ru"		"Отель"
-		"zho"		"飯店"
-		"chi"		"旅馆"
-	}
-	"#L4D360UI_LevelName_COOP_C1M2"
-	{
-		"en"		"Streets"
-		"ru"		"Улицы"
-		"zho"		"街道"
-		"chi"		"街道"
-	}
-	"#L4D360UI_LevelName_COOP_C1M3"
-	{
-		"en"		"Mall"
-		"ru"		"Торговый центр"
-		"zho"		"購物中心"
-		"chi"		"购物中心"
-	}
-	"#L4D360UI_LevelName_COOP_C1M4"
-	{
-		"en"		"Atrium"
-		"ru"		"Атриум"
-		"zho"		"中庭"
-		"chi"		"中厅终章"
-	}
-	"#L4D360UI_LevelName_COOP_C2M1"
-	{
-		"en"		"Highway"
-		"ru"		"Автострада"
-		"zho"		"高速公路"
-		"chi"		"高速公路"
-	}
-	"#L4D360UI_LevelName_COOP_C2M2"
-	{
-		"en"		"Fairgrounds"
-		"ru"		"Базарная площадь"
-		"zho"		"露天市集"
-		"chi"		"游乐场"
-	}
-	"#L4D360UI_LevelName_COOP_C2M3"
-	{
-		"en"		"Coaster"
-		"ru"		"Американские горки"
-		"zho"		"雲霄飛車"
-		"chi"		"过山车"
-	}
-	"#L4D360UI_LevelName_COOP_C2M4"
-	{
-		"en"		"Barns"
-		"ru"		"Сараи"
-		"zho"		"穀倉"
-		"chi"		"谷仓"
-	}
-	"#L4D360UI_LevelName_COOP_C2M5"
-	{
-		"en"		"Concert"
-		"ru"		"Концерт"
-		"zho"		"音樂會"
-		"chi"		"音乐会终章"
-	}
-	"#L4D360UI_LevelName_COOP_C3M1"
-	{
-		"en"		"Plank Country"
-		"ru"		"Дощатые задворки"
-		"zho"		"木工廠"
-		"chi"		"乡村"
-	}
-	"#L4D360UI_LevelName_COOP_C3M2"
-	{
-		"en"		"Swamp"
-		"ru"		"Болото"
-		"zho"		"沼澤"
-		"chi"		"沼泽"
-	}
-	"#L4D360UI_LevelName_COOP_C3M3"
-	{
-		"en"		"Shanty Town"
-		"ru"		"Трущобы"
-		"zho"		"貧民窟"
-		"chi"		"贫民窟"
-	}
-	"#L4D360UI_LevelName_COOP_C3M4"
-	{
-		"en"		"Plantation"
-		"ru"		"Плантация"
-		"zho"		"農場"
-		"chi"		"种植园终章"
-	}
-	"#L4D360UI_LevelName_COOP_C4M1"
-	{
-		"en"		"Milltown"
-		"ru"		"Городишко при заводе"
-		"zho"		"密爾城"
-		"chi"		"密尔城"
-	}
-	"#L4D360UI_LevelName_COOP_C4M2"
-	{
-		"en"		"Sugar Mill"
-		"ru"		"Сахарный завод"
-		"zho"		"糖廠"
-		"chi"		"糖厂"
-	}
-	"#L4D360UI_LevelName_COOP_C4M3"
-	{
-		"en"		"Mill Escape"
-		"ru"		"Бегство с завода"
-		"zho"		"逃離工廠"
-		"chi"		"逃离工厂"
-	}
-	"#L4D360UI_LevelName_COOP_C4M4"
-	{
-		"en"		"Return to Town"
-		"ru"		"Возвращение в город"
-		"zho"		"返回城鎮"
-		"chi"		"重返小镇"
-	}
-	"#L4D360UI_LevelName_COOP_C4M5"
-	{
-		"en"		"Town Escape"
-		"ru"		"Бегство из города"
-		"zho"		"逃離城鎮"
-		"chi"		"逃离小镇终章"
-	}
-	"#L4D360UI_LevelName_COOP_C5M1"
-	{
-		"en"		"Waterfront"
-		"ru"		"Берег"
-		"zho"		"岸邊"
-		"chi"		"码头"
-	}
-	"#L4D360UI_LevelName_COOP_C5M2"
-	{
-		"en"		"Park"
-		"ru"		"Парк"
-		"zho"		"公園"
-		"chi"		"公园"
-	}
-	"#L4D360UI_LevelName_COOP_C5M3"
-	{
-		"en"		"Cemetery"
-		"ru"		"Кладбище"
-		"zho"		"公墓"
-		"chi"		"墓地"
-	}
-	"#L4D360UI_LevelName_COOP_C5M4"
-	{
-		"en"		"Condos"
-		"ru"		"Квартал"
-		"zho"		"特區"
-		"chi"		"特区"
-	}
-	"#L4D360UI_LevelName_COOP_C5M5"
-	{
-		"en"		"Lift Bridge"
-		"ru"		"Мост"
-		"zho"		"橋梁"
-		"chi"		"桥终章"
-	}
-	"#L4D360UI_LevelName_COOP_C6M1"
-	{
-		"en"		"Riverbank"
-		"ru"		"Берег реки"
-		"zho"		"河岸"
-		"chi"		"河畔"
-	}
-	"#L4D360UI_LevelName_COOP_C6M2"
-	{
-		"en"		"Underground"
-		"ru"		"Подземелье"
-		"zho"		"下水道"
-		"chi"		"地下通道"
-	}
-	"#L4D360UI_LevelName_COOP_C6M3"
-	{
-		"en"		"Port"
-		"ru"		"Порт"
-		"zho"		"港口"
-		"chi"		"港口终章"
-	}
-	"#L4D360UI_LevelName_COOP_C7M1"
-	{
-		"en"		"Docks"
-		"ru"		"Доки"
-		"zho"		"碼頭"
-		"chi"		"码头"
-	}
-	"#L4D360UI_LevelName_COOP_C7M2"
-	{
-		"en"		"Barge"
-		"ru"		"Баржа"
-		"zho"		"駁船"
-		"chi"		"驳船"
-	}
-	"#L4D360UI_LevelName_COOP_C7M3"
-	{
-		"en"		"Port"
-		"ru"		"Порт"
-		"zho"		"港口"
-		"chi"		"港口终章"
-	}
-	"#L4D360UI_LevelName_COOP_C8M1"
-	{
-		"en"		"Apartments"
-		"ru"		"Апартаменты"
-		"zho"		"公寓"
-		"chi"		"公寓"
-	}
-	"#L4D360UI_LevelName_COOP_C8M2"
-	{
-		"en"		"Subway"
-		"ru"		"Метро"
-		"zho"		"地下鐵"
-		"chi"		"地铁"
-	}
-	"#L4D360UI_LevelName_COOP_C8M3"
-	{
-		"en"		"Sewer"
-		"ru"		"Канализация"
-		"zho"		"下水道"
-		"chi"		"下水道"
-	}
-	"#L4D360UI_LevelName_COOP_C8M4"
-	{
-		"en"		"Hospital"
-		"ru"		"Госпиталь"
-		"zho"		"醫院"
-		"chi"		"医院"
-	}
-	"#L4D360UI_LevelName_COOP_C8M5"
-	{
-		"en"		"Rooftop"
-		"ru"		"Крыша"
-		"zho"		"屋頂"
-		"chi"		"屋顶终章"
-	}
-	"#L4D360UI_LevelName_COOP_C9M1"
-	{
-		"en"		"The Alleys"
-		"ru"		"Переулки"
-		"zho"		"小巷"
-		"chi"		"小巷"
-	}
-	"#L4D360UI_LevelName_COOP_C9M2"
-	{
-		"en"		"The Truck Depot"
-		"ru"		"Гараж"
-		"zho"		"卡車車庫最終章"
-		"chi"		"卡车停车场终章"
-	}
-	"#L4D360UI_LevelName_COOP_C10M1"
-	{
-		"en"		"The Turnpike"
-		"ru"		"Ограждение"
-		"zho"		"高速公路"
-		"chi"		"收费公路"
-	}
-	"#L4D360UI_LevelName_COOP_C10M2"
-	{
-		"en"		"The Drains"
-		"ru"		"Водосток"
-		"zho"		"排水管"
-		"chi"		"水沟"
-	}
-	"#L4D360UI_LevelName_COOP_C10M3"
-	{
-		"en"		"The Church"
-		"ru"		"Церковь"
-		"zho"		"教堂"
-		"chi"		"教堂"
-	}
-	"#L4D360UI_LevelName_COOP_C10M4"
-	{
-		"en"		"The Town"
-		"ru"		"Город"
-		"zho"		"小鎮"
-		"chi"		"小镇"
-	}
-	"#L4D360UI_LevelName_COOP_C10M5"
-	{
-		"en"		"The Boat House"
-		"ru"		"Лодочная станция"
-		"zho"		"船屋最終章"
-		"chi"		"码头终章"
-	}
-	"#L4D360UI_LevelName_COOP_C11M1"
-	{
-		"en"		"The Greenhouse"
-		"ru"		"Теплица"
-		"zho"		"溫室"
-		"chi"		"花房"
-	}
-	"#L4D360UI_LevelName_COOP_C11M2"
-	{
-		"en"		"The Crane"
-		"ru"		"Кран"
-		"zho"		"起重機"
-		"chi"		"起重机"
-	}
-	"#L4D360UI_LevelName_COOP_C11M3"
-	{
-		"en"		"The Construction Site"
-		"ru"		"Стройка"
-		"zho"		"建築工地"
-		"chi"		"建筑工地"
-	}
-	"#L4D360UI_LevelName_COOP_C11M4"
-	{
-		"en"		"The Terminal"
-		"ru"		"Терминал"
-		"zho"		"航空站"
-		"chi"		"航空机场"
-	}
-	"#L4D360UI_LevelName_COOP_C11M5"
-	{
-		"en"		"Runway"
-		"ru"		"Взлетная полоса"
-		"zho"		"跑道最終章"
-		"chi"		"飞机跑道终章"
-	}
-	"#L4D360UI_LevelName_COOP_C12M1"
-	{
-		"en"		"The Woods"
-		"ru"		"Леса"
-		"zho"		"森林"
-		"chi"		"森林"
-	}
-	"#L4D360UI_LevelName_COOP_C12M2"
-	{
-		"en"		"The Tunnel"
-		"ru"		"Туннель"
-		"zho"		"隧道"
-		"chi"		"隧道"
-	}
-	"#L4D360UI_LevelName_COOP_C12M3"
-	{
-		"en"		"The Bridge"
-		"ru"		"Мост"
-		"zho"		"橋"
-		"chi"		"桥"
-	}
-	"#L4D360UI_LevelName_COOP_C12M4"
-	{
-		"en"		"The Train Station"
-		"ru"		"Ж/д станция"
-		"zho"		"火車站"
-		"chi"		"火车站"
-	}
-	"#L4D360UI_LevelName_COOP_C12M5"
-	{
-		"en"		"The Farmhouse"
-		"ru"		"Ферма"
-		"zho"		"農場最終章"
-		"chi"		"农舍终章"
-	}
-	"#L4D360UI_LevelName_COOP_C13M1"
-	{
-		"en"		"Alpine Creek"
-		"ru"		"Альпийский ручей"
-		"zho"		"山間溯溪"
-		"chi"		"高山小溪"
-	}
-	"#L4D360UI_LevelName_COOP_C13M2"
-	{
-		"en"		"South Pine Stream"
-		"ru"		"Южный хвойный ручей"
-		"zho"		"南杉溪流"
-		"chi"		"松木之河"
-	}
-	"#L4D360UI_LevelName_COOP_C13M3"
-	{
-		"en"		"Memorial Bridge"
-		"ru"		"Памятный мост"
-		"zho"		"紀念大橋"
-		"chi"		"纪念大桥"
-	}
-	"#L4D360UI_LevelName_COOP_C13M4"
-	{
-		"en"		"Cut-throat Creek"
-		"ru"		"Узкий пролив"
-		"zho"		"斷喉溪澗"
-		"chi"		"残酷溪流终章"
-	}
-	"#L4D360UI_LevelName_COOP_C14M1"
-	{
-		"en"		"The Junkyard"
-		"ru"		"Свалка"
-		"zho"		"教區橋梁"
-		"chi"		"废物场"
-	}
-	"#L4D360UI_LevelName_COOP_C14M2"
-	{
-		"en"		"Lighthouse Finale"
-		"ru"		"Маяк"
-		"zho"		"燈塔"
-		"chi"		"灯塔终章"
-	}
-	
 	"choose_new_map_type"
 	{
 		"en"		"Choose the type to assign"
 		"ru"		"Какой тип присвоить"
+		"ua"		"Який тип присвоїти"
 		"zho"		"選擇要分配的類型"
 		"chi"		"选择要分配的类型"
 	}
@@ -881,6 +172,7 @@
 	{
 		"en"		"Type: < set # 1 >"
 		"ru"		"Тип: < набор № 1 >"
+		"ua"		"Тип: < набір № 1 >"
 		"zho"		"類型: < set # 1 >"
 		"chi"		"类型: < set # 1 >"
 	}
@@ -888,6 +180,7 @@
 	{
 		"en"		"Type: < set # 2 >"
 		"ru"		"Тип: < набор № 2 >"
+		"ua"		"Тип: < набір № 2 >"
 		"zho"		"類型: < set # 2 >"
 		"chi"		"类型: < set # 2 >"
 	}
@@ -895,13 +188,15 @@
 	{
 		"en"		"Type: < test map >"
 		"ru"		"Тип: < тестовая карта >"
+		"ua"		"Тип: < тестова карта >"
 		"zho"		"類型: < 測試地圖 >"
-		"chi"		"类型: < 第三方地图 >"
+		"chi"		"类型: < 测试地图 >"
 	}
 	"set_rating"
 	{
 		"en"		"Assign the rating for campaign"
 		"ru"		"Поставьте оценку кампании"
+		"ua"		"Поставте оцінку кампанії"
 		"zho"		"為地圖給予評價"
 		"chi"		"给地图评分"
 	}
@@ -909,6 +204,7 @@
 	{
 		"en"		"Remove the rating"
 		"ru"		"Удалить рейтинг"
+		"ua"		"Видалити рейтинг"
 		"zho"		"刪除評價"
 		"chi"		"删除评分"
 	}
@@ -916,6 +212,7 @@
 	{
 		"en"		"Move to another group"
 		"ru"		"Переместить в другую группу"
+		"ua"		"Перемістити до іншої групи"
 		"zho"		"移到另一個分類"
 		"chi"		"移到另一分类"
 	}
@@ -923,6 +220,7 @@
 	{
 		"en"		"Rate this campaign"
 		"ru"		"Поставить оценку"
+		"ua"		"Поставити оцінку"
 		"zho"		"評價這一個地圖"
 		"chi"		"评价这张地图"
 	}
@@ -930,6 +228,7 @@
 	{
 		"en"		"No maps found in configuration for this mode"
 		"ru"		"Не найдено карт в кофигурации для режима"
+		"ua"		"Не знайдено карт у кофігурації для режиму"
 		"zho"		"在此模式的配置中找不到地圖"
 		"chi"		"在此模式的配置中找不到地图"
 	}
@@ -938,6 +237,7 @@
 		"#format"	"{1:s}"
 		"en"		"Change map to: {1} ?"
 		"ru"		"Сменить карту на: {1} ?"
+		"ua"		"Змінити карту на: {1} ?"
 		"zho"		"更換地圖為: {1} ?"
 		"chi"		"更换地图为: {1} ?"
 	}
@@ -945,6 +245,7 @@
 	{
 		"en"		"Map"
 		"ru"		"Карта"
+		"ua"		"Карта"
 		"zho"		"地圖"
 		"chi"		"地图"
 	}
@@ -952,6 +253,7 @@
 	{
 		"en"		"is not exist on the server!"
 		"ru"		"не существует на сервере!"
+		"ua"		"не існує на сервері!"
 		"zho"		"不存在伺服器上!"
 		"chi"		"不存在于服务器上!"
 	}
@@ -959,6 +261,7 @@
 	{
 		"en"		"Another vote is not over!"
 		"ru"		"Другое голосование ещё не закончилось!"
+		"ua"		"Інше голосування ще не завершилося!"
 		"zho"		"另一個投票還沒結束!"
 		"chi"		"另一个投票还没结束!"
 	}
@@ -966,6 +269,7 @@
 	{
 		"en"		"Yes"
 		"ru"		"Да"
+		"ua"		"Так"
 		"zho"		"是"
 		"chi"		"是"
 	}
@@ -973,6 +277,7 @@
 	{
 		"en"		"No"
 		"ru"		"Нет"
+		"ua"		"Ні"
 		"zho"		"否"
 		"chi"		"否"
 	}
@@ -981,6 +286,7 @@
 		"#format"	"{1:i}"
 		"en"		"Not enough clients to start vote for mark (should be: {1}+)"
 		"ru"		"Не достаточно игроков, чтобы начать голосование за рейтинг (должно быть: {1}+)"
+		"ua"		"Не достатньо гравців, щоб розпочати голосування за рейтинг (має бути: {1}+)"
 		"zho"		"沒有足夠的玩家可以開始地圖評價投票 (人數要有: {1}+)"
 		"chi"		"沒有足够的玩家可以开始地图评分投票 (人数要有: {1}+)"
 	}
@@ -989,13 +295,24 @@
 		"#format"	"{1:i},{2:T},{3:s}"
 		"en"		"Set mark {1} {2} for the map: {3} ?"
 		"ru"		"Поставить рейтинг {1} {2} карте: {3} ?"
+		"ua"		"Поставити рейтинг {1} {2} карті: {3} ?"
 		"zho"		"評價 {1} {2} 給地圖: {3} ?"
 		"chi"		"评分 {1} {2} 给地图: {3} ?"
+	}
+	"mark_set_success"
+	{
+		"#format"	"{1:i},{2:t},{3:s}"
+		"en"		"{cyan}Map: {green}{3} {cyan}received a rating: {orange}{1} {2}"
+		"ru"		"{cyan}Карта: {green}{3} {cyan}получила рейтинг: {orange}{1} {2}"
+		"ua"		"{cyan}Карта: {green}{3} {cyan}отримала рейтинг: {orange}{1} {2}"
+		"zho"		"{cyan}地圖: {green}{3} {cyan}獲得評價: {orange}{1} {2}"
+		"chi"		"{cyan}地图: {green}{3} {cyan}获得评分: {orange}{1} {2}"
 	}
 	"veto"
 	{
 		"en"		"Current vote is vetoed by %N"
 		"ru"		"%N наложил вето на голосование"
+		"ua"		"%N наклав вето на голосування"
 		"zho"		"目前的票被 %N 否決"
 		"chi"		"%N 强制否决了投票"
 	}
@@ -1003,6 +320,7 @@
 	{
 		"en"		"Current vote is passed by %N"
 		"ru"		"%N принудительно продвинул голосование"
+		"ua"		"%N примусово просунув голосування"
 		"zho"		"目前的投票通過 %N"
 		"chi"		"%N 强制通过了投票"
 	}
@@ -1010,6 +328,7 @@
 	{
 		"en"		"You can't vote too often!"
 		"ru"		"Вы не можете голосовать слишком часто!"
+		"ua"		"Ви не можете голосувати занадто часто!"
 		"zho"		"您不能頻繁投票!"
 		"chi"		"您不能频繁投票!"
 	}
@@ -1017,20 +336,32 @@
 	{
 		"en"		"{cyan}Vote for map {orange}is failed"
 		"ru"		"{cyan}Голосование за карту {orange}провалилось"
-		"zho"		"{cyan}地圖 {orange}投票失敗"
-		"chi"		"{cyan}地图 {orange}投票失败"
+		"ua"		"{cyan}Голосування за карту {orange}провалилося"
+		"zho"		"{cyan}地圖投票 {orange}失敗"
+		"chi"		"{cyan}地图投票 {orange}失败"
+	}
+	"vote_mark_failed"
+	{
+		"en"		"{cyan}Vote for rating {orange}is failed"
+		"ru"		"{cyan}Голосование за рейтинг {orange}провалилось"
+		"ua"		"{cyan}Голосування за рейтинг {orange}провалилося"
+		"zho"		"{cyan}評價投票 {orange}失敗"
+		"chi"		"{cyan}评分投票 {orange}失败"
 	}
 	"vote_success"
 	{
-		"en"		"{green}Changing the map..."
-		"ru"		"{green}Смена карты ..."
-		"zho"		"{green}正在更換地圖..."
-		"chi"		"{green}正在更换地图..."
+		"#format"	"{1:s},{2:s},{3:i},{4:i}"
+		"en"		"{green}Changing the map: {white}[{orange}{3}/{4}{white}]  {cyan}{1} - {2}"
+		"ru"		"{green}Смена карты: {white}[{orange}{3}/{4}{white}]  {cyan}{1} - {2}"
+		"ua"		"{green}Зміна карти: {white}[{orange}{3}/{4}{white}]  {cyan}{1} - {2}"
+		"zho"		"{green}正在更換地圖: {white}[{orange}{3}/{4}{white}]  {cyan}{1} - {2}"
+		"chi"		"{green}正在更换地图: {white}[{orange}{3}/{4}{white}]  {cyan}{1} - {2}"
 	}
 	"no_access"
 	{
 		"en"		"No access!"
 		"ru"		"Нет доступа!"
+		"ua"		"Немає доступу!"
 		"zho"		"沒有權限!"
 		"chi"		"没有权限!"
 	}
@@ -1038,24 +369,32 @@
 	{
 		"en"		"Cannot change map. Invalid"
 		"ru"		"Не могу сменить карту. Неверная"
+		"ua"		"Не можу змінити карту. Невірна"
 		"zho"		"指令無效，更換地圖失敗。"
+		"chi"		"指令无效，更换地图失败"
 	}
 	"no_points"
 	{
 		"en"		"Not enough points"
 		"ru"		"Недостаточно очков"
+		"ua"		"Недостатньо очок"
 		"zho"		"積分不足"
+		"chi"		"积分不足"
 	}
 	"no_time"
 	{
 		"en"		"Not enough play time"
 		"ru"		"Недостаточно игрового времени"
+		"ua"		"Недостатньо ігрового часу"
 		"zho"		"遊戲時間不足"
+		"chi"		"游戏时间不足"
 	}
 	"random_map"
 	{
 		"en"		"Random map"
 		"ru"		"Случайная карта"
+		"ua"		"Випадкова карта"
 		"zho"		"隨機地圖"
+		"chi"		"随机地图"
 	}
 }

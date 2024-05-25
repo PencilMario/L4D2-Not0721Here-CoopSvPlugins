@@ -2599,6 +2599,17 @@ void ClearStringMB(char[] sName) // Removes all multi-byte letters, except those
 				sName[j++] = sName[i];
 			}
 		}
+		else if( bytes >= 3 )
+		{
+		    // For CJK characters, just copy the multi-byte sequence
+		    for (int k = 0; k < bytes; k++)
+		    {
+		 	   sName[j++] = sName[i++];
+		    }
+		    // Step back i to account for the loop increment
+		    i--;
+		}
+
 		i++;
 	}
 	sName[j] = 0;

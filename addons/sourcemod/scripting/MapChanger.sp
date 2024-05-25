@@ -2422,7 +2422,7 @@ void AddMapTemplate(bool bIsAddon, char[] sCampaign, GAME_TYPE eType, char[] sMa
 {
 	if( sCampaign[0] != '#' )
 	{
-		ClearStringMB(sCampaign);
+		//ClearStringMB(sCampaign);
 		NormalizeName(sCampaign);
 	}
 	if( sMapDisplay[0] != '#' )

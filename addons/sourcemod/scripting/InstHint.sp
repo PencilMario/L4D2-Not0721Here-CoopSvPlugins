@@ -4,9 +4,10 @@
 #include <sourcemod>
 #include <sdktools>
 #include <sdkhooks>
+#define MODEL_MARK_FIELD 	"materials/sprites/laserbeam.vmt"
 
 #define DeathTime 10.0
-
+int g_iFieldModelIndex;
 public Plugin myinfo = 
 {
 	name = "[L4D2] Skills Core",
@@ -55,6 +56,7 @@ public void OnMapStart()
 {
 	for (int i = 1; i <= MaxClients; i++)
 		g_flTime[i] = 0.0;
+	g_iFieldModelIndex = PrecacheModel(MODEL_MARK_FIELD, true);
 }
 
 public Action Vocalize_Listener(int client, const char[] command, int argc)
@@ -102,16 +104,21 @@ public int VMainHandler(Menu menu, MenuAction action, int client, int index)
 		char szMenuItem[24], szTemp[64], szParent[36];
 		menu.GetItem(index, szMenuItem, sizeof szMenuItem);
 
-		float vOrigin[3], vAngles[3];
+		float vOrigin[3], vAngles[3], vEnd[3];
 			
 		GetClientEyeAngles(client, vAngles);
 		GetClientEyePosition(client, vOrigin);
+		GetClientEyePosition(client, vEnd);
 			
 		Handle TraceRay = TR_TraceRayFilterEx(vOrigin, vAngles, MASK_SHOT, RayType_Infinite, TraceFilter, client);
-			
+				
 		if (TR_DidHit(TraceRay))
 			TR_GetEndPosition(vOrigin, TraceRay);
-			
+			float timeLimit = GetGameTime() + 20.0;
+			float fieldDuration = (timeLimit - GetGameTime() < 1.0 ? timeLimit - GetGameTime() : 1.0);
+			PrintToConsoleAll("fieldDuration:%f", fieldDuration);
+			TE_SetupBeamPoints(vEnd, vOrigin, g_iFieldModelIndex, 0, 0, 0, 5.0, 2.0, 2.0, 1, 0.0, {255, 20, 147, 255}, 5);
+			TE_SendToAll();
 		vOrigin[2] += 25.0;
 		delete TraceRay;
 

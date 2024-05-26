@@ -23,6 +23,7 @@
       * 允许非旁观者使用!panel查看队伍状态
       * 可以使用!drop/!g丢弃道具
       * 可以R键给其他人道具
+      * 地图小僵尸限制受z_common_limit影响
 
          <details>
          <summary>插件配置</summary>

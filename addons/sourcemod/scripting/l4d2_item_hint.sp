@@ -941,7 +941,8 @@ void CreateSpotMarker(int client, bool bIsAimInfeced)
 
 	TE_SetupBeamRingPoint(vBeamPos, 75.0, 100.0, g_iFieldModelIndex, 0, 0, 0, fieldDuration, 2.0, 0.0, color, 0, 0);
 	TE_Send(targets, targetCount);
-
+	TE_SetupBeamPoints(vPos, vBeamPos, g_iFieldModelIndex, 0, 0, 0, fieldDuration, 2.0, 2.0, 1, 0.0, color, 5);
+	TE_Send(targets, targetCount);
 	float vSpritePos[3];
 	vSpritePos = vEndPos;
 	vSpritePos[2] += 50.0;

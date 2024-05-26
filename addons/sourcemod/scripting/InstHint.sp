@@ -116,7 +116,6 @@ public int VMainHandler(Menu menu, MenuAction action, int client, int index)
 			TR_GetEndPosition(vOrigin, TraceRay);
 			float timeLimit = GetGameTime() + 20.0;
 			float fieldDuration = (timeLimit - GetGameTime() < 1.0 ? timeLimit - GetGameTime() : 1.0);
-			PrintToConsoleAll("fieldDuration:%f", fieldDuration);
 			TE_SetupBeamPoints(vEnd, vOrigin, g_iFieldModelIndex, 0, 0, 0, 5.0, 2.0, 2.0, 1, 0.0, {255, 20, 147, 255}, 5);
 			TE_SendToAll();
 		vOrigin[2] += 25.0;

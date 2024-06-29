@@ -1,0 +1,115 @@
+"Games"
+{
+	"left4dead2"
+	{
+		"Offsets"
+		{
+			"oAbility"
+			{
+				"windows"	"928"
+				"linux"		"948"
+			}
+		}
+
+		"Signatures"
+		{
+			"SetClass"
+			{
+				"library"       "server"
+				"windows"	"\x55\x8b\xec\x56\x8b\xf1\xe8****\x83\xf8*\x0f\x85****\xa1****\x40\xa3"
+				"linux"         "@_ZN13CTerrorPlayer8SetClassE15ZombieClassType"
+			}
+
+			"CreateAbility"
+			{
+				"library"	"server"
+				"windows"	"\x55\x8b\xec\x83\xec*\x56\x8b\x75*\x85\xf6\x0f\x84****\x8b\xce\xe8"
+				"linux"         "@_ZN12CBaseAbility15CreateForPlayerEP13CTerrorPlayer"
+			}
+			"RoundRespawn"
+			{
+				"library"	"server"
+				"linux"		"@_ZN13CTerrorPlayer12RoundRespawnEv"
+				"windows"	"\x56\x8B\xF1\xE8\x2A\x2A\x2A\x2A\xE8\x2A\x2A\x2A\x2A\x84\xC0\x75"
+			}
+			"CSpitterProjectile_Detonate"
+			{
+				"library"	"server"
+				"linux"		"@_ZN18CSpitterProjectile8DetonateEv"
+				"windows"   "\x81\xEC\x8C\x2A\x2A\x2A\x55\x57\x8B\xE9\xE8\xB1\x2A\xD6\xFF\x8B\xF8\xF6\x47\x42\x04\x0F\x85\xC6\x02"
+				//"windows" "\x81\xEC\x8C\x2A\x2A\x2A\x55\x57\x8B\xE9\xE8\x61\x09\xD6\xFF\x8B\xF8\xF6\x47\x42\x04\x0F\x85\xC6\x02"
+			}
+			"CTerrorPlayer_OnAdrenalineUsed"
+			{
+				"library"	"server"
+				"linux"		"@_ZN13CTerrorPlayer16OnAdrenalineUsedEf"
+				"windows"   "\x55\x8B\x2A\x51\x53\x56\x8B\x2A\x8D\x2A\x2A\x2A\x2A\x2A\x57\x8B\x2A\xE8"
+				//"windows" "\xD9\x44\x24\x04\x56\x8B\xF1\x51\x8D\x8E\x84\x32\x2A\x2A\xD9\x1C\x24\xE8\x3A\x37\xD6\xFF\x80\xBE"
+				//"windows" "\xD9\x44\x24\x04\x56\x8B\xF1\x51\x8D\x8E\x84\x32\x2A\x2A\xD9\x1C\x24\xE8\x8A\x34\xD6\xFF\x80\xBE"
+			}
+			/*
+			 *   CTerrorPlayer::OnRevived(void) - used by the game to revive Survivors
+			 */
+			"CTerrorPlayer_OnRevived"
+			{
+				"library"	"server"
+				"linux"		"@_ZN13CTerrorPlayer9OnRevivedEv"
+				"windows"   "\x2A\x2A\x2A\x2A\x2A\x2A\x53\x56\x8B\xF1\x8B\x06\x8B\x90\x2A\x2A\x2A\x2A\x57\xFF\xD2\x84\xC0\x0F\x84\x2A\x2A\x2A\x2A\x8B\xCE"
+				//"windows" "\x83\xEC\x38\x53\x55\x56\x8B\xF1\x8B\x06\x8B\x90\x2A\x2A\x2A\x2A\x57\xFF\xD2\x84\xC0\x0F\x84\xF1\x06"
+			}
+			/*
+			*  CTerrorPlayer::OnHitByVomitJar(CBaseCombatCharacter *)
+			*/
+			"CTerrorPlayer_OnHitByVomitJar"
+            {
+                "library"    "server"
+                "linux"    "@_ZN13CTerrorPlayer15OnHitByVomitJarEP20CBaseCombatCharacter"
+                "windows" "\x2A\x2A\x2A\x2A\x2A\x2A\x56\x8B\xF1\xE8\x2A\x2A\x2A\x2A\x84\xC0\x74\x2A\x8B\x06\x8B\x90\x2A\x2A\x2A\x2A\x8B\xCE\xFF\xD2\x84\xC0\x0F"
+                /* 55 8B EC 83 EC ? 56 8B F1 E8 ? ? ? ? 84 C0 74 ? 8B 06 8B 90 ? ? ? ? 8B CE FF D2 84 C0 0F */
+            }
+			/*
+			*  CTerrorPlayer::OnVomitedUpon(CTerrorPlayer*, bool)
+			*/
+			"CTerrorPlayer_OnVomitedUpon"
+            {
+                "library"    "server"
+                "linux"    "@_ZN13CTerrorPlayer13OnVomitedUponEPS_b"
+                "windows" "\x2A\x2A\x2A\x2A\x2A\x2A\x53\x56\x57\x8B\xF1\xE8\x2A\x2A\x2A\x2A\x84\xC0\x74\x2A\x8B\x06\x8B\x90"
+                /* 55 8B EC 83 EC ? 53 56 57 8B F1 E8 ? ? ? ? 84 C0 74 ? 8B 06 8B */
+            }
+			"IsStaggering"
+			{
+				"library" "server"
+				"windows" "\x83\xB9\x2A\x2A\x2A\x2A\xFF\x74"
+				"linux" "@_ZNK13CTerrorPlayer12IsStaggeringEv"
+			}
+			/*
+			 * CTerrorPlayer::OnStaggered(CBaseEntity *, Vector const*) - used by L4D2 on Survivors, causes staggering (e.g. Charger Impact nearby)
+			 *
+			 * - string "PlayerShoved" has 3 refs, the one furthest into a function should be this one.
+			 */
+			"CTerrorPlayer_OnStaggered"
+			{
+				"library"	"server"
+				"linux"		"@_ZN13CTerrorPlayer11OnStaggeredEP11CBaseEntityPK6Vector"
+				"windows"	"\x2A\x2A\x2A\x2A\x2A\x2A\x83\x2A\x2A\x83\x2A\x2A\x55\x8B\x2A\x2A\x89\x2A\x2A\x2A\x8B\x2A\x83\x2A\x2A\x56\x57\x8B\x2A\xE8\x2A\x2A\x2A\x2A\x84\x2A\x0F\x85\x2A\x2A\x2A\x2A\x8B\x2A\x8B"
+				/* 53 8B ? 83 ? ? 83 ? ? 83 ? ? 55 8B ? ? 89 ? ? ? 8B ? 83 ? ? 56 57 8B ? E8 ? ? ? ? 84 ? 0F 85 ? ? ? ? 8B ? 8B
+				 * 															83 ? ? ? 8B ? E8 ? ? ? ? 84 ? 0F 85 ? ? ? ? 8B ? 8B
+				 * Using a long local jump as the unique portion (last few bytes of sig)
+				 */
+			}
+			"SetHumanSpec"
+			{
+				"library"    "server"
+				"linux" "@_ZN11SurvivorBot17SetHumanSpectatorEP13CTerrorPlayer"
+				"windows" "\x2A\x2A\x2A\x2A\x2A\x2A\x83\xBE\x2A\x2A\x2A\x2A\x00\x7E\x07\x32\xC0\x5E\x5D\xC2\x04\x00\x8B\x0D"
+			}
+			"TakeOverBot"
+			{
+				"library"    "server"
+				"linux"    "@_ZN13CTerrorPlayer11TakeOverBotEb"
+				"windows" "\x2A\x2A\x2A\x2A\x2A\x2A\x2A\x2A\x2A\xA1\x2A\x2A\x2A\x2A\x33\xC5\x89\x45\xFC\x53\x56\x8D\x85"
+			}
+		}
+	}
+}

@@ -1,0 +1,8195 @@
+﻿// The last 6 format variables are (from right to left)
+// lb, rb, white, blue, green, orange
+
+"Phrases"
+{
+	"Activator Health Required"
+	{
+		"#format"			"{1:3.1f},{2:s}"
+		"en"				"Health required: {1}{2}"
+	}
+	"Activator Health Cost"
+	{
+		"#format"			"{1:3.1f},{2:s},{3:i}"
+		"en"				"Health cost: {1}{2} ({3})"
+	}
+	"Multiply Strength Nearby Downed Allies"
+	{
+		"#format"			"{1:3.1f},{2:s}"
+		"en"				"Talent strength *= {1}{2} for each incapacitated ally in coherency range."
+	}
+	"handicap level unlocked"
+	{
+		"#format"			"{1:s},{2:s},{3:s},{4:s},{5:s},{6:s},{7:s},{8:s},{9:s}"
+		"en"				"{1}: +{2}{3}/+{4}{5}❤, +{6}{7}loot, {9}{8} score"
+	}
+	"handicap level locked"
+	{
+		"#format"			"{1:s},{2:s},{3:s},{4:s},{5:s},{6:s},{7:s},{8:s},{9:s},{10:s}"
+		"en"				"{1}(locked): +{2}{3}/+{4}{5}❤, +{6}{7}loot, {10}{9} score"
+	}
+	"savior complex i"
+	{
+		"en"				"Savior Complex I"
+	}
+	"savior complex i info"
+	{
+		"#format"			"{1:3.2f},{2:s},{3:3.2f},{4:s},{5:3.2f},{6:s},{7:3.2f},{8:i},{9:3.2f},{10:i},{11:i},{12:i},{13:i},{14:i},{15:i},{16:3.2f},{17:s}"
+		"en"				"Deal increased melee damage per stack to special infected\nthat have an ensnared Survivor, up to {10} stacks."
+	}
+	"savior complex ii"
+	{
+		"en"				"Savior Complex II"
+	}
+	"savior complex ii info"
+	{
+		"#format"			"{1:3.2f},{2:s},{3:3.2f},{4:s},{5:3.2f},{6:s},{7:3.2f},{8:i},{9:3.2f},{10:i},{11:i},{12:i},{13:i},{14:i},{15:i},{16:3.2f},{17:s}"
+		"en"				"Deal increased melee damage to special infected\nthat have an ensnared Survivor for each {1}{2} health\nmissing while you have less than {5}{6} health."
+	}
+	"savior complex iii"
+	{
+		"en"				"Savior Complex III"
+	}
+	"savior complex iii info"
+	{
+		"#format"			"{1:3.2f},{2:s},{3:3.2f},{4:s},{5:3.2f},{6:s},{7:3.2f},{8:i},{9:3.2f},{10:i},{11:i},{12:i},{13:i},{14:i},{15:i},{16:3.2f},{17:s}"
+		"en"				"When healed by an ally, hurt yourself, exploding for\nAoE damage when within {7}units of an ensnared ally."
+	}
+	"determination i"
+	{
+		"en"				"Determination I"
+	}
+	"determination i info"
+	{
+		"#format"			"{1:3.2f},{2:s},{3:3.2f},{4:s},{5:3.2f},{6:s},{7:3.2f},{8:i},{9:3.2f},{10:i},{11:i},{12:i},{13:i},{14:i},{15:i},{16:3.2f},{17:s}"
+		"en"				"Deal increased melee damage per stack, up to {10} stacks\nwhen within {7}units of an ensnared Survivor."
+	}
+	"barrier i"
+	{
+		"en"				"Barrier I"
+	}
+	"barrier i info"
+	{
+		"#format"			"{1:3.2f},{2:s},{3:3.2f},{4:s},{5:3.2f},{6:s},{7:3.2f},{8:i},{9:3.2f},{10:i},{11:i},{12:i},{13:i},{14:i},{15:i},{16:3.2f},{17:s}"
+		"en"				"Knocks back any non-Tank special infected\nthat get within {7}units of you."
+	}
+	"barrier ii"
+	{
+		"en"				"Barrier II"
+	}
+	"barrier ii info"
+	{
+		"#format"			"{1:3.2f},{2:s},{3:3.2f},{4:s},{5:3.2f},{6:s},{7:3.2f},{8:i},{9:3.2f},{10:i},{11:i},{12:i},{13:i},{14:i},{15:i},{16:3.2f},{17:s}"
+		"en"				"Knocks back Tanks that get within {7}units of you."
+	}
+	"precision path iii"
+	{
+		"en"				"Precision III"
+	}
+	"precision path iii info"
+	{
+		"#format"			"{1:3.2f},{2:s},{3:3.2f},{4:s},{5:3.2f},{6:s},{7:3.2f},{8:i},{9:3.2f},{10:i},{11:i},{12:i},{13:i},{14:i},{15:i},{16:3.2f},{17:s}"
+		"en"				"When using sniper rifles, deal bonus damage when\nhitting limbs of enemies further than {9}units from you."
+	}
+	"knockback i"
+	{
+		"en"				"Knockback I"
+	}
+	"knockback i info"
+	{
+		"#format"			"{1:3.2f},{2:s},{3:3.2f},{4:s},{5:3.2f},{6:s},{7:3.2f},{8:i},{9:3.2f},{10:i},{11:i},{12:i},{13:i},{14:i},{15:i},{16:3.2f},{17:s}"
+		"en"				"Knocks back any non-Tank special infected\nthat you shoot within {7}units of you."
+	}
+	"knockback ii"
+	{
+		"en"				"Knockback II"
+	}
+	"knockback ii info"
+	{
+		"#format"			"{1:3.2f},{2:s},{3:3.2f},{4:s},{5:3.2f},{6:s},{7:3.2f},{8:i},{9:3.2f},{10:i},{11:i},{12:i},{13:i},{14:i},{15:i},{16:3.2f},{17:s}"
+		"en"				"Knocks back any special infected that\nhurts you and is within {7}units of you."
+	}
+	"explosives i"
+	{
+		"en"				"Explosives I"
+	}
+	"explosives ii"
+	{
+		"en"				"Explosives II"
+	}
+	"explosives iii"
+	{
+		"en"				"Explosives III"
+	}
+	"explosives i info"
+	{
+		"en"				"Increase your explosive ammo/pipebomb/firework damage."
+	}
+	"cleric perfect surname"
+	{
+		"en"				"Clerics"
+	}
+	"H perfect surname"
+	{
+		"en"				"Healthy"
+	}
+	"rrbullet perfect surname"
+	{
+		"en"				"Efficient"
+	}
+	"noffexplode perfect surname"
+	{
+		"en"				"Explosive"
+	}
+	"ffexplode perfect surname"
+	{
+		"en"				"Explosive"
+	}
+	"ammoreserve perfect surname"
+	{
+		"en"				"Reservist"
+	}
+	"rpbullet perfect surname"
+	{
+		"en"				"Efficient"
+	}
+	"o perfect surname"
+	{
+		"en"				"Tanky"
+	}
+	"h perfect surname"
+	{
+		"en"				"Regen"
+	}
+	"d perfect surname"
+	{
+		"en"				"Fighters"
+	}
+	"aoeheal perfect surname"
+	{
+		"en"				"Healers"
+	}
+	"stamina perfect surname"
+	{
+		"en"				"Scouts"
+	}
+	"giveitem perfect surname"
+	{
+		"en"				"Magical"
+	}
+	"vampire perfect surname"
+	{
+		"en"				"Vampiric"
+	}
+	"cdr perfect surname"
+	{
+		"en"				"Accelerating"
+	}
+	"speed perfect surname"
+	{
+		"en"				"Swift"
+	}
+	"maghalfempty perfect surname"
+	{
+		"en"				"Optimist"
+	}
+	"cleric major surname"
+	{
+		"en"				"Clerics"
+	}
+	"snipersmark major surname"
+	{
+		"en"				"Snipers Mark"
+	}
+	"snipersmark perfect surname"
+	{
+		"en"				"Snipers Mark"
+	}
+	"b perfect surname"
+	{
+		"en"				"Bean Bag"
+	}
+	"b major surname"
+	{
+		"en"				"Bean Bag"
+	}
+	"H major surname"
+	{
+		"en"				"Healthy"
+	}
+	"rrbullet major surname"
+	{
+		"en"				"Efficient"
+	}
+	"noffexplode major surname"
+	{
+		"en"				"Explosive"
+	}
+	"ffexplode major surname"
+	{
+		"en"				"Explosive"
+	}
+	"ammoreserve major surname"
+	{
+		"en"				"Reservist"
+	}
+	"rpbullet major surname"
+	{
+		"en"				"Efficient"
+	}
+	"o major surname"
+	{
+		"en"				"Tanky"
+	}
+	"h major surname"
+	{
+		"en"				"Regen"
+	}
+	"d major surname"
+	{
+		"en"				"Fighters"
+	}
+	"aoeheal major surname"
+	{
+		"en"				"Healers"
+	}
+	"stamina major surname"
+	{
+		"en"				"Scouts"
+	}
+	"giveitem major surname"
+	{
+		"en"				"Magical"
+	}
+	"vampire major surname"
+	{
+		"en"				"Vampiric"
+	}
+	"cdr major surname"
+	{
+		"en"				"Accelerating"
+	}
+	"speed major surname"
+	{
+		"en"				"Swift"
+	}
+	"maghalfempty major surname"
+	{
+		"en"				"Optimist"
+	}
+	"activetime major surname"
+	{
+		"en"				"Spellcasters"
+	}
+	"weak damage increase i"
+	{
+		"en"				"Shadow Damage I"
+	}
+	"weak damage increase ii"
+	{
+		"en"				"Shadow Damage II"
+	}
+	"weak damage increase iii"
+	{
+		"en"				"Shadow Damage III"
+	}
+	"weak damage increase"
+	{
+		"en"				"Deal increased damage from all sources while black and white."
+	}
+	"heal spec i"
+	{
+		"en"				"Healer Proficiency I"
+	}
+	"heal spec ii"
+	{
+		"en"				"Healer Proficiency II"
+	}
+	"heal spec i info"
+	{
+		"en"				"Unlike normal talents, proficiencies are multiplicative.\nIncreases all healing, but also reduces all outgoing damage."
+	}
+	"heal spec ii info"
+	{
+		"en"				"Unlike normal talents, proficiencies are multiplicative.\nIncreases all healing, but also increases all damage taken."
+	}
+	"tank spec i"
+	{
+		"en"				"Tank Proficiency I"
+	}
+	"tank spec ii"
+	{
+		"en"				"Tank Proficiency II"
+	}
+	"tank spec i info"
+	{
+		"en"				"Unlike normal talents, proficiencies are multiplicative.\nReduces all damage taken, but also reduces all healing."
+	}
+	"tank spec ii info"
+	{
+		"en"				"Unlike normal talents, proficiencies are multiplicative.\nReduces all damage taken, but also reduces all damage dealt."
+	}
+	"damage spec i"
+	{
+		"en"				"DPS Proficiency I"
+	}
+	"damage spec ii"
+	{
+		"en"				"DPS Proficiency II"
+	}
+	"damage spec i info"
+	{
+		"en"				"Unlike normal talents, proficiencies are multiplicative.\nIncreases all damage dealt, but also reduces all healing."
+	}
+	"damage spec ii info"
+	{
+		"en"				"Unlike normal talents, proficiencies are multiplicative.\nIncreases all damage dealt, but also increases all damage taken."
+	}
+	"player end of map roll award"
+	{
+		"#format"			"{1:s},{2:s},{3:s},{4:s},{5:3.3f},{6:s},{7:s},{8:s},{9:s},{10:s},{11:s}"
+		"en"				"{1}{2} {3}received a {4}+{5}{6} {7} {8} {9} {10}augment {11}for surviving."
+	}
+	"player loot award"
+	{
+		"#format"			"{1:s},{2:s},{3:s},{4:s},{5:3.3f},{6:s},{7:s},{8:s},{9:s},{10:s},{11:s}"
+		"en"				"{1}{2} {3}found a {4}+{5}{6} {7} {8} {9} {10}augment {11}on an infected corpse."
+	}
+	"end of map augment rolls"
+	{
+		"#format"			"{1:s},{2:s},{3:i},{4:s},{5:s}"
+		"en"				"{1}Attempting {2}{3} {4}augment rolls for all {5}"
+	}
+	"snipersmark augment info"
+	{
+		"en"				"Snipers Mark"
+	}
+	"R perfect surname"
+	{
+		"en"				"Thorns"
+	}
+	"R major surname"
+	{
+		"en"				"Thorns"
+	}
+	"R augment info"
+	{
+		"en"				"Thorns"
+	}
+	"acidburn perfect surname"
+	{
+		"en"				"Acid Burn"
+	}
+	"acidburn major surname"
+	{
+		"en"				"Acid Burn"
+	}
+	"acidburn augment info"
+	{
+		"en"				"Acid Burn"
+	}
+	"c perfect surname"
+	{
+		"en"				"Burn"
+	}
+	"c major surname"
+	{
+		"en"				"Burn"
+	}
+	"c augment info"
+	{
+		"en"				"Burn"
+	}
+	"cleric augment info"
+	{
+		"en"				"Cleric"
+	}
+	"H augment info"
+	{
+		"en"				"Health"
+	}
+	"rrbullet augment info"
+	{
+		"en"				"Bullet Refund"
+	}
+	"noffexplode augment info"
+	{
+		"en"				"Explosion (no ff)"
+	}
+	"ffexplode augment info"
+	{
+		"en"				"Explosion"
+	}
+	"ammoreserve augment info"
+	{
+		"en"				"Ammo Reserve"
+	}
+	"rpbullet augment info"
+	{
+		"en"				"Ammo Percentage Refund"
+	}
+	"activetime"
+	{
+		"en"				"Spell Active Time"
+	}
+	"o augment info"
+	{
+		"en"				"Damage Reduction"
+	}
+	"h augment info"
+	{
+		"en"				"Health Regen"
+	}
+	"d augment info"
+	{
+		"en"				"Damage"
+	}
+	"aoeheal augment info"
+	{
+		"en"				"AoE Heal"
+	}
+	"stamina augment info"
+	{
+		"en"				"Stamina"
+	}
+	"giveitem augment info"
+	{
+		"en"				"Gifted Item"
+	}
+	"vampire augment info"
+	{
+		"en"				"Vampire"
+	}
+	"cdr augment info"
+	{
+		"en"				"Cooldown Reduction"
+	}
+	"speed augment info"
+	{
+		"en"				"Movement Speed"
+	}
+	"maghalfempty augment info"
+	{
+		"en"				"Mag Half-Empty"
+	}
+	"activetime augment info"
+	{
+		"en"				"Spellcasters"
+	}
+	"b augment info"
+	{
+		"en"				"Bean Bag"
+	}
+	"1ststrike major surname"
+	{
+		"en"				"1st Strike"
+	}
+	"1ststrike perfect surname"
+	{
+		"en"				"1st Strike"
+	}
+	"1ststrike augment info"
+	{
+		"en"				"1st Strike"
+	}
+	"equip augment"
+	{
+		"en"				"Equip"
+	}
+	"unequip augment"
+	{
+		"en"				"Un-Equip"
+	}
+	"sell augment"
+	{
+		"en"				"Sell on the marketplace"
+	}
+	"cannot sell equipped augment"
+	{
+		"en"				"Cannot sell (Augment is equipped)"
+	}
+	"giveaway augment"
+	{
+		"en"				"Put on the marketplace for free"
+	}
+	"cannot equip forsale augment"
+	{
+		"en"				"Equip unavailable (listed on market)"
+	}
+	"remove augment from sale"
+	{
+		"en"				"Remove market listing"
+	}
+	"disassemble augment"
+	{
+		"en"				"Disassemble"
+	}
+	"confirm disassemble augment"
+	{
+		"en"				"Confirm to disassemble this augment"
+	}
+	"reroll augment"
+	{
+		"en"				"Reroll Augment"
+	}
+	"lock augment"
+	{
+		"en"				"Favourite Augment"
+	}
+	"unlock augment"
+	{
+		"en"				"Unlock Augment"
+	}
+	"view augment inventory"
+	{
+		"en"				"Augments\n!autodismantle in chat for more info."
+	}
+	"equip augment inventory"
+	{
+		"en"				"Equip Augments"
+	}
+	"survivalist bonus experience"
+	{
+		"#format"			"{1:s},{2:s},{3:s},{4:3.2f},{5:s},{6:s}"
+		"en"				"{1}Round Survivalist bonus experience{2}: {3}{4}{5}{6}"
+	}
+	"director points earned"
+	{
+		"#format"			"{1:s},{2:s},{3:3.3f},{4:s},{5:s}"
+		"en"				"{1}{5} {2}earns {3} {4}point(s) for SkyNet."
+	}
+	"director purchase announcement"
+	{
+		"#format"			"{1:s},{2:s},{3:s},{4:s},{5:s},{6:s},{7:3.3f},{8:s}"
+		"en"				"{1}SkyNet {2}buys {3}{4} {5}for {6}{7} {8}points."
+	}
+	"buff visual display text"
+	{
+		"#format"			"{1:s}"
+		"en"				"{1}"
+	}
+	"compounding talent info"
+	{
+		"en"				"This talent stacks with other talents."
+	}
+	"not compounding talent info"
+	{
+		"en"				"This talents output is independent of other talents."
+	}
+	"effect over time talent info"
+	{
+		"en"				"Effect-Over-Time"
+	}
+	"in combat state required"
+	{
+		"en"				"Combat State: In-Combat [Ic]"
+	}
+	"no combat state required"
+	{
+		"en"				"Combat State: Out-of-Combat [Oc]"
+	}
+	"combat state formatted improperly"
+	{
+		"en"				"bad combat state check your config file."
+	}
+	"You cannot aim at anything"
+	{
+		"en"				"No aim target"
+	}
+	"common aim target"
+	{
+		"en"				"Common"
+	}
+	"special common aim target"
+	{
+		"en"				"Super"
+	}
+	"witch aim target"
+	{
+		"en"				"Witch"
+	}
+	"Node Governing Attribute"
+	{
+		"#format"			"{1:s}"
+		"en"				"Governed By: {1}"
+	}
+	"primary aoe range"
+	{
+		"#format"			"{1:3.2f}"
+		"en"				"Primary AoE Range: {1}"
+	}
+	"secondary aoe range"
+	{
+		"#format"			"{1:3.2f}"
+		"en"				"Secondary AoE Range: {1}"
+	}
+	"multiply aoe range"
+	{
+		"#format"			"{1:3.2f}"
+		"en"				"Multiply Range: {1}"
+	}
+	"Survivor Sheet Info"
+	{
+		"#format"			"{1:s}"
+		"en"				"{PLAYTIME}\nMax Health: {MYHP}\nHealth RGN: {HPRGN}\nMax Stamina: {MYSTAM}\nDamage: {WDMG}\n \nConstitution:  {CON}\nAgility:\t\t\t{AGI}\nResilience:\t {RES}\nTechnique:\t {TEC}\nEndurance:\t{END}\nLuck:\t\t\t {LUC}\n \nMelee Heal: {HEALSTRMEL}\nBullet Heal: {HEALSTRGUN}"
+	}
+	"Infected Sheet Info"
+	{
+		"en"				"Infected Character Data\n \nCommons HP: {CH}\tDMG: {CD}\nWitch HP: {WH}\tDMG: {WD}\nHunter HP: {HUNTERHP}\tDMG: {HUNTERDMG}\nSmoker HP: {SMOKERHP}\tDMG: {SMOKERDMG}\nBoomer HP: {BOOMERHP}\tDMG: {BOOMERDMG}\nSpitter HP: {SPITTERHP}\tDMG: {SPITTERDMG}\nJockey HP: {JOCKEYHP}\tDMG: {JOCKEYDMG}\nCharger HP: {CHARGERHP}\tDMG: {CHARGERDMG}\nTank HP: {TANKHP}\tDMG: {TANKDMG}"
+	}
+	"node locked"
+	{
+		"#format"			"{1:s},{2:i}"
+		"en"				"{1}"//"{1} (Cost: {2} upgrade points)"
+	}
+	"node locked by talents all (treeview)"
+	{
+		"#format"			"{1:s},{2:s}"
+		"en"				"{1} (Req. ALL)\n{2}"
+	}
+	"node locked by talents multiple (treeview)"
+	{
+		"#format"			"{1:s},{2:s},{3:i}"
+		"en"				"{1} (Req. {3})\n{2}"
+	}
+	"node locked by talents single (treeview)"
+	{
+		"#format"			"{1:s},{2:s},{3:i}"
+		"en"				"{1} (Req. {3})\n{2}"
+	}
+	"node locked by talents last one (treeview)"
+	{
+		"#format"			"{1:s},{2:s}"
+		"en"				"{1} (Req.)\n{2}"
+	}
+	"node locked by talents all (talentview)"
+	{
+		"#format"			"{1:s}"
+		"en"				"Talent Locked (Req. ALL)\n{1}"
+	}
+	"node locked by talents multiple (talentview)"
+	{
+		"#format"			"{1:s},{2:i}"
+		"en"				"Talent Locked (Req. {2})\n{1}"
+	}
+	"node locked by talents single (talentview)"
+	{
+		"#format"			"{1:s},{2:i}"
+		"en"				"Talent Locked (Req. {2})\n{1}"
+	}
+	"node locked by talents last one (talentview)"
+	{
+		"#format"			"{1:s}"
+		"en"				"Talent Locked (Req. below Talent)\n{1}"
+	}
+	"node unlocked"
+	{
+		"#format"			"{1:s}"
+		"en"				"{1} (Unlocked)"//"{1} (Talent unlocked)"
+	}
+	"ability locked translation"
+	{
+		"en"				"Talent Locked"
+	}
+	"ability unlocked translation"
+	{
+		"en"				"Talent Unlocked"
+	}
+	"unlock node translation"
+	{
+		"en"				"Unlock Talent"
+	}
+	"lock node translation"
+	{
+		"en"				"Refund Talent"
+	}
+	"tree strength display"
+	{
+		"#format"			"{1:i},{2:i}"
+		"en"				"({1}/{2})"
+	}
+	"magazine half empty"
+	{
+		"en"				"magazine half empty"
+	}
+	"magazine half empty info"
+	{
+		"en"				"damage increased when half or less bullets remaining\nup to this amount for the last bullet."
+	}
+	"battle focus i"
+	{
+		"en"				"Battle Focus I"
+	}
+	"battle focus ii"
+	{
+		"en"				"Battle Focus II"
+	}
+	"battle focus i info"
+	{
+		"en"				"Chance on Hit to heal for a percentage of the damage you deal."
+	}
+	"high ground i"
+	{
+		"en"				"High Ground I"
+	}
+	"high ground ii"
+	{
+		"en"				"High Ground II"
+	}
+	"high ground i info"
+	{
+		"en"				"Deal increased damage when you have\na high-ground advantage over your target."
+	}
+	"against all odds i"
+	{
+		"en"				"Against All Odds I"
+	}
+	"against all odds ii"
+	{
+		"en"				"Against All Odds II"
+	}
+	"against all odds i info"
+	{
+		"en"				"Deal increased damage when your target\nhas a high-ground advantage on you."
+	}
+	"leeching i"
+	{
+		"en"				"Leeching I"
+	}
+	"leeching ii"
+	{
+		"en"				"Leeching II"
+	}
+	"leeching i info"
+	{
+		"en"				"On infected kill, heal for a percentage of your weapon damage."
+	}
+	"leeching ii info"
+	{
+		"en"				"When hurting infected, heal for a percentage of your weapon damage."
+	}
+	"damage resistance"
+	{
+		"en"				"DMG resistance"
+	}
+	"damage resistance info"
+	{
+		"en"				"reduces incoming damage by a percentage."
+	}
+	"progress bar speed"
+	{
+		"en"				"Progress Bar Speed"
+	}
+	"progress bar speed info"
+	{
+		"en"				"Reduces time to use items that activate the progress bar."
+	}
+	"talent trees"
+	{
+		"en"				"View/Upgrade Talent Trees\nSpend your talent points here!"
+	}
+	"frontline"
+	{
+		"en"				"Frontline"
+	}
+	"survival"
+	{
+		"en"				"Survivalist"
+	}
+	"offensive"
+	{
+		"en"				"Offensive"
+	}
+	"utility"
+	{
+		"en"				"Utility"
+	}
+	"attribute"
+	{
+		"en"				"Attributes"
+	}
+	"hunter"
+	{
+		"en"				"Hunter"
+	}
+	"jockey"
+	{
+		"en"				"Jockey"	
+	}
+	"spitter"
+	{
+		"en"				"Spitter"
+	}
+	"charger"
+	{
+		"en"				"Charger"	
+	}
+	"tank"
+	{
+		"en"				"Tank"
+	}
+	"smoker"
+	{
+		"en"				"Smoker"
+	}
+	"support"
+	{
+		"en"				"Support"
+	}
+	"ambush"
+	{
+		"en"				"Ambush"
+	}
+	"frontline talents"
+	{
+		"en"				"Frontline"
+	}
+	"survival talents"
+	{
+		"en"				"Survivalist"
+	}
+	"offensive talents"
+	{
+		"en"				"Offensive"
+	}
+	"utility talents"
+	{
+		"en"				"Utility"
+	}
+	"attribute talents"
+	{
+		"en"				"Attributes"
+	}
+	"hunter talents"
+	{
+		"en"				"Hunter"
+	}
+	"jockey talents"
+	{
+		"en"				"Jockey"	
+	}
+	"spitter talents"
+	{
+		"en"				"Spitter"
+	}
+	"charger talents"
+	{
+		"en"				"Charger"	
+	}
+	"tank talents"
+	{
+		"en"				"Tank"
+	}
+	"smoker talents"
+	{
+		"en"				"Smoker"
+	}
+	"support talents"
+	{
+		"en"				"Support"
+	}
+	"ambush talents"
+	{
+		"en"				"Ambush"
+	}
+	"proficiency level up"
+	{
+		"#format"			"{1:s},{2:s},{3:s},{4:s},{5:s},{6:s},{7:s},{8:i}"
+		"en"				"{1}{2} {3}has reached {4}{5} {6}level {7}{8}"
+	}
+	"pistol proficiency"
+	{
+		"en"				"Pistol"
+	}
+	"melee proficiency"
+	{
+		"en"				"Melee"
+	}
+	"uzi proficiency"
+	{
+		"en"				"Uzi"
+	}
+	"shotgun proficiency"
+	{
+		"en"				"Shotgun"
+	}
+	"sniper proficiency"
+	{
+		"en"				"Sniper"
+	}
+	"assault proficiency"
+	{
+		"en"				"Assault"
+	}
+	"medic proficiency"
+	{
+		"en"				"Medic"
+	}
+	"grenade proficiency"
+	{
+		"en"				"Grenade"
+	}
+	"pistol proficiency up"
+	{
+		"en"				"Pistol Proficiency"
+	}
+	"melee proficiency up"
+	{
+		"en"				"Melee Proficiency"
+	}
+	"uzi proficiency up"
+	{
+		"en"				"Uzi Proficiency"
+	}
+	"shotgun proficiency up"
+	{
+		"en"				"Shotgun Proficiency"
+	}
+	"sniper proficiency up"
+	{
+		"en"				"Sniper Proficiency"
+	}
+	"assault proficiency up"
+	{
+		"en"				"Assault Proficiency"
+	}
+	"medic proficiency up"
+	{
+		"en"				"Medic Proficiency"
+	}
+	"grenade proficiency up"
+	{
+		"en"				"Grenade Proficiency"
+	}	
+	"join group advertisement"
+	{
+		"#format"			"{1:3.2f},{2:s},{3:s},{4:s},{5:s},{6:s},{7:s},{8:s},{9:s},{10:s}"
+		"en"				"{3}Type '{4}motd{5}' into chat and click '{6}Join This Servers Steamgroup{7}' to earn {8}{1}{9}{2} {10}bonus experience in the server."
+	}
+	"tank spawn:hulk"
+	{
+		"en"				"Earthquake Tank"
+	}
+	"tank spawn:death"
+	{
+		"en"				"Death Tank"
+	}
+	"tank spawn:burn"
+	{
+		"en"				"Fire Tank"
+	}
+	"tank spawn:teleporter"
+	{
+		"en"				"Teleporter Tank"
+	}
+	"tank spawn:unstable"
+	{
+		"en"				"Unstable Tank"
+	}
+	"tank spawn:reflect"
+	{
+		"en"				"Reflect Tank"
+	}
+	"tank spawn notification"
+	{
+		"#format"			"{1:s},{2:s},{3:s},{4:s}"
+		"en"				"{1}{2} {3}has {4}Entered The Battlefield!"
+	}
+	"tank shift notification"
+	{
+		"#format"			"{1:s},{2:s},{3:s},{4:s}"
+		"en"				"{1}{2} {3}has {4}Entered The Battlefield!"
+	}
+	"round bonus multiplier"
+	{
+		"#format"			"{1:s},{2:s},{3:s},{4:s},{5:3.2f},{6:s},{7:s},{8:s}"
+		"en"				"{1}{2} {3}earning XP at a {4}{5}{6}{7} {8}rate."
+	}
+	"brawler info"
+	{
+		"en"				"brawler info?"
+	}
+	"Vanilla"
+	{
+		"en"				"Vanilla"
+	}
+	"personal settings"
+	{
+		"en"				"Settings\nCreate/Save/Delete Profiles\nSpawn Loadout\nLevel/Enemy Info\nWeapon Proficiency Data\nDisable Handicap"
+	}
+	"threat menu"
+	{
+		"en"				"Threat Meter"
+	}
+	"threat meter title"
+	{
+		"en"				"real-time threat meter"
+	}
+	"hardcore mode enabled"
+	{
+		"#format"			"{1:s},{2:s},{3:i},{4:s},{5:s}"
+		"en"				"{1}You are level {2}{3}{4}: All Death Penalties are {5}Enabled"
+	}
+	"the zombies are coming"
+	{
+		"#format"			"{1:s},{2:s},{3:s}"
+		"en"				"{1}>>>>> {2}THE INFECTED ARE COMING {3}<<<<<"
+	}
+	"bonus container locked"
+	{
+		"#format"			"{1:s},{2:s}"
+		"en"				"{1}Your bonus container {2}is now locked."
+	}
+	"player no longer eligible"
+	{
+		"#format"			"{1:s},{2:s},{3:s}"
+		"en"				"{1}{2} {3}was removed from the server for falling below the score requirement."
+	}
+	"loading data cannot open menu"
+	{
+		"#format"			"{1:s}"
+		"en"				"{1}The menu is unavailable while your data is loading."
+	}
+	"Cancel Load Request"
+	{
+		"#format"			"{1:s}"
+		"en"				"View Profile Authorization Request From {1}"
+	}
+	"none"
+	{
+		"en"				"RPG DISABLED"
+	}
+	"view class abilities"
+	{
+		"en"				"View Talent Modifiers & Class Abilities"
+	}
+	"view class experience"
+	{
+		"en"				"View CARTEL XP modifiers" 
+	}
+	"select survivor bot"
+	{
+		"en"				"Select a Survivor Bot from the list\nthat you'd like to load your profile on to\n\nPressing the 'BACK' key resets targeting to YOU"
+	}
+	"vanilla"
+	{
+		"en"				"Vanilla"
+	}
+	"Select Load Target"
+	{
+		"#format"			"{1:s}"
+		"en"				"Load Profile Onto: {1}"
+	}
+	"Yourself"
+	{
+		"en"				"Yourself"
+	}
+	"playing in server name"
+	{
+		"#format"			"{1:s},{2:s},{3:s},{4:s},{5:s},{6:s},{7:s}"
+		"en"				"{1}You are playing at {2}{3}\n{4}Say {5}!{6} {7}into chat to open the Control Panel"
+	}
+	"tellah"
+	{
+		"en"				"Tellah"
+	}
+	"talent level requirement not met"
+	{
+		"#format"			"{1:s},{2:s},{3:i},{4:s},{5:s},{6:s}"
+		"en"				"{1}You must be level {2}{3} {4}to access the talent {5}{6}"
+	}
+	"class level requirement not met"
+	{
+		"#format"			"{1:s},{2:s},{3:i},{4:s},{5:s},{6:s}"
+		"en"				"{1}You must be level {2}{3} {4}to access the class {5}{6}"
+	}
+	"loading class profile"
+	{
+		"#format"			"{1:s},{2:s},{3:s}"
+		"en"				"{1}Loading your saved {2}{3}"
+	}
+	"class profile loaded"
+	{
+		"#format"			"{1:s},{2:s},{3:s}"
+		"en"				"{1}My life is complete; I have loaded your {2}{3}"
+	}
+	"rejoining too fast"
+	{
+		"#format"			"{1:s}"
+		"en"				"{1}You will be respawned at a closet, or the beginning of the next round."
+	}
+	"rejoining too fast survival"
+	{
+		"#format"			"{1:s}"
+		"en"				"{1}You will respawn with all dead players at the next 5-minute interval."
+	}
+	"Leaderboards Top Page"
+	{
+		"en"				"Leaderboards - Go To Top Page"
+	}
+	"Leaderboards Next Page"
+	{
+		"en"				"Leaderboards - Next Page"
+	}
+	"View My Ranking"
+	{
+		"en"				"View My Ranking"
+	}
+	"proficiency data"
+	{
+		"en"				"Weapon Proficiency Data"
+	}
+	"disable handicap"
+	{
+		"en"				"Disable Handicap"
+	}
+	"talent trees"
+	{
+		"en"				"View/Upgrade Talent Trees\nSpend your talent points here!"
+	}
+	"the leaderboards"
+	{
+		"en"				"Leaderboard"
+	}
+	"bullet trails (disabled)"
+	{
+		"en"				"Bullet Trails (Disabled)"
+	}
+	"bullet trails (enabled)"
+	{
+		"en"				"Bullet Trails (Enabled)"
+	}
+	"noob mode (disabled)"
+	{
+		"en"				"Noob Assistance (Disabled)"
+	}
+	"noob mode (enabled)"
+	{
+		"en"				"Noob Assistance (Enabled)"
+	}
+	"auto level (locked)"
+	{
+		"#format"			"{1:3.1f},{2:s}"
+		"en"				"Auto-Level (Off-Locked)\nA level-up option is on the main page."
+	}
+	"auto level (disabled)"
+	{
+		"#format"			"{1:3.1f},{2:s}"
+		"en"				"Auto-Level (Off)\nA level-up option is on the main page."
+	}
+	"auto level (enabled)"
+	{
+		"en"				"Auto-Level (On)\nDisable to enable manual leveling (on the main page).\n"
+	}
+	"respec confirm"
+	{
+		"en"				"Confirm\nResetting your talents cannot be undone."
+	}
+	"respec"
+	{
+		"en"				"Refund Talents"
+	}
+	"lowest layer reached"
+	{
+		"en"					"Lowest Layer reached."
+	}
+	"highest layer reached"
+	{
+		"en"					"Highest Layer reached."
+	}
+	"show tree layers"
+	{
+		"#format"			"{1:i},{2:i},{3:i},{4:i}"
+		"en"				"trees {1}({4} talents, {2}/{3} talents req.)"
+	}
+	"show tree layers single (locked)"
+	{
+		"#format"			"{1:i},{2:i},{3:i}"
+		"en"				"trees {1} locked({2} talents, +{3} talent req.)"
+	}
+	"show tree layers (locked)"
+	{
+		"#format"			"{1:i},{2:i},{3:i}"
+		"en"				"trees {1} locked({2} talents, +{3} talents req.)"
+	}
+	"layer move"
+	{
+		"#format"				"{1:i}"
+		"en"				"trees {1}"
+	}
+	"layer move locked"
+	{
+		"#format"			"{1:i},{2:i},{3:i}"
+		"en"				"Trees {1}\n(preview, locked ({3})"
+		//"en"				"(Preview Only) Layer {1}\nThis layer requires {3} more upgrades before\nyou can unlock deeper layers."
+	}
+	"prestige"
+	{
+		"en"				"Prestige Up!"
+	}
+	"collected bonus container"
+	{
+		"#format"			"{1:s},{2:s},{3:s},{4:s},{5:s},{6:s}"
+		"en"				"{1}{2} {3}collected their bonus container for {4}{6} {5}experience"
+	}
+	"raid lock penalty warning"
+	{
+		"#format"			"{1:s},{2:s}"
+		"en"				"{1}You are now locked in for the round.\n{2}Leaving before the round ends will forfeit experience earned this round."
+	}
+	"raid lock penalty enacted"
+	{
+		"#format"			"{1:s},{2:s},{3:s},{4:s}"
+		"en"				"{1}{2} {3}left during a live round.\n{4}Their progress this round was not saved, and raid (or solo) level reset."
+	}
+	"bonus container burst"
+	{
+		"#format"			"{1:s},{2:s},{3:s},{4:s},{5:3.1f},{6:s},{7:s}"
+		"en"				"{1}{2} {3}loses their {4}{5}{7} {6}XP Multiplier..."
+	}
+	"bonus experience waiting"
+	{
+		"#format"			"{1:s},{2:s},{3:s},{4:s},{5:s},{6:s},{7:s},{8:s},{9:s},{10:3.2f},{11:s}"
+		"en"				"{1}You have {2}{3} experience{4} available.\nType {5}!collect {6}to {7}receive the bonus now {8}and reset the multiplier.\nCurrent multiplier: {9}{10}{11}"
+	}
+	"teammate bonus experience"
+	{
+		"#format"			"{1:s},{2:s},{3:3.2f},{4:s}"
+		"en"				"{1}Team Experience Bonus: {2}{3}{4}"
+	}
+	"teammate has died"
+	{
+		"#format"			"{1:s},{2:s},{3:s},{4:s},{5:3.2f},{6:s}"
+		"en"				"{1}{2} {3}has died; The monsters weaken...\nTeam experience multiplier: {4}{5}{6}"
+	}
+	"you have died - handicap disabled"
+	{
+		"#format"			"{1:s},{2:s}"
+		"en"				"{1}You have died: {2}Handicap Disabled"
+	}
+	"teammate has died - handicap reduced"
+	{
+		"#format"			"{1:s},{2:s}"
+		"en"				"{1}One of your teammates died on your watch: {2}Handicap Reduced"
+	}
+	"you are doomed"
+	{
+		"#format"			"{1:s}"
+		"en"				"{1}The spell Doom has been cast upon you."
+	}
+	"survivors are doomed"
+	{
+		"#format"			"{1:s}"
+		"en"				"{1}The Survivors were Doomed..."
+	}
+	"Team Points"
+	{
+		"en"				"Team Points:"
+	}
+	"Share Points Syntax"
+	{
+		"#format"			"{1:s},{2:s},{3:s}"
+		"en"				"!{3} <client> <points>"
+	}
+	"Share Points Given"
+	{
+		"#format"			"{1:s},{2:s},{3:s},{4:s},{5:3.2f},{6:s},{7:s},{8:s}"
+		"en"				"{1}{2} {3}has gifted {4}{5} {6}point(s) to {7}{8}"
+	}
+	"combat handicap restricted"
+	{
+		"#format"			"{1:s},{2:s},{3:i}"
+		"en"				"{1}You are now locked in to {2}Handicap Lv.{3}"
+	}
+	"Overdrive damage"
+	{
+		"en"				"Overdrive DMG"
+	}
+	"Overdrive damage info"
+	{
+		"en"				"Increases all outgoing damage during Overdrive\nbased on the number of overdrive stacks."
+	}
+	"Overdrive leech"
+	{
+		"en"				"Overdrive Leech"
+	}
+	"Overdrive leech info"
+	{
+		"en"				"You heal for some of the outgoing damage\nmultiplicative based on the stack count."
+	}
+	"Overdrive absorb"
+	{
+		"en"				"Overdrive DMG Shield"
+	}
+	"Overdrive absorb info"
+	{
+		"en"				"Absorb a portion of incoming damage\nPlease note this occurs after handicap/raid damage increases."
+	}
+	"Overdrive reflect"
+	{
+		"en"				"Overdrive Reflect"
+	}
+	"Overdrive reflect info"
+	{
+		"en"				"Reflects damage back - based on overdrive stacks."
+	}
+	
+	"Cleanse damage"
+	{
+		"en"				"Cleanse DMG"
+	}
+	"Cleanse damage info"
+	{
+		"en"				"Increases all outgoing damage based on\nyour cleanse stacks."
+	}
+	"Cleanse leech"
+	{
+		"en"				"Cleanse Leech"
+	}
+	"Cleanse leech info"
+	{
+		"en"				"You heal for some outgoing damage based on\nyour cleanse count."
+	}
+	"Cleanse absorb"
+	{
+		"en"				"Cleanse DMG Shield"
+	}
+	"Cleanse absorb info"
+	{
+		"en"				"Absorb a portion of incoming damage based on cleanse stacks."
+	}
+	"Cleanse reflect"
+	{
+		"en"				"Cleanse Reflect"
+	}
+	"Cleanse reflect info"
+	{
+		"en"				"Reflects damage back - based on cleanse stacks."
+	}
+	"building stack change"
+	{
+		"#format"			"{1:s},{2:s},{3:s},{4:s},{5:s},{6:3.3f},{7:s}"
+		"en"				"{1}Now generating {2}{3} {4}for {5}{6} {7}second(s)."
+	}
+	"chainsaw damage increase"
+	{
+		"en"				"Chainsaw DMG+"
+	}
+	"chainsaw damage increase info"
+	{
+		"en"				"Chainsaw damage is increased."
+	}
+	"explosion damage increase"
+	{
+		"en"				"Explosion DMG+"
+	}
+	"explosion damage increase info"
+	{
+		"en"				"Explosions (pipes, propane, etc.) deal more damage."
+	}
+	"blunt damage increase"
+	{
+		"en"				"Blunt Melee DMG+"
+	}
+	"blunt damage increase info"
+	{
+		"en"				"Blunt Melee Weapons deal more damage"
+	}
+	"sharp damage increase"
+	{
+		"en"				"Sharp Melee DMG+"
+	}
+	"sharp damage increase info"
+	{
+		"en"				"Sharp Melee Weapons deal more damage"
+	}
+	"special ammo target selected"
+	{
+		"#format"			"{1:s},{2:s},{3:s}"
+		"en"				"{1}Special Ammo Target: {2}{3}"
+	}
+	"special ammo targeted"
+	{
+		"#format"			"{1:s},{2:s},{3:s}"
+		"en"				"{1}Special Ammo Targeting You: {2}{3}"
+	}
+	"select special ammo target"
+	{
+		"#format"			"{1:s},{2:s}"
+		"en"				"{1}!ammotarget {2}<targetname>"
+	}
+	"last special target wiped"
+	{
+		"#format"			"{1:s},{2:s}"
+		"en"				"{1}Last special ammo target {2}forgotten."
+	}
+	"survival intermission end"
+	{
+		"#format"			"{1:s},{2:s},{3:i}"
+		"en"				"{1}Intermission is over.\nBeginning Round {2}{3}"
+	}
+	"survival intermission ending soon"
+	{
+		"#format"			"{1:s},{2:s},{3:i}"
+		"en"				"{1}Intermission will end in {2}{3} seconds"
+	}
+	"out of combat state"
+	{
+		"en"				"Out of Combat"
+	}
+	"in combat state"
+	{
+		"#format"			"{1:3.1f}"
+		"en"				"In Combat ({1})"
+	}
+	"upgrade awarded"
+	{
+		"#format"			"{1:s},{2:s},{3:s},{4:s},{5:i}"
+		"en"				"{1}You have received {2}{5} {3}Talent Upgrades{4}!"
+	}
+	"experience debt penalty"
+	{
+		"#format"		"{1:s},{2:s},{3:s},{4:i}"
+		"en"			"{1}You have earned {2}{4} {3}experience debt for dying."
+	}
+	"Talent Id Code"
+	{
+		"en"			"ID Code:"
+	}
+	"Talent Menu"
+	{
+		"en"			"Talent Menu"
+	}
+	"Survivor Menu"
+	{
+		"en"			"Survivor Menu"
+	}
+	"Infected Menu"
+	{
+		"en"			"Infected Menu"
+	}
+	"not enough damage"
+	{
+		"#format"		"{1:s},{2:s},{3:3.2f},{4:s},{5:s},{6:s},{7:3.2f},{8:s},{9:s}"
+		"en"			"{1}You contributed {2}{3}{4}PCT {5}of the required {6}{7}{8}PCT {9}contribution."
+	}
+	"damage experience reward"
+	{
+		"#format"			"{1:s},{2:s},{3:s},{4:s},{5:s},{6:s}"
+		"en"				"{1}Exited Combat\n{2}Damage {3}bonus: {4}{5} {6}experience"
+	}
+	"base experience reward"
+	{
+		"#format"			"{1:s},{2:s},{3:s},{4:s},{5:s},{6:s}"
+		"en"				"{1}{2} {3}Killed: {4}{5} {6}experience"
+	}
+	"handicap experience reward"
+	{
+		"#format"			"{1:s},{2:s},{3:s},{4:s},{5:s}"
+		"en"				"{1}Handicap {2}bonus: {3}{4} {5}experience"
+	}
+	"sky experience reward"
+	{
+		"#format"			"{1:s},{2:s},{3:s},{4:s},{5:s}"
+		"en"				"{1}Sky level {2}bonus: {3}{4} {5}experience"
+	}
+	"rested experience reward"
+	{
+		"#format"			"{1:s},{2:s},{3:s},{4:s},{5:s}"
+		"en"				"{1}Rested {2}bonus: {3}{4} {5}experience"
+	}
+	"booster experience reward"
+	{
+		"#format"			"{1:s},{2:s},{3:s},{4:s},{5:s}"
+		"en"				"{1}Booster {2}bonus: {3}{4} {5}experience"
+	}
+	"tanking experience reward"
+	{
+		"#format"			"{1:s},{2:s},{3:s},{4:s},{5:s}"
+		"en"				"{1}Tanking {2}bonus: {3}{4} {5}experience"
+	}
+	"healing experience reward"
+	{
+		"#format"			"{1:s},{2:s},{3:s},{4:s},{5:s}"
+		"en"				"{1}Healing {2}bonus: {3}{4} {5}experience"
+	}
+	"buffing experience reward"
+	{
+		"#format"			"{1:s},{2:s},{3:s},{4:s},{5:s}"
+		"en"				"{1}Buffing {2}bonus: {3}{4} {5}experience"
+	}
+	"hexing experience reward"
+	{
+		"#format"			"{1:s},{2:s},{3:s},{4:s},{5:s}"
+		"en"				"{1}Hexing {2}bonus: {3}{4} {5}experience"
+	}
+	"points from damage reward"
+	{
+		"#format"			"{1:s},{2:s},{3:s},{4:3.3f},{5:s}"
+		"en"				"{1}Points{2}: {3}{4} {5}earned"
+	}
+	"handicap disabled for map"
+	{
+		"#format"			"{1:s}"
+		"en"				"{1}the team wiped on this map, handicap is disabled until next map."
+	}
+	"received item from teammate"
+	{
+		"#format"			"{1:s},{2:s},{3:s},{4:s},{5:s}"
+		"en"				"{1}{2} {3}was purchased and given to you by {4}{5}"
+	}
+	"teamwork reward notification"
+	{
+		"#format"			"{1:s},{2:s},{3:s},{4:s},{5:s},{6:s},{7:s},{8:i}"
+		"en"				"{1}{2} {3}has received {4}{5}{6}: {7}{8} experience"
+	}
+	"handicap level reduced by force"
+	{
+		"#format"			"{1:s},{2:s},{3:s},{4:s},{5:i}"
+		"en"				"{1}Your handicap level has been reduced to {2}{5} {3}due to {4}incapacitation/death."
+	}
+	"handicap level disabled by force"
+	{
+		"#format"			"{1:s},{2:s},{3:s},{4:s}"
+		"en"				"{1}Your handicap level has been {2}disabled {3}due to {4}incapacitation/death."
+	}
+	"level requirement kick"
+	{
+		"#format"			"{1:i},{2:s}"
+		"en"				"Requires level {2}, You are level{1}."
+	}
+	"incap survivor health"
+	{
+		"en"				"(Incap) Survivor Health"
+	}
+	"incap survivor health info"
+	{
+		"en"				"Increases the time you can rest your\nhead on the floor."
+	}
+	"incap health regen survivor"
+	{
+		"en"				"(Incap) Health Regen"
+	}
+	"incap health regen survivor info"
+	{
+		"en"				"Regens your health while you're resting your head\ngiving you more time to rest your head."
+	}
+	"enable hardcore mode"
+	{
+		"en"				"Enable Hardcore Mode"
+	}
+	"backpack fizzle"
+	{
+		"#format"			"{1:s},{2:s}"
+		"en"				"{1}The contents of the backpack are useless {2}so you toss it aside"
+	}
+	"backpack roll"
+	{
+		"#format"			"{1:s},{2:s},{3:s}"
+		"en"				"{1}{2} {3}is scavenging..."
+	}
+	"nerve agent release countdown"
+	{
+		"#format"			"{1:i}"
+		"en"				"SILENT DEATH IMMINENT!!!\n{1} SECOND(S) TO GET TO THE SAFEROOM!\nSILENT DEATH IMMINENT!!!"
+	}
+	"nerve agent released"
+	{
+		"en"				"SILENT DEATH!!!\nSTAY IN THE SAFEROOM!!!"
+	}
+	"Forgive Warnings Syntax"
+	{
+		"#format"			"{1:s},{2:s}"
+		"en"				"{1}!forgive {2}<player name>"
+	}
+	"Forgive Warnings Player"
+	{
+		"#format"			"{1:s},{2:s},{3:s},{4:s}"
+		"en"				"{1}You have forgiven {2}{4} {3}of their chat transgressions."
+	}
+	"Chat Ban Time"
+	{
+		"#format"			"{1:i},{2:i},{3:i}"
+		"en"				"Chat Ban Time Remaining: {1} Hour(s) {2} Minute(s) {3} Second(s)"
+	}
+	"melee against special"
+	{
+		"en"				"Melee do no damage to special infected!"
+	}
+	"handicap"
+	{
+		"en"				"Handicap\nModify your (and yours alone) difficulty."
+	}
+	"player handicap bonus"
+	{
+		"#format"			"{1:3.1f}"
+		"en"				"XP / Point Bonus: {1}PCT"
+	}
+	"increase handicap"
+	{
+		"en"				"Increase Handicap"
+	}
+	"decrease handicap"
+	{
+		"en"				"Decrease Handicap"
+	}
+	"reset handicap"
+	{
+		"en"				"Reset Handicap"
+	}
+	"player handicap movement"
+	{
+		"#format"			"{1:3.1f}"
+		"en"				"Movement Speed Penalty: {1}PCT"
+	}
+	"player handicap damage"
+	{
+		"#format"			"{1:3.1f}"
+		"en"				"Damage Output Penalty: {1}PCT"
+	}
+	"damage increase commons"
+	{
+		"#format"			"{1:3.1f}"
+		"en"				"Common Damage: {1}PCT"
+	}
+	"damage increase hunter"
+	{
+		"#format"			"{1:3.1f}"
+		"en"				"Hunter Damage: {1}PCT"
+	}
+	"damage increase smoker"
+	{
+		"#format"			"{1:3.1f}"
+		"en"				"Smoker Damage: {1}PCT"
+	}
+	"handicap health increase"
+	{
+		"#format"			"{1:3.1f}"
+		"en"				"Health Increase: {1}PCT"
+	}
+	"damage increase boomer"
+	{
+		"#format"			"{1:3.1f}"
+		"en"				"Boomer Damage: {1}PCT"
+	}
+	"damage increase witch"
+	{
+		"#format"			"{1:3.1f}"
+		"en"				"Witch Damage: {1}PCT"
+	}
+	"damage increase jockey"
+	{
+		"#format"			"{1:3.1f}"
+		"en"				"Jockey Damage: {1}PCT"
+	}
+	"damage increase spitter"
+	{
+		"#format"			"{1:3.1f}"
+		"en"				"Spitter Damage: {1}PCT"
+	}
+	"damage increase charger"
+	{
+		"#format"			"{1:3.1f}"
+		"en"				"Charger Damage: {1}PCT"
+	}
+	"damage increase tank"
+	{
+		"#format"			"{1:3.1f}"
+		"en"				"Tank Damage: {1}PCT"
+	}
+	"Menu Header 0"
+	{
+		"#format"			"{1:3.3f}"
+		"en"				"Shop Points: {1}"
+	}
+	"Menu Header 3 Exp"
+	{
+		"#format"			"{1:s}"
+		"en"				"Upgrade Cost: {1}"
+	}
+	"Give Store Points Syntax"
+	{
+		"#format"			"{1:s},{2:s}"
+		"en"				"{1}Syntax: {2}!awardsp <name> <value>"
+	}
+	"Store Points Award Given"
+	{
+		"#format"			"{1:s},{2:s},{3:s},{4:s},{5:s},{6:s}"
+		"en"				"{1}Awarded {2}{3} {4}Premium Credits to {5}{6}"
+	}
+	"Store Points Award Received"
+	{
+		"#format"			"{1:s},{2:s},{3:s},{4:s}"
+		"en"				"{1}You have been awarded {2}{3} {4}Premium Credits"
+	}
+	"Sky Points Award"
+	{
+		"#format"			"{1:s},{2:i},{3:s},{4:s},{5:s},{6:s},{7:s},{8:s}"
+		"en"				"{1}{2} {3}{4} {5}have been added to {6}{7} {8}'s account"
+	}
+	"Warn Buy Level"
+	{
+		"#format"			"{1:i},{2:i}"
+		"en"				"Upgrades this level: {1} / {2}\n \nDo you still want to level up?"
+	}
+	"Tank Limit Reached"
+	{
+		"#format"			"{1:s},{2:s},{3:i},{4:s}"
+		"en"				"{1}Tank Limit of {2}{3} {4}has been reached"
+	}
+	"Tank On Cooldown"
+	{
+		"#format"			"{1:s},{2:s}"
+		"en"				"{1}Tank purchases {2}currently on cooldown"
+	}
+	"Tank Cooldown Complete"
+	{
+		"#format"			"{1:s},{2:s}"
+		"en"				"{1}THE AI {2}can now purchase a tank"
+	}
+	"Tank Cooldown Remaining"
+	{
+		"#format"			"{1:s},{2:3.1f},{3:s},{4:s},{5:s}"
+		"en"				"{1}{2} {3}second(s) remaining on {4}Tank {5}cooldown"
+	}
+	"Store Header"
+	{
+		"#format"			"{1:i}"
+		"en"				"In-Game Store\n!Store Credits: {1}"
+	}
+	"Store Points Award"
+	{
+		"#format"			"{1:s},{2:i},{3:s},{4:s},{5:s},{6:s},{7:s},{8:s}"
+		"en"				"{1}{2} {3}{4} {5}have been added to {6}{7} {8}'s account"
+	}
+	"Infected Health Broadcast"
+	{
+		"#format"			"{1:s},{2:s},{3:s},{4:s},{5:s}"
+		"en"				"{1}\n{2} - {3} / {4}\n{5}"
+	}
+	"Hint Text Broadcast 0"
+	{
+		"#format"			"{1:s}"
+		"en"				"{1}"
+	}
+	"Hint Text Broadcast 1"
+	{
+		"#format"			"{1:s},{2:s},{3:s}"
+		"en"				"{1}\n{2} / {3}"
+	}
+	"Hint Text Broadcast 2"
+	{
+		"#format"			"{1:s},{2:s},{3:s},{4:3.3f}"
+		"en"				"{1}\n{2} / {3}\n{4} Buy Point(s)"
+	}
+	"Respawn Timer"
+	{
+		"#format"			"{1:i}"
+		"en"				"Time until respawn\n{1} sec(s)"
+	}
+	"Time Played"
+	{
+		"#format"			"{1:s},{2:s},{3:s},{4:s}"
+		"en"				"{1} Day(s), {2} Hour(s), {3} Min(s), {4} sec(s)"
+	}
+	"Menu Header 1 Talents"
+	{
+		"#format"			"{1:i},{2:i},{3:s},{4:s},{5:i},{6:s},{7:i}"
+		"en"				"Lv: {1} of {2}\nXP: {3} of {4}\n \nTalent Points: {5} ({6})\nPremium Credits: {7}"
+	}
+	"Menu Header 1 Exp"
+	{
+		"#format"			"{1:i},{2:i},{3:s},{4:s},{5:s},{6:s},{7:i},{8:s},{9:s}"
+		"en"				"Lv: {1} of {2} {9}\n\nXP: {3} of {4} ({5})\n \nUpgrade Cost: {6} XP\nPremium Credits: {7}\n \n{8}"
+	}
+	"Menu Header 2 Talents"
+	{
+		"#format"			"{1:i},{2:i},{3:s},{4:s},{5:i},{6:s},{7:3.3f},{8:i}"
+		"en"				"Lv: {1} of {2}\nXP: {3} of {4}\n \nTalent Points: {5} ({6})\nZShop Credits: {7}\nPremium Credits: {8}"
+	}
+	"Menu Header 2 Exp"
+	{
+		"#format"			"{1:i},{2:i},{3:s},{4:s},{5:s},{6:s},{7:3.3f},{8:i},{9:s},{10:s}"
+		"en"				"Lv: {1} of {2} {10}\nXP: {3} of {4} ({5})\n \nUpgrade Cost: {6} XP\nShop Credits: {7}\nPremium Credits: {8}\n \n{9}"
+	}
+	"Points Text"
+	{
+		"#format"			"{1:3.2f}"
+		"en"				"\n!buy credits: {1}"
+	}
+	"Prestige Level Text"
+	{
+		"#format"			"{1:i},{2:i},{3:s}"
+		"en"				"Prestige Lv.{1} {3}"
+	}
+	"Player Level Text"
+	{
+		"#format"			"{1:i},{2:i},{3:s},{4:s},{5:s},{6:s},{7:s}"
+		"en"				"{3}xp{4}{5}xp\nLevel {1} / {2}\nScore: {6}\nScrap: {7}"
+	}
+	"XP Level Cap"
+	{
+		"#format"			"{1:s},{2:i}"
+		"en"				"This server caps XP earning at Lv.{2}\n \n{1}"
+	}
+	"XP Level Cap Reached"
+	{
+		"#format"			"{1:s},{2:i}"
+		"en"				"You earn no XP on this server (>= Lv.{2})\n \n{1}"
+	}
+	"Sky Level Text"
+	{
+		"#format"			"{1:i},{2:s},{3:s},{4:s}"
+		"en"				"Sky Lv. {1}\t{2}{3}{4}"
+	}
+	"RPG Header"
+	{
+		"#format"			"{1:s},{2:i},{3:i},{4:i}"
+		"en"				"{1}\n \n{2} / {3} unlocked talents\nTalent Points: {4}"
+	}
+	"RPG Layer Eligible"
+	{
+		"#format"			"{1:s},{2:i},{3:i},{4:i}"
+		//"en"				"{1}\n \n{3}/{4} required unlocks in Talent Tree {2}."
+		"en"				"{1}\n \nTalent Tree {2}:\n{3} / {4} req. talents."
+	}
+	"RPG Layer Not Eligible"
+	{
+		"#format"			"{1:s},{2:i}"
+		"en"				"{1}\n \nTalent Tree {2} is locked, but you can\nstill view this tree."
+	}
+	"attribute no layer progress"
+	{
+		"en"				"Attribute Talents do not contribute\nto unlocking the next talent layer."
+	}
+	"Class Level Text"
+	{
+		"#format"			"{1:s},{2:s}"
+		"en"				"{1} Lv.{2}"
+	}
+	"Data Saved"
+	{
+		"#format"			"{1:s},{2:s}"
+		"en"				"{1}All player data {2}has been saved!"
+	}
+	"Witch Name"
+	{
+		"en"				"Kyles Mom"
+	}
+	"Director Think Process"
+	{
+		"#format"			"{1:s},{2:s}"
+		"en"				"{1}The Director {2}is plotting its next move..."
+	}
+	"Not Enough Points"
+	{
+		"#format"			"{1:s},{2:s},{3:3.3f}"
+		"en"				"{1}Not enough Points ( {3} ) {2}to make this purchase"
+	}
+	"Not Enough Experience"
+	{
+		"#format"			"{1:s},{2:s},{3:i}"
+		"en"				"{1}Not enough Experience  ( {3} ) {2}to make this purchase"
+	}
+	"Buy Menu"
+	{
+		"en"				"!buy Menu"
+	}
+	"RPG Menu"
+	{
+		"en"				"View/Upgrade Talent Trees\nSpend your talent points here!"
+	}
+	"Buy Menu Option 1"
+	{
+		"#format"			"{1:s},{2:s}"
+		"en"				"{1} ({2})"
+	}
+	"Buy Menu Option 2"
+	{
+		"#format"			"{1:s},{2:3.1f},{3:s}"
+		"en"				"{1} Cost: {2} !buy credit(s) ({3})"
+	}
+	"Buy Menu Option 3"
+	{
+		"#format"			"{1:s},{2:i},{3:s}"
+		"en"				"{1} Cost: {2} XP ({3})"
+	}
+	"Command Information"
+	{
+		"#format"			"{1:s},{2:s},{3:s},{4:s},{5:s},{6:s},{7:s},{8:s}"
+		"en"				"{1}{2} {3}- {4}{5} {6}- {7}{8}"
+	}
+	"Commands Listed Console"
+	{
+		"#format"			"{1:s},{2:s},{3:s}"
+		"en"				"{1}Quick Commands {2}have been printed to your {3}Console"
+	}
+	"Upgrades Used"
+	{
+		"en"				"Upgrades Assigned"
+	}
+	"Points"
+	{
+		"en"				"Credit(s)"
+	}
+	"respawn"
+	{
+		"en"				"Respawn (at death spot)"
+	}
+	"respawn bind"
+	{
+		"en"				"buy your way back to life!"
+	}
+	"Experience"
+	{
+		"en"				"Experience"
+	}
+	"weapons bind"
+	{
+		"en"				"opens the weapons buy menu"
+	}
+	"health bind"
+	{
+		"en"				"opens the health items buy menu"
+	}
+	"grenade bind"
+	{
+		"en"				"opens the grenade items buy menu"
+	}
+	"upgrades bind"
+	{
+		"en"				"opens the upgrade items buy menu"
+	}
+	"free weapons bind"
+	{
+		"en"				"opens the weapons buy menu"
+	}
+	"baseball_bat bind"
+	{
+		"en"			"purchases the baseball bat melee weapon"
+	}
+	"fireaxe bind"
+	{
+		"en"				"purchases the fireaxe melee weapon"
+	}
+	"pitchfork bind"
+	{
+		"en"				"purchase the pitchfork melee weapon"
+	}
+	"shovel bind"
+	{
+		"en"				"purchases the shovel melee weapon"
+	}
+	"knife bind"
+	{
+		"en"				"purchases the knife melee weapon"
+	}
+	"tonfa bind"
+	{
+		"en"				"purchases the tonfa melee weapon"
+	}
+	"cricketbat bind"
+	{
+		"en"				"purchases the cricketbat melee weapon"
+	}
+	"melee weapons bind"
+	{
+		"en"				"opens the melee weapons buy menu"
+	}
+	"rifles bind"
+	{
+		"en"				"opens the tier 2 rifles buy menu"
+	}
+	"shotguns bind"
+	{
+		"en"				"opens the tier 2 shotguns buy menu"
+	}
+	"snipers bind"
+	{
+		"en"				"opens the tier 2 sniper rifles buy menu"
+	}
+	"chainsaw bind"
+	{
+		"en"				"Buy the chainsaw (melee weapon)"
+	}
+	"grenade launcher bind"
+	{
+		"en"				"Buy the grenade launcher"
+	}
+	"ammo bind"
+	{
+		"en"				"Buy ammo refill"
+	}
+	"pumpshotgun bind"
+	{
+		"en"				"Buy the pump shotgun"
+	}
+	"uzi bind"
+	{
+		"en"				"Buy the uzi"
+	}
+	"tmp5 bind"
+	{
+		"en"				"Buy the tmp5"
+	}
+	"mp5 bind"
+	{
+		"en"				"Buy the mp5"
+	}
+	"pistol bind"
+	{
+		"en"				"Buy the pistol"
+	}
+	"dual pistol bind"
+	{
+		"en"				"Buy Dual Pistols"
+	}
+	"magnum bind"
+	{
+		"en"				"Buy the magnum"
+	}
+	"m4a1 bind"
+	{
+		"en"				"Buy the M4A1"
+	}
+	"ak47 bind"
+	{
+		"en"				"Buy the AK47"
+	}
+	"desert bind"
+	{
+		"en"				"Buy the Desert Rifle"
+	}
+	"sg552 bind"
+	{
+		"en"				"Buy the SG552"
+	}
+	"m60 bind"
+	{
+		"en"				"Buy the M60"
+	}
+	"autoshotgun bind"
+	{
+		"en"				"Buy the Autoshotgun"
+	}
+	"spas bind"
+	{
+		"en"				"Buy the SPAS Shotgun"
+	}
+	"hunt bind"
+	{
+		"en"				"Buy the Hunting Rifle"
+	}
+	"military bind"
+	{
+		"en"				"Buy the Military Rifle"
+	}
+	"scout bind"
+	{
+		"en"				"Buy the Scout Sniper Rifle"
+	}
+	"awp bind"
+	{
+		"en"				"Buy the AWP Sniper Rifle"
+	}
+	"adren bind"
+	{
+		"en"				"Buy Adrenaline"
+	}
+	"pills bind"
+	{
+		"en"				"Buy Pain Pills"
+	}
+	"medkit bind"
+	{
+		"en"				"Buy a First Aid Kit"
+	}
+	"defib bind"
+	{
+		"en"				"Buy a Defibrillator"
+	}
+	"heal bind"
+	{
+		"en"				"Buy an Instant Heal (will stand you up if incapped)"
+	}
+	"molotov bind"
+	{
+		"en"				"Buy a Molotov"
+	}
+	"pipe bind"
+	{
+		"en"				"Buy a Pipe Bomb"
+	}
+	"vomitjar bind"
+	{
+		"en"				"Buy a Vomitjar"
+	}
+	"gascan bind"
+	{
+		"en"				"Buy a Gascan (useable on generator/gas events)"
+	}
+	"firework bind"
+	{
+		"en"				"Buy a firework crate"
+	}
+	"explosiveammo bind"
+	{
+		"en"				"Buy (single) explosive ammo clip"
+	}
+	"incendiaryammo bind"
+	{
+		"en"				"Buy (single) incendiary ammo clip"
+	}
+	"laser bind"
+	{
+		"en"				"Buy a laser sight"
+	}
+	"explosivepack bind"
+	{
+		"en"				"Buy explosive upgrade pack (medkit slot)"
+	}
+	"incendiarypack bind"
+	{
+		"en"				"Buy incendiary upgrade pack (medkit slot)"
+	}
+	"class bind"
+	{
+		"en"				"Open the class change menu"
+	}
+	"hunter bind"
+	{
+		"en"				"Buy (free if in ghost) a class change to hunter"
+	}
+	"smoker bind"
+	{
+		"en"				"Buy (free if in ghost) a class change to smoker"
+	}
+	"boomer bind"
+	{
+		"en"				"Buy (free if in ghost) a class change to boomer"
+	}
+	"jockey bind"
+	{
+		"en"				"Buy (free if in ghost) a class change to jockey"
+	}
+	"spitter bind"
+	{
+		"en"				"Buy (free if in ghost) a class change to spitter"
+	}
+	"charger bind"
+	{
+		"en"				"Buy (free if in ghost) a class change to charger"
+	}
+	"tank bind"
+	{
+		"en"				"Buy a class change to tank (it is never free, btw)"
+	}
+	"panic bind"
+	{
+		"en"				"Buy a panic event"
+	}
+	"witch bind"
+	{
+		"en"				"Buy a witch drop where you are looking"
+	}
+	"riotdrop bind"
+	{
+		"en"				"Buy a riot police drop where you are looking"
+	}
+	"riotqueue bind"
+	{
+		"en"				"Buy a riot police queue"
+	}
+	"jimmydrop bind"
+	{
+		"en"				"Buy a jimmy gibbs drop where you are looking"
+	}
+	"jimmyqueue bind"
+	{
+		"en"				"Buy a jimmy gibbs queue"
+	}
+	"Buy Menu Option Cooldown"
+	{
+		"#format"			"{1:s}"
+		"en"				"{1} (Cooldown)"
+	}
+	"Menu Option is On Cooldown"
+	{
+		"#format"			"{1:s},{2:s},{3:s}"
+		"en"				"{1}{2} {3}is on cooldown, the director cannot buy this!"
+	}
+	"Director Talents Enabled, No Survivor Talents"
+	{
+		"#format"			"{1:s},{2:s},{3:s},{4:s},{5:s}"
+		"en"				"{1}Director Talents are Enabled {2}please use {3}{4} {5}to disable before accessing the talent menus."
+	}
+	"Director Talents Disabled"
+	{
+		"#format"			"{1:s},{2:s}"
+		"en"				"{1}Director Talents {2}Disabled"
+	}
+	"Director Talents Enabled"
+	{
+		"#format"			"{1:s},{2:s}"
+		"en"				"{1}Director Talents {2}Enabled"
+	}
+	"Director Priority Save Disabled"
+	{
+		"#format"			"{1:s},{2:s}"
+		"en"				"{1}Director Priority Save {2}Disabled"
+	}
+	"Director Priority Save Enabled"
+	{
+		"#format"			"{1:s},{2:s}"
+		"en"				"{1}Director Priority Save {2}Enabled"
+	}
+	"constitution"
+	{
+		"en"				"Constitution"
+	}
+	"constitution info"
+	{
+		"en"				"Talents:\n+1st Upgrade Strength\n+Cooldown Time\n\nSpells:\n+1st Upgrade Lifetime\n+Base Stamina Cost\n+Cooldown Time"
+	}
+	"agility"
+	{
+		"en"				"Agility"
+	}
+	"agility info"
+	{
+		"en"				"Talents:\n+Each Upgrade Strength\n+Cooldown Time\n\nSpells:\n-Range"
+	}
+	"resilience"
+	{
+		"en"				"Resilience"
+	}
+	"resilience info"
+	{
+		"en"				"Talents:\n-Talent Cooldown Time\n\nSpells:\n+Each Upgrade Stamina Cost\n-Each Upgrade Cooldown Time"
+	}
+	"technique"
+	{
+		"en"				"Technique"
+	}
+	"technique info"
+	{
+		"en"				"Talents:\n+Each Upgrade Ability Time\n\nSpells:\n+1st Upgrade \"On\" Time"
+	}
+	"endurance"
+	{
+		"en"				"Endurance"
+	}
+	"endurance info"
+	{
+		"en"				"Does not affect Talents.\n\nSpells:\n+1st Upgrade Lifetime\n-1st Upgrade Stamina Cost\n+Each Upgrade Range"
+	}
+	"luck"
+	{
+		"en"				"Luck"
+	}
+	"luck info"
+	{
+		"en"				"Increases the likelihood of critical events."
+	}
+	"talent level up"
+	{
+		"#format"			"{1:s},{2:s},{3:s},{4:s},{5:i},{6:s},{7:s},{8:s}"
+		"en"				"{1}{2} {3}has gained {4}{5} {6}points of {7}{8}"
+	}
+	"cartel experience screen"
+	{
+		"#format"			"{1:i},{2:s},{3:s},{4:s},{5:s}"
+		"en"				"{4} Lv.{1}:\t{2}XP {5} {3}XP"
+	}
+	"Survivor Cartel"
+	{
+		"en"				"Attribute Levels\n \n \n \n"
+	}
+	"Character Sheet"
+	{
+		"en"				"Level/Enemy Info"
+	}
+	"Handicap Sheet"
+	{
+		"en"				"Handicap (Difficulty Modifiers)"
+	}
+	"Character Sheet (Survivor Page)"
+	{
+		"en"				"Survivor Info"
+	}
+	"Character Sheet (Infected Page)"
+	{
+		"en"				"Infected Info"
+	}
+	"Load And Go"
+	{
+		"en"				"Load 'n Go\nLoad an existing profile and go kill some shit!"
+	}
+	"Survivor Classes"
+	{
+		"en"				"Job Class"
+	}
+	"Tanking Classes"
+	{
+		"en"				"Tanking Classes\nClasses in this category primary role is tanking"
+	}
+	"Tank-Healing Subclasses"
+	{
+		"en"				"Tank(Healer)\nClasses in this category are tank-heal hybrids."
+	}
+	"Tank-DPS Subclasses"
+	{
+		"en"				"Tank(DPS)\nThese are tanks that also pack a punch!"
+	}
+	"DPS Classes"
+	{
+		"en"				"DPS Classes\nThese Class' primary focus is beating things up!"
+	}
+	"DPS-Ranged Subclasses"
+	{
+		"en"				"DPS(Ranged)\nDPS Classes with ranged-combat bonuses."
+	}
+	"DPS-Melee Subclasses"
+	{
+		"en"				"DPS(Melee)\nDPS Classes with a focus on close-quarter combat."
+	}
+	"Healer Classes"
+	{
+		"en"				"Healing Classes\nClasses that primarily focus in health recovery."
+	}
+	"Healer-DPS Subclasses"
+	{
+		"en"				"Healing(DPS)\nHealers that aren't COMPLETE push-overs in combat!"
+	}
+	"Healer-Tank Subclasses"
+	{
+		"en"				"Healing(Tank)\nThese healers have some tanking qualities."
+	}
+	"Hybrid Classes"
+	{
+		"en"				"Hybrid Classes\nThey can do it all!\n... But not necessarily the best."
+	}
+	"Submenu Locked"
+	{
+		"#format"			"{1:s},{2:i}"
+		"en"				"{1} (Locked until Lv.{2})"
+	}
+	"Submenu Available"
+	{
+		"#format"			"{1:s}"
+		"en"				"{1}"
+	}
+	"warrior"
+	{
+		"en"				"Warrior"
+	}
+	"healer"
+	{
+		"en"				"Healer"
+	}
+	"death knight"
+	{
+		"en"				"Death Knight"
+	}
+	"death healer"
+	{
+		"en"				"Death Priest"
+	}
+	"death ward"
+	{
+		"en"				"Death Ward"
+	}
+	"crusader"
+	{
+		"en"				"Crusader"
+	}
+	"paladin"
+	{
+		"en"				"Paladin"
+	}
+	"druid"
+	{
+		"en"				"Druid"
+	}
+	"shaman"
+	{
+		"en"				"Shaman"
+	}
+	"assassin"
+	{
+		"en"				"Assassin"
+	}
+	"crusader assassin"
+	{
+		"en"				"Arbiter"
+	}
+	"brawler"
+	{
+		"en"				"Brawler"
+	}
+	"monk"
+	{
+		"en"				"Monk"
+	}
+	"blaster"
+	{
+		"en"				"Blaster"
+	}
+	"firebug"
+	{
+		"en"				"Firebug"
+	}
+	"firebug blaster"
+	{
+		"en"				"Fireblaster"
+	}
+	"firebug crusader"
+	{
+		"en"				"Fire Crusader"
+	}
+	"firebug death"
+	{
+		"en"				"Hellfire Knight"
+	}
+	"explosive impact"
+	{
+		"en"				"Unstable Genetics\nSpecial Commons become unstable, exploding for AoE damage\nwhen you land the killing blow."
+	}
+	"fire crater"
+	{
+		"en"				"Fireball Blast\nLanding the killing blow on special commons\ncreates a crater of fire on them."
+	}
+	"healer aura"
+	{
+		"en"				"Healer's Aura\nYour health regen talents affect nearby teammates\nbased on your healing spell range."
+	}
+	"commando aura"
+	{
+		"en"				"Commando Aura\nHealth regen ticks regen ammo for nearby teammates."
+	}
+	"hemomancy"
+	{
+		"en"				"Hemomancy\nDealing damage replenishes your health, while\nreceiving damage heals nearby teammates."
+	}
+	"totem spirit"
+	{
+		"en"				"Totem Spirit\nRegen talents are converted to AoE damage based on your score."
+	}
+	"blessed by the light"
+	{
+		"en"				"Blessed By The Light\nDraws zombies to them if enrage is not active."
+	}
+	"dark sacrifice"
+	{
+		"en"				"Dark Sacrifice\nWeakness[Wk] is always active."
+	}
+	"space force"
+	{
+		"en"				"Space Force Tech\nUtilizing cutting-edge awesome, your jetpack is more efficient!"
+	}
+	"elon mastery"
+	{
+		"en"				"Elon Mastery\nUnspecified 'upgrades' prevent your Jetpack from\nmalfunctioning when tanks are nearby."
+	}
+	"zora mastery"
+	{
+		"en"				"Zora Mastery\nAs a Zora, you move swiftly when in water."
+	}
+	"coX class info"
+	{
+		"en"				"Constitution XP"
+	}
+	"agX class info"
+	{
+		"en"				"Agility XP"
+	}
+	"reX class info"
+	{
+		"en"				"Resilience XP"
+	}
+	"teX class info"
+	{
+		"en"				"Technique XP"
+	}
+	"enX class info"
+	{
+		"en"				"Endurance XP"
+	}
+	"luX class info"
+	{
+		"en"				"Luck XP"
+	}
+	"saving class data"
+	{
+		"#format"			"{1:s},{2:s},{3:s}"
+		"en"				"{1}Saving Class Data for {2}{3}"
+	}
+	"fprange class info"
+	{
+		"en"				"+Spell Range on First Upgrade"
+	}
+	"eprange class info"
+	{
+		"en"				"+Spell Range on Each Upgrade"
+	}
+	"h class info"
+	{
+		"en"				"Healing"
+	}
+	"d class info"
+	{
+		"en"				"Outgoing Damage"
+	}
+	"D class info"
+	{
+		"en"				"Incoming Damage"
+	}
+	"tXP class info"
+	{
+		"en"				"Tank XP"
+	}
+	"hB class info"
+	{
+		"en"				"Bullets Heal Allies"
+	}
+	"hM class info"
+	{
+		"en"				"Melee Weapons Heal Allies"
+	}
+	"hXP class info"
+	{
+		"en"				"Heal XP"
+	}
+	"stam class info"
+	{
+		"en"				"Stamina Cost"
+	}
+	"amCD class info"
+	{
+		"en"				"Spell Cooldown"
+	}
+	"wRNG class info"
+	{
+		"en"				"Weapon Range"
+	}
+	"mDMG class info"
+	{
+		"en"				"Melee Damage"
+	}
+	"gunDMG class info"
+	{
+		"en"				"Gun Damage"
+	}
+	"gunRNG class info"
+	{
+		"en"				"Gun Range"
+	}
+	"ICwDMG class info"
+	{
+		"en"				"In-Combat Weapon Damage"
+	}
+	"OCwDMG class info"
+	{
+		"en"				"Out-of-Combat Weapon Damage"
+	}
+	"snprDMG class info"
+	{
+		"en"				"Sniper Damage"
+	}
+	"pstlDMG class info"
+	{
+		"en"				"Pistol Damage"
+	}
+	"riflDMG class info"
+	{
+		"en"				"Assault Rifle Damage"
+	}
+	"snprDMG class info"
+	{
+		"en"				"Sniper Damage"
+	}
+	"shtgDMG class info"
+	{
+		"en"				"Shotgun Damage"
+	}
+	"smgDMG class info"
+	{
+		"en"				"SMG Damage"
+	}
+	"atsgDMG class info"
+	{
+		"en"				"Auto-Shotgun Damage"
+	}
+	"pusgDMG class info"
+	{
+		"en"				"Pump-Shotgun Damage"
+	}
+	"boltDMG class info"
+	{
+		"en"				"Bolt-Action Sniper Damage"
+	}
+	"50caDMG class info"
+	{
+		"en"				".50cal Damage"
+	}
+	"eprng class info"
+	{
+		"en"				"Each Point Range"
+	}
+	"STK class info"
+	{
+		"en"				"Stalker\nIncreases all outgoing damage.\nThe more damage a mob has dealt\nto you, the less stalker will deal to it."
+	}
+	"gunslinger"
+	{
+		"en"				"Gunslinger"
+	}
+	"river zora"
+	{
+		"en"				"River Zora"
+	}
+	"spacex employee"
+	{
+		"en"				"SpaceX Employee"
+	}
+	"arsonist"
+	{
+		"en"				"Arsonist"
+	}
+	"wtrDMG class info"
+	{
+		"en"				"Water Damage"
+	}
+	"airDMG class info"
+	{
+		"en"				"Air Damage"
+	}
+	"fireDMG class info"
+	{
+		"en"				"Fire Damage"
+	}
+	"rng class info"
+	{
+		"en"				"Your Spell Range"
+	}
+	"amSTR class info"
+	{
+		"en"				"Spell Strength"
+	}
+	"ftCD class info"
+	{
+		"en"				"First Upgrade Cooldown"
+	}
+	"etCD class info"
+	{
+		"en"				"Each Upgrade Cooldown"
+	}
+	"aamRNG class info"
+	{
+		"en"				"All Spell Range"
+	}
+	"H class talent info"
+	{
+		"en"				"Health Talents"
+	}
+	"h class talent info"
+	{
+		"en"				"Healing Talents"
+	}
+	"R class talent info"
+	{
+		"en"				"Reflect Talents"
+	}
+	"d class talent info"
+	{
+		"en"				"Damage Talents"
+	}
+	"elven ranger"
+	{
+		"en"				"Elven Ranger"
+	}
+	"sharpshooter"
+	{
+		"en"				"Sniper"
+	}
+	"death sharpshooter"
+	{
+		"en"				"Dark Sniper"
+	}
+	"shaman brawler"
+	{
+		"en"				"battlemage"
+	}
+	"healer shaman"
+	{
+		"en"				"Cleric"
+	}
+	"hemomancer"
+	{
+		"en"				"Hemomancer"
+	}
+	"death hemomancer"
+	{
+		"en"				"Blood Warrior"
+	}
+	"death scout"
+	{
+		"en"				"Scout"
+	}
+	"commando"
+	{
+		"en"				"Commando"
+	}
+	"shaman hemomancer"
+	{
+		"en"				"Bloodknight"
+	}
+	"healer hemomancer"
+	{
+		"en"				"Bloodpriest"
+	}
+	"death shaman"
+	{
+		"en"				"Deathbringer"
+	}
+	"crusader shaman"
+	{
+		"en"				"Battlemage"
+	}
+	"crusader death"
+	{
+		"en"				"Warblade"
+	}
+	"death ranger"
+	{
+		"en"				"Dark Ranger"
+	}
+	"rating increase"
+	{
+		"#format"			"{1:s},{2:s},{3:s},{4:s}"
+		"en"				"{1}+{2}{3} {4}damage score"
+	}
+	"rating increase for tanking"
+	{
+		"#format"			"{1:s},{2:s},{3:s},{4:s}"
+		"en"				"{1}+{2}{3} {4}tanking score"
+	}
+	"living survivors experience bonus"
+	{
+		"#format"			"{1:s},{2:s},{3:s},{4:s},{5:s},{6:3.3f},{7:s},{8:s},{9:s}"
+		"en"				"{1}Your {2}Survival EXP Bonus {3}increases by {4}+{5}{6}{7}{8}"
+	}
+	"team rating increase"
+	{
+		"#format"			"{1:s},{2:s},{3:s},{4:s},{5:s},{6:s},{7:s},{8:s},{9:s}"
+		"en"				"{1}+{2}{3} {4}score {5}( +{6}{7} {8}bonus{9})"
+	}
+	"player killed special infected"
+	{
+		"#format"			"{1:s},{2:s},{3:s},{4:s},{5:s}"
+		"en"				"{1}{2} {3}killed {4}{5}"
+	}
+	"player damage to special"
+	{
+		"#format"			"{1:s},{2:s},{3:s},{4:s},{5:s},{6:s},{7:s},{8:s},{9:s}"
+		"en"				"{1}{2} {3}lands the killing blow on {4}{5} {6}for {7}{8} {9}damage"
+	}
+	"killed special infected"
+	{
+		"#format"			"{1:s},{2:s},{3:s}"
+		"en"				"{1}{2} {3}died"
+	}
+	"Enable Class"
+	{
+		"en"				"Enable Class"
+	}
+	"Disable Class"
+	{
+		"en"				"Disable Class"
+	}
+	"strength slate"
+	{
+		"#format"			"{1:i},{2:i}"
+		"en"				"Current: {1} / {2}"
+	}
+	"luck slate"
+	{
+		"#format"			"{1:i},{2:i}"
+		"en"				"Luck: {1} / {2}"
+	}
+	"agility slate"
+	{
+		"#format"			"{1:i},{2:i}"
+		"en"				"Agility: {1} / {2}"
+	}
+	"technique slate"
+	{
+		"#format"			"{1:i},{2:i}"
+		"en"				"Technique: {1} / {2}"
+	}
+	"endurance slate"
+	{
+		"#format"			"{1:i},{2:i}"
+		"en"				"Endurance: {1} / {2}"
+	}
+	"weapons"
+	{
+		"en"				"Weapons"
+	}
+	"health"
+	{
+		"en"				"Health Items"
+	}
+	"grenades"
+	{
+		"en"				"Grenades"
+	}
+	"upgrades"
+	{
+		"en"				"Weapon Upgrades"
+	}
+	"free weapons"
+	{
+		"en"				"Weapons"
+	}
+	"fireaxe"
+	{
+		"en"				"Fireaxe"
+	}
+	"shovel"
+	{
+		"en"				"Shovel"
+	}
+	"pitchfork"
+	{
+		"en"				"pitchfork"
+	}
+	"tonfa"
+	{
+		"en"				"Tonfa"
+	}
+	"cricketbat"
+	{
+		"en"				"Cricket Bat"
+	}
+	"melee weapons"
+	{
+		"en"				"Melee Weapons"
+	}
+	"rifles"
+	{
+		"en"				"Assault Rifles"
+	}
+	"shotguns"
+	{
+		"en"				"Auto Shotguns"
+	}
+	"snipers"
+	{
+		"en"				"Sniper Rifles"
+	}
+	"chainsaw"
+	{
+		"en"				"Chainsaw"
+	}
+	"grenade launcher"
+	{
+		"en"				"Grenade Launcher"
+	}
+	"ammo"
+	{
+		"en"				"Ammo Refill"
+	}
+	"main menu"
+	{
+		"en"				"Return To Previous Menu"
+	}
+	"pump shotgun"
+	{
+		"en"				"Pump Shotgun"
+	}
+	"uzi"
+	{
+		"en"				"Uzi"
+	}
+	"tmp-5"
+	{
+		"en"				"TMP-5"
+	}
+	"mp-5"
+	{
+		"en"				"MP-5"
+	}
+	"pistol"
+	{
+		"en"				"Glock"
+	}
+	"dual pistol"
+	{
+		"en"				"Dual Pistols"
+	}
+	"rise again"
+	{
+		"#format"			"{1:s},{2:s},{3:s}"
+		"en"				"{1}One of {2}our fallen {3}has risen!"
+	}
+	"enter the fray"
+	{
+		"#format"			"{1:s},{2:s},{3:s}"
+		"en"				"{1}A new player {2}has entered the fray {3}Wish them luck!"
+	}
+	"magnum"
+	{
+		"en"				"Magnum"
+	}
+	"m4a1"
+	{
+		"en"				"M4A1"
+	}
+	"ak47"
+	{
+		"en"				"AK47"
+	}
+	"desert rifle"
+	{
+		"en"				"Desert Rifle"
+	}
+	"sg552"
+	{
+		"en"				"SG-552"
+	}
+	"m60"
+	{
+		"en"				"M-60"
+	}
+	"autoshotgun"
+	{
+		"en"				"Auto Shotgun"
+	}
+	"spas"
+	{
+		"en"				"SPAS Shotgun"
+	}
+	"hunting rifle"
+	{
+		"en"				"Hunting Rifle"
+	}
+	"military rifle"
+	{
+		"en"				"Military Rifle"
+	}
+	"scout"
+	{
+		"en"				"Scout"
+	}
+	"awp"
+	{
+		"en"				"AW/P"
+	}
+	"adrenaline"
+	{
+		"en"				"Adrenaline"
+	}
+	"pain pills"
+	{
+		"en"				"Pain Pills"
+	}
+	"medkit"
+	{
+		"en"				"Medkit"
+	}
+	"defibrillator"
+	{
+		"en"				"Defibrillator"
+	}
+	"full heal"
+	{
+		"en"				"Instant Heal"
+	}
+	"molotov"
+	{
+		"en"				"Molotov"
+	}
+	"pipe bomb"
+	{
+		"en"				"Pipe Bomb"
+	}
+	"vomitjar"
+	{
+		"en"				"Vomitjar"
+	}
+	"gascan"
+	{
+		"en"				"Gas can"
+	}
+	"firework crate"
+	{
+		"en"				"Firework Crate"
+	}
+	"explosive"
+	{
+		"en"				"Explosive Ammo (Single)"
+	}
+	"incendiary"
+	{
+		"en"				"Incendiary Ammo (Single)"
+	}
+	"explosive pack"
+	{
+		"en"				"Explosive Pack"
+	}
+	"incendiary pack"
+	{
+		"en"				"Incendiary Pack"
+	}
+	"laser sight"
+	{
+		"en"				"Laser Sight"
+	}
+	"director menu"
+	{
+		"en"				"Director Menu"
+	}
+	"class menu"
+	{
+		"en"				"Change Class"
+	}
+	"hunter"
+	{
+		"en"				"Hunter"
+	}
+	"smoker"
+	{
+		"en"				"Smoker"
+	}
+	"boomer"
+	{
+		"en"				"Boomer"
+	}
+	"jockey"
+	{
+		"en"				"Jockey"
+	}
+	"spitter"
+	{
+		"en"				"Spitter"
+	}
+	"charger"
+	{
+		"en"				"Charger"
+	}
+	"tank"
+	{
+		"en"				"Tank"
+	}
+	"panic event"
+	{
+		"en"				"Panic Event"
+	}
+	"witch"
+	{
+		"en"				"Witch"
+	}
+	"witch drop"
+	{
+		"en"				"Witch drop"
+	}
+	"riot queue"
+	{
+		"en"				"Riot Queue"
+	}
+	"clown queue"
+	{
+		"en"				"Clown Queue"
+	}
+	"fallen queue"
+	{
+		"en"				"Fallen Queue"
+	}
+	"riot drop"
+	{
+		"en"				"Riot Drop"
+	}
+	"jimmy queue"
+	{
+		"en"				"Jimmy Queue"
+	}
+	"jimmy drop"
+	{
+		"en"				"Jimmy Drop"
+	}
+	"bomber drop"
+	{
+		"en"				"Bomber Drop"
+	}
+	"flamer drop"
+	{
+		"en"				"Flamer Drop"
+	}
+	"leaker drop"
+	{
+		"en"				"Leaker Drop"
+	}
+	"bomber queue"
+	{
+		"en"				"Bomber Queue"
+	}
+	"flamer queue"
+	{
+		"en"				"Flamer Queue"
+	}
+	"leaker queue"
+	{
+		"en"				"Leaker Queue"
+	}
+	"Pistol Talents"
+	{
+		"en"				"Pistol Talents"
+	}
+	"SMG Talents"
+	{
+		"en"				"SMG Talents"
+	}
+	"Shotgun Talents"
+	{
+		"en"				"Shotgun Talents"
+	}
+	"Assault Rifle Talents"
+	{
+		"en"				"AR Talents"
+	}
+	"Defensive Survivor Talents"
+	{
+		"en"				"Defensive Survivor Talents"
+	}
+	"Survivor Passives"
+	{
+		"en"				"Passive Talents\nSurvivor Health Increase & Thorns"
+	}
+	"Survivor VomitedOn"
+	{
+		"en"				"Tanking Talents*\n*Must be covered-in-bile"
+	}
+	"Survivor Junky"
+	{
+		"en"				"Adren Talents\nAdrenaline[Ad] Required"
+	}
+	"Survivor Fire"
+	{
+		"en"				"Everything-Fire related"
+	}
+	"Survivor Auras"
+	{
+		"en"				"Auras"
+	}
+	"Survivor Spells"
+	{
+		"en"				"Spells"
+	}
+	"Ammo Circle Talents"
+	{
+		"en"				"Active Talents\n!abilitybar to toggle action menu display on/off"
+	}
+	"Infected Talents"
+	{
+		"en"				"Infected Talents"
+	}
+	"team composition"
+	{
+		"en"				"Team Info"
+	}
+	"Infected Passives"
+	{
+		"en"				"Infected Passives"
+	}
+	"level up unavailable"
+	{
+		"#format"			"{1:s}"
+		"en"				"Level Up Unavailable ({1} more XP Required)"
+	}
+	"level up available"
+	{
+		"#format"			"{1:s}"
+		"en"				"Buy Level Up! ({1} XP Required)"
+	}
+	"prestige up available"
+	{
+		"#format"			"{1:i}"
+		"en"				"Prestige (Level Resets)\nYour level resets to 1 but you earn\nan additional {1} talent unlocks!"
+	}
+	"prestige unavailable"
+	{
+		"#format"			"{1:s},{2:i}"
+		"en"				"Prestige (Locked)\n{1} more XP required."
+	}
+	"director priorities"
+	{
+		"en"				"Director Priorities"
+	}
+	"Map Records"
+	{
+		"en"				"Map Records"
+	}
+	"Store"
+	{
+		"en"				"Buffs Vendor\nEarn store credits to buy temporary buffs."
+	}
+	"survivor health"
+	{
+		"en"				"Raises your overall Health pool."
+	}
+	"health regen cdr i"
+	{
+		"en"				"Regen Mastery I"
+	}
+	"health regen cdr ii"
+	{
+		"en"				"Regen Mastery II"
+	}
+	"health regen cooldown"
+	{
+		"en"				"Reduces the cooldown of all Regen talents."
+	}
+	"health regen adr cdr i"
+	{
+		"en"				"(Adren) Regen Mastery I"
+	}
+	"health regen adr i cooldown"
+	{
+		"en"				"Reduces the cooldown of all Regen talents when you have [Ad]renaline."
+	}
+	"survivor cooldown info"
+	{
+		"en"				"reduces cooldowns for you when you're a survivor."
+	}
+	"damage resistance i"
+	{
+		"en"				"DMG Resist I"
+	}
+	"damage resistance i info"
+	{
+		"en"				"Reduces ALL incoming damage."
+	}
+	"survivor bile health i"
+	{
+		"en"				"(Biled) Health I"
+	}
+	"survivor bile health ii"
+	{
+		"en"				"(Biled) Health II"
+	}
+	"survivor bile health info"
+	{
+		"en"				"Raises your overall Health pool when covered in boomer [Bi]le."
+	}
+	"survivor adren health i"
+	{
+		"en"				"(Adren) Health I"
+	}
+	"survivor adren health ii"
+	{
+		"en"				"(Adren) Health II"
+	}
+	"survivor adren health info"
+	{
+		"en"				"Raises your overall Health pool when [Ad]renaline is active."
+	}
+	"survivor weak health i"
+	{
+		"en"				"(B&W) Health I"
+	}
+	"survivor weak health ii"
+	{
+		"en"				"(B&W) Health II"
+	}
+	"survivor weak health iii"
+	{
+		"en"				"(B&W) Health III"
+	}
+	"survivor weak health info"
+	{
+		"en"				"Raises your overall Health pool when black & white."
+	}
+	"revivalist path i"
+	{
+		"en"				"Revivalist I"
+	}
+	"revivalist path i info"
+	{
+		"en"				"Sometimes you find extra supplies to give\nyour medkits an extra use."
+	}
+	"pharmacist path i"
+	{
+		"en"				"Pharmacist I"
+	}
+	"pharmacist path i info"
+	{
+		"en"				"Healing your allies enables them to fight so\nyou can focus on crafting much-needed pain killers."
+	}
+	"battlemage path i"
+	{
+		"en"				"Battlemage I"
+	}
+	"battlemage path ii"
+	{
+		"en"				"Battlemage II"
+	}
+	"battlemage path i info"
+	{
+		"en"				"Explode, dealing AoE damage based on your last ally melee heal\nupon reaching the threshold."
+	}
+	"battlemage path iii"
+	{
+		"en"				"Battlemage III"
+	}
+	"battlemage path iii info"
+	{
+		"en"				"Explode, dealing AoE damage based on the last damage dealt to infected\nupon reaching the threshold."
+	}
+	"battlemage path iv"
+	{
+		"en"				"Battlemage IV"
+	}
+	"battlemage path iv info"
+	{
+		"en"				"Explode, dealing AoE damage after eating enough damage\nto reach the threshold."
+	}
+	"sadist path i"
+	{
+		"en"				"Sadist I"
+	}
+	"sadist path i info"
+	{
+		"en"				"Deal major single-target damage when reaching the\nthreshold with a melee weapon."
+	}
+	"sadist path ii"
+	{
+		"en"				"Sadist II"
+	}
+	"sadist path ii info"
+	{
+		"en"				"Deal AoE explosive damage when reaching the\nthreshold with a melee weapon."
+	}
+	"sadist path iii"
+	{
+		"en"				"Sadist III"
+	}
+	"sadist path iv"
+	{
+		"en"				"Sadist IV"
+	}
+	"warforged path i"
+	{
+		"en"				"Warforged I"
+	}
+	"elementalist path i"
+	{
+		"en"				"Elementalist I"
+	}
+	"elementalist path ii"
+	{
+		"en"				"Elementalist II"
+	}
+	"elementalist path i info"
+	{
+		"en"				"Apply one [Bu]rn debuff stack on melee hit, when you are on fire."
+	}
+	"elementalist path ii info"
+	{
+		"en"				"Apply one Acid Burn [Ab] debuff stack on melee hit, when you are in acid."
+	}
+	"warforged path i info"
+	{
+		"en"				"Heal teammates nearby based on your last outgoing heal\nupon reaching the threshold."
+	}
+	"warforged path ii"
+	{
+		"en"				"Warforged II"
+	}
+	"warforged path ii info"
+	{
+		"en"				"Heal teammates nearby based on your last damage taken\nupon reaching the threshold."
+	}
+	"fighter path i"
+	{
+		"en"				"Fighter I"
+	}
+	"fighter path i info"
+	{
+		"en"				"Deal bonus damage on the next shot when reaching\nthe threshold with a gun."
+	}
+	"fighter path ii"
+	{
+		"en"				"Fighter II"
+	}
+	"fighter path ii info"
+	{
+		"en"				"Deal bonus damage on the next hit when reaching\nthe threshold with a melee weapon."
+	}
+	"oathbreaker path i"
+	{
+		"en"				"Oathbreaker I"
+	}
+	"oathbreaker path i info"
+	{
+		"en"				"Deal bonus damage on the next hit when reaching\nthe threshold when using the magnum."
+	}
+	"oathbreaker path ii"
+	{
+		"en"				"Oathbreaker II"
+	}
+	"oathbreaker path ii info"
+	{
+		"en"				"Heal for a percentage of your damage dealt when\nreaching the threshold with the magnum."
+	}
+	"contribution required notice"
+	{
+		"en"				"Exiting combat resets contribution."
+	}
+	"bloodmage path i"
+	{
+		"en"				"Blood Mage I"
+	}
+	"bloodmage path i info"
+	{
+		"#format"			"{1:3.2f},{2:s},{3:3.2f},{4:s},{5:3.2f},{6:s},{7:3.2f},{8:i},{9:3.2f},{10:i},{11:i},{12:i},{13:i},{14:i},{15:i},{16:3.2f},{17:s}"
+		"en"				"Deal increased damage for each {1}{2} health missing."
+	}
+	"bloodmage path ii"
+	{
+		"en"				"Blood Mage II"
+	}
+	"bloodmage path ii info"
+	{
+		"#format"			"{1:3.2f},{2:s},{3:3.2f},{4:s},{5:3.2f},{6:s},{7:3.2f},{8:i},{9:3.2f},{10:i},{11:i},{12:i},{13:i},{14:i},{15:i},{16:3.2f},{17:s}"
+		"en"				"Deal increased damage when you are under {5}{6} health."
+	}
+	"bloodmage path iii"
+	{
+		"en"				"Blood Mage III"
+	}
+	"bloodmage path iii info"
+	{
+		"#format"			"{1:3.2f},{2:s},{3:3.2f},{4:s},{5:3.2f},{6:s},{7:3.2f},{8:i},{9:3.2f},{10:i},{11:i},{12:i},{13:i},{14:i},{15:i},{16:3.2f},{17:s}"
+		"en"				"Deal increased damage for each {1}{2} health missing\nwhen you are under {5}{6} health."
+	}
+	"bloodmage path iv"
+	{
+		"en"				"Blood Mage IV"
+	}
+	"precision path ii info"
+	{
+		"#format"			"{1:3.2f},{2:s},{3:3.2f},{4:s},{5:3.2f},{6:s},{7:3.2f},{8:i},{9:3.2f},{10:i},{11:i},{12:i},{13:i},{14:i},{15:i},{16:3.2f},{17:s}"
+		"en"				"Increases your limb/head shot damage with non-snipers\nwhen enemies are within {9} units."
+	}
+	"swimmer path i"
+	{
+		"en"				"Swimmer Path I"
+	}
+	"swimmer path i info"
+	{
+		"#format"			"{1:3.2f},{2:s},{3:3.2f},{4:s},{5:3.2f},{6:s},{7:3.2f},{8:i},{9:3.2f},{10:i},{11:i},{12:i},{13:i},{14:i},{15:i},{16:3.2f},{17:s}"
+		"en"				"Increases all damage when you are in water\nwhen the target is further than {9} units from you."
+	}
+	"assassin path iv"
+	{
+		"en"				"Assassin Path IV"
+	}
+	"assassin path iv info"
+	{
+		"#format"			"{1:3.2f},{2:s},{3:3.2f},{4:s},{5:3.2f},{6:s},{7:3.2f},{8:i},{9:3.2f},{10:i},{11:i},{12:i},{13:i},{14:i},{15:i},{16:3.2f},{17:s}"
+		"en"				"Non-sniper/melee damage bonus when hurting a new target\nthat is further than {9} units from you."
+	}
+	"arsonist path i"
+	{
+		"en"				"Arsonist I"
+	}
+	"arsonist path i info"
+	{
+		"en"				"Deal increased damage when you are on fire."
+	}
+	"arsonist path ii"
+	{
+		"en"				"Arsonist II"
+	}
+	"arsonist path ii info"
+	{
+		"en"				"Take reduced damage when you are on fire."
+	}
+	"arsonist path iii"
+	{
+		"en"				"Arsonist III"
+	}
+	"arsonist path iii info"
+	{
+		"#format"			"{1:3.2f},{2:s},{3:3.2f},{4:s},{5:3.2f},{6:s},{7:3.2f},{8:i},{9:3.2f},{10:i},{11:i},{12:i},{13:i},{14:i},{15:i},{16:3.2f},{17:s}"
+		"en"				"While on fire within {7}units of an ally on fire,\ndeal increased damage per stack up to {10} stacks."
+	}
+	"arsonist path iv"
+	{
+		"en"				"Arsonist IV"
+	}
+	"arsonist path iv info"
+	{
+		"#format"			"{1:3.2f},{2:s},{3:3.2f},{4:s},{5:3.2f},{6:s},{7:3.2f},{8:i},{9:3.2f},{10:i},{11:i},{12:i},{13:i},{14:i},{15:i},{16:3.2f},{17:s}"
+		"en"				"While on fire within {7}units of an ally on fire,\ndeal increased melee damage per stack up to {10} stacks."
+	}
+	"arsonist path v"
+	{
+		"en"				"Arsonist V"
+	}
+	"arsonist path v info"
+	{
+		"#format"			"{1:3.2f},{2:s},{3:3.2f},{4:s},{5:3.2f},{6:s},{7:3.2f},{8:i},{9:3.2f},{10:i},{11:i},{12:i},{13:i},{14:i},{15:i},{16:3.2f},{17:s}"
+		"en"				"Upon reaching the threshold with a melee weapon while\non fire, AoE explode for damage up to {10} stacks."
+	}
+	"savior complex iii info"
+	{
+		"#format"			"{1:3.2f},{2:s},{3:3.2f},{4:s},{5:3.2f},{6:s},{7:3.2f},{8:i},{9:3.2f},{10:i},{11:i},{12:i},{13:i},{14:i},{15:i},{16:3.2f},{17:s}"
+		"en"				"When healed by an ally, hurt yourself, exploding for\nAoE damage when within {7}units of an ensnared ally."
+	}
+	"opportunist path i"
+	{
+		"en"				"Opportunist I"
+	}
+	"opportunist path i info"
+	{
+		"en"				"Deal increased damage when you are suffering [Sc]orch ([Ab]+[Bu])"
+	}
+	"opportunist path ii"
+	{
+		"en"				"Opportunist II"
+	}
+	"opportunist path ii info"
+	{
+		"en"				"Deal increased damage when skeeting (air shots) enemy infected."
+	}
+	"revenge path i"
+	{
+		"en"				"Revenge I"
+	}
+	"revenge path i info"
+	{
+		"en"				"Reduced damage when your attacker is the same\nclass/type as your last attacker."
+	}
+	"hodor path i"
+	{
+		"en"				"Hodor I"
+	}
+	"hodor path i info"
+	{
+		"en"				"Damage resistance for when your teammates need you the most.\nHold. The. Line."
+	}
+	"hodor path ii"
+	{
+		"en"				"Hodor II"
+	}
+	"hodor path ii info"
+	{
+		"en"				"Melee damage bonus at the most-critical hour."
+	}
+	"warrior path i"
+	{
+		"en"				"Warrior I"
+	}
+	"warrior path ii"
+	{
+		"en"				"Warrior II"
+	}
+	"warrior path iv"
+	{
+		"en"				"Warrior IV"
+	}
+	"cleaner path i"
+	{
+		"en"				"Cleaner I"
+	}
+	"cleaner path ii"
+	{
+		"en"				"Cleaner II"
+	}
+	"cleaner path iii"
+	{
+		"en"				"Cleaner III"
+	}
+	"cleaner path i info"
+	{
+		"#format"			"{1:3.2f},{2:s},{3:3.2f},{4:s},{5:3.2f},{6:s},{7:3.2f},{8:i},{9:3.2f},{10:i},{11:i},{12:i},{13:i},{14:i},{15:i},{16:3.2f},{17:s}"
+		"en"				"Deal increased damage on consecutive hit to\ncommon infected per stack. Max {10} stacks."
+	}
+	"overload path i"
+	{
+		"en"				"Overload I"
+	}
+	"overload path ii"
+	{
+		"en"				"Overload II"
+	}
+	"splatter path i"
+	{
+		"en"				"(EoT)Splatter I"
+	}
+	"splatter path i info"
+	{
+		"en"				"Headshot kills w/ Melee weapons on commons increases\nall melee damage to all infected."
+	}
+	"mauler path i"
+	{
+		"en"				"(EoT)Mauler I"
+	}
+	"mauler path i info"
+	{
+		"en"				"Limbshot hits w/ Melee weapons on commons increases\nall limb damage to common infected."
+	}
+	"vengeance path i"
+	{
+		"en"				"(EoT)Vengeance I"
+	}
+	"vengeance path i info"
+	{
+		"en"				"When you are biled on, gain a temporary damage buff to all sources."
+	}
+	"vengeance path ii"
+	{
+		"en"				"(EoT)Vengeance II"
+	}
+	"vengeance path ii info"
+	{
+		"en"				"When bile wears off of you, gain a temporary damage buff to all sources."
+	}
+	"rejuvenated path i"
+	{
+		"en"				"Rejuvenated I"
+	}
+	"rejuvenated path i info"
+	{
+		"en"				"When bile wears off of you, heal all nearby teammates."
+	}
+	"overload path i info"
+	{
+		"#format"			"{1:3.2f},{2:s},{3:3.2f},{4:s},{5:3.2f},{6:s},{7:3.2f},{8:i},{9:3.2f},{10:i},{11:i},{12:i},{13:i},{14:i},{15:i},{16:3.2f},{17:s}"
+		"en"				"Heal nearby allies every {14} consecutive hits\nwith a gun on the same ally."
+	}
+	"overload path ii info"
+	{
+		"#format"			"{1:3.2f},{2:s},{3:3.2f},{4:s},{5:3.2f},{6:s},{7:3.2f},{8:i},{9:3.2f},{10:i},{11:i},{12:i},{13:i},{14:i},{15:i},{16:3.2f},{17:s}"
+		"en"				"Heal nearby allies every {14} consecutive hits\nwith a melee weapon on the same ally."
+	}
+	"cleaner path iii info"
+	{
+		"en"				"Consecutive headshots on common infected\nheal nearby allies."
+	}
+	"brawler path i"
+	{
+		"en"				"Brawler I"
+	}
+	"brawler path ii"
+	{
+		"en"				"Brawler II"
+	}
+	"brawler path iii"
+	{
+		"en"				"Brawler III"
+	}
+	"brawler path i info"
+	{
+		"#format"			"{1:3.2f},{2:s},{3:3.2f},{4:s},{5:3.2f},{6:s},{7:3.2f},{8:i},{9:3.2f},{10:i},{11:i},{12:i},{13:i},{14:i},{15:i},{16:3.2f},{17:s}"
+		"en"				"With your trusty melee weapon, deal damage per consecutive hit, up to {10} stacks."
+	}
+	"brawler path iii info"
+	{
+		"en"				"Deal increased melee weapon damage when\nconsecutively hitting the same target."
+	}
+	"sharpshooter path i"
+	{
+		"en"				"Sharpshooter I"
+	}
+	"sharpshooter path i info"
+	{
+		"#format"			"{1:3.2f},{2:s},{3:3.2f},{4:s},{5:3.2f},{6:s},{7:3.2f},{8:i},{9:3.2f},{10:i},{11:i},{12:i},{13:i},{14:i},{15:i},{16:3.2f},{17:s}"
+		"en"				"When using guns, deal damage per consecutive special\ninfected headshot, up to {12} stacks."
+	}
+	"accurate path i"
+	{
+		"en"				"Accurate I"
+	}
+	"accurate path i info"
+	{
+		"#format"			"{1:3.2f},{2:s},{3:3.2f},{4:s},{5:3.2f},{6:s},{7:3.2f},{8:i},{9:3.2f},{10:i},{11:i},{12:i},{13:i},{14:i},{15:i},{16:3.2f},{17:s}"
+		"en"				"When using guns, deal damage per consecutive hit, up to {10} stacks."
+	}
+	"warrior path i info"
+	{
+		"#format"			"{1:3.2f},{2:s},{3:3.2f},{4:s},{5:3.2f},{6:s},{7:3.2f},{8:i},{9:3.2f},{10:i},{11:i},{12:i},{13:i},{14:i},{15:i},{16:3.2f},{17:s}"
+		"en"				"Receive less damage when you are under {5}{6} health."
+	}
+	"warrior path v"
+	{
+		"en"				"Warrior V"
+	}
+	"warrior path v info"
+	{
+		"#format"			"{1:3.2f},{2:s},{3:3.2f},{4:s},{5:3.2f},{6:s},{7:3.2f},{8:i},{9:3.2f},{10:i},{11:i},{12:i},{13:i},{14:i},{15:i},{16:3.2f},{17:s}"
+		"en"				"Increased health regen for each {1}{2} health missing\nwhen you are under {5}{6} health."
+	}
+	"warrior path iii"
+	{
+		"en"				"Warrior III"
+	}
+	"warrior path iii info"
+	{
+		"en"				"Deal greatly-increased melee damage when in combat."
+	}
+	"coherency path i"
+	{
+		"en"				"Coherency I"
+	}
+	"coherency path i info"
+	{
+		"#format"			"{1:3.2f},{2:s},{3:3.2f},{4:s},{5:3.2f},{6:s},{7:3.2f},{8:i},{9:3.2f},{10:i},{11:i},{12:i},{13:i},{14:i},{15:i},{16:3.2f},{17:s}"
+		"en"				"Increase your health pool for each teammate within {7}units\nup to a maximum of {8} teammates."
+	}
+	"coherency path ii"
+	{
+		"en"				"Coherency II"
+	}
+	"coherency path ii info"
+	{
+		"#format"			"{1:3.2f},{2:s},{3:3.2f},{4:s},{5:3.2f},{6:s},{7:3.2f},{8:i},{9:3.2f},{10:i},{11:i},{12:i},{13:i},{14:i},{15:i},{16:3.2f},{17:s}"
+		"en"				"Increase your melee damage for each teammate within {7}units\nup to a maximum of {8} teammates."
+	}
+	"coherency path iii"
+	{
+		"en"				"Coherency III"
+	}
+	"coherency path iii info"
+	{
+		"#format"			"{1:3.2f},{2:s},{3:3.2f},{4:s},{5:3.2f},{6:s},{7:3.2f},{8:i},{9:3.2f},{10:i},{11:i},{12:i},{13:i},{14:i},{15:i},{16:3.2f},{17:s}"
+		"en"				"Increase your damage resistance for each teammate within {7}units\nup to a maximum of {8} teammates."
+	}
+	"coherency path iv"
+	{
+		"en"				"Coherency IV"
+	}
+	"coherency path iv info"
+	{
+		"#format"			"{1:3.2f},{2:s},{3:3.2f},{4:s},{5:3.2f},{6:s},{7:3.2f},{8:i},{9:3.2f},{10:i},{11:i},{12:i},{13:i},{14:i},{15:i},{16:3.2f},{17:s}"
+		"en"				"Increase your gun damage for each teammate within {7}units\nup to a maximum of {8} teammates."
+	}
+	"coherency path v"
+	{
+		"en"				"Coherency V"
+	}
+	"coherency path v info"
+	{
+		"#format"			"{1:3.2f},{2:s},{3:3.2f},{4:s},{5:3.2f},{6:s},{7:3.2f},{8:i},{9:3.2f},{10:i},{11:i},{12:i},{13:i},{14:i},{15:i},{16:3.2f},{17:s}"
+		"en"				"Increase your health regen for each teammate within {7}units\nup to a maximum of {8} teammates."
+	}
+	"last resort i"
+	{
+		"en"				"(Incap) Last Resort I"
+	}
+	"last resort ii"
+	{
+		"en"				"(Incap) Last Resort II"
+	}
+	"last resort iii"
+	{
+		"en"				"(Incap) Last Resort III"
+	}
+	"last resort iv"
+	{
+		"en"				"(Incap) Last Resort IV"
+	}
+	"last resort info"
+	{
+		"en"				"Deal increased pistol damage while incapacitated."
+	}
+	"adren rush i"
+	{
+		"en"				"(Adren) Rush I"
+	}
+	"adren rush i info"
+	{
+		"en"				"Deal increased damage with all guns when [Ad]renaline is active."
+	}
+	"adren rush ii"
+	{
+		"en"				"(Adren) Rush II"
+	}
+	"adren rush ii info"
+	{
+		"en"				"Deal increased damage with melee weapons when [Ad]renaline is active."
+	}
+	"adren rush iii"
+	{
+		"en"				"(Adren) Rush III"
+	}
+	"adren rush iii info"
+	{
+		"en"				"Health regen talents cooldown faster when [Ad]renaline is active."
+	}
+	"ammo regen i (single)"
+	{
+		"en"				"Arms Dealer I"
+	}
+	"ammo regen i (single) info"
+	{
+		"en"				"Regenerate reserve ammo over time."
+	}
+	"ammo regen ii (single)"
+	{
+		"en"				"Arms Dealer II"
+	}
+	"ammo regen ii (single) info"
+	{
+		"en"				"Successful headshot kills now return ammo to your reserves."
+	}
+	"arms dealer iii"
+	{
+		"en"				"(Holstered) Arms Dealer III"
+	}
+	"arms dealer iii info"
+	{
+		"en"				"Regenerate a percentage of your primary weapons ammo\nreserve while you have pistol(s) or a magnum drawn."
+	}
+	"ammo reserve i"
+	{
+		"en"				"Ammunisionist I"
+	}
+	"ammo reserve ii"
+	{
+		"en"				"Ammunisionist II"
+	}
+	"ammo reserve iii"
+	{
+		"en"				"Ammunisionist III"
+	}
+	"yerawizard i"
+	{
+		"en"				"Yer A Wizard I"
+	}
+	"yerawizard i info"
+	{
+		"en"				"You practice waiving your gun around like a wand.\nAoE fields you create last longer."
+	}
+	"ammo reserve i info"
+	{
+		"en"				"Increase your total ammo reserves."
+	}
+	"optimist i"
+	{
+		"en"				"Optimist I"
+	}
+	"optimist i info"
+	{
+		"en"				"Bullets in the last-half of your magazine deal increased damage\nup to the talent strength for the last bullet."
+	}
+	"optimist ii"
+	{
+		"en"				"Optimist II"
+	}
+	"optimist ii info"
+	{
+		"en"				"Bullets in the last-half of your magazine deal increased damage\nfor every two headshots in-a-row on the same target."
+	}
+	"survivor incap health i"
+	{
+		"en"				"(Incap) Health I"
+	}
+	"survivor incap health ii"
+	{
+		"en"				"(Incap) Health II"
+	}
+	"survivor incap health iii"
+	{
+		"en"				"(Incap) Health III"
+	}
+	"survivor incap health iv"
+	{
+		"en"				"(Incap) Health IV"
+	}
+	"survivor incap health info"
+	{
+		"en"				"Raises your overall Health pool when in the\ndowned state."
+	}
+	"adren heal i"
+	{
+		"en"				"(Adren) Heal I"
+	}
+	"adren heal i info"
+	{
+		"en"				"Heal for a percentage of damage dealt when [Ad]renaline is active."
+	}
+	"commons dmgdn i"
+	{
+		"en"				"Common Resist I"
+	}
+	"commons dmgdn ii"
+	{
+		"en"				"Common Resist II"
+	}
+	"commons dmgdn i info"
+	{
+		"en"				"Reduces incoming damage from common infected."
+	}
+	"bile dmgdn i"
+	{
+		"en"				"(Biled) DMG Resist I"
+	}
+	"bile dmgdn i info"
+	{
+		"en"				"Reduce incoming damage when you are covered in [Bi]le."
+	}
+	"weak dmgdn i"
+	{
+		"en"				"(B&W) DMG Resist I"
+	}
+	"weak dmgdn i info"
+	{
+		"en"				"Reduces incoming damage when you have [Wk]ness."
+	}
+	"adren dmgdn i"
+	{
+		"en"				"(Adren) DMG Resist I"
+	}
+	"adren dmgdn i info"
+	{
+		"en"				"Reduce incoming damage when you have [Ad]renaline active."
+	}
+	"precision boost i"
+	{
+		"en"				"(EoT)Precision Boost I"
+	}
+	"precision boost ii"
+	{
+		"en"				"(EoT)Precision Boost II"
+	}
+	"precision boost"
+	{
+		"en"				"Limb and Head shots temporarily increase your movement speed."
+	}
+	"precision heal i"
+	{
+		"en"				"Precision Heal I"
+	}
+	"precision heal i info"
+	{
+		"en"				"Every 4th consecutive hit heals you if a limb or head shot."
+	}
+	"medic path i"
+	{
+		"en"				"(EoT)Medic I"
+	}
+	"medic path i info"
+	{
+		"en"				"After reviving an ally, deal increased damage for a while."
+	}
+	"medic path ii"
+	{
+		"en"				"(EoT)Medic II"
+	}
+	"medic path ii info"
+	{
+		"en"				"After reviving an ally, heal nearby allies for a percentage\nof their max health every tick."
+	}
+	"thorns i"
+	{
+		"en"				"Thorns I"
+	}
+	"thorns i info"
+	{
+		"en"				"Reflects a small percentage of the damage taken back at the attacker."
+	}
+	"thorns ii"
+	{
+		"en"				"Thorns II"
+	}
+	"thorns ii info"
+	{
+		"en"				"Reflects a mid percentage of the damage taken back at the attacker."
+	}
+	"thorns iii"
+	{
+		"en"				"Thorns III"
+	}
+	"thorns iii info"
+	{
+		"en"				"Reflects a large percentage of the damage taken back at the attacker."
+	}
+	"thorns iv"
+	{
+		"en"				"Thorns IV"
+	}
+	"thorns iv info"
+	{
+		"en"				"Reflects an enourmous percentage of the damage taken back at the attacker."
+	}
+	"thorns v"
+	{
+		"en"				"Thorns V"
+	}
+	"thorns v info"
+	{
+		"en"				"Reflects the ultimate percentage of damage taken back at the attacker."
+	}
+	"progress bar speed i"
+	{
+		"en"				"Progress Bar Speed I"
+	}
+	"progress bar speed ii"
+	{
+		"en"				"Progress Bar Speed II"
+	}
+	"progress bar speed info"
+	{
+		"en"				"Reduces the time to use anything requiring a progress bar."
+	}
+	"commando path i"
+	{
+		"en"				"Commando I"
+	}
+	"commando path i info"
+	{
+		"en"				"Replenishes a percentage of ammo reserves for\nallies in range when you kill special infected."
+	}
+	"commando path ii"
+	{
+		"en"				"Commando II"
+	}
+	"commando path ii info"
+	{
+		"en"				"Replenish a percentage of your ammo reserve\nwhen you kill special infected."
+	}
+	"commando path iii"
+	{
+		"en"				"Commando III"
+	}
+	"commando path iii info"
+	{
+		"en"				"Replenishes a percentage of ammo reserves for you and\nallies within range on headshots."
+	}
+	"smg path i"
+	{
+		"en"				"SMG I"
+	}
+	"smg path i info"
+	{
+		"en"				"Consecutive limb or head shot hits with SMGs\nheal nearby teammates over a short period."
+	}
+	"assassin path i"
+	{
+		"en"				"Assassin I"
+	}
+	"assassin path i info"
+	{
+		"en"				"Greatly-increases your melee damage."
+	}
+	"assassin path ii"
+	{
+		"en"				"Assassin II"
+	}
+	"assassin path ii info"
+	{
+		"en"				"Greatly-increases all damage against Witches and Tanks."
+	}
+	"assassin path iii"
+	{
+		"en"				"Assassin III"
+	}
+	"assassin path iii info"
+	{
+		"en"				"Greatly-increases all damage with SNIPERs, DMRs, and Melee weapons."
+	}
+	"precision path i"
+	{
+		"en"				"Precision I"
+	}
+	"precision path ii"
+	{
+		"en"				"Precision II"
+	}
+	"precision path i info"
+	{
+		"en"				"Increases your outgoing damage when using\nthe zoom scope on your weapon."
+	}
+	"flight proficiency i"
+	{
+		"en"				"Jetpack Proficiency I"
+	}
+	"flight proficiency info"
+	{
+		"en"				"Reduces the stamina cost of using your jetpack."
+	}
+	"healer path i"
+	{
+		"en"				"Healer I"
+	}
+	"healer path ii"
+	{
+		"en"				"Healer II"
+	}
+	"healer path iii"
+	{
+		"en"				"Healer III"
+	}
+	"healer path iv"
+	{
+		"en"				"Healer IV"
+	}
+	"healer path v"
+	{
+		"en"				"(EoT)Healer V"
+	}
+	"healer path info"
+	{
+		"en"				"Bullet damage heals teammates for a percentage of damage dealt."
+	}
+	"healer path v info"
+	{
+		"en"				"Bullet heal damage is increased\nwhen healing teammates with bullets."
+	}
+	"overdose ab"
+	{
+		"en"				"Overdose"
+	}
+	"overdose ammo"
+	{
+		"en"				"(AB)Overdose"
+	}
+	"overdose ammo info"
+	{
+		"en"				"Temporarily-Increases the health pool of players affected."
+	}
+	"attack ab"
+	{
+		"en"				"DMG Up"
+	}
+	"attack ammo"
+	{
+		"en"				"(AB)DMG Up"
+	}
+	"attack ammo info"
+	{
+		"en"				"Increases the outgoing damage of any survivor in the field."
+	}
+	"berserk ab aura"
+	{
+		"en"				"Berserk Aura"
+	}
+	"berserk aura"
+	{
+		"en"				"(AB)Berserk Aura"
+	}
+	"berserk aura info"
+	{
+		"en"				"Increase the outgoing AND incoming damage\nof anything inside the field.\nThis field follows you."
+	}
+	"smg path ii"
+	{
+		"en"				"SMG II"
+	}
+	"smg path ii info"
+	{
+		"en"				"Deal more damage with your trusty SMG in hand."
+	}
+	"smg nailgun path i"
+	{
+		"en"				"Nailgun I"
+	}
+	"smg nailgun path i info"
+	{
+		"en"				"When using an SMG, deal a large amount of damage\nat the expense of a lot of life."
+	}
+	"smg nailgun path ii"
+	{
+		"en"				"Nailgun II"
+	}
+	"smg nailgun path ii info"
+	{
+		"en"				"When the SMG Nailgun I talent fires, explode\nfor AoE damage at a higher health cost."
+	}
+	"manipulator path iii"
+	{
+		"en"				"Manipulator III"
+	}
+	"manipulator path iii info"
+	{
+		"en"				"Explode, dealing a large amount of AoE damage\nwhen receiving a heal from an ally's cleric talent."
+	}
+	"berserk ab"
+	{
+		"en"				"Berserk"
+	}
+	"berserk ammo"
+	{
+		"en"				"(AB)Berserk"
+	}
+	"berserk ammo info"
+	{
+		"en"				"Increase the outgoing AND incoming damage\nof anything inside the field."
+	}
+	"cleanse ab"
+	{
+		"en"				"Cleanse"
+	}
+	"cleanse ammo"
+	{
+		"en"				"(AB)Cleanse"
+	}
+	"cleanse ammo info"
+	{
+		"en"				"Removes temporary debuffs on tick and pauses permanent debuffs."
+	}
+	"adren ab"
+	{
+		"en"				"Adrenaline"
+	}
+	"adren ammo"
+	{
+		"en"				"(AB)Adrenaline"
+	}
+	"adren ammo info"
+	{
+		"en"				"Places a temporary adrenaline field at your aim target."
+	}
+	"focus ab"
+	{
+		"en"				"Focused"
+	}
+	"focus ability"
+	{
+		"en"				"(AB)Focused"
+	}
+	"focus info"
+	{
+		"en"				"Reduces cooldowns of all talents."
+	}
+	"heal ammo ab"
+	{
+		"en"				"Heal AoE"
+	}
+	"heal ammo"
+	{
+		"en"				"(AB)Heal AoE"
+	}
+	"heal ammo info"
+	{
+		"en"				"Place a temporary healing field at your aim target."
+	}
+	"heal aura ab"
+	{
+		"en"				"Heal Aura"
+	}
+	"heal aura"
+	{
+		"en"				"(AB)Heal Aura"
+	}
+	"heal aura info"
+	{
+		"en"				"Create a temporary healing field that follows you around."
+	}
+	"reflect ab"
+	{
+		"en"				"Reflect"
+	}
+	"reflect ammo"
+	{
+		"en"				"(AB)Reflect"
+	}
+	"reflect ammo info"
+	{
+		"en"				"Places a temporary damage-reflection field at your aim target."
+	}
+	"weakness ab"
+	{
+		"en"				"Dark"
+	}
+	"weakness ammo"
+	{
+		"en"				"(AB)Dark"
+	}
+	"weakness ammo info"
+	{
+		"en"				"Survivors/Specials within the field have [Wk]Weakness."
+	}
+	"weakness aura ab"
+	{
+		"en"				"Dark Aura"
+	}
+	"weakness aura"
+	{
+		"en"				"(AB)Dark Aura"
+	}
+	"weakness aura info"
+	{
+		"en"				"Survivors/Specials within the field have [Wk]Weakness.\nThis field follows you."
+	}
+	"shield ab"
+	{
+		"en"				"Shield"
+	}
+	"shield ammo"
+	{
+		"en"				"(AB)Shield"
+	}
+	"shield ammo info"
+	{
+		"en"				"Place a temporary damage-reduction field at your aim target."
+	}
+	"shield aura ab"
+	{
+		"en"				"Shield Aura"
+	}
+	"shield aura"
+	{
+		"en"				"(AB) Shield Aura"
+	}
+	"shield aura info"
+	{
+		"en"				"Create a temporary damage-reduction field that follows you."
+	}
+	"psycho path i"
+	{
+		"en"				"Psycho I"
+	}
+	"psycho path i info"
+	{
+		"en"				"Increase your health for each enemy in range."
+	}
+	"psycho path ii"
+	{
+		"en"				"Psycho II"
+	}
+	"psycho path ii info"
+	{
+		"en"				"Increase your damage for each enemy in range."
+	}
+	"lastresort i"
+	{
+		"en"				"(Incap)Last Resort"
+	}
+	"lastresort i info"
+	{
+		"en"				"All Pistol damage is increased when incapped for each enemy in range."
+	}
+	"elon path i"
+	{
+		"en"				"Elon I"
+	}
+	"elon path i info"
+	{
+		"en"				"Tier 1 weapon damage increased when not touching the ground."
+	}
+	"elon path ii"
+	{
+		"en"				"Elon II"
+	}
+	"elon path ii info"
+	{
+		"en"				"Tier 2 weapon damage increased when not touching the ground."
+	}
+	"elon path iii"
+	{
+		"en"				"Elon III"
+	}
+	"elon path iii info"
+	{
+		"en"				"All SMGs and Shotguns deal increased damage when not touching the ground."
+	}
+	"elon path iv"
+	{
+		"en"				"Elon IV"
+	}
+	"elon path iv info"
+	{
+		"en"				"All Snipers and Pistols deal increased damage when not touching the ground."
+	}
+	"shaman path i"
+	{
+		"en"				"Shaman I"
+	}
+	"shaman path ii"
+	{
+		"en"				"Shaman II"
+	}
+	"shaman path iii"
+	{
+		"en"				"Shaman III"
+	}
+	"shaman path iv"
+	{
+		"en"				"Shaman IV"
+	}
+	"shaman path v"
+	{
+		"en"				"(EoT)Shaman V"
+	}
+	"shaman path info"
+	{
+		"en"				"Melee weapon damage heals teammates for a percentage of damage dealt."
+	}
+	"shaman path v info"
+	{
+		"en"				"Increases the heal amount done by melee weapon damage\nwhen healing teammates with melee weapons."
+	}
+	"bloodwarrior path i"
+	{
+		"en"				"Blood Warrior I"
+	}
+	"bloodwarrior path i info"
+	{
+		"en"				"When taking damage, heal allies within range for a percentage of\ndamage taken divided equally among them."
+	}
+	"bloodwarrior path ii"
+	{
+		"en"				"Blood Warrior II"
+	}
+	"bloodwarrior path ii info"
+	{
+		"en"				"When Blood Warrior I triggers, heals you for a\npercentage of the heal your allies received."
+	}
+	"bloodwarrior path iii"
+	{
+		"en"				"Blood Warrior III"
+	}
+	"bloodwarrior path iii info"
+	{
+		"en"				"When taking damage, heal allies within range for a percentage of\ndamage taken, divided equally, periodically."
+	}
+	"sniper path i"
+	{
+		"en"				"Sniper I"
+	}
+	"sniper path ii"
+	{
+		"en"				"Sniper II"
+	}
+	"sniper path iii"
+	{
+		"en"				"Sniper III"
+	}
+	"sniper path iv"
+	{
+		"en"				"Sniper IV"
+	}
+	"sniper path iv info"
+	{
+		"en"				"Increases all melee and sniper rifle outgoing damage."
+	}
+	"sniper path info"
+	{
+		"en"				"Increases all pistol and sniper rifle outgoing damage."
+	}
+	"berserker path i"
+	{
+		"en"				"Berserk I"
+	}
+	"berserker path ii"
+	{
+		"en"				"Berserk II"
+	}
+	"berserker path iii"
+	{
+		"en"				"Berserk III"
+	}
+	"berserker path iv"
+	{
+		"en"				"Berserk IV"
+	}
+	"berserker path info"
+	{
+		"en"				"Increases all shotgun and melee weapon outgoing damage."
+	}
+	"berserker path iv info"
+	{
+		"en"				"Increases all SMG and melee weapon damage."
+	}
+	"gunslinger path i"
+	{
+		"en"				"Gunslinger I"
+	}
+	"gunslinger path ii"
+	{
+		"en"				"Gunslinger II"
+	}
+	"gunslinger path iii"
+	{
+		"en"				"Gunslinger III"
+	}
+	"gunslinger path info"
+	{
+		"en"				"Increases single/twin pistol damage."
+	}
+	"outlaw path i"
+	{
+		"en"				"Outlaw I"
+	}
+	"outlaw path ii"
+	{
+		"en"				"Outlaw II"
+	}
+	"outlaw path iii"
+	{
+		"en"				"Outlaw III"
+	}
+	"outlaw path info"
+	{
+		"en"				"Increases damage with the Magnum."
+	}
+	"deadeye path i"
+	{
+		"en"				"Dead Eye I"
+	}
+	"deadeye path ii"
+	{
+		"en"				"Dead Eye II"
+	}
+	"deadeye path info"
+	{
+		"en"				"Increase headshot damage with the scout and awp."
+	}
+	"deadeye path ii info"
+	{
+		"en"				"Increase headshot damage with all SRs and DMRs."
+	}
+	"surgeon path i"
+	{
+		"en"				"Surgeon I"
+	}
+	"surgeon path ii"
+	{
+		"en"				"Surgeon II"
+	}
+	"surgeon path info"
+	{
+		"en"				"Increase limb damage with the DEagle and awp."
+	}
+	"surgeon path ii info"
+	{
+		"en"				"Increases limb damage with all Pistols aand SMGs."
+	}
+	"specialist path i"
+	{
+		"en"				"Specialist I"
+	}
+	"specialist path ii"
+	{
+		"en"				"Specialist II"
+	}
+	"specialist path iii"
+	{
+		"en"				"Specialist III"
+	}
+	"specialist path iv"
+	{
+		"en"				"Specialist IV"
+	}
+	"specialist path iv info"
+	{
+		"en"				"Increases all weapon damage, including melee weapons."
+	}
+	"specialist path info"
+	{
+		"en"				"Increases all weapon damage, except melee weapons."
+	}
+	"warblade path i"
+	{
+		"en"				"Warblade I"
+	}
+	"warblade path ii"
+	{
+		"en"				"Warblade II"
+	}
+	"warblade path info"
+	{
+		"en"				"Increases all melee and pump shotgun damage when you are black and white."
+	}
+	"warblade path iii"
+	{
+		"en"				"Shadow Knight"
+	}
+	"warblade path iii info"
+	{
+		"en"				"Become a Shadow Knight and receive a large health boost.\nHowever, you skip incap state and die if you go down."
+	}
+	"veteran path i"
+	{
+		"en"				"Veteran I"
+	}
+	"veteran path i info"
+	{
+		"en"				"When using a gun, regenerate a percentage of your max\nammo when you land the killing blow on a special infected."
+	}
+	"veteran path ii"
+	{
+		"en"				"Veteran II"
+	}
+	"veteran path ii info"
+	{
+		"en"				"When using a gun, regenerate ammo to your reserves\nwhen you assist in killing a special infected with a gun."
+	}
+	"pistol mastery path i"
+	{
+		"en"				"Pistol Mastery I"
+	}
+	"pistol mastery path i info"
+	{
+		"en"				"When you kill a common with a pistol, regenerate\nammo to your reserves."
+	}
+	"pistol mastery path ii"
+	{
+		"en"				"Pistol Mastery II"
+	}
+	"pistol mastery path ii info"
+	{
+		"en"				"When you kill a common with a pistol, regenerate\na percentage of your max ammo to your reserves."
+	}
+	"vampire path i"
+	{
+		"en"				"Vampire I"
+	}
+	"vampire path ii"
+	{
+		"en"				"Vampire II"
+	}
+	"vampire path iii"
+	{
+		"en"				"Vampire III"
+	}
+	"vampire path iv"
+	{
+		"en"				"Vampire IV"
+	}
+	"vampire path v"
+	{
+		"en"				"Vampire V"
+	}
+	"vampire path info"
+	{
+		"en"				"On successful melee hit, you heal for the specified amount."
+	}
+	"cleric path i"
+	{
+		"en"				"Cleric I"
+	}
+	"cleric path ii"
+	{
+		"en"				"Cleric II"
+	}
+	"cleric path iii"
+	{
+		"en"				"Cleric III"
+	}
+	"cleric path info"
+	{
+		"#format"			"{1:3.2f},{2:s},{3:3.2f},{4:s},{5:3.2f},{6:s},{7:3.2f},{8:i},{9:3.2f},{10:i},{11:i},{12:i},{13:i},{14:i},{15:i},{16:3.2f},{17:s}"
+		"en"				"Heal nearby teammates within {7}units for a percentage\nof your passive health regen."
+	}
+	"first strike path i"
+	{
+		"en"				"(EoT)First Strike I"
+	}
+	"first strike path ii"
+	{
+		"en"				"(EoT)First Strike II"
+	}
+	"first strike path iii"
+	{
+		"en"				"First Strike III"
+	}
+	"first strike path iv"
+	{
+		"en"				"First Strike IV"
+	}
+	"first strike path v"
+	{
+		"en"				"First Strike V"
+	}
+	"first strike path i info"
+	{
+		"#format"			"{1:3.2f},{2:s},{3:3.2f},{4:s},{5:3.2f},{6:s},{7:3.2f},{8:i},{9:3.2f},{10:i},{11:i},{12:i},{13:i},{14:i},{15:i},{16:3.2f},{17:s}"
+		"en"				"With Non-snipers, deal bonus damage to special infected or witches that\nhaven't hurt you yet.\nAllies within {7}units receive a coherency buff."
+	}
+	"first strike path ii info"
+	{
+		"#format"			"{1:3.2f},{2:s},{3:3.2f},{4:s},{5:3.2f},{6:s},{7:3.2f},{8:i},{9:3.2f},{10:i},{11:i},{12:i},{13:i},{14:i},{15:i},{16:3.2f},{17:s}"
+		"en"				"With Non-snipers, deal bonus melee damage to special infected or witches that\nhaven't hurt you yet.\nAllies within {7}units receive a coherency buff."
+	}
+	"first strike path iii info"
+	{
+		"#format"			"{1:3.2f},{2:s},{3:3.2f},{4:s},{5:3.2f},{6:s},{7:3.2f},{8:i},{9:3.2f},{10:i},{11:i},{12:i},{13:i},{14:i},{15:i},{16:3.2f},{17:s}"
+		"en"				"With Non-snipers, deal bonus damage to special infected or witches that\nhaven't hurt you yet.\nAllies within {7}units receive a coherency buff."
+	}
+	"first strike path iv info"
+	{
+		"#format"			"{1:3.2f},{2:s},{3:3.2f},{4:s},{5:3.2f},{6:s},{7:3.2f},{8:i},{9:3.2f},{10:i},{11:i},{12:i},{13:i},{14:i},{15:i},{16:3.2f},{17:s}"
+		"en"				"With Non-snipers, deal bonus melee damage to special infected or witches that\nhaven't hurt you yet.\nAllies within {7}units receive a coherency buff."
+	}
+	"first strike path v info"
+	{
+		"#format"			"{1:3.2f},{2:s},{3:3.2f},{4:s},{5:3.2f},{6:s},{7:3.2f},{8:i},{9:3.2f},{10:i},{11:i},{12:i},{13:i},{14:i},{15:i},{16:3.2f},{17:s}"
+		"en"				"With Non-snipers, deal bonus melee damage to tanks\nhaven't hurt you yet.\nAllies within {7}units receive a coherency buff."
+	}
+	"snipers mark path i"
+	{
+		"en"				"(EoT)Snipers Mark I"
+	}
+	"snipers mark path i info"
+	{
+		"#format"			"{1:3.2f},{2:s},{3:3.2f},{4:s},{5:3.2f},{6:s},{7:3.2f},{8:i},{9:3.2f},{10:i},{11:i},{12:i},{13:i},{14:i},{15:i},{16:3.2f},{17:s}"
+		"en"				"With all sniper rifles, deal bonus damage to\nspecial infected or witches that haven't hurt you yet.\nAllies within {7}units receive a coherency buff."
+	}
+	"manipulator path i"
+	{
+		"en"				"(EoT)Manipulator I"
+	}
+	"manipulator path i info"
+	{
+		"en"				"Deal increased damage for a period of time\nafter being healed by any ally's cleric talent."
+	}
+	"manipulator path ii"
+	{
+		"en"				"Manipulator II"
+	}
+	"manipulator path ii info"
+	{
+		"en"				"Heal for a great amount after being healed by any ally's cleric talent."
+	}
+	"dark cleric path i"
+	{
+		"en"				"Dark Cleric I"
+	}
+	"dark cleric path i info"
+	{
+		"en"				"Deal increased damage with melee weapons while\nb&w and within range of any ally's cleric talent."
+	}
+	"dark cleric path ii"
+	{
+		"en"				"(EoT)Dark Cleric II"
+	}
+	"dark cleric path ii info"
+	{
+		"en"				"Deal increased damage with melee weapons while b&w for\na period time after being healed by an ally's cleric talent."
+	}
+	"warblade path iv"
+	{
+		"en"				"Warblade III"
+	}
+	"warblade path iv info"
+	{
+		"en"				"Greatly-increase all melee and pump-shotgun damage\nwhen you are black and white."
+	}
+	"warblade path v"
+	{
+		"en"				"(EoT)Warblade IV"
+	}
+	"warblade path v info"
+	{
+		"en"				"Increases health after dealing damage while black and white."
+	}
+	"defender path i"
+	{
+		"en"				"Defender I"
+	}
+	"defender path ii"
+	{
+		"en"				"Defender II"
+	}
+	"defender path info"
+	{
+		"en"				"Increases all melee weapon and pump shotgun damage."
+	}
+	"health regen wk i"
+	{
+		"en"				"(B&W)Regen I"
+	}
+	"health regen wk i info"
+	{
+		"en"				"Regenerates a small amount of health over time when black and white."
+	}
+	"incap health regen i"
+	{
+		"en"				"(Incap) Regen I"
+	}
+	"incap health regen ii"
+	{
+		"en"				"(Incap) Regen II"
+	}
+	"incap health regen iii"
+	{
+		"en"				"(Incap) Regen III"
+	}
+	"incap health regen info"
+	{
+		"en"				"Regenerates health while incapacitated."
+	}
+	"ooc health regen i"
+	{
+		"en"				"(Oc) Regen I"
+	}
+	"ooc health regen ii"
+	{
+		"en"				"(Oc) Regen II"
+	}
+	"ooc health regen iii"
+	{
+		"en"				"(Oc) Regen III"
+	}
+	"ooc health regen iv"
+	{
+		"en"				"(Oc) Regen IV"
+	}
+	"health regen i"
+	{
+		"en"				"Regen I"
+	}
+	"health regen i info"
+	{
+		"en"				"Regenerates a small amount of health over time."
+	}
+	"adren health regen i"
+	{
+		"en"				"(Adren)Regen I"
+	}
+	"adren health regen ii"
+	{
+		"en"				"(Adren)Regen II"
+	}
+	"adren health regen i info"
+	{
+		"en"				"While you have the [Ad]renaline effect, regenerate health."
+	}
+	"battlecry i"
+	{
+		"en"				"Battle Cry I"
+	}
+	"battlecry i info"
+	{
+		"#format"			"{1:3.2f},{2:s},{3:3.2f},{4:s},{5:3.2f},{6:s},{7:3.2f},{8:i},{9:3.2f},{10:i},{11:i},{12:i},{13:i},{14:i},{15:i},{16:3.2f},{17:s}"
+		"en"				"Deal increased damage while you are within\n{7}units of an ally with the [Ad]renaline buff active."
+	}
+	"battlecry ii"
+	{
+		"en"				"Battle Cry II"
+	}
+	"battlecry ii info"
+	{
+		"#format"			"{1:3.2f},{2:s},{3:3.2f},{4:s},{5:3.2f},{6:s},{7:3.2f},{8:i},{9:3.2f},{10:i},{11:i},{12:i},{13:i},{14:i},{15:i},{16:3.2f},{17:s}"
+		"en"				"Explode for AoE damage when hurt by an enemy and\nwithin {7}units of an ally with the [Ad]renaline buff active."
+	}
+	"health regen critical i"
+	{
+		"en"				"(Adren)Critical Hour I"
+	}
+	"health regen critical i info"
+	{
+		"#format"			"{1:3.2f},{2:s},{3:3.2f},{4:s},{5:3.2f},{6:s},{7:3.2f},{8:i},{9:3.2f},{10:i},{11:i},{12:i},{13:i},{14:i},{15:i},{16:3.2f},{17:s}"
+		"en"				"Rapidly AoE heal when an ally within {7}units\nis below {16}{17} health, while you have [Ad]renaline."
+	}
+	"inverse health regen i"
+	{
+		"en"				"Inverse Health Regen I"
+	}
+	"inverse health regen i info"
+	{
+		"#format"			"{1:3.2f},{2:s},{3:3.2f},{4:s},{5:3.2f},{6:s},{7:3.2f},{8:i},{9:3.2f},{10:i},{11:i},{12:i},{13:i},{14:i},{15:i},{16:3.2f},{17:s}"
+		"en"				"At the expense of your own life, AoE heal when an ally\nwithin {7}units is below {16}{17} health."
+	}
+	"coverfire i"
+	{
+		"en"				"Cover Fire I"
+	}
+	"coverfire i info"
+	{
+		"#format"			"{1:3.2f},{2:s},{3:3.2f},{4:s},{5:3.2f},{6:s},{7:3.2f},{8:i},{9:3.2f},{10:i},{11:i},{12:i},{13:i},{14:i},{15:i},{16:3.2f},{17:s}"
+		"en"				"While there are allies within {7}units below {16}{17} health\ndeal increased damage and AoE heal nearby teammates on hitting an enemy."
+	}
+	"coverfire ii"
+	{
+		"en"				"Cover Fire II"
+	}
+	"coverfire ii info"
+	{
+		"#format"			"{1:3.2f},{2:s},{3:3.2f},{4:s},{5:3.2f},{6:s},{7:3.2f},{8:i},{9:3.2f},{10:i},{11:i},{12:i},{13:i},{14:i},{15:i},{16:3.2f},{17:s}"
+		"en"				"Upon reaching the threshold while there are allies\nwithin {7}units below {16}{17} health, deal increased\ndamage and explode for AoE damage on hitting an enemy."
+	}
+	"health regen ii"
+	{
+		"en"				"Regen II"
+	}
+	"health regen ii info"
+	{
+		"en"				"Regenerates a moderate amount of health over time."
+	}
+	"health regen iii"
+	{
+		"en"				"Regen III"
+	}
+	"health regen iii info"
+	{
+		"en"				"Regenerates a large amount of health over time."
+	}
+	"health regen iv"
+	{
+		"en"				"Regen IV"
+	}
+	"health regen iv info"
+	{
+		"en"				"Regenerates a large amount of health over a short period of time."
+	}
+	"stamina i"
+	{
+		"en"				"Stamina I"
+	}
+	"stamina i info"
+	{
+		"en"				"Increases your stamina by a small amount."
+	}
+	"stamina ii"
+	{
+		"en"				"Stamina II"
+	}
+	"stamina ii info"
+	{
+		"en"				"Increases your stamina by a moderate amount."
+	}
+	"stamina iii"
+	{
+		"en"				"Stamina III"
+	}
+	"stamina iii info"
+	{
+		"en"				"Increases your stamina by a large amount."
+	}
+	"stamina iv"
+	{
+		"en"				"Stamina IV"
+	}
+	"stamina iv info"
+	{
+		"en"				"Increases your stamina by a staggering amount."
+	}
+	"survivor health eot i"
+	{
+		"en"				"(EoT)Reactive Health I"
+	}
+	"survivor health eot"
+	{
+		"en"				"Increase your total health after taking damage."
+	}
+	"survivor health eot ii"
+	{
+		"en"				"(EoT)Reactive Health II"
+	}
+	"survivor health eot ii info"
+	{
+		"en"				"Increases nearby teammates total health after you take damage."
+	}
+	"ooc survivor health i"
+	{
+		"en"				"(Oc) Health I"
+	}
+	"survivor health i"
+	{
+		"en"				"Health I"
+	}
+	"survivor health ii"
+	{
+		"en"				"Health II"
+	}
+	"survivor health iii"
+	{
+		"en"				"Health III"
+	}
+	"survivor health iv"
+	{
+		"en"				"Health IV"
+	}
+	"survivor health v"
+	{
+		"en"				"Health V"
+	}
+	"ic cooldown up cdr i"
+	{
+		"en"				"(In-Combat)CD Mastery I"
+	}
+	"ic cooldown up cdr ii"
+	{
+		"en"				"(In-Combat)CD Mastery II"
+	}
+	"ic cooldown up cdr iii"
+	{
+		"en"				"(In-Combat)CD Mastery III"
+	}
+	"cooldown up cdr i"
+	{
+		"en"				"CD Mastery I"
+	}
+	"cooldown up i cooldown"
+	{
+		"en"				"Reduces the cooldown of all Tier-I talents."
+	}
+	"cooldown up cdr ii"
+	{
+		"en"				"CD Mastery II"
+	}
+	"cooldown up ii cooldown"
+	{
+		"en"				"Reduces the cooldown of all Tier-II talents."
+	}
+	"cooldown up cdr iii"
+	{
+		"en"				"CD Mastery III"
+	}
+	"cooldown up iii cooldown"
+	{
+		"en"				"Reduces the cooldown of all Tier-III talents."
+	}
+	"cooldown up cdr iv"
+	{
+		"en"				"CD Mastery IV"
+	}
+	"cooldown up iv cooldown"
+	{
+		"en"				"Reduces the cooldown of all Tier-IV talents."
+	}
+	"cooldown up cdr v"
+	{
+		"en"				"CD Mastery V"
+	}
+	"constitution trans"
+	{
+		"en"				"Increases your constitution attribute."
+	}
+	"agility trans"
+	{
+		"en"				"Increases your agility attribute."
+	}
+	"resilience trans"
+	{
+		"en"				"Increases your resilience attribute."
+	}
+	"technique trans"
+	{
+		"en"				"Increases your technique attribute."
+	}
+	"endurance trans"
+	{
+		"en"				"Increases your endurance attribute."
+	}
+	"luck trans"
+	{
+		"en"				"Increases your luck attribute."
+	}
+	"constitution i"
+	{
+		"en"				"Constitution I"
+	}
+	"constitution ii"
+	{
+		"en"				"Constitution II"
+	}
+	"constitution iii"
+	{
+		"en"				"Constitution III"
+	}
+	"constitution iv"
+	{
+		"en"				"Constitution IV"
+	}
+	"constitution v"
+	{
+		"en"				"Constitution V"
+	}
+	"constitution vi"
+	{
+		"en"				"Constitution VI"
+	}
+	"constitution vii"
+	{
+		"en"				"Constitution VII"
+	}
+	"constitution viii"
+	{
+		"en"				"Constitution VIII"
+	}
+	"constitution ix"
+	{
+		"en"				"Constitution IX"
+	}
+	"constitution x"
+	{
+		"en"				"Constitution X"
+	}
+	"agility i"
+	{
+		"en"				"Agility I"
+	}
+	"agility ii"
+	{
+		"en"				"Agility II"
+	}
+	"agility iii"
+	{
+		"en"				"Agility III"
+	}
+	"agility iv"
+	{
+		"en"				"Agility IV"
+	}
+	"agility v"
+	{
+		"en"				"Agility V"
+	}
+	"agility vi"
+	{
+		"en"				"Agility VI"
+	}
+	"agility vii"
+	{
+		"en"				"Agility VII"
+	}
+	"agility viii"
+	{
+		"en"				"Agility VIII"
+	}
+	"agility ix"
+	{
+		"en"				"Agility IX"
+	}
+	"agility x"
+	{
+		"en"				"Agility X"
+	}
+	"resilience i"
+	{
+		"en"				"Resilience I"
+	}
+	"resilience ii"
+	{
+		"en"				"Resilience II"
+	}
+	"resilience iii"
+	{
+		"en"				"Resilience III"
+	}
+	"resilience iv"
+	{
+		"en"				"Resilience IV"
+	}
+	"resilience v"
+	{
+		"en"				"Resilience V"
+	}
+	"resilience vi"
+	{
+		"en"				"Resilience VI"
+	}
+	"resilience vii"
+	{
+		"en"				"Resilience VII"
+	}
+	"resilience viii"
+	{
+		"en"				"Resilience VIII"
+	}
+	"resilience ix"
+	{
+		"en"				"Resilience IX"
+	}
+	"resilience x"
+	{
+		"en"				"Resilience X"
+	}
+	"technique i"
+	{
+		"en"				"Technique I"
+	}
+	"technique ii"
+	{
+		"en"				"Technique II"
+	}
+	"technique iii"
+	{
+		"en"				"Technique III"
+	}
+	"technique iv"
+	{
+		"en"				"Technique IV"
+	}
+	"technique v"
+	{
+		"en"				"Technique V"
+	}
+	"technique vi"
+	{
+		"en"				"Technique VI"
+	}
+	"technique vii"
+	{
+		"en"				"Technique VII"
+	}
+	"technique viii"
+	{
+		"en"				"Technique VIII"
+	}
+	"technique ix"
+	{
+		"en"				"Technique IX"
+	}
+	"technique x"
+	{
+		"en"				"Technique X"
+	}
+	"endurance i"
+	{
+		"en"				"Endurance I"
+	}
+	"endurance ii"
+	{
+		"en"				"Endurance II"
+	}
+	"endurance iii"
+	{
+		"en"				"Endurance III"
+	}
+	"endurance iv"
+	{
+		"en"				"Endurance IV"
+	}
+	"endurance v"
+	{
+		"en"				"Endurance V"
+	}
+	"endurance vi"
+	{
+		"en"				"Endurance VI"
+	}
+	"endurance vii"
+	{
+		"en"				"Endurance VII"
+	}
+	"endurance viii"
+	{
+		"en"				"Endurance VIII"
+	}
+	"endurance ix"
+	{
+		"en"				"Endurance IX"
+	}
+	"endurance x"
+	{
+		"en"				"Endurance X"
+	}
+	"luck i"
+	{
+		"en"				"Luck I"
+	}
+	"luck ii"
+	{
+		"en"				"Luck II"
+	}
+	"luck iii"
+	{
+		"en"				"Luck III"
+	}
+	"luck iv"
+	{
+		"en"				"Luck IV"
+	}
+	"luck v"
+	{
+		"en"				"Luck V"
+	}
+	"luck vi"
+	{
+		"en"				"Luck VI"
+	}
+	"luck vii"
+	{
+		"en"				"Luck VII"
+	}
+	"luck viii"
+	{
+		"en"				"Luck VIII"
+	}
+	"luck ix"
+	{
+		"en"				"Luck IX"
+	}
+	"luck x"
+	{
+		"en"				"Luck X"
+	}
+	"cooldown up v cooldown"
+	{
+		"en"				"Reduces the cooldown of all Tier-V talents."
+	}
+	"ability chance"
+	{
+		"en"				"Talent Chance"
+	}
+	"surv def ability chance"
+	{
+		"en"				"Defensive Chance"
+	}
+	"pistol ability chance"
+	{
+		"en"				"Pistol Chance"
+	}
+	"smg ability chance"
+	{
+		"en"				"SMG Chance"
+	}
+	"shotgun ability chance"
+	{
+		"en"				"Shotgun Chance"
+	}
+	"shotgun damage increase"
+	{
+		"en"				"Shotgun Critical DMG"
+	}
+	"ability chance infected"
+	{
+		"en"				"Talent Chance"
+	}
+	"bean bag"
+	{
+		"en"				"Beanbag"
+	}
+	"slowing ammo"
+	{
+		"en"				"Slow"
+	}
+	"bean bag ammo"
+	{
+		"en"				"Beanbag"
+	}
+	"explosive ammo"
+	{
+		"en"				"Explode"
+	}
+	"leech ammo"
+	{
+		"en"				"Drain"
+	}
+	"gravity ammo"
+	{
+		"en"				"Gravity"
+	}
+	"pistol damage increase"
+	{
+		"en"				"Pistol Crit. DMG"
+	}
+	"Other Talents"
+	{
+		"en"				"Other Talents\nEnvironmental, etc."
+	}
+	"Melee Talents"
+	{
+		"en"				"Melee Talents\nWhen guns aren't good enough."
+	}
+	"headshot damage increase"
+	{
+		"en"				"Increase weapon damage on headshots."
+	}
+	"headshot damage increase i"
+	{
+		"en"				"Headshot DMG I"
+	}
+	"headshot damage increase ii"
+	{
+		"en"				"Headshot DMG II"
+	}
+	"limb damage increase"
+	{
+		"en"				"Increase weapon damage to arms and legs."
+	}
+	"limb damage increase i"
+	{
+		"en"				"Limb DMG I"
+	}
+	"limb damage increase ii"
+	{
+		"en"				"Limb DMG II"
+	}
+	"weapon damage increase i"
+	{
+		"en"				"Gun DMG I"
+	}
+	"weapon damage increase ii"
+	{
+		"en"				"Gun DMG II"
+	}
+	"weapon damage increase iii"
+	{
+		"en"				"Gun DMG III"
+	}
+	"weapon damage increase"
+	{
+		"en"				"All gun weapons deal increased damage."
+	}
+	"masochist path i"
+	{
+		"en"				"Masoschistic I"
+	}
+	"masochist path i info"
+	{
+		"en"				"Increase damage for each status effect you have."
+	}
+	"melee damage increase i"
+	{
+		"en"				"Melee DMG I"
+	}
+	"melee damage increase ii"
+	{
+		"en"				"Melee DMG II"
+	}
+	"melee damage increase iii"
+	{
+		"en"				"Melee DMG III"
+	}
+	"melee damage increase"
+	{
+		"en"				"All melee weapons deal increased damage."
+	}
+	"melee damage increase ii info"
+	{
+		"en"				"All melee weapons deal increased damage."
+	}
+	"tier1 damage increase"
+	{
+		"en"				"Tier 1 Weapons have increased damage.\n(twin pistols, pump shotguns, smg\'s, hunting rifle)"
+	}
+	"tier1 damage increase i"
+	{
+		"en"				"T1 DMG I"
+	}
+	"tier1 damage increase ii"
+	{
+		"en"				"T1 DMG II"
+	}
+	"tier1 damage increase iii"
+	{
+		"en"				"T1 DMG III"
+	}
+	"tier2 damage increase"
+	{
+		"en"				"Tier 2 Weapons have increased damage.\n(assault rifles, auto-shotguns, and sniper rifles)"
+	}
+	"tier2 damage increase i"
+	{
+		"en"				"T2 DMG I"
+	}
+	"tier2 damage increase ii"
+	{
+		"en"				"T2 DMG II"
+	}
+	"tier2 damage increase iii"
+	{
+		"en"				"T2 DMG III"
+	}
+	"crouch damage increase"
+	{
+		"en"				"Increase all outgoing damage while crouching."
+	}
+	"crouch damage increase i"
+	{
+		"en"				"Crouch DMG I"
+	}
+	"burn damage increase"
+	{
+		"en"				"Fire DMG+"
+	}
+	"burn damage increase info"
+	{
+		"en"				"Increases all the burn damage sourced from you."
+	}
+	"weapon damage increase info"
+	{
+		"en"				"Fires a second, non-elemental bullet."
+	}
+	"melee damage increase"
+	{
+		"en"				"Melee DMG Increase"
+	}
+	"melee damage increase info"
+	{
+		"en"				"Melee weapon damage increases."
+	}
+	"smg damage increase"
+	{
+		"en"				"SMG Crit. DMG"
+	}
+	"rifle ability chance"
+	{
+		"en"				"Assault Rifle Ability Chance"
+	}
+	"rifle damage increase"
+	{
+		"en"				"Assault Rifle Crit. Hit"
+	}
+	"shotgun damage increase info"
+	{
+		"en"				"Shotgun Critical Hit damage!"
+	}
+	"shotgun ability chance info"
+	{
+		"en"				"The likelihood shotgun abilities to trigger"
+	}
+	"rifle damage increase info"
+	{
+		"en"				"Assault Rifle Critical Hit Damage!!!!"
+	}
+	"rifle ability chance info"
+	{
+		"en"				"The likelihood assault rifle abilities trigger!"
+	}
+	"damage multiplier permanent"
+	{
+		"en"				"SI DMG"
+	}
+	"zero gravity ammo"
+	{
+		"en"				"Gravity"
+	}
+	"adrenaline heal"
+	{
+		"en"				"Adrenaline Heal"
+	}
+	"fight or flight"
+	{
+		"en"				"Fight or Flight"
+	}
+	"lead bullet"
+	{
+		"en"				"Lead Bullet"
+	}
+	"ghost beacon"
+	{
+		"en"				"Infected Detector"
+	}
+	"incap revenge"
+	{
+		"en"				"Incap Revenge"
+	}
+	"blind ammo"
+	{
+		"en"				"Blind"
+	}
+	"healing ammo"
+	{
+		"en"				"Cure"
+	}
+	"distraction ammo"
+	{
+		"en"				"Vomit"
+	}
+	"distraction ammo info"
+	{
+		"en"				"Survivors inside the spell will become a distraction."
+	}
+	"Single Spell Talents"
+	{
+		"en"				"Focus Spells\nCasts a spell on a specific target."
+	}
+	"Equip Action Bar"
+	{
+		"en"				"Edit Actionbar\n!abilitybar toggles the ability bar on/off"
+	}
+	"Aoe Spell Talents"
+	{
+		"en"				"Spells"
+	}
+	"Abilities Talents"
+	{
+		"en"				"Passive Actions"
+	}
+	"rage ammo"
+	{
+		"en"				"Adrenaline Rage"
+	}
+	"rage ammo info"
+	{
+		"en"				"Grants adrenaline, but increases incoming damage for anything inside."
+	}
+	"darkness ammo"
+	{
+		"en"				"Dark"
+	}
+	"darkness ammo info"
+	{
+		"en"				"Grants weakness."
+	}
+	"fire ammo"
+	{
+		"en"				"Fire"
+	}
+	"damage shield"
+	{
+		"en"				"DMG Shield"
+	}
+	"speed boost"
+	{
+		"en"				"Temporary Speed Boost"
+	}
+	"thorns talent"
+	{
+		"en"				"Thorns"
+	}
+	"danger will robinson"
+	{
+		"en"				"Bile Defense"
+	}
+	"i am neo"
+	{
+		"en"				"I Am Neo"
+	}
+	"Round Time"
+	{
+		"#format"			"{1:s},{2:s},{3:i},{4:s},{5:s},{6:i},{7:s}"
+		"en"				"{1}This round was {2}{3}{4}m {5}{6}{7}s"
+	}
+	"gravity jump"
+	{
+		"en"				"Gravity Jump"
+	}
+	"infected health"
+	{
+		"en"				"Infected Health"
+	}
+	"hunter health"
+	{
+		"en"				"Hunter Health"
+	}
+	"smoker health"
+	{
+		"en"				"Smoker Health"
+	}
+	"boomer health"
+	{
+		"en"				"Boomer Health"
+	}
+	"jockey health"
+	{
+		"en"				"Jockey Health"
+	}
+	"spitter health"
+	{
+		"en"				"Spitter Health"
+	}
+	"charger health"
+	{
+		"en"				"Charger Health"
+	}
+	"tank health"
+	{
+		"en"				"Tank Health"
+	}
+	"infected speed"
+	{
+		"en"				"Movement Speed"
+	}
+	"infected damage"
+	{
+		"en"				"DMG Multiplier"
+	}
+	"wall of fire"
+	{
+		"en"				"Wall of Fire"
+	}
+	"spawn anywhere"
+	{
+		"en"				"Spawn Anywhere"
+	}
+	"hunter stalker"
+	{
+		"en"				"Hunter Stalker"
+	}
+	"backlash"
+	{
+		"en"				"Backlash"
+	}
+	"smoker whip"
+	{
+		"en"				"Smoker Whip"
+	}
+	"blinding bile"
+	{
+		"en"				"Blinding Bile"
+	}
+	"slowing bile"
+	{
+		"en"				"Slowing Bile"
+	}
+	"volatile bile"
+	{
+		"en"				"Volatile Bile"
+	}
+	"jockey jump"
+	{
+		"en"				"Jockey Jump"
+	}
+	"slowing spit"
+	{
+		"en"				"Slowing Spit"
+	}
+	"burning spit"
+	{
+		"en"				"Burning Spit"
+	}
+	"spit invisibility"
+	{
+		"en"				"Spit Invisibility"
+	}
+	"charger jump"
+	{
+		"en"				"Charger Jump"
+	}
+	"black hole"
+	{
+		"en"				"Black Hole"
+	}
+	"earthquake tank"
+	{
+		"en"				"Earthquake (Tank)"
+	}
+	"slowing tank"
+	{
+		"en"				"Slow on Hit (Tank)"
+	}
+	"invisible tank"
+	{
+		"en"				"Cloak on Hit (Tank)"
+	}
+	"blinding tank"
+	{
+		"en"				"Blind on Hit (Tank)"
+	}
+	"reflective armour"
+	{
+		"en"				"Reflective Armour (Tank)"
+	}
+	"cdr"
+	{
+		"en"				"Cooldown Reduction"
+	}
+	"vampire"
+	{
+		"en"				"Vampire"
+	}
+	"Ability Restricted"
+	{
+		"#format"			"{1:s},{2:i}"
+		"en"				"{1} (Unlocks at Lv.{2})"
+	}
+	"Ability Locked"
+	{
+		"#format"			"{1:s}"
+		"en"				"{1} (Find it as loot!)"
+	}
+	"Ability Available"
+	{
+		"#format"			"{1:s},{2:i},{3:i}"
+		"en"				"{1}\t({2}/{3})"
+	}
+	"Ability Available T1"
+	{
+		"#format"			"{1:s},{2:i},{3:i}"
+		"en"				"{1}\t({2}/{3})"
+	}
+	"Ability Available Percent"
+	{
+		"#format"			"{1:s},{2:i},{3:i},{4:i},{5:3.2f},{6:s},{7:3.3f},{8:s}"
+		"en"				"{1} {2} / {3} ({4}) - BPP: {5}{6} ({7}{8})"
+	}
+	"Ability Available Time"
+	{
+		"#format"			"{1:s},{2:i},{3:i},{4:i},{5:3.2f},{6:3.2f}"
+		"en"				"{1} {2} / {3} ({4}) - BPP: {5} sec(s) ({6} sec(s))"
+	}
+	"Ability Available Distance"
+	{
+		"#format"			"{1:s},{2:i},{3:i},{4:i},{5:3.2f},{6:3.2f}"
+		"en"				"{1} {2} / {3} ({4}) - BPP: {5} unit(s) ({6} unit(s))"
+	}
+	"Ability Available Percent - First Point"
+	{
+		"#format"			"{1:s},{2:i},{3:i},{4:i},{5:3.2f},{6:s}"
+		"en"				"{1} {2} / {3} ({4}) - First Point: {5}{6}"
+	}
+	"Ability Available Time - First Point"
+	{
+		"#format"			"{1:s},{2:i},{3:i},{4:i},{5:3.2f}"
+		"en"				"{1} {2} / {3} ({4}) - First Point: {5} sec(s)"
+	}
+	"Ability Available Distance - First Point"
+	{
+		"#format"			"{1:s},{2:i},{3:i},{4:i},{5:3.2f}"
+		"en"				"{1} {2} / {3} ({4}) - First Point: {5} unit(s)"
+	}
+	"player level up"
+	{
+		"#format"			"{1:s},{2:s},{3:s},{4:s},{5:i}"
+		"en"				"{1}{4} {2}is now level {3}{5}"
+	}
+	"player multiple level up"
+	{
+		"#format"			"{1:s},{2:s},{3:s},{4:s},{5:i},{6:s},{7:s},{8:s}"
+		"en"				"{1}{2} {3}gained {4}{5} {6}levels, and is now {7}level {8}"
+	}
+	"player sky level up"
+	{
+		"#format"			"{1:s},{2:s},{3:s},{4:s},{5:i}"
+		"en"				"{1}{4} {2}reached sky level {3}{5}"
+	}
+	"tag player"
+	{
+		"#format"			"{1:s},{2:s},{3:i},{4:s}"
+		"en"				"{1}Tagged player: {2}{3} {4}XP."
+	}
+	"common kills award"
+	{
+		"#format"			"{1:s},{2:s},{3:s},{4:s}"
+		"en"				"{1}Commons Killed: {2}{3} {4}XP."
+	}
+	"common headshot award"
+	{
+		"#format"			"{1:s},{2:s},{3:s},{4:s}"
+		"en"				"{1}Commons Headshots: {2}{3} {4}XP."
+	}
+	"distance experience"
+	{
+		"#format"			"{1:s},{2:s},{3:i},{4:s}"
+		"en"				"{1}Distance: {2}{3} {4}XP."
+	}
+	"healing experience"
+	{
+		"#format"			"{1:s},{2:s},{3:i},{4:s}"
+		"en"				"{1}Healing: {2}{3} {4}XP."
+	}
+	"assisting experience"
+	{
+		"#format"			"{1:s},{2:s},{3:i},{4:s}"
+		"en"				"{1}Assist: {2}{3} {4}XP."
+	}
+	"distance points"
+	{
+		"#format"			"{1:s},{2:s},{3:3.3f},{4:s}"
+		"en"				"{1}Distance: {2}{3} {4}!buy credit(s)."
+	}
+	"healing points"
+	{
+		"#format"			"{1:s},{2:s},{3:3.3f},{4:s}"
+		"en"				"{1}Healing: {2}{3} {4}!buy credit(s)."
+	}
+	"assisting points"
+	{
+		"#format"			"{1:s},{2:s},{3:3.3f},{4:s}"
+		"en"				"{1}Assist: {2}{3} {4}!buy credit(s)."
+	}
+	"Experience Earned Self"
+	{
+		"#format"			"{1:s},{2:s},{3:s},{4:s},{5:s},{6:s},{7:i}"
+		"en"				"{1}Hurt Bonus: {2}{6} {3}for {4}{7} {5}XP."
+	}
+	"Points Earned Self"
+	{
+		"#format"			"{1:s},{2:s},{3:s},{4:s},{5:s},{6:s},{7:3.3f}"
+		"en"				"{1}Hurt Bonus: {2}{6} {3}for {4}{7} {5}buy !buy credit(s)"
+	}
+	"Tag Experience"
+	{
+		"#format"			"{1:s},{2:s},{3:s},{4:i}"
+		"en"				"{1}Tag XP: {2}{4} {3}XP."
+	}
+	"client level set"
+	{
+		"#format"			"{1:s},{2:s},{3:s},{4:s},{5:i}"
+		"en"				"{2}{1} {3}is now level {4}{5}"
+	}
+	"client sky level set"
+	{
+		"#format"			"{1:s},{2:s},{3:s},{4:s},{5:i}"
+		"en"				"{2}{1} {3}is now sky level {4}{5}"
+	}
+	"Tag Points"
+	{
+		"#format"			"{1:s},{2:s},{3:s},{4:3.2f}"
+		"en"				"{1}Tag Points: {2}{4} {3}!buy credit(s)."
+	}
+	"Bile Damage Experience"
+	{
+		"#format"			"{1:s},{2:s},{3:s},{4:s},{5:s},{6:s},{7:i}"
+		"en"				"{1}Bile XP: {2}{6} {3}for {4}{7} {5}XP."
+	}
+	"Bile Damage Points"
+	{
+		"#format"			"{1:s},{2:s},{3:s},{4:s},{5:s},{6:s},{7:3.1f}"
+		"en"				"{1}Bile Points: {2}{6} {3}for {4}{7} {5}!buy credit(s)."
+	}
+	"Experience Earned Total Self"
+	{
+		"#format"			"{1:s},{2:s},{3:s},{4:i}"
+		"en"				"{1}Hurt Bonus (Total): {2}{4} {3}XP."
+	}
+	"Experience Earned Total Team"
+	{
+		"#format"			"{1:s},{2:s},{3:s},{4:s},{5:s},{6:s},{7:i}"
+		"en"				"{1}Hurt Bonus (Total) for {2}{6}{3}: {4}{7} {5}XP."
+	}
+	"Experience Earned Total Team Survivor"
+	{
+		"#format"			"{1:s},{2:s},{3:s},{4:s},{5:s},{6:s},{7:s},{8:s},{9:s},{10:i}"
+		"en"				"{1}Hurt Bonus: {2}{8} {3}against {4}{9} {5}for {6}{10} {7}XP."
+	}
+	"Points Earned Total Self"
+	{
+		"#format"			"{1:s},{2:s},{3:s},{4:3.3f}"
+		"en"				"{1}Hurt Bonus (Total): {2}{4} {3}!buy credit(s)"
+	}
+	"Points Earned Total Team"
+	{
+		"#format"			"{1:s},{2:s},{3:s},{4:s},{5:s},{6:s},{7:3.3f}"
+		"en"				"{1}Hurt Bonus (Total) for {2}{6}{3}: {4}{7} {5}!buy credit(s)"
+	}
+	"Points Earned Total Team Survivor"
+	{
+		"#format"			"{1:s},{2:s},{3:s},{4:s},{5:s},{6:s},{7:s},{8:s},{9:s},{10:3.3f}"
+		"en"				"{1}Hurt Bonus: {2}{8} {3}against {4}{9} {5}for {6}{10} {7}!buy credit(s)"
+	}
+	"Experience Points Earned Total Self"
+	{
+		"#format"			"{1:s},{2:s},{3:s},{4:s},{5:s},{6:i},{7:3.3f}"
+		"en"				"{1}Hurt Bonus (Total): {2}{6} {3}XP, {4}{7} {5}!buy credit(s)"
+	}
+	"Experience Points Earned Total Team"
+	{
+		"#format"			"{1:s},{2:s},{3:s},{4:s},{5:s},{6:s},{7:i}"
+		"en"				"{1}Hurt Bonus (Total) for {2}{6}{3}: {4}{7} {5}XP."
+	}
+	"Experience Points Earned Total Team Survivor"
+	{
+		"#format"			"{1:s},{2:s},{3:s},{4:s},{5:s},{6:s},{7:s},{8:s},{9:s},{10:s},{11:s},{12:i},{13:3.3f}"
+		"en"				"{1}Hurt Bonus: {2}{10} {3}against {4}{11} {5}for {6}{12} {7}XP, {8}{13} {9}!buy credit(s)"
+	}
+	"slate"
+	{
+		"en"				"CRATE Attributes\nConstitution\nResilience\nAgility\nTechnique\nEndurance"
+	}
+	"SLATE Award Common"
+	{
+		"#format"			"{1:s},{2:s},{3:s},{4:s},{5:s},{6:s}"
+		"en"				"{1}{6} {2}collected a {3}SLATE {4}point from a {5}Common Infected"
+	}
+	"SLATE Award Special"
+	{
+		"#format"			"{1:s},{2:s},{3:s},{4:s},{5:s}"
+		"en"				"{1}{2} {3}collected a {4}SLATE {5}point."
+	}
+	"SlATE award legacy"
+	{
+		"#format"			"{1:s},{2:s},{3:s},{4:s},{5:s},{6:s},{7:s},{8:s}"
+		"en"				"{1}{2} {3}won a {4}SLATE {5}point. ({6}rolled a {7}{8})"
+	}
+	"SLATE Award (end of map roll)"
+	{
+		"#format"			"{1:s},{2:s},{3:s},{4:s},{5:s},{6:s},{7:s},{8:s}"
+		"en"				"{6}({7}end of map lottery winner{8}) {1}{2} {3}has found a {4}SLATE {5}point."
+	}
+	"Store Item Award"
+	{
+		"#format"			"{1:s},{2:s},{3:s},{4:s},{5:s},{6:s}"
+		"en"				"{1}{2} {3}collected a {4}{5}{6}!"
+	}
+	"Store Item Award legacy"
+	{
+		"#format"			"{1:s},{2:s},{3:s},{4:s},{5:s},{6:s},{7:s},{8:s},{9:s}"
+		"en"				"{1}{2} {3}won a {4}{5}{6}. ({7}rolled a {8}{9})"
+	}
+	"Store Item Award (end of map roll)"
+	{
+		"#format"			"{1:s},{2:s},{3:s},{4:s},{5:s},{6:s},{7:s},{8:s},{9:s}"
+		"en"				"{7}({8}end of map lottery winner{9}) {1}{2} {3}has found a {4}{5}{6}!"
+	}
+	"Locked Talent Award"
+	{
+		"#format"			"{1:s},{2:s},{3:s},{4:s},{5:s},{6:s}"
+		"en"				"{1}{2} {3}has unlocked the {4}{5} {6}talent!"
+	}
+	"Locked Talent Award legacy"
+	{
+		"#format"			"{1:s},{2:s},{3:s},{4:s},{5:s},{6:s},{7:s},{8:s},{9:s}"
+		"en"				"{1}{2} {3}won a {4}{5}{6}. ({7}rolled a {8}{9})"
+	}
+	"Locked Talent Award (end of map roll)"
+	{
+		"#format"			"{1:s},{2:s},{3:s},{4:s},{5:s},{6:s},{7:s},{8:s},{9:s}"
+		"en"				"{7}({8}end of map lottery winner{9}) {1}{2} {3}has found the {4}{5} {6}talent!"
+	}
+	"Crafting Item Award"
+	{
+		"#format"			"{1:s},{2:s},{3:s},{4:s},{5:s},{6:s}"
+		"en"				"{1}{2} {3}collected a {4}{5}{6}!"
+	}
+	"Menu Header 1 Talents Bot"
+	{
+		"#format"			"{1:i},{2:i},{3:s},{4:s},{5:s}"
+		"en"				"Lv.{1} of {2}\nXP: {3} of {4}\nUpgrade Cost: {5}"
+	}
+	"Menu Header 2 Talents Bot"
+	{
+		"#format"			"{1:i},{2:i},{3:s},{4:s},{5:s},{6:3.3f}"
+		"en"				"Lv.{1} of {2}\nXP: {3} of {4}\nUpgrade Cost: {5}\nShop Credits: {6}"
+	}
+	"Menu Header 0 Director"
+	{
+		"#format"			"{1:3.3f}"
+		"en"				"Director Points: {1}"
+	}
+	"Free Upgrades"
+	{
+		"en"				"Free Upgrades"
+	}
+	"Slate Points"
+	{
+		"#format"			"{1:i}"
+		"en"				"Slate Points: {1}"
+	}
+	"common kills"
+	{
+		"#format"			"{1:s},{2:s}"
+		"en"				"common kills: {2} by {1}"
+	}
+	"damage (survivors)"
+	{
+		"#format"			"{1:s},{2:s}"
+		"en"				"damage: {2} by {1}"
+	}
+	"healing"
+	{
+		"#format"			"{1:s},{2:s}"
+		"en"				"healing: {2} by {1}"
+	}
+	"Inventory"
+	{
+		"en"				"Inventory"
+	}
+	"added to inventory (clip)"
+	{
+		"#format"			"{1:s},{2:s},{3:s},{4:s},{5:i}"
+		"en"				"{1}{5} {2}ammo picked up for your {3}{4}"
+	}
+	"added to inventory (weapon)"
+	{
+		"#format"			"{1:s},{2:s},{3:s}"
+		"en"				"{1}{3} {2}placed in your inventory"
+	}
+	"unlimited inventory"
+	{
+		"en"				"Unlimited Slots"
+	}
+	"inventory header"
+	{
+		"#format"			"{1:s},{2:i},{3:i}"
+		"en"				"{1}\nInventory: {2} of {3}"
+	}
+	"inventory empty"
+	{
+		"en"				"Inventory is EMPTY"
+	}
+	"maximum inventory clip size reached"
+	{
+		"#format"			"{1:s},{2:s},{3:s},{4:i}"
+		"en"				"{1}Inventory Limit Reached {2}of maximum clip size: {3}{4}"
+	}
+	"autoshotgun"
+	{
+		"en"				"Auto Shotgun"
+	}
+	"grenade_launcher"
+	{
+		"en"				"Grenade Launcher"
+	}
+	"hunting_rifle"
+	{
+		"en"				"Hunting Rifle"
+	}
+	"pistol"
+	{
+		"en"				"Pistol"
+	}
+	"pistol_magnum"
+	{
+		"en"				"Magnum"
+	}
+	"pumpshotgun"
+	{
+		"en"				"Pump Shotgun"
+	}
+	"rifle"
+	{
+		"en"				"M4A1"
+	}
+	"rifle_ak47"
+	{
+		"en"				"AK47"
+	}
+	"rifle_desert"
+	{
+		"en"				"Desert Rifle"
+	}
+	"rifle_m60"
+	{
+		"en"				"M60"
+	}
+	"rifle_sg552"
+	{
+		"en"				"SG552"
+	}
+	"shotgun_chrome"
+	{
+		"en"				"Pump Shotgun (Chrome)"
+	}
+	"shotgun_spas"
+	{
+		"en"				"SPAS Shotgun"
+	}
+	"smg"
+	{
+		"en"				"UZI"
+	}
+	"smg_mp5"
+	{
+		"en"				"MP5"
+	}
+	"smg_silenced"
+	{
+		"en"				"TMP5"
+	}
+	"sniper_awp"
+	{
+		"en"				"AWP Sniper"
+	}
+	"sniper_military"
+	{
+		"en"				"Military Sniper"
+	}
+	"sniper_scout"
+	{
+		"en"				"Scout Sniper"
+	}
+	"baseball_bat"
+	{
+		"en"				"Baseball Bat"
+	}
+	"cricket_bat"
+	{
+		"en"				"Cricket Bat"
+	}
+	"crowbar"
+	{
+		"en"				"Crowbar"
+	}
+	"melee"
+	{
+		"en"				"Melee"
+	}
+	"electric_guitar"
+	{
+		"en"				"Electric Guitar"
+	}
+	"frying_pan"
+	{
+		"en"				"Frying Pan"
+	}
+	"golfclub"
+	{
+		"en"				"Golf club"
+	}
+	"katana"
+	{
+		"en"				"Katana"
+	}
+	"machete"
+	{
+		"en"				"Machete"
+	}
+	"tonfa"
+	{
+		"en"				"Tonfa"
+	}
+	"knife"
+	{
+		"en"				"Knife"
+	}
+	"chainsaw"
+	{
+		"en"				"Chainsaw"
+	}
+	"adrenaline"
+	{
+		"en"				"Adrenaline"
+	}
+	"defibrillator"
+	{
+		"en"				"Defibrillator"
+	}
+	"first_aid_kit"
+	{
+		"en"				"Medkit"
+	}
+	"pain_pills"
+	{
+		"en"				"Pain Killers"
+	}
+	"molotov"
+	{
+		"en"				"Molotov"
+	}
+	"pipe_bomb"
+	{
+		"en"				"Pipe Bomb"
+	}
+	"vomitjar"
+	{
+		"en"				"Vomitjar"
+	}
+	"upgradepack_explosive"
+	{
+		"en"				"Upgrade Pack (Explosive)"
+	}
+	"upgradepack_incendiary"
+	{
+		"en"				"Upgrade Pack (Incendiary)"
+	}
+	"Time Remaining"
+	{
+		"en"				"Current"
+	}
+	"memory wipe"
+	{
+		"en"				"Respec Talents"
+	}
+	"experience boost"
+	{
+		"en"				"XP Boost"
+	}
+	"experience boost 2"
+	{
+		"en"				"XP Boost"
+	}
+	"talent upgrade"
+	{
+		"en"				"Talent Upgrade"
+	}
+	"slate upgrade"
+	{
+		"en"				"SLATE Upgrade"
+	}
+	"experience in bulk"
+	{
+		"en"				"Bulk Experience"
+	}
+	"random backpack"
+	{
+		"en"				"Random Backpack"
+	}
+	"Store Amount Range"
+	{
+		"#format"			"{1:i},{2:i}"
+		"en"				"{1} --> {2}"
+	}
+	"Store Amount Static"
+	{
+		"#format"			"{1:i}"
+		"en"				"{1}"
+	}
+	"Store Option"
+	{
+		"#format"			"{1:s},{2:i},{3:s},{4:s}"
+		"en"				"{1} {4} Cost: {2} Credit(s) {3}"
+	}
+	"Locked Talent Store Cost"
+	{
+		"#format"			"{1:s},{2:i}"
+		"en"				"{1} - Cost: {2}"
+	}
+	"unstable genetics"
+	{
+		"en"				"Unstable Genetics"
+	}
+	"corrosive vomit"
+	{
+		"en"				"Corrosive Vomit"
+	}
+	"health regen survivor"
+	{
+		"en"				"(In Combat) Health regen"
+	}
+	"nocombat regen survivor"
+	{
+		"en"				"(OoC) Health regen"
+	}
+	"passive health regen"
+	{
+		"en"				"Always(tm) Health regen"
+	}
+	"(Sniper OoC)tank damage"
+	{
+		"en"				"(Sniper - OoC) Tank DMG"
+	}
+	"(Combat)tank damage"
+	{
+		"en"				"(IC) Tank DMG"
+	}
+	"(OoC) Common Recovery"
+	{
+		"en" "(OoC) Common DMG Recovery"
+	}
+	"(OoC) Common Ammo Recovery"
+	{
+		"en" "(OoC) Commons Give Ammo"
+	}
+	"(IC) Common Ammo Recovery"
+	{
+		"en" "(IC) Commons Give Ammo"
+	}
+	"health regen infected"
+	{
+		"en"				"Health Regen"
+	}
+	"crafting"
+	{
+		"en"				"Crafting Materials"
+	}
+	"hunter craft"
+	{
+		"en"				"Hunter material"
+	}
+	"smoker craft"
+	{
+		"en"				"Smoker material"
+	}
+	"boomer craft"
+	{
+		"en"				"Boomer material"
+	}
+	"jockey craft"
+	{
+		"en"				"Jockey material"
+	}
+	"spitter craft"
+	{
+		"en"				"Spitter material"
+	}
+	"charger craft"
+	{
+		"en"				"Charger material"
+	}
+	"tank craft"
+	{
+		"en"				"Tank material"
+	}
+	"Crafting Menu Item"
+	{
+		"#format"			"{1:s},{2:s}"
+		"en"				"{1} (You have {2})"
+	}
+	"medical assistance"
+	{
+		"en"				"Medical Assistance"
+	}
+	"delayed impact"
+	{
+		"en"				"Delayed Impact"
+	}
+	"nintendos folly"
+	{
+		"en"				"Nintendo's Folly"
+	}
+	"self preservation"
+	{
+		"en"				"Self Preservation"
+	}
+	"counter measure"
+	{
+		"en"				"Counter Measure"
+	}
+	"trauma"
+	{
+		"en"				"Trauma"
+	}
+	"concussive force"
+	{
+		"en"				"Concussive Force"
+	}
+	"combustion"
+	{
+		"en"				"Combustion"
+	}
+	"Player upgrades ability"
+	{
+		"#format"			"{1:s},{2:s},{3:s},{4:s},{5:s},{6:s}"
+		"en"				"{1}{2} {3}upgraded their {4}{5} {6}talent!"
+	}
+	"Weapon Level Increase"
+	{
+		"#format"			"{1:s},{2:s},{3:s},{4:s},{5:s},{6:s},{7:s},{8:i}"
+		"en"				"{1}{2} {3}has achieved {4}{5} {6}Level {7}{8}"
+	}
+	"tier one"
+	{
+		"en"				"tier one weapons"
+	}
+	"shotguns"
+	{
+		"en"				"Shotguns"
+	}
+	"rifles"
+	{
+		"en"				"Assault Rifles"
+	}
+	"snipers"
+	{
+		"en"				"Sniper Rifles"
+	}
+	"weapon level menu"
+	{
+		"#format"			"{1:s},{2:s},{3:s},{4:s},{5:3.1f}"
+		"en"				"{1} (Lv.{2}) {3} of {4} ({5}PCT Bonus)"
+	}
+	"weapon levels"
+	{
+		"en"				"Weapon Statistics"
+	}
+	"round statistics"
+	{
+		"#format"			"{1:s},{2:s},{3:s},{4:s},{5:s},{6:s},{7:s},{8:s},{9:s},{10:s},{11:s},{12:s},{13:s},{14:s},{15:s},{16:s},{17:s},{18:s},{19:s},{20:s},{21:s}"
+		"en"				"{20}=== {1}Infected killed this round {21}===\n{2}Commons: {3}{4} {5}(Supers: {6}{7}{8})\nWitches: {9}{10}\n{11}Special Infected: {12}{13} {14}(Tanks: {15}{16}{17})\nTotal: {18}{19}"
+	}
+	"campaign statistics"
+	{
+		"#format"			"{1:s},{2:s},{3:s},{4:s},{5:s},{6:s},{7:s},{8:s},{9:s},{10:s},{11:s},{12:s},{13:s},{14:s},{15:s},{16:s},{17:s},{18:s},{19:s},{20:s},{21:s}"
+		"en"				"{20}=== {1}Infected killed this campaign {21}===\n{2}Commons: {3}{4} {5}(Supers: {6}{7}{8})\nWitches: {9}{10}\n{11}Special Infected: {12}{13} {14}(Tanks: {15}{16}{17})\nTotal: {18}{19}"
+	}
+	"Talent requirements are not met"
+	{
+		"#format"			"{1:s},{2:s}"
+		"en"				"{1}\nTalents required to unlock this talents:\n{2}"
+	}
+	"Talent Upgrade Title"
+	{
+		"#format"			"{1:s},{2:i}"
+		"en"				"{1} - Talent Info"
+	}
+	"Talent Upgrade Title Free"
+	{
+		"#format"			"{1:s},{2:i},{3:i}"
+		"en"				"{1} - Upgrades --> {2}\nUpgrades Respec: {3}"
+	}
+	"Talent Cooldown Info - No Points"
+	{
+		"#format"			"{1:3.2f}"
+		"en"				"Cooldown\t: {1}s"
+	}
+	"Talent Cooldown Info"
+	{
+		"#format"			"{1:3.2f},{2:3.2f}"
+		"en"				"Cooldown\t: {1}s"
+	}
+	"No Talent Cooldown Info"
+	{
+		"en"				"Cooldown\t: None"
+	}
+	"Ability Info Raw"
+	{
+		"#format"			"{1:i},{2:i}"
+		"en"				"Talent Bonus: {2}"
+	}
+	"Ability Info Raw Max"
+	{
+		"#format"			"{1:i}"
+		"en"				"Talent Bonus: {1}"
+	}
+	"Ability Info Percent"
+	{
+		"#format"			"{1:3.3f},{2:s},{3:3.3f},{4:s}"
+		"en"				"Talent Bonus: {3}{4}"
+	}
+	"Ability Info Percent Max"
+	{
+		"#format"			"{1:3.3f},{2:s}"
+		"en"				"Talent Bonus: {1}{2}"
+	}
+	"Ability Info Time"
+	{
+		"#format"			"{1:3.3f},{2:3.3f}"
+		"en"				"Time\t\t\t: {2}s"
+	}
+	"Ability Info Time Max"
+	{
+		"#format"			"{1:3.3f}"
+		"en"				"Time\t\t\t: {1}s"
+	}
+	"Ability Info Distance"
+	{
+		"#format"			"{1:3.1f},{2:3.1f}"
+		"en"				"Distance: {2}units"
+	}
+	"Ability Info Distance Max"
+	{
+		"#format"			"{1:3.1f}"
+		"en"				"Distance: {1}units"
+	}
+	"Roll Chance Talent Info"
+	{
+		"#format"			"{1:3.2f},{2:s}"
+		"en"				"Roll Chance: {1}{2}"
+	}
+	"Ability Info Aura"
+	{
+		"en"				"Talent Bonus: {1}{2}\nRange:\nCooldown:\nUptime:"
+	}
+	"Insert Talent Upgrade"
+	{
+		"#format"			"{1:i}"
+		"en"				"Unlock Talent"
+	}
+	"Refund Talent Upgrade"
+	{
+		"#format"			"{1:i}"
+		"en"				"Refund Talent Point"
+	}
+	"profile editor"
+	{
+		"en"				"Create/Save/Delete Profiles"
+	}
+	"save or load profile"
+	{
+		"en"				"Save, Load, or Delete your profiles.\nuse chat command !loadoutname\nto create a new profile."
+	}
+	"loadout name set"
+	{
+		"#format"			"{1:s},{2:s},{3:s}"
+		"en"				"{1}Loadout name set to {2}{3}"
+	}
+	"profile editor title"
+	{
+		"#format"			"{1:s}"
+		"en"				"Loadout: {1}\n"
+	}
+	"loadout deleted"
+	{
+		"#format"			"{1:s},{2:s},{3:s}"
+		"en"				"{1}Deleted Loadout: {2}{3}"
+	}
+	"loading profile"
+	{
+		"#format"			"{1:s},{2:s},{3:s},{4:s},{5:s},{6:s},{7:s},{8:s},{9:s}"
+		"en"				"{1}{2} {3}is loading the {4}{5} {6}profile (!loadprofile {7}\"{8}\"{9})"
+	}
+	"loading profile command"
+	{
+		"#format"			"{1:s},{2:s},{3:s},{4:s},{5:s},{6:s},{7:s},{8:s},{9:s}"
+		"en"				"{1}{2} {3}is trying to load the {4}{5} {6}profile, if it exists."
+	}
+	"loading profile ex"
+	{
+		"#format"			"{1:s},{2:s}"
+		"en"				"{1}Loading Profile; A new menu will load when this process is complete. {2}"
+	}
+	"loaded profile"
+	{
+		"#format"			"{1:s},{2:s},{3:s},{4:s},{5:s}"
+		"en"				"{1}{2} {3}has loaded the {4}{5} profile"
+	}
+	"target has authorized you"
+	{
+		"#format"			"{1:s},{2:s},{3:s}"
+		"en"				"{1}{2} {3}has authorized you to load profiles for them."
+	}
+	"authorized client to load"
+	{
+		"#format"			"{1:s},{2:s},{3:s},{4:s},{5:s},{6:s}"
+		"en"				"{1}You have authorized {2}{3} {4}to load profiles for you.\nThey have access until you {5}REVOKE {6}the privilege."
+	}
+	"user has withdrawn authorization"
+	{
+		"#format"			"{1:s},{2:s},{3:s}"
+		"en"				"{1}{2} {3}has withdrawn authorization."
+	}
+	"withdrawn authorization to user"
+	{
+		"#format"			"{1:s},{2:s},{3:s}"
+		"en"				"{1}Withdrawn authorization to user: {2}{3}"
+	}
+	"user has withdrawn request"
+	{
+		"#format"			"{1:s},{2:s},{3:s}"
+		"en"				"{1}{2} {3}has withdrawn their authorization request."
+	}
+	"withdrawn request to user"
+	{
+		"#format"			"{1:s},{2:s},{3:s}"
+		"en"				"{1}Withdrawn authorization request to user: {2}{3}"
+	}
+	"bot data deleted"
+	{
+		"#format"			"{1:s},{2:s}"
+		"en"				"{1}BOT Data has been {2}erased"
+	}
+	"no profiles to load"
+	{
+		"#format"			"{1:s}"
+		"en"				"{1}The selected steam account has no saved profiles."
+	}
+	"new save"
+	{
+		"#format"			"{1:s},{2:s},{3:s}"
+		"en"				"{1}Profile Saved: {2}{3}"
+	}
+	"update save"
+	{
+		"#format"			"{1:s},{2:s},{3:s}"
+		"en"				"{1}Profile Updated: {2}{3}"
+	}
+	"sending profile request"
+	{
+		"#format"			"{1:s},{2:s},{3:s}"
+		"en"				"{1}Sending profile load request to {2}{3}"
+	}
+	"profile load request"
+	{
+		"#format"			"{1:s}"
+		"en"				"Profile Load Request\n\n{1} would like your permission to\nload their saved profile onto your character."
+	}
+	"profile request cancelled"
+	{
+		"#format"			"{1:s},{2:s},{3:s}"
+		"en"				"{1}Cancelled your profile load request to {2}{3}"
+	}
+	"Allow Profile Request"
+	{
+		"en"				"Load This Profile"
+	}
+	"Deny Profile Request"
+	{
+		"en"				"Deny Request"
+	}
+	"Delete Profile"
+	{
+		"en"				"Delete Current Profile"
+	}
+	"profile editor limit reached"
+	{
+		"#format"			"{1:s}"
+		"en"				"{1}You\'ve reached the limit of profile Saves.\nDelete one and try again."
+	}
+	"profile exists"
+	{
+		"#format"			"{1:s}"
+		"en"				"{1}A profile with this name already exists.
+	}
+	"profile saved"
+	{
+		"#format"			"{1:s},{2:s},{3:s}"
+		"en"				"{2}{3} {1}has been saved successfully. Use !loadprofile for quick-load."
+	}
+	"Spawn Loadout"
+	{
+		"en"				"Spawn Loadout\nThe Weapons/Gear you receive when the saferoom door opens."
+	}
+	"Save Profile"
+	{
+		"en"				"Save Current Profile"
+	}
+	"Load Profile"
+	{
+		"en"				"Load My Profiles"
+	}
+	"Load All"
+	{
+		"en"				"Load All Profiles"
+	}
+	"Insert One Upgrade"
+	{
+		"en"				"Use 1 Free Upgrade"
+	}
+	"Insert Ten Upgrade"
+	{
+		"en"				"Use 10 Free Upgrades"
+	}
+	"Fill Her Up"
+	{
+		"en"				"Just Fill Her Up (Oh Daddy!)"
+	}
+	"Ability Available Percent"
+	{
+		"#format"			"{1:s},{2:i},{3:i},{4:i},{5:3.2f},{6:s},{7:3.3f},{8:s}"
+		"en"				"{1} {2} / {3} ({4}) - BPP: {5}{6} ({7}{8})"
+	}
+	"Ability Available Time"
+	{
+		"#format"			"{1:s},{2:i},{3:i},{4:i},{5:3.2f},{6:3.2f}"
+		"en"				"{1} {2} / {3} ({4}) - BPP: {5} sec(s) ({6} sec(s))"
+	}
+	"Ability Available Distance"
+	{
+		"#format"			"{1:s},{2:i},{3:i},{4:i},{5:3.2f},{6:3.2f}"
+		"en"				"{1} {2} / {3} ({4}) - BPP: {5} unit(s) ({6} unit(s))"
+	}
+	"Ability Available Percent - First Point"
+	{
+		"#format"			"{1:s},{2:i},{3:i},{4:i},{5:3.2f},{6:s}"
+		"en"				"{1} {2} / {3} ({4}) - First Point: {5}{6}"
+	}
+	"Warning Upgrade TalentName"
+	{
+		"#format"			"{1:s}"
+		"en"				"Please confirm your upgrade: {1}"
+	}
+	"continue"
+	{
+		"en"				"Continue with upgrade"
+	}
+	"return to talent menu"
+	{
+		"en"				"Previous Menu"
+	}
+	"disable handicap"
+	{
+		"en"				"Disable Handicap"
+	}
+	"handicap disabled"
+	{
+		"en"				"You have disabled handicap levels."
+	}
+	"enable handicap"
+	{
+		"en"				"Enable Handicap"
+	}
+	"difficulty leniency"
+	{
+		"#format"			"{1:s},{2:s}"
+		"en"				"{1}Difficulty Leniency is {2}Enabled until the map is cleared"
+	}
+	"rubber-banding"
+	{
+		"en"				"Rubber-Banding"
+	}
+	"stoneskin"
+	{
+		"en"				"Stone Skin"
+	}
+	"second chance"
+	{
+		"en"				"Second Chance"
+	}
+	"rebirth"
+	{
+		"en"				"Rebirth"
+	}
+	"bile bullet"
+	{
+		"en"				"Bile Bullet"
+	}
+	"bile heal"
+	{
+		"en"				"Bile Heal"
+	}
+	"adrenaline bullet"
+	{
+		"en"				"Adrenaline Bullet"
+	}
+	"adrenaline bullet info"
+	{
+		"en"				"Fires an additional bullet when Adrenaline[Ad]\nis active."
+	}
+	"dark bullet"
+	{
+		"en"				"Dark Bullet"
+	}
+	"dark bullet info"
+	{
+		"en"				"Fires a bullet laced with dark energy when Weakness[Wk]\nis active." 
+	}
+	"Menu Rested Experience"
+	{
+		"#format"			"{1:s},{2:s},{3:s},{4:i}"
+		"en"				"{1}\nRested XP: {2} of {3} (+{4}PCT XP Rate)\n \n"
+	}
+	"Menu Experience Debt"
+	{
+		"#format"			"{1:s},{2:s},{3:i}"
+		"en"				"{1}\nExperience Debt: {2} ({3}PCT penalty)"	
+	}
+	"handicap locked until end of round"
+	{
+		"#format"			"{1:s},{2:s},{3:s},{4:s}"
+		"en"				"{1}Your {2}handicap is now locked {3}until the {4}end of the current round"
+	}
+	"tag colors"
+	{
+		"en"				"Name-Tag Colour"
+	}
+	"chat colors"
+	{
+		"en"				"Chat-Text Colour"
+	}
+	"white"
+	{
+		"en"				"White"
+	}
+	"orange"
+	{
+		"en"				"Orange"
+	}
+	"red"
+	{
+		"en"				"Red"
+	}
+	"blue"
+	{
+		"en"				"Blue"
+	}
+	"light green"
+	{
+		"en"				"Light Green"
+	}
+	"green"
+	{
+		"en"				"Green"
+	}
+	"team"
+	{
+		"en"				"Team-Based (Red-Infected, Blue-Survivor)"
+	}
+	"Tag Name Too Long"
+	{
+		"#format"			"{1:i}"
+		"en"				"Your nick name can be no larger than {1} characters."
+	}
+	"Tag Name Set"
+	{
+		"#format"			"{1:s}"
+		"en"				"Your nick name is now: {1}"
+	}
+	"chat settings"
+	{
+		"en"				"Chat Colours\n!name\nSet a custom chat name"
+	}
+	"Chat Settings (Reserve)"
+	{
+		"en"				"Chat Colours Config"
+	}
+	"Farming Prevention Disabled"
+	{
+		"#format"			"{1:s},{2:s},{3:s},{4:s},{5:s},{6:s}"
+		"en"				"{1}The {2}Farming Prevention System {3}has been {4}disabled {5}until the {6}rescue vehicle arrives"
+	}
+	"Experience Gains Disabled"
+	{
+		"#format"			"{1:s},{2:s},{3:s},{4:s},{5:s}"
+		"en"				"{1}Experience and Point gains {2}have been {3}disabled {4}as the {5}rescue vehicle has arrived"
+	}
+	"survivor health info"
+	{
+		"en"				"Raises your maximum survivor health."
+	}
+	"survivor health (weak)"
+	{
+		"en"				"Survivor Health [Wk]"
+	}
+	"survivor health (weak) info"
+	{
+		"en"				"Raises your maximum survivor health when suffering [Wk]Weakness"
+	}
+	"survivor health (adren)"
+	{
+		"en"				"Survivor Health [Ad]"
+	}
+	"survivor health (adren) info"
+	{
+		"en"				"Raises your maximum survivor health while\nunder the effect of adrenaline."
+	}
+	"survivor health (vomit)"
+	{
+		"en"				"Survivor Health [Bi]"
+	}
+	"survivor health (vomit) info"
+	{
+		"en"				"Raises your maximum survivor health while\ncovered in boomer bile."
+	}
+	"ability chance info"
+	{
+		"en"				"Raises the likelihood talents will occur."
+	}
+	"surv def ability chance info"
+	{
+		"en"				"Raises the likelihood defensive talents will occur."
+	}
+	"pistol ability chance info"
+	{
+		"en"				"Raises the likelihood pistol talents will occur."
+	}
+	"weapon ability chance"
+	{
+		"en"				"Weapon Ability Chance"
+	}
+	"weapon ability chance info"
+	{
+		"en"				"This talent governs the likelihood that\nWeapon talents will occur."
+	}
+	"smg ability chance info"
+	{
+		"en"				"Raises the likelihood smg talents will occur."
+	}
+	"ability chance infected info"
+	{
+		"en"				"Raises the likelihood talents will occur."
+	}
+	"bean bag info"
+	{
+		"en"				"Bullet Damage launches specials\nin a random direction."
+	}
+	"slowing ammo info"
+	{
+		"en"				"Bullet Damage temporarily slow the movement\nspeed of specials."
+	}
+	"bean bag ammo info"
+	{
+		"en"				"You know, they get thrown... like a bean bag.\n...Just shoot something with it."
+	}
+	"explosive ammo info"
+	{
+		"en"				"Creates an explosion based on weapon damage.\nA second explosion will trigger on critical damage.\nHurts allies and enemies."
+	}
+	"healing ammo info"
+	{
+		"en"				"Places an AoE that occasionally heals allies."
+	}
+	"fire ammo info"
+	{
+		"en"				"Places a fire trap AoE that ignites ANYTHING that enters."
+	}
+	"leech ammo info"
+	{
+		"en"				"Creates an AoE that damages allies and enemies\nalike, healing you for a portion of it."
+	}
+	"gravity ammo info"
+	{
+		"en"				"Pulls enemies (and players) inward, great for aoe damage combinations!"
+	}
+	"damage multiplier permanent info"
+	{
+		"en"				"Bullet Damage is increased for one attack.\nDoes not affect tanks!"
+	}
+	"(Combat)tank damage info"
+	{
+		"en"				"Bullet Damage is increased for one attack.\nOnly affects tanks!"
+	}
+	"(Sniper OoC)tank damage info"
+	{
+		"en"				"Bolt-Action Sniper Bullet Damage is increased\nfor one attack. Must be out of combat."
+	}
+	"(OoC) Common Ammo Recovery info"
+	{
+		"en"				"Killing Commons adds ammo to the magazine.\nMust be out of combat."
+	}
+	"(IC) Common Ammo Recovery info"
+	{
+		"en"				"Killing Commons adds ammo to the magazine.\nMust be in combat."
+	}
+	"(OoC) Common Recovery info"
+	{
+		"en"				"Commons Damage revives you with increased\ntemporary health. Must be out of combat."
+	}
+	"zero gravity ammo info"
+	{
+		"en"				"Bullet Damage gives specials wings.\nWarning: Effect only temporary."
+	}
+	"Healing Talents"
+	{
+		"en"				"Health Talents\nMaximum/Regen/etc."
+	}
+	"adrenaline heal info"
+	{
+		"en"				"Heal for a percentage of your outgoing damage\nwhen Adrenaline[Ad] is active."
+	}
+	"fight or flight info"
+	{
+		"en"				"Taking damage gives you adrenaline and\nheals you for a small amount."
+	}
+	"lead bullet info"
+	{
+		"en"				"Scout Sniper Bullet Damage is greatly increased for one attack."
+	}
+	"ghost beacon info"
+	{
+		"en"				"Sonar Waves are emitted from enemy locations.\nYou must be within the range."
+	}
+	"incap revenge info"
+	{
+		"en"				"The perpetrator may be biled when you\nare incapacitated. Commons are unaffected."
+	}
+	"blind ammo info"
+	{
+		"en"				"Bullet Damage may blind enemy specials.\nVERSUS-ONLY Talent."
+	}
+	"damage shield info"
+	{
+		"en"				"You conveniently find an invisible riot shield and\nuse it to absorb a portion of the attack."
+	}
+	"speed boost info"
+	{
+		"en"				"Incoming damage can increase your movement\nspeed, albeit temporarily."
+	}
+	"thorns talent info"
+	{
+		"en"				"Taking damage reflects a percentage back at the attacker."
+	}
+	"danger will robinson info"
+	{
+		"en"				"Your outfit is RUINED!\nTemporary Damage Increase when biled on."
+	}
+	"i am neo info"
+	{
+		"en"				"What do you get when you mix slowing\nammo with bean bag ammo?\nA bit of blindness, I'm afraid."
+	}
+	"gravity jump info"
+	{
+		"en"				"Hold your jump key down and experience all\nthe fun that Borderlands Pre-Sequel offers.\nCool!"
+	}
+	"knife info"
+	{
+		"en"				"A trusty knife for when you have no one to\nget your six.\nStaggers you and specials within the range."
+	}
+	"death field"
+	{
+		"en"				"Death Field"
+	}
+	"death field info"
+	{
+		"en"				"Creates a death field around the target\nhealing teammates within for a\nportion of the damage dealt."
+	}
+	"pulse wave"
+	{
+		"en"				"Pulse Wave"
+	}
+	"pulse wave info"
+	{
+		"en"				"Sends out an AoE shockwave, instantly\nkilling common infected after\ntaking non-SI-based damage."
+	}
+	"health regen survivor info"
+	{
+		"en"				"Regenerate your health!\nMust be in combat."
+	}
+	"nocombat regen survivor info"
+	{
+		"en"				"Regenerate your health!\nMust not be in combat!"
+	}
+	"passive health regen info"
+	{
+		"en"				"Slowly regenerate your health at all times."
+	}
+	"medical assistance info"
+	{
+		"en"				"Reviving a friend gives you a temporary health boost!"
+	}
+	"nintendos folly info"
+	{
+		"en"				"<..N.nt..do.De.t.oy.>\nConfusion.\nTeam Temporary Speed Boost = Enemy Team Temporary Damage Boost ?"
+	}
+	"how to use meds"
+	{
+		"#format"	"{1:s},{2:s},{3:s}"
+		"en"		"{1}Hold your {2}Item pickup / use key {3}to use this item!"
+	}
+	"self preservation info"
+	{
+		"en"				"Killing a special common while incapped\nwill revive you with temp health based on the talent."
+	}
+	"trauma info"
+	{
+		"en"				"You fight-back against specials hurting you\ncausing them to stagger in surprise."
+	}
+	"bile bullet info"
+	{
+		"en"				"Fires an additional bullet when covered in bile."
+	}
+	"bile heal info"
+	{
+		"en"				"Heal for a percentage of all incoming damage\nwhen covered in bile."
+	}
+	"rebirth info"
+	{
+		"en"				"Like a Phoenix reborn from its ashes...\nTemporary Damage boost included."
+	}
+	"stoneskin info"
+	{
+		"en"				"When sent flying by a charger, your armor\nbreaks and a piece temporarily blinds them."
+	}
+	"rubber-banding info"
+	{
+		"en"				"When a Special Infected hurts you, you're\nboth knocked into time-out."
+	}
+	"infected health info"
+	{
+		"en"				"Increases all Special Infected health pools."
+	}
+	"smoker health info"
+	{
+		"en"				"Increases smoker health base."
+	}
+	"boomer health info"
+	{
+		"en"				"Increases boomer health base."
+	}
+	"hunter health info"
+	{
+		"en"				"Increases hunter health base."
+	}
+	"spitter health info"
+	{
+		"en"				"Increases spitter health base."
+	}
+	"jockey health info"
+	{
+		"en"				"Increases jockey health base."
+	}
+	"charger health info"
+	{
+		"en"				"Increases charger health base."
+	}
+	"tank health info"
+	{
+		"en"				"Increases tank health base."
+	}
+	"infected speed info"
+	{
+		"en"				"Increases all infected base movement speed."
+	}
+	"infected damage info"
+	{
+		"en"				"Increases all infected damage."
+	}
+	"wall of fire info"
+	{
+		"en"				"In a past life, you were holding a molotov.\nOh well, it shatters when you die."
+	}
+	"spawn anywhere info"
+	{
+		"en"				"The Survivors are so pre-occupied, anyway.\nWhy follow the rules? Spawn wherever you want!"
+	}
+	"hunter stalker info"
+	{
+		"en"				"While pouncing, you're harder to detect, and\nsee, for that matter."
+	}
+	"backlash info"
+	{
+		"en"				"If you have a victim and their teammate attacks you\ninstead absorb damage and heal, staggering them."
+	}
+	"blinding bile info"
+	{
+		"en"				"When you throw-up on a survivor, it actually gets\ninto their eyes and blinds them."
+	}
+	"slowing bile info"
+	{
+		"en"				"When you throw-up on a survivor, it weighs them down\nslowing their movement speed."
+	}
+	"volatile bile info"
+	{
+		"en"				"Vomit-infused spit covers the player, slowing them\nwhile not affecting you at all."
+	}
+	"jockey jump info"
+	{
+		"en"				"Tickle their head, and they'll do anything you want."
+	}
+	"slowing spit info"
+	{
+		"en"				"Survivors damaged by your spit will have their movement speed slowed."
+	}
+	"burning spit info"
+	{
+		"en"				"Survivors damaged by your spit will take burning DoTs."
+	}
+	"spit invisibility info"
+	{
+		"en"				"After spitting, receive temporary invisibility.\nNote: Shadow still visible."
+	}
+	"charger jump info"
+	{
+		"en"				"Press your jump key while carrying a survivor\nto... jump over obstacles or into the river!"
+	}
+	"black hole info"
+	{
+		"en"				"Slowly launches a survivor after being the victim\nof special infected abilities."
+	}
+	"earthquake tank info"
+	{
+		"en"				"As a tank, hurting a survivor may literally send them flying."
+	}
+	"slowing tank info"
+	{
+		"en"				"As a tank, smacking a survivor may send them flying... in slow-mo."
+	}
+	"blinding tank info"
+	{
+		"en"				"As a tank, you may strike a survivor so hard they\ntemporarily go blind."
+	}
+	"reflective armour info"
+	{
+		"en"				"Absorb, Heal, and Reflect damage when it's taken.\nThe Trifecta of Special."
+	}
+	"vampire info"
+	{
+		"en"				"Dealing damage absorbs a portion of it to heal yourself."
+	}
+	"smoker whip info"
+	{
+		"en"				"As a smoker, Primary attack while smoking a victim\nmay send them flying in a random direction."
+	}
+	"unstable genetics info"
+	{
+		"en"				"As a boomer, being shoved will set your opponent on fire."
+	}
+	"corrosive vomit info"
+	{
+		"en"				"As a boomer, being struck by a melee weapon will\nmakes you squirt a little acid pee on your attacker."
+	}
+	"health regen infected info"
+	{
+		"en"				"Infected Health regenerates over time."
+	}
+	"delayed impact info"
+	{
+		"en"				"Survivors who get in your way when you're\ncharging a victim are sent flying\nin slow-mo."
+	}
+	"counter measure info"
+	{
+		"en"				"Survivors attacking you get blinded, staggered\nand covered in spit. Your movement\nspeed is temporarily increased."
+	}
+	"concussive force info"
+	{
+		"en"				"As a charger or tank, stagger survivors you deal damage to."
+	}
+	"combustion info"
+	{
+		"en"				"When taking damage, leave a high-damage flame\nwhere you were last damaged from."
+	}
+	"pistol damage increase info"
+	{
+		"en"				"permanent increases your damage dealt with pistols."
+	}
+	"smg damage increase info"
+	{
+		"en"				"permanent increases your damage dealt with SMGs."
+	}
+	"smg ammo recovery"
+	{
+		"en"				"SMG Ammo Recovery"
+	}
+	"smg ammo recovery info"
+	{
+		"en"				"SMG kills may recover primary ammo."
+	}
+	"pistol ammo recovery"
+	{
+		"en"				"Pistol Ammo Recovery"
+	}
+	"weapon ammo recovery"
+	{
+		"en"				"Weapon Ammo Recovery"
+	}
+	"shotgun ammo recovery"
+	{
+		"en"				"Shotgun Ammo Recovery"
+	}
+	"shotgun ammo recovery info"
+	{
+		"en"				"Shotgun kills may recover primary ammo."
+	}
+	"pistol ammo recovery info"
+	{
+		"en"				"Pistol kills recovery primary ammo."
+	}
+	"weapon ammo recovery info"
+	{
+		"en"				"Kills with bullets recover primary ammo."
+	}
+	"All Guns Weapon Talents"
+	{
+		"en"				"All Guns Weapon Talents"
+	}
+	"all guns ability chance"
+	{
+		"en"				"All Guns Ability Chance"
+	}
+	"all guns ability chance info"
+	{
+		"en"				"Raises the chance that talents for this category\nwill trigger."
+	}
+	"all guns damage increase"
+	{
+		"en"				"All-Weapon Crit. Chance"
+	}
+	"all guns damage increase info"
+	{
+		"en"				"A critical hit that all guns can deal."
+	}
+	"Sniper Talents"
+	{
+		"en"				"Sniper Talents"
+	}
+	"sniper ability chance"
+	{
+		"en"				"Sniper Rifle Ability Chance"
+	}
+	"sniper ability chance info"
+	{
+		"en"				"The likelihood sniper rifle abilities\nwill trigger."
+	}
+	"sniper damage increase"
+	{
+		"en"				"Sniper Critical Hit"
+	}
+	"sniper damage increase info"
+	{
+		"en" "Increases your sniper rifle damage."
+	}
+	"sniper tank damage"
+	{
+		"en"				"Sniper Tank DMG"
+	}
+	"sniper tank damage info"
+	{
+		"en"				"Increases your sniper damage to tanks."
+	}
+	"Overdrive Talents"
+	{
+		"en"				"Overdrive\nGet cleansed, earn overdrive stacks."
+	}
+	"Bullet Talents"
+	{
+		"en"				"Bullet Talents\nLace your bullets with something extra!"
+	}
+	"Weapon Talents"
+	{
+		"en"				"Weapon Talents\nGuns & Melee"
+	}
+	"Infected Talents Main"
+	{
+		"en"				"Infected Menu\nAll Infected-related RPG stuff."
+	}
+	"Infected Talents Global"
+	{
+		"en"				"Infected Talents (Global)\nAffects ALL Infected Classes."
+	}
+	"Survivor Talents Main"
+	{
+		"en"				"Survivor Menu\nTalents/Spells/Abilities/etc."
+	}
+	"Proficiency Data"
+	{
+		"en"				"Proficiency Data"
+	}
+	"Main Talents"
+	{
+		"en"				"Passive Talents"
+	}
+	"Special Ammo Effect Strength"
+	{
+		"#format"			"{1:3.3f},{2:s}"
+		"en"				"Strength: {1}{2}"
+	}
+	"Special Ammo Time"
+	{
+		"#format"			"{1:3.2f}"
+		"en"				"Lifetime:\t{1}s"
+	}
+	"Special Ammo Interval"
+	{
+		"#format"			"{1:3.2f},{2:3.2f}"
+		"en"				"\"On\" Time: {1}s"
+	}
+	"Special Ammo Cooldown"
+	{
+		"#format"			"{1:3.2f}"
+		"en"				"Cooldown: {1}s"
+	}
+	"Special Ammo Stamina"
+	{
+		"#format"			"{1:i}"
+		"en"				"Stamina cost: {1}"
+	}
+	"Special Ammo Range"
+	{
+		"#format"			"{1:3.2f}"
+		"en"				"Range:\t\t{1}units"
+	}
+	"Special Ammo Time Max"
+	{
+		"#format"			"{1:3.2f}"
+		"en"				"Lifetime:\t{1}s"
+	}
+	"Special Ammo Cooldown Max"
+	{
+		"#format"			"{1:3.2f}"
+		"en"				"Cooldown: {1}s"
+	}
+	"Special Ammo Stamina Max"
+	{
+		"#format"			"{1:i}"
+		"en"				"Stamina cost: {1}"
+	}
+	"Special Ammo Range Max"
+	{
+		"#format"			"{1:3.2f}"
+		"en"				"Range:\t\t{1}units"
+	}
+	"No Special Ammo"
+	{
+		"#format"			"{1:s},{2:s},{3:s}"
+		"en"				"{1}You have {2}No Spells {3}to equip."
+	}
+	"Special Ammo Enabled"
+	{
+		"#format"			"{1:s},{2:s}"
+		"en"				"{1}Spells {2}Enabled"
+	}
+	"Special Ammo Disabled"
+	{
+		"#format"			"{1:s},{2:s}"
+		"en"				"{1}Spells {2}Disabled"
+	}
+	"Special Ammo Debug Enabled"
+	{
+		"#format"			"{1:s},{2:s}"
+		"en"				"{1}Spells DEBUG {2}Enabled"
+	}
+	"Special Ammo Debug Disabled"
+	{
+		"#format"			"{1:s},{2:s}"
+		"en"				"{1}Spells DEBUG {2}Disabled"
+	}
+	"cannot load in combat"
+	{
+		"#format"			"{1:s}"
+		"en"				"{1}You cannot load profiles when you are in combat."
+	}
+	//2/12/2019
+	"PvP Disabled"
+	{
+		"#format"			"{1:s},{2:s}"
+		"en"				"{1}Friendly-Fire: {2}Disabled"
+	}
+	"PvP Enabled"
+	{
+		"#format"			"{1:s},{2:s}"
+		"en"				"{1}Friendly-Fire: {2}Enabled"
+	}
+	"sacrificed a bot to respawn"
+	{
+		"#format"			"{1:s},{2:s},{3:s},{4:s}"
+		"en"				"{1}A bot was sacrificed to bring {2}{3} {4}back from the dead."
+	}
+	"my inventory"
+	{
+		"en"				"Inventory\nAll of your loot in one convenient location."
+	}
+	"No Action Equipped"
+	{
+		"en"				"<empty>"
+	}
+	"No Weapon Equipped"
+	{
+		"en"				"Nothing Equipped"
+	}
+	"Primary Weapon"
+	{
+		"#format"			"{1:s}"
+		"en"				"Primary Weapon: {1}"
+	}
+	"Secondary Weapon"
+	{
+		"#format"			"{1:s}"
+		"en"				"Secondary Weapon: {1}"
+	}
+	"Assign to Action Bar"
+	{
+		"#format"			"{1:s},{2:i},{3:s}"
+		"en"				"!{1}{2}: {3}"
+	}
+	"action bar displayed"
+	{
+		"#format"			"{1:s},{2:s}"
+		"en"				"{1}Action bar: {2}Show"
+	}
+	"action bar hidden"
+	{
+		"#format"			"{1:s},{2:s}"
+		"en"				"{1}Action bar: {2}Hide"
+	}
+	"Action Bar Loaded"
+	{
+		"#format"			"{1:s},{2:s}"
+		"en"				"{1}Action Bar: {2}Loaded"
+	}
+	"Active Effects"
+	{
+		"en"				"On-Use:"
+	}
+	"Passive Effects"
+	{
+		"en"				"Passively:"
+	}
+	"Toggle Effects"
+	{
+		"en"				"Toggle:"
+	}
+	"Cooldown Effects"
+	{
+		"en"				"On-Cooldown:"
+	}
+	"Ability Cooldown"
+	{
+		"#format"			"{1:3.1f}"
+		"en"				"Cooldown: {1}s"
+	}
+	"No Ability Cooldown"
+	{
+		"en"				"Cooldown: Instant"
+	}
+	"Ability Active Time"
+	{
+		"#format"			"{1:3.1f}"
+		"en"				"Active: {1}s"
+	}
+	"Instant Ability"
+	{
+		"en"				"Active: Instant"
+	}
+	"S Toggle Ability"
+	{
+		"#format"			"{1:3.2f},{2:s}"
+		"en"				"When ensnared, shake yourself free, immediately"
+	}
+	"S Passive Ability"
+	{
+		"#format"			"{1:3.2f},{2:s}"
+		"en"				"When ensnared, spam strafe_left / strafe_right to shake yourself free"
+	}
+	"X Active Ability"
+	{
+		"#format"			"{1:3.2f},{2:s}"
+		"en"				"Reduces all incoming damage by {1}{2}"
+	}
+	"stagger Active Ability"
+	{
+		"en"				"Free yourself when ensnared by a special infected\nif activated before being ensnared."
+	}
+	"stagger Toggle Ability"
+	{
+		"en"				"Free yourself when ensnared by a special infected."
+	}
+	"stagger Disabled"
+	{
+		"en"				"Free yourself when ensnared by a special infected."
+	}
+	"firewall Active Ability"
+	{
+		"en"				"Unleash an ultimate ability, setting yourself\nand all enemies around you ablaze."
+	}
+	"X Passive Ability"
+	{
+		"#format"			"{1:3.2f},{2:s}"
+		"en"				"Reduces all incoming damage by {1}{2}"
+	}
+	"expo Passive Ability"
+	{
+		"#format"			"{1:3.2f},{2:s}"
+		"en"				"Increases all incoming damage by {1}{2}"
+	}
+	"P Disabled"
+	{
+		"en"				"Switch between dual pistols and magnum"
+	}
+	"V Disabled"
+	{
+		"en"				"Increases incoming healing."
+	}
+	"P Toggle Ability"
+	{
+		"#format"			"{1:3.2f},{2:s}"
+		"en"				"Switch between dual pistols and magnum"
+	}
+	"T Toggle Ability"
+	{
+		"#format"			"{1:3.2f},{2:s}"
+		"en"				"Do the chicken dance, taunting the infected horde."
+	}
+	"T Disabled"
+	{
+		"en"				"Do the chicken dance, taunting the infected horde."
+	}
+	"C Active Ability"
+	{
+		"#format"			"{1:3.2f},{2:s},{3:3.2f},{4:s}"
+		"en"				"Outgoing Damage is increased by {1}{2} per consecutive hit\nup to {3}{4}"
+	}
+	"C Passive Ability"
+	{
+		"#format"			"{1:3.2f},{2:s},{3:3.2f},{4:s}"
+		"en"				"Outgoing Damage is increased by {1}{2} per consecutive hit\nup to {3}{4}"
+	}
+	"N Active Ability"
+	{
+		"#format"			"{1:3.2f},{2:s}"
+		"en"				"Outgoing Damage is increased by {1}{2}"
+	}
+	"N Passive Ability"
+	{
+		"#format"			"{1:3.2f},{2:s}"
+		"en"				"Outgoing Damage is increased by {1}{2}"
+	}
+	"L Active Ability"
+	{
+		"#format"			"{1:3.2f},{2:s}"
+		"en"				"Reduces ALL cooldowns by {1}{2}"
+	}
+	"L Passive Ability"
+	{
+		"#format"			"{1:3.2f},{2:s}"
+		"en"				"Reduces ALL cooldowns by {1}{2}"
+	}
+	"R Active Ability"
+	{
+		"#format"			"{1:3.2f},{2:s}"
+		"en"				"Life on Kill for {1}{2} of earned score"
+	}
+	"R Passive Ability"
+	{
+		"#format"			"{1:3.2f},{2:s}"
+		"en"				"Life on Kill for {1}{2} of earned score"
+	}
+	"r Disabled"
+	{
+		"en"				"Rise up like a Phoenix from the Ashes."
+	}
+	"B Cooldown Ability"
+	{
+		"#format"			"{1:3.2f},{2:s}"
+		"en"				"{1}{2} increased burn damage received while on cooldown."
+	}
+	"I Active Ability"
+	{
+		"#format"			"{1:3.2f},{2:s}"
+		"en"				"Life on Kill for {1}{2} of your maximum health"
+	}
+	"I Passive Ability"
+	{
+		"#format"			"{1:3.2f},{2:s}"
+		"en"				"Life on Kill for {1}{2} of your maximum health"
+	}
+	"T Active Ability"
+	{
+		"#format"			"{1:3.2f},{2:s}"
+		"en"				"Increases your total stamina by {1}{2}"
+	}
+	"T Passive Ability"
+	{
+		"#format"			"{1:3.2f},{2:s}"
+		"en"				"Increases your total stamina by {1}{2}"
+	}
+	"A Active Ability"
+	{
+		"#format"			"{1:3.2f},{2:s}"
+		"en"				"Instantly restores {1}{2} of your total stamina"
+	}
+	"H Active Ability"
+	{
+		"#format"			"{1:3.2f},{2:s}"
+		"en"				"Instantly restores {1}{2} of your maximum health"
+	}
+	"t Active Ability"
+	{
+		"#format"			"{1:3.2f},{2:s}"
+		"en"				"Instantly reduces your threat by {1}{2}"
+	}
+	"t Passive Ability"
+	{
+		"#format"			"{1:3.2f},{2:s}"
+		"en"				"reduce all threat generated by {1}{2}"
+	}
+	"V Active Ability"
+	{
+		"#format"			"{1:3.2f},{2:s}"
+		"en"				"Increases your maximum health by {1}{2}"
+	}
+	"V Passive Ability"
+	{
+		"#format"			"{1:3.2f},{2:s}"
+		"en"				"Increases your total health by {1}{2}"
+	}
+	"E Active Ability"
+	{
+		"#format"			"{1:3.2f},{2:s}"
+		"en"				"+{1}{2} Incoming Healing"
+	}
+	"E Passive Ability"
+	{
+		"#format"			"{1:3.2f},{2:s}"
+		"en"				"+{1}{2} Incoming Healing"
+	}
+	"E Disabled"
+	{
+		"en"				"Incoming Heals Reduced to 0"
+	}
+	"O Active Ability"
+	{
+		"#format"			"{1:3.2f},{2:s}"
+		"en"				"Enemies you kill are {1}{2} more-likely to drop items"
+	}
+	"O Passive Ability"
+	{
+		"#format"			"{1:3.2f},{2:s}"
+		"en"				"Enemies you kill are {1}{2} more-likely to drop items"
+	}
+	"M Active Ability"
+	{
+		"#format"			"{1:3.2f},{2:s}"
+		"en"				"Items you obtain are {1}{2} stronger"
+	}
+	"M Passive Ability"
+	{
+		"#format"			"{1:3.2f},{2:s}"
+		"en"				"Items you obtain are {1}{2} stronger"
+	}
+	"K Active Ability"
+	{
+		"#format"			"{1:3.2f},{2:s}"
+		"en"				"Increases your damage while flying by {1}{2}"
+	}
+	"K Passive Ability"
+	{
+		"#format"			"{1:3.2f},{2:s}"
+		"en"				"Increases your damage while flying by {1}{2}"
+	}
+	"a Active Ability"
+	{
+		"#format"			"{1:3.2f},{2:s}"
+		"en"				"Increases your damage in water by {1}{2}"
+	}
+	"a Passive Ability"
+	{
+		"#format"			"{1:3.2f},{2:s}"
+		"en"				"Increases your damage in water by {1}{2}"
+	}
+	"f Active Ability"
+	{
+		"#format"			"{1:3.2f},{2:s}"
+		"en"				"Increases your damage when on fire by {1}{2}"
+	}
+	"f Passive Ability"
+	{
+		"#format"			"{1:3.2f},{2:s}"
+		"en"				"Increases your damage when on fire by {1}{2}"
+	}
+	"F Active Ability"
+	{
+		"#format"			"{1:3.2f},{2:s}"
+		"en"				"Reduces your fall damage by {1}{2}"
+	}
+	"F Passive Ability"
+	{
+		"#format"			"{1:3.2f},{2:s}"
+		"en"				"Reduces your fall damage by {1}{2}"
+	}
+	"l Active Ability"
+	{
+		"#format"			"{1:3.2f},{2:s}"
+		"en"				"Specials you kill explode for {1}{2} weapon damage as Fire."
+	}
+	"l Passive Ability"
+	{
+		"#format"			"{1:3.2f},{2:s}"
+		"en"				"Specials you kill explode for {1}{2} weapon damage as Fire."
+	}
+	"transference ab"
+	{
+		"en"				"Transference"
+	}
+	"transference ability"
+	{
+		"en"				"(AB)Transference"
+	}
+	"transference info"
+	{
+		"en"				"Heal for a percentage of your earned score when you land the killing blow."
+	}
+	"healers embrace ab"
+	{
+		"en"				"Healers Embrace"
+	}
+	"healers embrace ability"
+	{
+		"en"				"(AB)Healers Embrace"
+	}
+	"healers embrace info"
+	{
+		"en"				"This talent must be equipped to the action bar once unlocked."
+	}
+	"phoenix ab"
+	{
+		"en"				"Rebirth"
+	}
+	"phoenix ability"
+	{
+		"en"				"(AB)Rebirth"
+	}
+	"phoenix info"
+	{
+		"en"				"Reborn like a Phoenix in the flames..."
+	}
+	"presstheattack ab"
+	{
+		"en"				"Press-The-Attack"
+	}
+	"presstheattack ability"
+	{
+		"en"				"(AB)Press-The-Attack"
+	}
+	"presstheattack info"
+	{
+		"en"				"This ability works with ALL weapons."
+	}
+	"rocketeer ab"
+	{
+		"en"				"Rocketeer"
+	}
+	"rocketeer ability"
+	{
+		"en"				"(AB)Rocketeer"
+	}
+	"rocketeer info"
+	{
+		"en"				"This ability works with ALL weapons."
+	}
+	"sharp eye ab"
+	{
+		"en"				"Sharp Eye"
+	}
+	"sharp eye ability"
+	{
+		"en"				"(AB)Sharp Eye"
+	}
+	"sharp eye info"
+	{
+		"en"				"This ability works with Snipers and DMRs only."
+	}
+	"bloodlust ab"
+	{
+		"en"				"Bloodlust"
+	}
+	"bloodlust ability"
+	{
+		"en"				"(AB)Bloodlust"
+	}
+	"bloodlust info"
+	{
+		"en"				"Increases all outgoing damage."
+	}
+	"fade ab"
+	{
+		"en"				"Fade"
+	}
+	"fade ability"
+	{
+		"en"				"(AB)Fade"
+	}
+	"fade info"
+	{
+		"en"				"This talent must be equipped to the action bar once unlocked."
+	}
+	"firewall ab"
+	{
+		"en"				"Fire Wall(Ultimate)"
+	}
+	"firewall ability"
+	{
+		"en"				"(Ultimate, Equippable)Fire Wall"
+	}
+	"firewall info"
+	{
+		"en"				"Cast a Fire Wall on yourself, taking burn damage\nequal to a percentage of your max health."
+	}
+	"knife ab"
+	{
+		"en"				"Knife"
+	}
+	"knife ability"
+	{
+		"en"				"(AB)Knife"
+	}
+	"knife info"
+	{
+		"en"				"You can now parry special infected ensnares\nif this ability is active when you are ensnared."
+	}
+	"basilisk ab"
+	{
+		"en"				"Basilisk Armor"
+	}
+	"basilisk ability"
+	{
+		"en"				"(AB)Basilisk Armor"
+	}
+	"last chance ab"
+	{
+		"en"				"Last Chance"
+	}
+	"last chance ability"
+	{
+		"en"				"(AB)Last Chance"
+	}
+	"last chance info"
+	{
+		"en"				"Reduce almost-all incoming damage for a short period of time."
+	}
+	"second holster ab"
+	{
+		"en"				"Second Holster"
+	}
+	"second holster ability"
+	{
+		"en"				"(AB)Second Holster"
+	}
+	"second holster info"
+	{
+		"en"				"Swap between dual pistols and DEagle on the fly."
+	}
+	"featherweight ab"
+	{
+		"en"				"Featherweight"
+	}
+	"featherweight ability"
+	{
+		"en"				"(AB)Featherweight"
+	}
+	"featherweight info"
+	{
+		"en"				"Greatly-reduce your fall damage; fall from even greater\nheights than before!"
+	}
+	"meditation ab"
+	{
+		"en"				"Meditation"
+	}
+	"meditation ability"
+	{
+		"en"				"(AB)Meditation"
+	}
+	"meditation info"
+	{
+		"en"				"Increases your max stamina when not on cooldown."
+	}
+	"refresh ab"
+	{
+		"en"				"Heal Self"
+	}
+	"refresh ability"
+	{
+		"en"				"(AB)Heal Self"
+	}
+	"refresh info"
+	{
+		"en"				"Instantly heal yourself for a percentage of your max health."
+	}
+	"refresh aura ab"
+	{
+		"en"				"Heal Aura"
+	}
+	"refresh aura"
+	{
+		"en"				"(AB)Heal Aura"
+	}
+	"refresh aura info"
+	{
+		"en"				"Heal yourself and allies in range for a percentage\nof your weapon damage, instantly."
+	}
+	"stance ab"
+	{
+		"en"				"Taunt"
+	}
+	"stance ability"
+	{
+		"en"				"(AB)Taunt"
+	}
+	"stance info"
+	{
+		"en"				"Makes infected AI target you."
+	}
+	"Action Slot Range"
+	{
+		"#format"			"{1:s},{2:s},{3:i},{4:s}"
+		"en"				"{1}Available action slots are {2}!ability1 - !ability{3}\n{4}You can substitute / for ! to suppress."
+	}
+	"group member bonus"
+	{
+		"#format"			"{1:s},{2:3.1f},{3:s},{4:s},{5:s}"
+		"en"				"{1}+{2}{3}{4}XP {5}STEAMGROUP MEMBER Bonus"
+	}
+	"group no survivor bots bonus"
+	{
+		"#format"			"{1:s},{2:3.1f},{3:s},{4:s},{5:s}"
+		"en"				"{1}+{2}{3}{4}XP {5}Bonus for having NO Survivor bots."
+	}
+	"group member benefit"
+	{
+		"#format"			"{1:s},{2:s},{3:3.1f},{4:s},{5:s},{6:s}"
+		"en"				"{1}Become a STEAMGROUP MEMBER to earn {2}{3}{4}{5}XP {6}bonus"
+	}
+	"player uses spell"
+	{
+		"#format"			"{1:s},{2:s},{3:s},{4:s},{5:s},{6:s}"
+		"en"				"{1}{2} {3}casts the {4}{5} {6}spell"
+	}
+	"player uses ability"
+	{
+		"#format"			"{1:s},{2:s},{3:s},{4:s},{5:s},{6:s}"
+		"en"				"{1}{2} {3}uses the {4}{5} {6}ability"
+	}
+	"handicap range"
+	{
+		"#format"			"{1:s},{2:s},{3:i},{4:s},{5:s},{6:i}"
+		"en"				"{1}Handicap Range: {2}{3} {4}- {5}{6}"
+	}
+	"player handicap locked"
+	{
+		"#format"			"{1:s}"
+		"en"				"{1}Handicap is locked. You can only change it if you have not entered combat during the round."
+	}
+	"player handicap"
+	{
+		"#format"			"{1:s},{2:s},{3:s},{4:i}"
+		"en"				"{1}Handicap Set{2}: {3}{4}"
+	}
+	"respawn queue"
+	{
+		"#format"			"{1:i}"
+		"en"				"Respawning in {1} second(s)"
+	}
+	"respawn queue paused"
+	{	
+		"#format"			"{1:i}"
+		"en"				"Respawn Queue paused at {1} second(s)\nSearching for a safe survivor..."
+	}
+	"health potion (lo)"
+	{
+		"en"				"minor Healing Potion"
+	}
+	"stamina potion (lo)"
+	{
+		"en"				"minor Stamina Potion"
+	}
+	"adren potion (lo)"
+	{
+		"en"				"minor Adrenaline Potion"
+	}
+	"incendiary potion (lo)"
+	{
+		"en"				"minor Incendiary Potion"
+	}
+	"explosive potion (lo)"
+	{
+		"en"				"minor Explosive Potion"
+	}
+	"blue potion (lo)"
+	{
+		"en"				"minor Blue Potion"
+	}
+	"ammo potion (lo)"
+	{
+		"en"				"minor Ammo potion"
+	}
+	"health potion (hi)"
+	{
+		"en"				"major Healing Potion"
+	}
+	"stamina potion (hi)"
+	{
+		"en"				"major Stamina Potion"
+	}
+	"adren potion (hi)"
+	{
+		"en"				"major Adrenaline Potion"
+	}
+	"incendiary potion (hi)"
+	{
+		"en"				"major Incendiary Potion"
+	}
+	"explosive potion (hi)"
+	{
+		"en"				"major Explosive Potion"
+	}
+	"blue potion (hi)"
+	{
+		"en"				"major Blue Potion"
+	}
+	"item obtained by player"
+	{
+		"#format"			"{1:s},{2:s},{3:s},{4:s},{5:s}"
+		"en"				"{1}{2} {3}obtained a {4}{5}"
+	}
+	"enrage period"
+	{
+		"#format"			"{1:s},{2:s},{3:s}"
+		"en"				"{1}!!! {2}ENRAGE NOW ACTIVE {3}!!!"
+	}
+	"enrage in..."
+	{
+		"#format"			"{1:s},{2:s},{3:s},{4:s}"
+		"en"				"{1}The enrage period starts in {2}{3}{4}..."
+	}
+	"time until things get bad"
+	{
+		"#format"			"{1:s},{2:s},{3:s},{4:s}"
+		"en"				"{1}The enrage period starts in {2}{3} {4}... Better get moving!"
+	}
+	"Creating New Class"
+	{
+		"#format"			"{1:s},{2:s},{3:s},{4:s}"
+		"en"				"{1}Creating a shiny, NEW {2}{3} {4}for you!"
+	}
+	"death penalty"
+	{
+		"#format"			"{1:s},{2:s},{3:s},{4:s},{5:s},{6:s}"
+		"en"				"{1}{6} has died! {2}They have lost {3}{4} {5}experience"
+	}
+	"Rushing Return To Team"
+	{
+		"#format"			"{1:s},{2:s},{3:s}"
+		"en"				"{1}!!! {2}STOP RUSHING AND REGROUP WITH YOUR TEAM {3}!!!"
+	}
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

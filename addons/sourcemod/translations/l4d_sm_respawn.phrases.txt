@@ -69,6 +69,14 @@
 	
 	"Dummy" // Dummy. Don't touch!
 	{
-		"en"	""
+		"en"		""
+		"ru"		""
+		"hu"		""
+		"es"		""
+		"sv"		""
+		"zho"		""
+		"chi"		""
+		"pt"		""
+		"pt_p"		""
 	}
 }

@@ -59,7 +59,7 @@ ConVar g_hCvarMPGameMode, g_hCvarAllow, g_hCvarModes, g_hCvarModesOff, g_hCvarMo
 bool g_bCvarAllow, g_bLeft4Dead2;
 int g_iCvarTypes, g_iCvarDamageTypes;
 
-
+int g_iDmgInterval[MAXPLAYERS] = {3};
 
 
 
@@ -275,6 +275,11 @@ Action OnTakeDamage(int victim, int &attacker, int &inflictor, float &damage, in
 			if( pass )
 			{
 				L4D_StaggerPlayer(victim, inflictor, NULL_VECTOR);
+				if (g_iDmgInterval[victim]-- < 0){
+					damage = 5.0;
+					g_iDmgInterval[victim] = 7;
+				}
+				else {damage = 0.1;}
 			}
 		}
 	}

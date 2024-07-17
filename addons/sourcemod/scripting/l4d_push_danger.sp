@@ -276,10 +276,9 @@ Action OnTakeDamage(int victim, int &attacker, int &inflictor, float &damage, in
 			{
 				L4D_StaggerPlayer(victim, inflictor, NULL_VECTOR);
 				if (g_iDmgInterval[victim]-- < 0){
-					damage = 5.0;
 					g_iDmgInterval[victim] = 7;
 				}
-				else {damage = 0.1;}
+				else {damage = 0.1;return Plugin_Handled;}
 			}
 		}
 	}

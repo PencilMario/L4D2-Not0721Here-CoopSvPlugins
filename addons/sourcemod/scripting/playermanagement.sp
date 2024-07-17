@@ -216,8 +216,15 @@ public Action L4D_OnEnterGhostStatePre(int client)
 public Action GoAfk_Listener(int client, const char[] command, int argc){
 	if(!IsClientInGame(client)) 
 		return Plugin_Handled;
+	CreateTimer(3.0, Timer_CmdJoin, client);
 	return Spectate_Cmd(client, 0);
 }
+
+public Action Timer_CmdJoin(Handle timer, int client){
+	FakeClientCommand(client, "sm_join");
+	return Plugin_Stop;
+}
+
 public Action TeamChange_Listener(int client, const char[] command, int argc)
 {
 	// Invalid 

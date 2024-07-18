@@ -175,7 +175,7 @@ stock int GetTeamPlayer(int team)
 
 public Event_TankSpawn(Handle:event, const String:name[], bool:dontBroadcast)
 {
-	new MaxTankHealth = GetConVarInt(g_hCvarTankHealth);
+	//new MaxTankHealth = GetConVarInt(g_hCvarTankHealth);
 	new client = GetClientOfUserId(GetEventInt(event, "userid"));
 	g_iTankClient = client;
 	for(int i=1; i <= MaxClients; i++){
@@ -183,27 +183,32 @@ public Event_TankSpawn(Handle:event, const String:name[], bool:dontBroadcast)
 		iTankClaw[i]=0;
 	}
 	if (g_bIsTankInPlay) return; // Tank passed
-	if(GetTeamPlayer(2) == 2 || GetTeamPlayer(2) == 3)
-		MaxTankHealth = 1000+(GetTeamPlayer(2)-1)*1500;
-	else if(GetTeamPlayer(2) > 4)
-	{
-		MaxTankHealth = 6000+(GetTeamPlayer(2)-4)*2000;
-		if(GetTeamPlayer(2) > 6)
-			MaxTankHealth += (GetTeamPlayer(2)-6)*500;
-	}
+	//if(GetTeamPlayer(2) == 2 || GetTeamPlayer(2) == 3)
+	//	MaxTankHealth = 1000+(GetTeamPlayer(2)-1)*1500;
+	//else if(GetTeamPlayer(2) > 4)
+	//{
+	//	MaxTankHealth = 6000+(GetTeamPlayer(2)-4)*2000;
+	//	if(GetTeamPlayer(2) > 6)
+	//		MaxTankHealth += (GetTeamPlayer(2)-6)*500;
+	//}
 		
 	//g_fMaxTankHealth = view_as<float>MaxTankHealth;
 	EmitSoundToAll("ui/pickup_secret01.wav", _, SNDCHAN_AUTO, SNDLEVEL_NORMAL, SND_NOFLAGS, 0.8);
 	// New tank, damage has not been announced
 	//PrintToChatAll("Tank血量：%d",MaxTankHealth);
-	SetEntProp(client, Prop_Send, "m_iMaxHealth", MaxTankHealth);
-	SetEntProp(client, Prop_Send, "m_iHealth", MaxTankHealth);
+	//SetEntProp(client, Prop_Send, "m_iMaxHealth", MaxTankHealth);
+	//SetEntProp(client, Prop_Send, "m_iHealth", MaxTankHealth);
 	g_bAnnounceTankDamage = true;
 	g_bIsTankInPlay = true;
 	// Set health for damage print in case it doesn't get set by player_hurt (aka no one shoots the tank)
-	g_iLastTankHealth = GetClientHealth(client);
+	//g_iLastTankHealth = GetClientHealth(client);
+	CreateTimer(0.5, Timer_GetTankMaxHealth);
 }
-
+public Action Timer_GetTankMaxHealth(Handle:timer, any:client){
+	g_fMaxTankHealth = float(GetEntProp(client, Prop_Send, "m_iMaxHealth"));
+	g_iLastTankHealth = GetClientHealth(client);
+	return Plugin_Stop;
+}
 public Event_RoundStart(Handle:event, const String:name[], bool:dontBroadcast)
 {
 	bPrintedHealth = false;

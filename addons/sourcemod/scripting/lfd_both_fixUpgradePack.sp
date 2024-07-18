@@ -139,6 +139,7 @@ public Action PostThinkMultiply(int client) {
 		if (primaryItem != -1) {
 			int currentUpgradedAmmo = GetEntProp(primaryItem, Prop_Send, "m_nUpgradedPrimaryAmmoLoaded");
 			int targetUpgradedAmmo = RoundToFloor(currentUpgradedAmmo * (bUsingExplosive[client] ? cvarExplosiveMultiValue : cvarIncendiaryMultiValue));
+			if (targetUpgradedAmmo > 255) targetUpgradedAmmo = 255;
 			if (targetUpgradedAmmo > currentUpgradedAmmo) {
 				SetEntProp(primaryItem, Prop_Send, "m_nUpgradedPrimaryAmmoLoaded", targetUpgradedAmmo);
 			}

@@ -1,7 +1,6 @@
 ConVar g_cSmgAmmo, g_cShotGunAmmo, g_cAutoShotGunAmmo, g_cAssrultRifleAmmo, g_cHuntingRifleAmmo, 
     g_cSinperRifleAmmo, g_cM60Ammo, g_cGrenadeAmmo, g_cChainsawAmmo;
 
-#include <extra_menu>
 enum
 {
     AMMO_SMG_MAX = 650,
@@ -52,5 +51,6 @@ public Action Cmd_SetAmmo(int args)
     g_cM60Ammo.IntValue = RoundToNearest(float(AMMO_M60_MAX) * multi);
     g_cGrenadeAmmo.IntValue = RoundToNearest(float(AMMO_GRENADELAUNCHER_MAX) * multi);
     g_cChainsawAmmo.IntValue = RoundToNearest(float(AMMO_CHAINSAW_MAX) * multi);
+    ServerCommand("sm_weapon weapon_chainsaw clipsize %i", RoundToNearest(float(AMMO_CHAINSAW_MAX) * multi))
     return Plugin_Handled;
 }

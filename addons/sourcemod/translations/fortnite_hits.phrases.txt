@@ -25,17 +25,20 @@
 	{
 		"ru"		"{GL}[{D}Fortnite hits{GL}] {D}Вы {G}включили {D}показ урона!"
 		"en"		"{GL}[{D}Fortnite hits{GL}] {D}You {G}enable {D}damage display!"
+		"chi"		"{GL}[{D}Fortnite hits{GL}] {D}你 {G}启用了 {D}伤害显示!"
 	}
 	
 	"display_toggle_off"
 	{
 		"ru"		"{GL}[{D}Fortnite hits{GL}] {D}Вы {R}выключили {D}показ урона!"
 		"en"		"{GL}[{D}Fortnite hits{GL}] {D}You {R}disable {D}damage display!"
+		"chi"		"{GL}[{D}Fortnite hits{GL}] {D}你 {R}禁用了 {D}伤害显示!"
 	}
 	
 	"no_access"
 	{
 		"ru"		"{GL}[{D}Fortnite hits{GL}] {R}Недостаточно прав для использования данной функции!"
 		"en"		"{GL}[{D}Fortnite hits{GL}] {R}You have no access to that command!"
+		"chi"		"{GL}[{D}Fortnite hits{GL}] {R}你没有使用该命令的权限!"
 	}
 }

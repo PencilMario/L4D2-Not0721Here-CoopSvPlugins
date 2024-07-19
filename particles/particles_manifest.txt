@@ -1,0 +1,4 @@
+particles_manifest
+{
+	file	!particles/gammacase/hit_nums.pcf
+}

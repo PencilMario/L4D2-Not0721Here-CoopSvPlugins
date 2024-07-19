@@ -1,0 +1,3 @@
+Please don't include particlesmanifest.pcf anywhere else.
+It's whole purpose here is to rewrite some original (unused) L4D2 effects that are used by my custom weapon script for third person muzzle effects.
+In this .pcf, these effects are rewritten by empty effects, so that in case of accidental use by the custom weapon script without the presence of the "proper" effect in the memory it wouldn't play the vanilla effect ( and you wouldn't see, like, blood or debrie pieces coming out of the gun )

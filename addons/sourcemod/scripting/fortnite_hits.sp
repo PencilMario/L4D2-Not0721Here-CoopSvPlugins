@@ -390,7 +390,7 @@ public void SetAccess(int client)
 
 stock bool IsValidClient(int client, bool botcheck = true)
 {
-	//return true;
+	return true;
 	return (1 <= client && client <= MaxClients && IsClientConnected(client) && IsClientInGame(client) && (botcheck ? !IsFakeClient(client) : true));
 }
 

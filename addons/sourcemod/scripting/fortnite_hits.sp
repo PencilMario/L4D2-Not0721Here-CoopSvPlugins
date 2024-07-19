@@ -53,7 +53,7 @@ enum HitGroup
 public void OnPluginStart()
 {
 	g_cvAllowForBots = CreateConVar("fortnite_hits_allowforbots", "1", "Allow bots to create hit particles (NOTE: Only will be visible when spectating a bot)", FCVAR_NONE, true, 0.0, true, 1.0);
-	g_cvReconnectPlayer = CreateConVar("fortnite_hits_enableplayerreconnect", "1", "Enable this to force new players to reconnect to server, so they will see particle effects without need of waiting next map", FCVAR_NONE, true, 0.0, true, 1.0);
+	g_cvReconnectPlayer = CreateConVar("fortnite_hits_enableplayerreconnect", "0", "Enable this to force new players to reconnect to server, so they will see particle effects without need of waiting next map", FCVAR_NONE, true, 0.0, true, 1.0);
 	g_cvCommands = CreateConVar("fortnite_hits_commandnames", "sm_fortnitehits;sm_hits;sm_damage;sm_fortnite;", "Set custom names here for toggle damage display command, don't add to many commands as it may overflow buffer. (NOTE: Write command names with \"sm_\" prefix, and don't use ! or any other symbol except A-Z and 0-9 and underline symbol \"_\", also server needs to be restarted to see changes!)", FCVAR_NONE);
 	g_cvDistance = CreateConVar("fortnite_hits_distance", "50.0", "Distance between victim player and damage numbers (NOTE: Make that value lower to prevent numbers show up through the walls)", FCVAR_NONE, true, 0.0);
 	g_cvPermission = CreateConVar("fortnite_hits_flag", "", "Set any flag here if you want to restrict use of that plugin only to certain flag (NOTE: Leave it empty to allow anyone to use this plugin)", FCVAR_NONE);
@@ -93,8 +93,67 @@ public void OnMapStart()
 	AddFileToDownloadsTable("materials/gammacase/fortnite/hitnums/nums_bw.vmt");
 	AddFileToDownloadsTable("materials/gammacase/fortnite/hitnums/nums_bw.vtf");
 	PrecacheGeneric("particles/gammacase/hit_nums.pcf", true);
+	//FormatEx(buff, sizeof(buff), "%s_num%i_f%s", ("crit" : "def"), (0-9), ("l" : "r"));
+	PrecacheParticle("def_num0_fl");
+	PrecacheParticle("def_num0_fr");
+	PrecacheParticle("def_num1_fl");
+	PrecacheParticle("def_num1_fr");
+	PrecacheParticle("def_num2_fl");
+	PrecacheParticle("def_num2_fr");
+	PrecacheParticle("def_num3_fl");
+	PrecacheParticle("def_num3_fr");
+	PrecacheParticle("def_num4_fl");
+	PrecacheParticle("def_num4_fr");
+	PrecacheParticle("def_num5_fl");
+	PrecacheParticle("def_num5_fr");
+	PrecacheParticle("def_num6_fl");
+	PrecacheParticle("def_num6_fr");
+	PrecacheParticle("def_num7_fl");
+	PrecacheParticle("def_num7_fr");
+	PrecacheParticle("def_num8_fl");
+	PrecacheParticle("def_num8_fr");
+	PrecacheParticle("def_num9_fl");
+	PrecacheParticle("def_num9_fr");
+	PrecacheParticle("crit_num0_fl");
+	PrecacheParticle("crit_num0_fr");
+	PrecacheParticle("crit_num1_fl");
+	PrecacheParticle("crit_num1_fr");
+	PrecacheParticle("crit_num2_fl");
+	PrecacheParticle("crit_num2_fr");
+	PrecacheParticle("crit_num3_fl");
+	PrecacheParticle("crit_num3_fr");
+	PrecacheParticle("crit_num4_fl");
+	PrecacheParticle("crit_num4_fr");
+	PrecacheParticle("crit_num5_fl");
+	PrecacheParticle("crit_num5_fr");
+	PrecacheParticle("crit_num6_fl");
+	PrecacheParticle("crit_num6_fr");
+	PrecacheParticle("crit_num7_fl");
+	PrecacheParticle("crit_num7_fr");
+	PrecacheParticle("crit_num8_fl");
+	PrecacheParticle("crit_num8_fr");
+	PrecacheParticle("crit_num9_fl");
+	PrecacheParticle("crit_num9_fr");
 }
+int PrecacheParticle(const char[] sEffectName)
+{
+	static int table = INVALID_STRING_TABLE;
+	if( table == INVALID_STRING_TABLE )
+	{
+		table = FindStringTable("ParticleEffectNames");
+	}
 
+	int index = FindStringIndex(table, sEffectName);
+	if( index == INVALID_STRING_INDEX )
+	{
+		bool save = LockStringTables(false);
+		AddToStringTable(table, sEffectName);
+		LockStringTables(save);
+		index = FindStringIndex(table, sEffectName);
+	}
+
+	return index;
+}
 public void OnConfigsExecuted()
 {
 	char buff[8];

@@ -340,12 +340,7 @@ public Action TimerHit_CallBack(Handle timer, int userid)
 
 stock void ShowPRTDamage(int attacker, int client, int entity, int damage, bool crit, bool late = false)
 {
-	if (!IsValidClient(client, false))
-		return;
-	
-	if (!IsValidClient(attacker, false))
-		return;
-	
+
 	static float pos[3], pos2[3], ang[3], fwd[3], right[3], temppos[3], dist, d, dif;
 	static int ent, l, count, dmgnums[8];
 	static char buff[16];

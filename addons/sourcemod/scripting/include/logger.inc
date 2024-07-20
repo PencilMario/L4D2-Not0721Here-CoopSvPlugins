@@ -148,7 +148,7 @@ methodmap Logger __nullable__
         if (view_as<LogType>(this.IgnoreLevel) > view_as<LogType>(LogType_Info)) return;
         char buffer[MAX_LOG_LINE];
         VFormat(buffer, sizeof(buffer), message, 3);
-        if (this.LogObjectType == LoggerType_NewLogFile) this.WritetoLogFile(LogType_Info, buffer)
+        if (this.LogObjectType == LoggerType_NewLogFile) this.WritetoLogFile(LogType_Info, buffer);
         else LogMessage(buffer);
     }
     /**

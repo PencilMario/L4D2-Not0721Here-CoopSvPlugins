@@ -89,7 +89,7 @@ public void Cvar_Permission_ChangeHook(ConVar convar, const char[] oldValue, con
 
 public void OnMapStart()
 {
-	AddFileToDownloadsTable("particles/gammacase/hit_nums.pcf");
+	//AddFileToDownloadsTable("particles/gammacase/hit_nums.pcf");
 	AddFileToDownloadsTable("materials/gammacase/fortnite/hitnums/nums_bw.vmt");
 	AddFileToDownloadsTable("materials/gammacase/fortnite/hitnums/nums_bw.vtf");
 	PrecacheGeneric("particles/gammacase/hit_nums.pcf", true);
@@ -449,7 +449,6 @@ public void SetAccess(int client)
 
 stock bool IsValidClient(int client, bool botcheck = true)
 {
-	return true;
 	return (1 <= client && client <= MaxClients && IsClientConnected(client) && IsClientInGame(client) && (botcheck ? !IsFakeClient(client) : true));
 }
 

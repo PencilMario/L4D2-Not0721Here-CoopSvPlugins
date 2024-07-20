@@ -457,6 +457,5 @@ public void GetAbsOrigin(int client, int entity, float vec[3]) {
 }
 
 public bool IsShotgun(char[] sWeapon) {
-	return StrEqual(sWeapon, "xm1014") || StrEqual(sWeapon, "nova") || StrEqual(sWeapon, "mag7") || StrEqual(sWeapon, "sawedoff")
-	    || StrEqual(sWeapon, "shotgun_chrome") || StrEqual(sWeapon, "shotgun_spas") || StrEqual(sWeapon, "autoshotgun") || StrEqual(sWeapon, "pumpshotgun")
+	return StrEqual(sWeapon, "shotgun_chrome") || StrEqual(sWeapon, "shotgun_spas") || StrEqual(sWeapon, "autoshotgun") || StrEqual(sWeapon, "pumpshotgun")
 } 

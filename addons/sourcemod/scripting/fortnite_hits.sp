@@ -93,6 +93,7 @@ public void OnMapStart()
 	AddFileToDownloadsTable("materials/gammacase/fortnite/hitnums/nums_bw.vmt");
 	AddFileToDownloadsTable("materials/gammacase/fortnite/hitnums/nums_bw.vtf");
 	PrecacheGeneric("particles/gammacase/hit_nums.pcf", true);
+	PrecacheGeneric("particles/gammacase/gravemind_particles.pcf", true);
 	//FormatEx(buff, sizeof(buff), "%s_num%i_f%s", ("crit" : "def"), (0-9), ("l" : "r"));
 	PrecacheParticle("def_num0_fl");
 	PrecacheParticle("def_num0_fr");

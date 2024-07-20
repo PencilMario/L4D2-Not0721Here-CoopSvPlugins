@@ -1,6 +1,6 @@
 /*
 *	Reload Fix - Max Clip Size
-*	Copyright (C) 2021 Silvers
+*	Copyright (C) 2024 Silvers
 *
 *	This program is free software: you can redistribute it and/or modify
 *	it under the terms of the GNU General Public License as published by
@@ -18,7 +18,7 @@
 
 
 
-#define PLUGIN_VERSION		"1.3a"
+#define PLUGIN_VERSION		"1.5"
 
 /*======================================================================================
 	Plugin Info:
@@ -26,11 +26,18 @@
 *	Name	:	[L4D & L4D2] Reload Fix - Max Clip Size
 *	Author	:	SilverShot
 *	Descrp	:	Fixes glitchy animation when the max clip sized was changed.
-*	Link	:	https://forums.alliedmods.net/showthread.php?t=321696
+*	Link	:	https://forums.alliedmods.net/showthread.php?t=327105
 *	Plugins	:	https://sourcemod.net/plugins.php?exact=exact&sortby=title&search=1&author=Silvers
 
 ========================================================================================
 	Change Log:
+
+1.5 (21-Apr-2024)
+	- Added cvar "l4d_reload_fix_m60" to control if the M60 should be fixed or not, since I encounter no bug with changed clip size.
+	- Fixed the Grenade Launcher and M60 playing the reload animation when a modified clip size is full. Thanks to "chungocanh12" for reporting.
+
+1.4 (20-Nov-2023)
+	- Fixed not deleting 2 handles. Thanks to "HarryPotter" for reporting.
 
 1.3a (08-Sep-2021)
 	- GameData file updated. Wildcarded "CTerrorGun::Reload" to support other plugins detouring this function.
@@ -75,6 +82,7 @@
 bool g_bLeft4Dead2;
 StringMap g_hClipSize;
 StringMap g_hDefaults;
+ConVar g_hCvarM60;
 
 char g_sWeapons[][] =
 {
@@ -108,7 +116,7 @@ public Plugin myinfo =
 	author = "SilverShot",
 	description = "Fixes glitchy animation when the max clip sized was changed.",
 	version = PLUGIN_VERSION,
-	url = "https://forums.alliedmods.net/showthread.php?t=321696"
+	url = "https://forums.alliedmods.net/showthread.php?t=327105"
 }
 
 public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max)
@@ -142,7 +150,9 @@ Handle g_hSDK_Call_StartReload;
 
 public void OnPluginStart()
 {
+	g_hCvarM60 = CreateConVar("l4d_reload_fix_m60", "1", "0=Off, 1=Fix the M60 from reload bug issues.", FCVAR_NOTIFY);
 	CreateConVar("l4d_reload_fix_version", PLUGIN_VERSION, "Reload Fix - Max Clip Size plugin version.", FCVAR_NOTIFY|FCVAR_DONTRECORD);
+	AutoExecConfig(true, "l4d_reload_fix");
 
 	// =========================
 	// GAMEDATA
@@ -190,6 +200,9 @@ public void OnPluginStart()
 
 	if( !DHookEnableDetour(hDetour, false, OnGunReload) )
 		SetFailState("Failed to detour: CTerrorGun::Reload");
+
+	delete hDetour;
+	delete hGameData;
 
 	// =========================
 	// CLIP SIZE
@@ -247,7 +260,7 @@ public void OnMapStart()
 	}
 }
 
-public void Event_Reload(Event event, const char[] name, bool dontBroadcast)
+void Event_Reload(Event event, const char[] name, bool dontBroadcast)
 {
 	int client = GetClientOfUserId(event.GetInt("userid"));
 	int weapon = GetEntPropEnt(client, Prop_Send, "m_hActiveWeapon");
@@ -283,7 +296,7 @@ public void Event_Reload(Event event, const char[] name, bool dontBroadcast)
 	}
 }
 
-public Action TimerReload(Handle timer, any weapon)
+Action TimerReload(Handle timer, int weapon)
 {
 	// Valid shotgun weapon and is reloading
 	if( (weapon = EntRefToEntIndex(weapon)) != INVALID_ENT_REFERENCE && GetEntProp(weapon, Prop_Send, "m_bInReload") )
@@ -374,6 +387,13 @@ MRESReturn OnGunReload(int pThis, Handle hReturn, Handle hParams)
 						{
 							// Fix animation glitch
 							SetEntPropFloat(weapon, Prop_Send, "m_flNextPrimaryAttack", GetGameTime() + 0.1);
+
+							// Stop reloading GL
+							if( strcmp(classname[7], "grenade_launcher") == 0 || (g_hCvarM60.BoolValue && strcmp(classname[7], "rifle_m60") == 0) )
+							{
+								RemovePlayerItem(client, weapon);
+								EquipPlayerWeapon(client, weapon);
+							}
 
 							// Stop reloading
 							DHookSetReturn(hReturn, 0);

@@ -43,6 +43,7 @@ public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max
 	CreateNative("isClientHasAddonFeature", Native_AddAddonFeature);
 	
 	RegPluginLibrary("addon_miss_checker");
+
 	return APLRes_Success;
 }
 
@@ -74,7 +75,7 @@ public void OnClientDisconnect(int client){
 }
 
 public void OnClientPutInServer(int client){
-    clientQueueState[client] = QueueState_Queued;
+    BeginScan(client);
 }
 public void OnMapStart(){
     CreateTimer(5.0, Timer_ProcessQueue, _, TIMER_FLAG_NO_MAPCHANGE | TIMER_REPEAT);
@@ -152,4 +153,9 @@ void StartProcessingClient(int client)
 stock bool IsValidClient(int client, bool botcheck = true)
 {
 	return (1 <= client && client <= MaxClients && IsClientConnected(client) && IsClientInGame(client) && (botcheck ? !IsFakeClient(client) : true));
+}
+
+public void showMissMenu(int client){
+    Menu menu = new Menu();
+    menu.SetTitle(">>> 模组缺失 <<<\n为了保护你的游戏体验, 相关功能已对你禁用, 选择以查看信息");
 }

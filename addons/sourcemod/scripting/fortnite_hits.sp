@@ -32,6 +32,7 @@ AdminFlag g_afPermission = INVALID_ADMIN_ID;
 ConVar g_cvAllowForBots, 
 g_cvReconnectPlayer, 
 g_cvCommands, 
+g_cvMeleeDistance,
 g_cvDistance, 
 g_cvPermission;
 Handle g_hCookie;
@@ -56,6 +57,7 @@ public void OnPluginStart()
 	g_cvReconnectPlayer = CreateConVar("fortnite_hits_enableplayerreconnect", "0", "Enable this to force new players to reconnect to server, so they will see particle effects without need of waiting next map", FCVAR_NONE, true, 0.0, true, 1.0);
 	g_cvCommands = CreateConVar("fortnite_hits_commandnames", "sm_fortnitehits;sm_hits;sm_damage;sm_fortnite;", "Set custom names here for toggle damage display command, don't add to many commands as it may overflow buffer. (NOTE: Write command names with \"sm_\" prefix, and don't use ! or any other symbol except A-Z and 0-9 and underline symbol \"_\", also server needs to be restarted to see changes!)", FCVAR_NONE);
 	g_cvDistance = CreateConVar("fortnite_hits_distance", "50.0", "Distance between victim player and damage numbers (NOTE: Make that value lower to prevent numbers show up through the walls)", FCVAR_NONE, true, 0.0);
+	g_cvMeleeDistance = CreateConVar("fortnite_hits_distance_melee", "5.0", "Distance between victim player and damage numbers with melee (NOTE: Make that value lower to prevent numbers show up through the walls)", FCVAR_NONE, true, 0.0);
 	g_cvPermission = CreateConVar("fortnite_hits_flag", "", "Set any flag here if you want to restrict use of that plugin only to certain flag (NOTE: Leave it empty to allow anyone to use this plugin)", FCVAR_NONE);
 	AutoExecConfig();
 	
@@ -309,7 +311,7 @@ public void PlayerHurt_Event(Event event, const char[] name, bool dontBroadcast)
 		GetAbsOrigin(client, entity, g_fPlayerPosLate[client]);
 	}
 	else {
-		ShowPRTDamage(attacker, client, entity, damage, (hitgroup == HITGROUP_HEAD));
+		ShowPRTDamage(attacker, client, entity, damage, (hitgroup == HITGROUP_HEAD), (strncmp(sWeapon[7], "melee", 5, true) == 0));
 	}
 }
 
@@ -338,7 +340,7 @@ public Action TimerHit_CallBack(Handle timer, int userid)
 	return Plugin_Continue;
 }
 
-stock void ShowPRTDamage(int attacker, int client, int entity, int damage, bool crit, bool late = false)
+stock void ShowPRTDamage(int attacker, int client, int entity, int damage, bool crit, bool late = false, bool melee = false)
 {
 
 	static float pos[3], pos2[3], ang[3], fwd[3], right[3], temppos[3], dist, d, dif;
@@ -385,6 +387,9 @@ stock void ShowPRTDamage(int attacker, int client, int entity, int damage, bool 
 		}
 	}
 	dif = g_cvDistance.FloatValue;
+	if (melee){
+		dif = g_cvMeleeDistance.FloatValue;
+	}
 	for (int i = count - 1; i >= 0; i--)
 	{
 		temppos = pos;

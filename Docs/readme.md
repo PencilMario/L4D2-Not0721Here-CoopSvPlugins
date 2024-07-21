@@ -277,6 +277,7 @@
       > 基于community5_noobplus
       <details>
       * 默认刷特：基础5只0s，4人以上每多1人加1特，跳过Relax阶段
+      * 2倍特殊弹药包提供的弹药
       </details>
 
 2. **写实系列**

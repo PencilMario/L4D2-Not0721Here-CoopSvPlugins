@@ -2,7 +2,7 @@
 #pragma newdecls required
 */
 
-stock void BuildMenuTitle(int client, Handle menu, int bot = 0, int type = 0, bool bIsPanel = false, bool ShowLayerEligibility = false) {	// 0 is legacy type that appeared on all menus. 0 - Main Menu | 1 - Upgrades | 2 - Points
+stock void BuildMenuTitle(int client, Handle menu, int bot = 0, int type = 0, bool bIsPanel = false, bool ShowLayerEligibility = false, int typeOfDataToShow = 0) {	// 0 is legacy type that appeared on all menus. 0 - Main Menu | 1 - Upgrades | 2 - Points
 
 	char text[512];
 	int CurRPGMode = iRPGMode;
@@ -11,12 +11,14 @@ stock void BuildMenuTitle(int client, Handle menu, int bot = 0, int type = 0, bo
 	char targExperience[64];
 	char ratingFormatted[64];
 	char scrap[64];
+	char avgAugLvl[64];
 
 	if (bot == 0) {
 		AddCommasToString(ExperienceLevel[client], currExperience, sizeof(currExperience));
 		AddCommasToString(CheckExperienceRequirement(client), targExperience, sizeof(targExperience));
 		AddCommasToString(Rating[client], ratingFormatted, sizeof(ratingFormatted));
 		AddCommasToString(augmentParts[client], scrap, 64);
+		AddCommasToString(playerCurrentAugmentAverageLevel[client], avgAugLvl, 64);
 
 		char PointsText[64];
 		Format(PointsText, sizeof(PointsText), "%T", "Points Text", client, Points[client]);
@@ -28,18 +30,22 @@ stock void BuildMenuTitle(int client, Handle menu, int bot = 0, int type = 0, bo
 
 			int TotalPoints = TotalPointsAssigned(client);
 			char PlayerLevelText[256];
-			MenuExperienceBar(client, _, _, PlayerLevelText, sizeof(PlayerLevelText));
-			Format(PlayerLevelText, sizeof(PlayerLevelText), "%T", "Player Level Text", client, PlayerLevel[client], iMaxLevel, currExperience, PlayerLevelText, targExperience, ratingFormatted, scrap);
-			if (SkyLevel[client] > 0) Format(PlayerLevelText, sizeof(PlayerLevelText), "%T", "Prestige Level Text", client, SkyLevel[client], iSkyLevelMax, PlayerLevelText);
-			if (iExperienceLevelCap > 0) {
-				if (PlayerLevel[client] < iExperienceLevelCap) Format(PlayerLevelText, sizeof(PlayerLevelText), "%T", "XP Level Cap", client, PlayerLevelText, iExperienceLevelCap);
-				else Format(PlayerLevelText, sizeof(PlayerLevelText), "%T", "XP Level Cap Reached", client, PlayerLevelText, iExperienceLevelCap);
+			if (typeOfDataToShow == 0) {
+				MenuExperienceBar(client, _, _, PlayerLevelText, sizeof(PlayerLevelText));
+				if (typeOfDataToShow == 0) Format(PlayerLevelText, sizeof(PlayerLevelText), "%T", "Player Level Text", client, PlayerLevel[client], iMaxLevel, currExperience, PlayerLevelText, targExperience, ratingFormatted, scrap, avgAugLvl);
+				else if (typeOfDataToShow == 1) Format(PlayerLevelText, sizeof(PlayerLevelText), "%T", "Player Level Text minor", client, PlayerLevel[client], iMaxLevel, currExperience, PlayerLevelText, targExperience, ratingFormatted, scrap, avgAugLvl);
+				if (SkyLevel[client] > 0) Format(PlayerLevelText, sizeof(PlayerLevelText), "%T", "Prestige Level Text", client, SkyLevel[client], iSkyLevelMax, PlayerLevelText);
+				if (iExperienceLevelCap > 0) {
+					if (PlayerLevel[client] < iExperienceLevelCap) Format(PlayerLevelText, sizeof(PlayerLevelText), "%T", "XP Level Cap", client, PlayerLevelText, iExperienceLevelCap);
+					else Format(PlayerLevelText, sizeof(PlayerLevelText), "%T", "XP Level Cap Reached", client, PlayerLevelText, iExperienceLevelCap);
+				}
 			}
 			int maximumPlayerUpgradesToShow = (iShowTotalNodesOnTalentTree == 1) ? MaximumPlayerUpgrades(client, true) : MaximumPlayerUpgrades(client);
 			if (CheckRPGMode != 0) {
 				//decl String:upgradeCap[64];
 				//(iMaxServerUpgrades < 1) ? Format(upgradeCap, sizeof(upgradeCap), "N/A") : Format(upgradeCap, sizeof(upgradeCap), "%d", iMaxServerUpgrades);
-				Format(text, sizeof(text), "%T", "RPG Header", client, PlayerLevelText, TotalPoints, maximumPlayerUpgradesToShow, UpgradesAvailable[client] + FreeUpgrades[client]);
+				if (typeOfDataToShow == 0) Format(text, sizeof(text), "%T", "RPG Header", client, PlayerLevelText, TotalPoints, maximumPlayerUpgradesToShow, UpgradesAvailable[client] + FreeUpgrades[client]);
+				else if (typeOfDataToShow == 1) Format(text, sizeof(text), "%T", "RPG Header minor", client, TotalPoints, maximumPlayerUpgradesToShow, UpgradesAvailable[client] + FreeUpgrades[client]);
 				if (ShowLayerEligibility) {
 					if (bIsLayerEligible) {
 						int strengthOfCurrentLayer = GetLayerUpgradeStrength(client, PlayerCurrentMenuLayer[client], _, _, _, _, true);
@@ -145,7 +151,10 @@ stock bool CheckKillPositions(client, bool b_AddPosition = false) {
 	}
 	return false;
 }
-
+/*
+int TheTalentStrength = GetArrayCell(MyTalentStrength[client], i);
+			if (TheTalentStrength < 1) continue;
+			*/
 stock bool HasTalentUpgrades(client, char[] TalentName) {
 
 	if (IsLegitimateClient(client)) {
@@ -157,13 +166,9 @@ stock bool HasTalentUpgrades(client, char[] TalentName) {
 		char TalentName_Compare[64];
 
 		for (int i = 0; i < a_Size; i++) {
-
-			//ChanceKeys[client]			= GetArrayCell(a_Menu_Talents, i, 0);
-			//ChanceValues[client]		= GetArrayCell(a_Menu_Talents, i, 1);
-			ChanceSection[client]		= GetArrayCell(a_Menu_Talents, i, 2);
-
-			GetArrayString(ChanceSection[client], 0, TalentName_Compare, sizeof(TalentName_Compare));
-			if (StrEqual(TalentName, TalentName_Compare, false) && GetArrayCell(MyTalentStrength[client], i) > 0) return true;
+			if (GetArrayCell(MyTalentStrength[client], i) < 1) continue;
+			GetArrayString(a_Database_Talents, i, TalentName_Compare, sizeof(TalentName_Compare));
+			if (StrEqual(TalentName, TalentName_Compare, false)) return true;
 		}
 	}
 	return false;
@@ -192,7 +197,7 @@ stock LoadProfileEx(client, char[] key, char[] menuFacingProfileName = "none") {
 	int target = LoadTarget[client];
 	LoadTarget[client] = -1;
 	if (target == -1) target = client;
-	else if (!IsLegitimateClient(target) || GetClientTeam(target) != TEAM_SURVIVOR || !b_IsLoaded[target]) {
+	else if (!IsLegitimateClient(target) || myCurrentTeam[target] != TEAM_SURVIVOR || !b_IsLoaded[target]) {
 		PrintToChat(client, "\x04Your load target is not valid.");
 		return;
 	}
@@ -219,8 +224,11 @@ stock LoadProfileEx_Confirm(client, char[] key, char[] menuFacingProfileName = "
 		else PrintToChatAll("%t", "loading profile command", blue, myName, white, blue, menuFacingProfileName, white, green, key, white);
 	}
 
+	// track players who are loading a profile.
+	bIsLoadingCustomProfile[client] = true;
 	//b_IsLoading[client] = false;
 	Format(tquery, sizeof(tquery), "SELECT `steam_id`, `total upgrades` FROM `%s_profiles` WHERE (`steam_id` = '%s');", TheDBPrefix, key);
+	Format(customProfileKey[client], sizeof(customProfileKey[]), "%s", key);
 	// maybe set a value equal to the users steamid integer only, so if steam:0:1:23456, set the value of "client" equal to 23456 and then set the client equal to whatever client's steamid contains 23456?
 	//LogMessage("Loading %N data: %s", client, tquery);
 	SQL_TQuery(hDatabase, QueryResults_LoadEx, tquery, client);
@@ -304,8 +312,6 @@ public void QueryResults_LoadEx(Handle howner, Handle hndl, const char[] error, 
 	}
 	if (!rowsFound || !IsLegitimateClient(client)) {
 		b_IsLoading[client] = false;
-		if (!IsFakeClient(client)) PrintToChat(client, "\x04No profile could be found under that designation.\nCheck the syntax and try again.");
-		//LogMessage("Could not load the profile on target client forced by %N, exiting loading sequence.", client);
 		return;
 	}
 	char tquery[512];
@@ -351,10 +357,8 @@ public void QueryResults_LoadTalentTreesEx(Handle owner, Handle hndl, const char
 	char skey[64];
 
 	if (!IsLegitimateClient(client)) return;
-	int dbsize = GetArraySize(a_Database_Talents);
-	if (GetArraySize(a_Database_PlayerTalents[client]) != dbsize) {
-		ResizeArray(a_Database_PlayerTalents[client], dbsize);
-	}
+	int dbsize = GetArraySize(a_Menu_Talents);
+	if (GetArraySize(a_Database_PlayerTalents[client]) != dbsize) ResizeArray(a_Database_PlayerTalents[client], dbsize);
 	while (SQL_FetchRow(hndl)) {
 		SQL_FetchString(hndl, 0, key, sizeof(key));
 		if (LoadPos[client] >= 0 && LoadPos[client] < dbsize) {
@@ -388,6 +392,7 @@ public void QueryResults_LoadTalentTreesEx(Handle owner, Handle hndl, const char
 				LoadPos[client] = -2;
 				SQL_TQuery(hDatabase, QueryResults_LoadTalentTreesEx, tquery, client);
 				return;*/
+
 				int ActionSlots = iActionBarSlots;
 				Format(tquery, sizeof(tquery), "SELECT `steam_id`");
 				for (int i = 0; i < ActionSlots; i++) {
@@ -426,27 +431,12 @@ public void QueryResults_LoadTalentTreesEx(Handle owner, Handle hndl, const char
 			LoadPos[client] = 0;
 			LoadTalentTrees(client, skey, true, key);
 		}
-		int PlayerTalentPoints			=	0;
-		char TalentName[64];
-
-		//new size						=	GetArraySize(a_Menu_Talents);
-
-		//if (StrEqual(ConfigName, CONFIG_MENUSURVIVOR)) size			=	GetArraySize(a_Menu_Talents_Survivor);
-		//else if (StrEqual(ConfigName, CONFIG_MENUINFECTED)) size	=	GetArraySize(a_Menu_Talents_Infected);
-
 		for (int i = 0; i < size; i++) {
-
-			//MenuKeys[client]			= GetArrayCell(a_Menu_Talents, i, 0);
-			MenuValues[client]			= GetArrayCell(a_Menu_Talents, i, 1);
-			MenuSection[client]			= GetArrayCell(a_Menu_Talents, i, 2);
-
-			GetArrayString(MenuSection[client], 0, TalentName, sizeof(TalentName));
-
-			PlayerTalentPoints = GetArrayCell(MyTalentStrength[client], i);
+			int PlayerTalentPoints = GetArrayCell(MyTalentStrength[client], i);
 			if (PlayerTalentPoints > 1) {
 				FreeUpgrades[client] += (PlayerTalentPoints - 1);
 				PlayerUpgradesTotal[client] -= (PlayerTalentPoints - 1);
-				AddTalentPoints(client, TalentName, (PlayerTalentPoints - 1));
+				AddTalentPoints(client, i, (PlayerTalentPoints - 1));
 			}
 		}
 	}
@@ -564,10 +554,9 @@ stock GetTeamComposition(client) {
 	char text[512];
 	char ratingText[64];
 
-	int myteam = GetClientTeam(client);
 	for (int i = 1; i <= MaxClients; i++) {
 
-		if (!IsLegitimateClient(i) || myteam != GetClientTeam(i)) continue;
+		if (!IsLegitimateClient(i) || myCurrentTeam[client] != myCurrentTeam[i]) continue;
 
 		GetClientName(i, text, sizeof(text));
 
@@ -612,7 +601,7 @@ stock LoadProfileTargetSurvivorBot(client) {
 	SetMenuTitle(menu, text);
 	for (int i = 1; i <= MaxClients; i++) {
 
-		if (IsLegitimateClient(i) && GetClientTeam(i) != TEAM_INFECTED) {
+		if (IsLegitimateClient(i) && myCurrentTeam[i] != TEAM_INFECTED) {
 
 			Format(pos, sizeof(pos), "%d", i);
 			PushArrayString(RPGMenuPosition[client], pos);
@@ -770,9 +759,9 @@ stock VerifyAllActionBars(client) {
 
 	int size = iActionBarSlots;
 	for (int i = 0; i < size; i++) {
-
 		GetArrayString(ActionBar[client], i, talentname, sizeof(talentname));
-		VerifyActionBar(client, talentname, i);
+		int menuPos = GetArrayCell(ActionBarMenuPos[client], i);
+		VerifyActionBar(client, talentname, i, menuPos);
 	}
 }
 
@@ -803,86 +792,72 @@ stock ShowActionBar(client) {
 		}
 	}
 	Format(text, sizeof(text), "%s\nsame target Hits: %d", text, ConsecutiveHits[client]);
-	//DataScreenTargetName returns two results on every call - an integer return value, and the text it formats w/ baseWeaponDamageText
-	//(DataScreenTargetName(client, baseWeaponDamageText, sizeof(baseWeaponDamageText)) != -1) ? Format(text, sizeof(text), "%s\ntarget: %s", text, baseWeaponDamageText) : Format(text, sizeof(text), "%s\ntarget: n/a", text);
-	//if (baseWeaponDamage > 0) Format(text, sizeof(text), "%s\nBullet Damage: %s", text, AddCommasToString(baseWeaponDamage));
-	//}
 	SetMenuTitle(menu, text);
 	int size = iActionBarSlots;
 	float AmmoCooldownTime = -1.0, fAmmoCooldownTime = -1.0, fAmmoCooldown = 0.0, fAmmoActive = 0.0;
 
-	// decl String:acmd[10];
-	// GetConfigValue(acmd, sizeof(acmd), "action slot command?");
-	int TalentStrength = 0;
-
-	//decl String:TheValue[64];
-	bool bIsAbility = false;
-	int ManaCost = 0;
-	//decl String:tCooldown[16];
 	for (int i = 0; i < size; i++) {
-
 		GetArrayString(ActionBar[client], i, talentname, sizeof(talentname));
-		TalentStrength = GetTalentStrength(client, talentname);
-		if (TalentStrength > 0) {
-			GetTranslationOfTalentName(client, talentname, text, sizeof(text), _, true);
-			Format(text, sizeof(text), "%T", text, client);
+		int menuPos = GetArrayCell(ActionBarMenuPos[client], i);
+		int TalentStrength = GetTalentStrength(client, _, _, menuPos);
+		if (TalentStrength < 1) {
+			Format(text, sizeof(text), "%T", "No Action Equipped", client);
+			Format(text, sizeof(text), "!%s%d:\t%s", acmd, i+1, text);
+			AddMenuItem(menu, text, text);
+			continue;
 		}
-		else Format(text, sizeof(text), "%T", "No Action Equipped", client);
-
+		GetTranslationOfTalentName(client, talentname, text, sizeof(text), _, true);
+		Format(text, sizeof(text), "%T", text, client);
 		Format(text, sizeof(text), "!%s%d:\t%s", acmd, i+1, text);
-		if (TalentStrength > 0) {
+		bool bIsAbility = IsAbilityTalent(client, menuPos);
+		// spells
+		int talentMenuPos = GetArrayCell(ActionBarMenuPos[client], i);
+		if (!bIsAbility) {
+			int ManaCost = RoundToCeil(GetSpecialAmmoStrength(client, talentname, 2, _, _, talentMenuPos));
+			if (ManaCost > 0) Format(text, sizeof(text), "%s\nStamina Cost: %d", text, ManaCost);
 
-			bIsAbility = IsAbilityTalent(client, talentname);
-			// spells
-			if (!bIsAbility) {
-
-				ManaCost = RoundToCeil(GetSpecialAmmoStrength(client, talentname, 2));
-				if (ManaCost > 0) Format(text, sizeof(text), "%s\nStamina Cost: %d", text, ManaCost);
-
-				AmmoCooldownTime = GetAmmoCooldownTime(client, talentname);
-				fAmmoCooldownTime = AmmoCooldownTime;
-				if (fAmmoCooldownTime != -1.0) {
-
-					AmmoCooldownTime = GetSpecialAmmoStrength(client, talentname);
-
-					// finding out the active time of ammos isn't as easy because of design...
-					fAmmoCooldown = AmmoCooldownTime + GetSpecialAmmoStrength(client, talentname, 1);
-					AmmoCooldownTime = AmmoCooldownTime - (fAmmoCooldown - fAmmoCooldownTime);
-					//PrintToChat(client, "%3.3f = %3.3f - (%3.3f - %3.3f)", AmmoCooldownTime, GetSpecialAmmoStrength(client, talentname), fAmmoCooldown, fAmmoCooldownTime);
-				}
-				else {
-
-					AmmoCooldownTime = GetSpecialAmmoStrength(client, talentname);
-				}
-			}	// abilities
-			else {
-				// if (AbilityDoesDamage(client, talentname)) {
-				// 	TheAbilityMultiplier = GetAbilityMultiplier(client, "0", _, talentname);
-				// 	baseWeaponDamage = RoundToCeil(baseWeaponDamage * TheAbilityMultiplier);
-
-				// 	Format(text, sizeof(text), "%s\nDamage: %d", text, baseWeaponDamage);
-				// }
-				AmmoCooldownTime = GetAmmoCooldownTime(client, talentname, true);
-				fAmmoCooldownTime = AmmoCooldownTime;
-
-				// abilities dont show active time correctly (NOT FIXED)
-				fAmmoActive = GetAbilityValue(client, talentname, ABILITY_ACTIVE_TIME);
-				if (fAmmoCooldownTime != -1.0) {
-
-					fAmmoCooldown = GetSpellCooldown(client, talentname);
-					AmmoCooldownTime = fAmmoActive - (fAmmoCooldown - fAmmoCooldownTime);
-				}
+			fAmmoCooldownTime = GetAmmoCooldownTime(client, talentname);
+			AmmoCooldownTime = GetSpecialAmmoStrength(client, talentname, _, _, _, talentMenuPos);
+			if (fAmmoCooldownTime != -1.0) {
+				// finding out the active time of ammos isn't as easy because of design...
+				fAmmoCooldown = AmmoCooldownTime + GetSpecialAmmoStrength(client, talentname, 1, _, _, talentMenuPos);
+				AmmoCooldownTime = AmmoCooldownTime - (fAmmoCooldown - fAmmoCooldownTime);
 			}
-			if (bIsAbility && AmmoCooldownTime != -1.0 && AmmoCooldownTime > 0.0 ||
-				!bIsAbility && (AmmoCooldownTime > 0.0 || AmmoCooldownTime == -1.0)) Format(text, sizeof(text), "%s\nActive: %ds", text, RoundToNearest(AmmoCooldownTime));
+		}	// abilities
+		else {
+			AmmoCooldownTime = GetAmmoCooldownTime(client, talentname, true);
+			fAmmoCooldownTime = AmmoCooldownTime;
 
-			AmmoCooldownTime = fAmmoCooldownTime;
-			if (AmmoCooldownTime != -1.0) Format(text, sizeof(text), "%s\nCooldown: %ds", text, RoundToNearest(AmmoCooldownTime));
+			// abilities dont show active time correctly (NOT FIXED)
+			fAmmoActive = GetAbilityValue(client, ABILITY_ACTIVE_TIME, talentMenuPos);
+			if (fAmmoCooldownTime != -1.0) {
+
+				fAmmoCooldown = GetSpellCooldown(client, _, talentMenuPos);
+				AmmoCooldownTime = fAmmoActive - (fAmmoCooldown - fAmmoCooldownTime);
+			}
 		}
+		if (bIsAbility && AmmoCooldownTime != -1.0 && AmmoCooldownTime > 0.0 ||
+			!bIsAbility && (AmmoCooldownTime > 0.0 || AmmoCooldownTime == -1.0)) Format(text, sizeof(text), "%s\nActive: %ds", text, RoundToNearest(AmmoCooldownTime));
+
+		AmmoCooldownTime = fAmmoCooldownTime;
+		if (AmmoCooldownTime != -1.0) Format(text, sizeof(text), "%s\nCooldown: %ds", text, RoundToNearest(AmmoCooldownTime));
 		AddMenuItem(menu, text, text);
 	}
 	SetMenuExitBackButton(menu, false);
 	DisplayMenu(menu, client, 0);
+
+/*
+		Format(text, sizeof(text), "%T", "Special Ammo Time", client, fltime, fltimen);
+		DrawPanelText(menu, text);
+		//Format(text, sizeof(text), "%T", "Special Ammo Interval", client, GetSpecialAmmoStrength(client, TalentName, 4), GetSpecialAmmoStrength(client, TalentName, 4, true));
+		//DrawPanelText(menu, text);
+		Format(text, sizeof(text), "%T", "Special Ammo Cooldown", client, fltime + GetSpecialAmmoStrength(client, TalentName, 1), fltimen + GetSpecialAmmoStrength(client, TalentName, 1, true));
+		DrawPanelText(menu, text);
+		Format(text, sizeof(text), "%T", "Special Ammo Stamina", client, RoundToCeil(GetSpecialAmmoStrength(client, TalentName, 2)), RoundToCeil(GetSpecialAmmoStrength(client, TalentName, 2, true)));
+		DrawPanelText(menu, text);
+		Format(text, sizeof(text), "%T", "Special Ammo Range", client, GetSpecialAmmoStrength(client, TalentName, 3), GetSpecialAmmoStrength(client, TalentName, 3, true));
+		DrawPanelText(menu, text);
+ */
 }
 
 
@@ -890,17 +865,18 @@ stock ShowActionBar(client) {
 stock bool AbilityDoesDamage(client, char[] TalentName) {
 
 	char theQuery[64];
+	int menuPos = GetMenuPosition(client, TalentName);
 	//Format(theQuery, sizeof(theQuery), "does damage?");
-	IsAbilityTalent(client, TalentName, theQuery, 64, ABILITY_DOES_DAMAGE);
+	IsAbilityTalent(client, menuPos, theQuery, 64, ABILITY_DOES_DAMAGE);
 
 	if (StringToInt(theQuery) == 1) return true;
 	return false;
 }
 
-stock bool VerifyActionBar(client, char[] TalentName, pos) {
+stock bool VerifyActionBar(client, char[] TalentName, int pos, int menuPos) {
 	//if (defaultTalentStrength == -1) defaultTalentStrength = GetTalentStrength(client, TalentName);
 	if (StrEqual(TalentName, "none", false)) return false;
-	if (!IsTalentExists(TalentName) || GetTalentStrength(client, TalentName) < 1) {
+	if (!IsTalentExists(TalentName) || GetTalentStrength(client, TalentName, _, menuPos) < 1) {
 		if (GetArraySize(ActionBarMenuPos[client]) != iActionBarSlots) ResizeArray(ActionBarMenuPos[client], iActionBarSlots);
 		char none[64];
 		Format(none, sizeof(none), "none");
@@ -911,29 +887,13 @@ stock bool VerifyActionBar(client, char[] TalentName, pos) {
 	return true;
 }
 
-stock bool IsAbilityTalent(client, char[] TalentName, char[] SearchKey = "none", TheSize = 0, pos = -1) {	// Can override the search query, and then said string will be replaced and sent back
-
-	char text[64];
-
-	int size = GetArraySize(a_Database_Talents);
-	for (int i = 0; i < size; i++) {
-		GetArrayString(a_Database_Talents, i, text, sizeof(text));
-		IsAbilitySection[client]		= GetArrayCell(a_Menu_Talents, i, 2);
-		GetArrayString(IsAbilitySection[client], 0, text, sizeof(text));
-		if (!StrEqual(TalentName, text)) continue;
-		IsAbilityValues[client]			= GetArrayCell(a_Menu_Talents, i, 1);
-
-		if (pos == -1) {
-
-			if (GetArrayCell(IsAbilityValues[client], IS_TALENT_ABILITY) == 1) return true;
-		}
-		else {
-
-			GetArrayString(IsAbilityValues[client], pos, SearchKey, TheSize);
-			return true;
-		}
-		break;
+stock bool IsAbilityTalent(client, int menuPos, char[] SearchKey = "none", TheSize = 0, pos = -1) {	// Can override the search query, and then said string will be replaced and sent back
+	IsAbilityValues[client]			= GetArrayCell(a_Menu_Talents, menuPos, 1);
+	if (pos == -1 || pos == IS_TALENT_ABILITY) {
+		if (GetArrayCell(IsAbilityValues[client], IS_TALENT_ABILITY) == 1) return true;
+		return false;
 	}
+	GetArrayString(IsAbilityValues[client], pos, SearchKey, TheSize);
 	return false;
 }
 // Delay can be set to a default value because it is only used for overloading.
@@ -969,17 +929,17 @@ public Action Timer_DrawInstantEffect(Handle timer, Handle drawpack) {
 	return Plugin_Stop;
 }
 
-stock bool IsActionAbilityCooldown(client, char[] TalentName, bool IsActiveInstead = false) {
+stock bool IsActionAbilityCooldown(client, char[] TalentName, bool IsActiveInstead = false, int pos) {
 
 	float AmmoCooldownTime = GetAmmoCooldownTime(client, TalentName, true);
 	float fAmmoCooldownTime = AmmoCooldownTime;
 	float fAmmoCooldown = 0.0;
 
 	// abilities dont show active time correctly (NOT FIXED)
-	float fAmmoActive = GetAbilityValue(client, TalentName, ABILITY_ACTIVE_TIME);
+	float fAmmoActive = GetAbilityValue(client, ABILITY_ACTIVE_TIME, pos);
 	if (fAmmoCooldownTime != -1.0) {
 
-		fAmmoCooldown = GetSpellCooldown(client, TalentName);
+		fAmmoCooldown = GetSpellCooldown(client, _, pos);
 		AmmoCooldownTime = fAmmoActive - (fAmmoCooldown - fAmmoCooldownTime);//copy to source
 	}
 	if (!IsActiveInstead) {
@@ -1005,15 +965,13 @@ stock float CheckActiveAbility(client, thevalue, eventtype = 0, bool IsPassive =
 	if (GetArraySize(ActionBar[client]) != ActionBarSize) ResizeArray(ActionBar[client], ActionBarSize);
 	if (GetArraySize(ActionBarMenuPos[client]) != iActionBarSlots) ResizeArray(ActionBarMenuPos[client], iActionBarSlots);
 	char text[64];// free guesses on what this one is for.
-	char Effects[64];
 	char none[64];
 	char sDrawEffect[PLATFORM_MAX_PATH];
 	char sDrawPos[PLATFORM_MAX_PATH];
 	char sDrawDelay[PLATFORM_MAX_PATH];
 	char sDrawSize[PLATFORM_MAX_PATH];
 	Format(none, sizeof(none), "none");	// you guessed it.
-	int pos = -1;
-	bool IsMultiplier = false;
+	//int pos = -1;
 	float MyMultiplier = 1.0;
 	//new MyAttacker = L4D2_GetInfectedAttacker(client);
 	int size = GetArraySize(ActionBar[client]);
@@ -1033,13 +991,15 @@ stock float CheckActiveAbility(client, thevalue, eventtype = 0, bool IsPassive =
 	for (int i = 0; i < size; i++) {
 		if (IsInstantDraw && thevalue != i) continue;
 		GetArrayString(ActionBar[client], i, text, sizeof(text));
-		if (!VerifyActionBar(client, text, i)) continue;	// not a real talent or has no points in it.
 		//if (StrEqual(text, "none", false) || GetTalentStrength(client, text) < 1) continue;
-		if (!IsAbilityActive(client, text) && !IsDrawEffect) continue;	// inactive / passive / toggle abilities go through to the draw section.
-		pos = GetMenuPosition(client, text);
+		int pos = GetArrayCell(ActionBarMenuPos[client], i);
+		if (!VerifyActionBar(client, text, i, pos)) continue;	// not a real talent or has no points in it.
+		if (!IsAbilityActive(client, text, _, _, pos) && !IsDrawEffect) continue;	// inactive / passive / toggle abilities go through to the draw section.
+		//pos = GetMenuPosition(client, text);
 		if (pos < 0) continue;
 		CheckAbilityKeys[client]		= GetArrayCell(a_Menu_Talents, pos, 0);
 		CheckAbilityValues[client]		= GetArrayCell(a_Menu_Talents, pos, 1);
+		
 		if (IsDrawEffect) {
 			if (GetArrayCell(CheckAbilityValues[client], IS_TALENT_ABILITY) == 1) {
 				IsPassiveAbility = GetArrayCell(CheckAbilityValues[client], ABILITY_PASSIVE_ONLY);
@@ -1066,7 +1026,7 @@ stock float CheckActiveAbility(client, thevalue, eventtype = 0, bool IsPassive =
 						SetArrayCell(PlayActiveAbilities[client], abPos, visualsCooldown, 3);
 						continue;	// do not draw if visuals are on cooldown
 					}
-					if (IsActionAbilityCooldown(client, text, true)) {// || !StrEqual(sPassiveEffects, "-1.0") && !IsActionAbilityCooldown(client, text)) {
+					if (IsActionAbilityCooldown(client, text, true, pos)) {// || !StrEqual(sPassiveEffects, "-1.0") && !IsActionAbilityCooldown(client, text)) {
 						SetArrayCell(PlayActiveAbilities[client], abPos, GetArrayCell(CheckAbilityValues[client], ABILITY_ACTIVE_DRAW_DELAY), 3);
 						while (drawpos >= 0 && drawheight >= 0 && drawsize >= 0) {
 							drawpos = FormatKeyValue(sDrawEffect, sizeof(sDrawEffect), CheckAbilityKeys[client], CheckAbilityValues[client], "draw effect?", _, _, drawpos, false);
@@ -1096,34 +1056,15 @@ stock float CheckActiveAbility(client, thevalue, eventtype = 0, bool IsPassive =
 			}
 			continue;
 		}
-
-		if (GetArrayCell(CheckAbilityValues[client], ABILITY_EVENT_TYPE) != eventtype) continue;
+		//if (GetArrayCell(CheckAbilityValues[client], ABILITY_EVENT_TYPE) != eventtype) continue;
 		
-		if (!IsPassive) {
+		// if (!IsPassive) {
+		// 	GetArrayString(CheckAbilityValues[client], ABILITY_ACTIVE_EFFECT, Effects, sizeof(Effects));
+		// }
+		// else {
+		// 	GetArrayString(CheckAbilityValues[client], ABILITY_PASSIVE_EFFECT, Effects, sizeof(Effects));
+		// }
 
-			GetArrayString(CheckAbilityValues[client], ABILITY_ACTIVE_EFFECT, Effects, sizeof(Effects));
-
-			if (StrContains(Effects, "X", true) != -1) {
-
-				if (thevalue >= GetClientHealth(client)) {
-
-					// attacks that would kill or incapacitate are completely nullified
-					// this unfortunately also means that abilties that would be offensive or utility as a result of this attack do not fire.
-					// we will later create a class that ignores this rule. Adventurer: "Years of hardened adventuring and ability use has led to the ability to both use AND bend mothers will"
-					if (!IsMultiplier) return 0.0;
-					MyMultiplier = 0.0;		// even if other active abilities fire, no incoming damage is coming through. Go you, adventurer.
-				}
-			}
-		}
-		else {
-
-			GetArrayString(CheckAbilityValues[client], ABILITY_PASSIVE_EFFECT, Effects, sizeof(Effects));
-
-			if (StrContains(Effects, "S", true) != -1 && thevalue == 19) {
-
-				return 1.0;
-			}
-		}
 	}
 	if (MyMultiplier <= 0.0) return 0.0;
 	return (MyMultiplier * thevalue);
@@ -1192,7 +1133,7 @@ stock BuildMenu(client, char[] TheMenuName = "none") {
 	char s_TalentDependency[64];
 	// Collect player team and server gamemode.
 	Format(currentGamemode, sizeof(currentGamemode), "%d", ReadyUpGameMode);
-	Format(clientTeam, sizeof(clientTeam), "%d", GetClientTeam(client));
+	Format(clientTeam, sizeof(clientTeam), "%d", myCurrentTeam[client]);
 
 	int size	= GetArraySize(a_Menu_Main);
 	int CurRPGMode = iRPGMode;
@@ -1298,6 +1239,12 @@ stock BuildMenu(client, char[] TheMenuName = "none") {
 
 				if (iIsBulletTrails[client] == 0) Format(text, sizeof(text), "%T", "bullet trails (disabled)", client);
 				else Format(text, sizeof(text), "%T", "bullet trails (enabled)", client);
+			}
+			else if (StrEqual(configname, "lootmode toggle")) {
+				if (iDontAllowLootStealing[client] == 3) Format(text, sizeof(text), "%T", "ffa loot (disabled)", client);
+				else if (iDontAllowLootStealing[client] == 2) Format(text, sizeof(text), "%T", "ffa loot (all)", client);
+				else if (iDontAllowLootStealing[client] == 1) Format(text, sizeof(text), "%T", "ffa loot (major)", client);
+				else if (iDontAllowLootStealing[client] == 0) Format(text, sizeof(text), "%T", "ffa loot (minor)", client);
 			}
 			else if (StrEqual(configname, "level up")) {
 
@@ -1517,6 +1464,11 @@ public BuildMenuHandle(Handle menu, MenuAction action, int client, int slot) {
 			else iIsBulletTrails[client] = 1;
 			BuildMenu(client);
 		}
+		else if (StrEqual(config, "lootmode toggle", false)) {
+			if (iDontAllowLootStealing[client] == 3) iDontAllowLootStealing[client] = 0;
+			else iDontAllowLootStealing[client]++;
+			BuildMenu(client);
+		}
 		else if (StrEqual(config, "inv_augments", false)) {
 			if (GetArraySize(myAugmentIDCodes[client]) > 0) Augments_Inventory(client);
 			else BuildMenu(client);
@@ -1613,6 +1565,7 @@ public BuildMenuHandle(Handle menu, MenuAction action, int client, int slot) {
 		}
 		else if (StrEqual(config, "nohandicap", false) && handicapLevel[client] >= 0) {
 			handicapLevel[client] = -1;
+			BuildMenu(client);
 		}
 		/*else {
 
@@ -1854,6 +1807,7 @@ public DisplayTheLeaderboards_Init (Handle topmenu, MenuAction action, client, p
 }
 
 public void SpawnLoadoutEditor(client) {
+	if (GetArraySize(hWeaponList[client]) != 2) ResizeArray(hWeaponList[client], 2);
 
 	Handle menu		= CreateMenu(SpawnLoadoutEditorHandle);
 
@@ -1908,7 +1862,7 @@ stock GetTotalThreat() {
 	int iThreatAmount = 0;
 	for (int i = 1; i <= MaxClients; i++) {
 
-		if (IsLegitimateClientAlive(i) && GetClientTeam(i) == TEAM_SURVIVOR) {
+		if (IsLegitimateClientAlive(i) && myCurrentTeam[i] == TEAM_SURVIVOR) {
 
 			iThreatAmount += iThreatLevel[i];
 		}
@@ -2188,6 +2142,10 @@ public void CharacterSheetMenu(client) {
 		//int infected = FindInfectedClient(true);
 
 		Format(text, sizeof(text), "%T", "Survivor Sheet Info", client, pct);
+		if (StrContains(text, "{AUGAVGLVL}", true) != -1) {
+			Format(otherText, sizeof(otherText), "%d", playerCurrentAugmentAverageLevel);
+			ReplaceString(text, sizeof(text), "{AUGAVGLVL}", otherText);
+		}
 		if (StrContains(text, "{PLAYTIME}", true) != -1) {
 			GetTimePlayed(client, otherText, sizeof(otherText));
 			ReplaceString(text, sizeof(text), "{PLAYTIME}", otherText);
@@ -2380,10 +2338,9 @@ stock GetCharacterSheetData(client, char[] stringRef, theSize, request, zombiecl
 	}
 	if (request != 7 && request % 2 == 0) {
 		float damageReductionPenaltyMultiplier = 0.0;	// the lesstanky, lessdamage, lessheals, etc. talents are proficiencies so they ignore cooldowns and always get calculated
-		damageReductionPenaltyMultiplier += GetAbilityStrengthByTrigger(client, client, "lessTankyMoreHeals", _, 0, _, _, "ignore", 2, true, _, _, _, _, 1);
-		damageReductionPenaltyMultiplier += GetAbilityStrengthByTrigger(client, client, "lessTankyMoreDamage", _, 0, _, _, "ignore", 2, true, _, _, _, _, 1);
-														// "exposed" debuff, currently present on the knife ability.
-		damageReductionPenaltyMultiplier += GetAbilityMultiplier(client, "expo");
+		damageReductionPenaltyMultiplier += GetAbilityStrengthByTrigger(client, client, "lessTankyMoreHeals", _, 0, _, _, "ignore", 2, true);
+		damageReductionPenaltyMultiplier += GetAbilityStrengthByTrigger(client, client, "lessTankyMoreDamage", _, 0, _, _, "ignore", 2, true);
+		damageReductionPenaltyMultiplier += GetAbilityMultiplier(client, "expo");			// "exposed" debuff, currently present on the knife ability.
 		// Special ammo "E" is the berserk ammo.
 		float ammoStr = IsClientInRangeSpecialAmmo(client, "E");
 		if (ammoStr > 0.0) {
@@ -2395,11 +2352,11 @@ stock GetCharacterSheetData(client, char[] stringRef, theSize, request, zombiecl
 				damageReductionPenaltyMultiplier += ammoStr;
 			}
 		}
-		int damageTakenToAdd = (damageReductionPenaltyMultiplier > 0.0) ? RoundToFloor(iResult * damageReductionPenaltyMultiplier) : 0;
+		int damageTakenToAdd = (damageReductionPenaltyMultiplier > 0.0) ? RoundToCeil(iResult * damageReductionPenaltyMultiplier) : 0;
 
 		float damageReductionMultiplier = 0.0;
-		damageReductionMultiplier += GetAbilityStrengthByTrigger(client, client, "lessDamageMoreTanky", _, 0, _, _, "ignore", 2, true, _, _, _, _, 1);
-		damageReductionMultiplier += GetAbilityStrengthByTrigger(client, client, "lessHealsMoreTanky", _, 0, _, _, "ignore", 2, true, _, _, _, _, 1);
+		damageReductionMultiplier += GetAbilityStrengthByTrigger(client, client, "lessDamageMoreTanky", _, 0, _, _, "ignore", 2, true);
+		damageReductionMultiplier += GetAbilityStrengthByTrigger(client, client, "lessHealsMoreTanky", _, 0, _, _, "ignore", 2, true);
 		damageReductionMultiplier += GetAbilityStrengthByTrigger(client, attacker, "L", _, 0, _, _, "o", 2, true);
 		// Special ammo "D" is the shield ammo.
 		ammoStr = IsClientInRangeSpecialAmmo(client, "D");
@@ -2407,15 +2364,16 @@ stock GetCharacterSheetData(client, char[] stringRef, theSize, request, zombiecl
 			damageReductionMultiplier += ammoStr;
 		}
 		// Ability multiplier "X" is currently for last chance and basilisk armor, or any other damage reduction abilities.
-		damageReductionMultiplier += GetAbilityMultiplier(client, "X");
+		float abilityDamageReduction = GetAbilityMultiplier(client, "X");
+		if (abilityDamageReduction > 0.0) damageReductionMultiplier += abilityDamageReduction;
 		if (damageReductionMultiplier > fMaxDamageResistance) {
 			// prevent damage taken from being reduced to 0 (if desired) but by default the limit is 90%
 			damageReductionMultiplier = fMaxDamageResistance;
 		}
-		int damageTakenToRemove = (damageReductionMultiplier > 0.0) ? RoundToFloor(iResult * damageReductionMultiplier) : 0;
+		int damageTakenToRemove = (damageReductionMultiplier > 0.0) ? RoundToCeil(iResult * damageReductionMultiplier) : 0;
 		iResult += damageTakenToAdd;
 		iResult -= damageTakenToRemove;
-		iResult = RoundToCeil(CheckActiveAbility(client, iResult, 1));
+		//iResult = RoundToCeil(CheckActiveAbility(client, iResult, 1));
 		if (iResult < 1) iResult = 1;
 	}
 	AddCommasToString(iResult, stringRef, theSize);
@@ -2439,8 +2397,8 @@ public void ProfileEditorMenu(client) {
 
 	char TheName[64];
 	int thetarget = LoadProfileRequestName[client];
-	if (thetarget == -1 || thetarget == client || !IsLegitimateClient(thetarget) || GetClientTeam(thetarget) != TEAM_SURVIVOR) thetarget = LoadTarget[client];
-	if (IsLegitimateClient(thetarget) && GetClientTeam(thetarget) != TEAM_INFECTED && thetarget != client) {
+	if (thetarget == -1 || thetarget == client || !IsLegitimateClient(thetarget) || myCurrentTeam[thetarget] != TEAM_SURVIVOR) thetarget = LoadTarget[client];
+	if (IsLegitimateClient(thetarget) && myCurrentTeam[thetarget] != TEAM_INFECTED && thetarget != client) {
 
 		//decl String:theclassname[64];
 		GetClientName(thetarget, TheName, sizeof(TheName));
@@ -2495,6 +2453,73 @@ stock CheckRequestStatus(client, bool CancelRequest = false) {
 	return -1;
 }
 
+stock void AddProfilesToAugments(int client, char[] profileName, char[] fullProfileName) {
+	for (int i = 0; i < iNumAugments; i++) {
+		char currentlyEquippedAugment[64];
+		GetArrayString(equippedAugmentsIDCodes[client], i, currentlyEquippedAugment, sizeof(currentlyEquippedAugment));
+
+		int augmentPos = FindAugmentPosByIDCode(client, currentlyEquippedAugment);
+		if (augmentPos < 0) continue;	// this augment doesn't exist anymore.
+
+		char profiles[512];
+		GetArrayString(myAugmentSavedProfiles[client], augmentPos, profiles, sizeof(profiles));
+		// don't add the profile to the augment if it's already stored on the augment.
+		if (StrContains(profiles, profileName, false) != -1) continue;
+		if (StrEqual(profiles, "none")) {
+			Format(profiles, sizeof(profiles), "%s", fullProfileName);
+		}
+		else Format(profiles, sizeof(profiles), "%s\n%s", profiles, fullProfileName);
+		SetArrayString(myAugmentSavedProfiles[client], augmentPos, profiles);
+	}
+}
+
+stock void RemoveProfileFromAugments(int client, char[] profileName, bool skipEquippedAugments = false, int specificAugmentOnly = -1) {
+	int size = GetArraySize(myAugmentSavedProfiles[client]);
+	char newProfiles[512];
+	for (int i = (specificAugmentOnly == -1) ? 0 : specificAugmentOnly; i < size; i++) {
+		int isEquipped = GetArrayCell(myAugmentInfo[client], i, 3);
+		// This switch is so when a new profile is saved, I can call:
+		// AddProfilesToAugments(client, newProfileName);
+		// and then call
+		// RemoveProfileFromAugments(client, newProfileName, true);
+		// afterwards, to quickly remove the newly-saved profile from augments that are not attached to its lists, if it's an overwrite, if those augments were previously saved to that profile.
+		if (skipEquippedAugments && isEquipped >= 0) continue;
+
+		char profiles[512];
+		GetArrayString(myAugmentSavedProfiles[client], i, profiles, sizeof(profiles));
+		
+		int ExplodeCount = GetDelimiterCount(profiles, "\n") + 1;
+		if (ExplodeCount == 1) {
+			if (StrContains(profiles, profileName, false) == -1) Format(newProfiles, sizeof(newProfiles), "%s", profiles);
+			else {
+				Format(newProfiles, sizeof(newProfiles), "none");
+				// augments not tied to profiles are unlocked for autodismantle if they are not equipped.
+				if (isEquipped >= 0) continue;
+
+				char augmentID[64];
+				GetArrayString(myAugmentIDCodes[client], i, augmentID, sizeof(augmentID));
+				
+				char sql[512];
+				Format(sql, sizeof(sql), "UPDATE `%s_loot` SET `isequipped` = '-1' WHERE (`itemid` = '%s');", TheDBPrefix, augmentID);
+ 				SQL_TQuery(hDatabase, QueryResults, sql, client);
+			}
+		}
+		else {
+			char[][] profileNames = new char[ExplodeCount][64];
+			ExplodeString(profiles, "\n", profileNames, ExplodeCount, 64);
+			int count = 0;
+			for (int pos = 0; pos < ExplodeCount; pos++) {
+				if (StrContains(profileNames[pos], profileName, false) != -1) continue;
+				if (count > 0) Format(newProfiles, sizeof(newProfiles), "%s\n%s", newProfiles, profileNames[pos]);
+				else Format(newProfiles, sizeof(newProfiles), "%s", profileNames[pos]);
+				count++;
+			}
+		}
+		SetArrayString(myAugmentSavedProfiles[client], i, newProfiles);
+		if (specificAugmentOnly >= 0) break;
+	}
+}
+
 stock DeleteProfile(client, bool DisplayToClient = true) {
 
 	if (strlen(LoadoutName[client]) < 4) return;
@@ -2507,8 +2532,8 @@ stock DeleteProfile(client, bool DisplayToClient = true) {
 	if (!StrEqual(serverKey, "-1")) Format(t_Loadout, sizeof(t_Loadout), "%s%s", serverKey, t_Loadout);
 	Format(t_Loadout, sizeof(t_Loadout), "%s+%s", t_Loadout, LoadoutName[client]);
 	Format(tquery, sizeof(tquery), "DELETE FROM `%s_profiles` WHERE `steam_id` LIKE '%s%s' AND `steam_id` LIKE '%s%s';", TheDBPrefix, t_Loadout, pct, pct, pct);
-	//PrintToChat(client, tquery);
 	SQL_TQuery(hDatabase, QueryResults, tquery, client);
+	RemoveProfileFromAugments(client, LoadoutName[client]);
 	if (DisplayToClient) {
 
 		PrintToChat(client, "%T", "loadout deleted", client, orange, green, LoadoutName[client]);
@@ -2599,9 +2624,16 @@ stock SaveProfile(client, SaveType = 0) {	// 1 insert a new save, 2 overwrite an
 		if (SaveType == 1) PrintToChat(client, "%T", "new save", client, orange, green, LoadoutName[client]);
 		else PrintToChat(client, "%T", "update save", client, orange, green, LoadoutName[client]);
 
-		if (StrContains(LoadoutName[client], "Lv.", false) == -1) Format(key, sizeof(key), "%s%s Lv.%d+%s", key, LoadoutName[client], TotalPointsAssigned(client), PROFILE_VERSION);
+		int tpa = TotalPointsAssigned(client);
+		if (StrContains(LoadoutName[client], "Lv.", false) == -1) Format(key, sizeof(key), "%s%s Lv.%d+%s", key, LoadoutName[client], tpa, PROFILE_VERSION);
 		else Format(key, sizeof(key), "%s%s+%s", key, LoadoutName[client], PROFILE_VERSION);
 		SaveProfileEx(client, key, SaveType);
+
+		char LoadoutNameFull[512];
+		Format(LoadoutNameFull, sizeof(LoadoutNameFull), "%s Lv.%d", LoadoutName[client], tpa);
+
+		AddProfilesToAugments(client, LoadoutName[client], LoadoutNameFull);
+		RemoveProfileFromAugments(client, LoadoutName[client], true);
 	}
 	else {
 
@@ -2644,8 +2676,6 @@ stock SaveProfileEx(client, char[] key, SaveType) {
 
 	//if (PlayerLevel[client] < 1) return;		// Clearly, their data hasn't loaded, so we don't save.
 	Format(tquery, sizeof(tquery), "UPDATE `%s_profiles` SET `total upgrades` = '%d' WHERE `steam_id` = '%s';", TheDBPrefix, PlayerLevel[client] - UpgradesAvailable[client] - FreeUpgrades[client], key);
-	//PrintToChat(client, tquery);
-	//LogMessage(tquery);
 	SQL_TQuery(hDatabase, QueryResults, tquery, client);
 
 	Format(tquery, sizeof(tquery), "UPDATE `%s_profiles` SET `primarywep` = '%s', `secondwep` = '%s' WHERE `steam_id` = '%s';", TheDBPrefix, sPrimary, sSecondary, key);
@@ -2664,17 +2694,23 @@ stock SaveProfileEx(client, char[] key, SaveType) {
 	}
 
 	for (int i = 0; i < iActionBarSlots; i++) {	// isnt looping?
-
 		GetArrayString(ActionBar[client], i, ActionBarText, sizeof(ActionBarText));
+		int menuPos = GetArrayCell(ActionBarMenuPos[client], i);
+
 		//if (StrEqual(ActionBarText, "none")) continue;
-		if (!IsAbilityTalent(client, ActionBarText) && (!IsTalentExists(ActionBarText) || GetTalentStrength(client, ActionBarText) < 1)) Format(ActionBarText, sizeof(ActionBarText), "none");
+		if (menuPos < 0 || !IsAbilityTalent(client, menuPos) && (!IsTalentExists(ActionBarText) || GetTalentStrength(client, ActionBarText, _, menuPos) < 1)) Format(ActionBarText, sizeof(ActionBarText), "none");
 		Format(tquery, sizeof(tquery), "UPDATE `%s_profiles` SET `aslot%d` = '%s' WHERE (`steam_id` = '%s');", TheDBPrefix, i+1, ActionBarText, key);
 		SQL_TQuery(hDatabase, QueryResults, tquery);
 	}
 	Format(tquery, sizeof(tquery), "UPDATE `%s_profiles` SET `disab` = '%d' WHERE (`steam_id` = '%s');", TheDBPrefix, isDisab, key);
 	SQL_TQuery(hDatabase, QueryResults, tquery);
 
-	LogMessage("Saving Profile %N where steamid: %s", client, key);
+	for (int i = 0; i < iNumAugments; i++) {
+		char currentIDCode[64];
+		GetArrayString(equippedAugmentsIDCodes[client], i, currentIDCode, sizeof(currentIDCode));
+		Format(tquery, sizeof(tquery), "UPDATE `%s_profiles` SET `augment%d` = '%s' WHERE (`steam_id` = '%s');", TheDBPrefix, i+1, currentIDCode, key);
+		SQL_TQuery(hDatabase, QueryResults, tquery);
+	}
 }
 
 stock ReadProfiles(client, char[] target = "none") {
@@ -2707,7 +2743,6 @@ stock ReadProfiles(client, char[] target = "none") {
 	//decl String:tqueryE[512];
 	//SQL_EscapeString(Handle:hDatabase, tquery, tqueryE, sizeof(tqueryE));
 	// maybe set a value equal to the users steamid integer only, so if steam:0:1:23456, set the value of "client" equal to 23456 and then set the client equal to whatever client's steamid contains 23456?
-	//LogMessage("Loading %N data: %s", client, tquery);
 	ClearArray(PlayerProfiles[owner]);
 	if (!StrEqual(target, "all", false)) SQL_TQuery(hDatabase, ReadProfiles_Generate, tquery, owner);
 	else SQL_TQuery(hDatabase, ReadProfiles_GenerateAll, tquery, owner);
@@ -2768,8 +2803,8 @@ stock BuildSubMenu(client, char[] MenuName, char[] ConfigName, char[] ReturnMenu
 	// these keys/values/section names match their talentmenu.cfg notations.
 	int requiredTalentsRequiredToUnlock = 0;
 	int requiredCopy = 0;
-	bool isClientSurvivor = (GetClientTeam(client) == TEAM_SURVIVOR) ? true : false;
-	bool isClientInfected = (GetClientTeam(client) == TEAM_INFECTED) ? true : false;
+	bool isClientSurvivor = (myCurrentTeam[client] == TEAM_SURVIVOR || myCurrentTeam[client] == TEAM_SPECTATOR) ? true : false;
+	bool isClientInfected = (myCurrentTeam[client] == TEAM_INFECTED) ? true : false;
 	for (int i = 0; i < size; i++) {
 		MenuValues[client]			= GetArrayCell(a_Menu_Talents, i, 1);
 		int activatorClassesAllowed = GetArrayCell(MenuValues[client], ACTIVATOR_CLASS_REQ);
@@ -2781,9 +2816,9 @@ stock BuildSubMenu(client, char[] MenuName, char[] ConfigName, char[] ReturnMenu
 		}
 
 		MenuKeys[client]			= GetArrayCell(a_Menu_Talents, i, 0);
-		MenuSection[client]			= GetArrayCell(a_Menu_Talents, i, 2);
+		//MenuSection[client]			= GetArrayCell(a_Menu_Talents, i, 2);
 
-		GetArrayString(MenuSection[client], 0, TalentName, sizeof(TalentName));
+		GetArrayString(a_Database_Talents, i, TalentName, sizeof(TalentName));
 		if (!bEquipSpells[client] && !TalentListingFound(client, MenuKeys[client], MenuValues[client], MenuName)) continue;
 		AbilityTalent	=	GetArrayCell(MenuValues[client], IS_TALENT_ABILITY);
 		isSpecialAmmo	=	GetArrayCell(MenuValues[client], TALENT_IS_SPELL);
@@ -2825,7 +2860,7 @@ stock BuildSubMenu(client, char[] MenuName, char[] ConfigName, char[] ReturnMenu
 					if (PlayerTalentPoints > 0) {
 						FreeUpgrades[client]++;// += nodeUnlockCost;
 						PlayerUpgradesTotal[client] -= PlayerTalentPoints;
-						AddTalentPoints(client, TalentName, 0);
+						AddTalentPoints(client, i, 0);
 					}
 				}
 				else {
@@ -2840,11 +2875,11 @@ stock BuildSubMenu(client, char[] MenuName, char[] ConfigName, char[] ReturnMenu
 						// instantly, and effortlessly, because it's an rpg and a common sense feature that should ALWAYS EXIST IN AN RPG.
 						FreeUpgrades[client] += (PlayerTalentPoints - 1);
 						PlayerUpgradesTotal[client] -= (PlayerTalentPoints - 1);
-						AddTalentPoints(client, TalentName, (PlayerTalentPoints - 1));
+						AddTalentPoints(client, i, (PlayerTalentPoints - 1));
 					}
 				}
 			}
-			else PlayerTalentPoints = GetTalentStrength(-1, TalentName);
+			else PlayerTalentPoints = GetTalentStrength(-1, _, _, i);
 			if (bIsNotEligible) {
 				if (iShowLockedTalents == 0) continue;
 				if (requiredTalentsRequiredToUnlock > 1) {
@@ -2946,8 +2981,8 @@ public BuildSubMenuHandle(Handle menu, MenuAction action, client, slot)
 
 		//if (StrEqual(ConfigName, CONFIG_MENUSURVIVOR)) size			=	GetArraySize(a_Menu_Talents_Survivor);
 		//else if (StrEqual(ConfigName, CONFIG_MENUINFECTED)) size	=	GetArraySize(a_Menu_Talents_Infected);
-		bool isClientSurvivor = (GetClientTeam(client) == TEAM_SURVIVOR) ? true : false;
-		bool isClientInfected = (GetClientTeam(client) == TEAM_INFECTED) ? true : false;
+		bool isClientSurvivor = (myCurrentTeam[client] == TEAM_SURVIVOR || myCurrentTeam[client] == TEAM_SPECTATOR) ? true : false;
+		bool isClientInfected = (myCurrentTeam[client] == TEAM_INFECTED) ? true : false;
 		for (int i = 0; i < size; i++) {
 			MenuValues[client]				= GetArrayCell(a_Menu_Talents, i, 1);
 			int activatorClassesAllowed = GetArrayCell(MenuValues[client], ACTIVATOR_CLASS_REQ);
@@ -2959,9 +2994,9 @@ public BuildSubMenuHandle(Handle menu, MenuAction action, client, slot)
 			}
 
 			MenuKeys[client]				= GetArrayCell(a_Menu_Talents, i, 0);
-			MenuSection[client]				= GetArrayCell(a_Menu_Talents, i, 2);
+			//MenuSection[client]				= GetArrayCell(a_Menu_Talents, i, 2);
 
-			GetArrayString(MenuSection[client], 0, TalentName, sizeof(TalentName));
+			GetArrayString(a_Database_Talents, i, TalentName, sizeof(TalentName));
 			if (!bEquipSpells[client] && !TalentListingFound(client, MenuKeys[client], MenuValues[client], MenuName)) continue;
 			AbilityTalent	=	GetArrayCell(MenuValues[client], IS_TALENT_ABILITY);
 			isSpecialAmmo	=	GetArrayCell(MenuValues[client], TALENT_IS_SPELL);
@@ -3135,18 +3170,21 @@ stock float GetTalentInfo(client, Handle Values, infotype = 0, bool bIsNext = fa
 		float cdReduction = 0.0;
 		int acdReduction = GetArraySize(a_Menu_Talents);
 		for (int i = 0; i < acdReduction; i++) {
+			int TheTalentStrength = GetArrayCell(MyTalentStrength[client], i);
+			if (TheTalentStrength < 1) continue;
 			acdrValues[client] = GetArrayCell(a_Menu_Talents, i, 1);
 			GetArrayString(acdrValues[client], COOLDOWN_GOVERNOR_OF_TALENT, sCooldownGovernor, sizeof(sCooldownGovernor));
 			if (!FoundCooldownReduction(TalentNameOverride, sCooldownGovernor)) continue;
 
-			acdrSection[client] = GetArrayCell(a_Menu_Talents, i, 2);
-			GetArrayString(acdrSection[client], 0, sCooldownGovernor, sizeof(sCooldownGovernor));
+			//acdrSection[client] = GetArrayCell(a_Menu_Talents, i, 2);
+			GetArrayString(a_Database_Talents, i, sCooldownGovernor, sizeof(sCooldownGovernor));
 			cdReduction += GetTalentInfo(client, acdrValues[client], _, _, sCooldownGovernor);
 		}
 		//if (governingAttributeMultiplier > 0.0) cdReduction += governingAttributeMultiplier;
 		if (cdReduction > 0.0) f_StrengthPoint -= (f_StrengthPoint * cdReduction);
 		float fMinimumCooldown = GetArrayCell(Values, TALENT_MINIMUM_COOLDOWN_TIME);
-		if (fMinimumCooldown < 0.0) fMinimumCooldown = 0.0;
+		float fStartingCooldown = GetArrayCell(Values, TALENT_COOLDOWN_STRENGTH_VALUE);
+		if (fMinimumCooldown < 0.0) fMinimumCooldown = fStartingCooldown;
 		if (f_StrengthPoint < fMinimumCooldown) f_StrengthPoint = fMinimumCooldown;	// can't have cooldowns that are less than 0.0 seconds.
 	}
 
@@ -3193,14 +3231,15 @@ public Handle TalentInfoScreen(client) {
 	int IsSpecialAmmo = GetArrayCell(PurchaseValues[client], TALENT_IS_SPELL);
 
 	Handle menu = CreatePanel();
-	BuildMenuTitle(client, menu, _, 0, true, true);
+	BuildMenuTitle(client, menu, _, 0, true, true, 1);
 
 	char TalentName[64];
 	Format(TalentName, sizeof(TalentName), "%s", PurchaseTalentName[client]);
+	int menuPos = GetMenuPosition(client, TalentName);
 
 	int TalentPointAmount		= 0;
-	if (!b_IsDirectorTalents[client]) TalentPointAmount = GetTalentStrength(client, TalentName);
-	else TalentPointAmount = GetTalentStrength(-1, TalentName);
+	if (!b_IsDirectorTalents[client]) TalentPointAmount = GetTalentStrength(client, TalentName, _, menuPos);
+	else TalentPointAmount = GetTalentStrength(-1, TalentName, _, menuPos);
 
 	int nodeUnlockCost = 1;
 
@@ -3226,17 +3265,16 @@ public Handle TalentInfoScreen(client) {
 	char TalentNameTranslation[64];
 	GetTranslationOfTalentName(client, TalentName, TalentNameTranslation, sizeof(TalentNameTranslation), true);
 	Format(TalentName_Temp, sizeof(TalentName_Temp), "%T", TalentNameTranslation, client);
-	char text[1024];	
-	if (AbilityTalent != 1) {
-
-		if (FreeUpgrades[client] < 0) FreeUpgrades[client] = 0;
-		Format(text, sizeof(text), "%T", "Talent Upgrade Title", client, TalentName_Temp, TalentPointAmount);
-	}
-	else Format(text, sizeof(text), "%s", TalentName_Temp);
-	DrawPanelText(menu, text);
+	char text[1024];
+	if (FreeUpgrades[client] < 0) FreeUpgrades[client] = 0;
+	// if (AbilityTalent != 1) {
+	// 	Format(text, sizeof(text), "%T", "Talent Upgrade Title", client, TalentName_Temp, TalentPointAmount);
+	// }
+	// else Format(text, sizeof(text), "%s", TalentName_Temp);
+	// DrawPanelText(menu, text);
 
 	char governingAttribute[64];
-	GetGoverningAttribute(client, TalentName, governingAttribute, sizeof(governingAttribute));
+	GetGoverningAttribute(client, TalentName, governingAttribute, sizeof(governingAttribute), menuPos);
 	if (!StrEqual(governingAttribute, "-1")) {
 		Format(text, sizeof(text), "%T", governingAttribute, client);
 		Format(text, sizeof(text), "%T", "Node Governing Attribute", client, text);
@@ -3352,8 +3390,8 @@ public Handle TalentInfoScreen(client) {
 			else Format(text, sizeof(text), "%T", "Talent Upgrade Title Free", client, TalentName_Temp, TalentPointAmount, TalentPointMaximum, FreeUpgrades[client]);
 			SetPanelTitle(menu, text);*/
 
-			float fTimeCur = GetSpecialAmmoStrength(client, TalentName);
-			float fTimeNex = GetSpecialAmmoStrength(client, TalentName, 0, true);
+			float fTimeCur = GetSpecialAmmoStrength(client, TalentName, _, _, _, menuPos);
+			float fTimeNex = GetSpecialAmmoStrength(client, TalentName, 0, true, _, menuPos);
 
 			//new Float:flIntCur = GetSpecialAmmoStrength(client, TalentName, 4);
 			//new Float:flIntNex = GetSpecialAmmoStrength(client, TalentName, 4, true);
@@ -3366,26 +3404,28 @@ public Handle TalentInfoScreen(client) {
 			if (TalentPointAmount < 1) {
 				Format(text, sizeof(text), "%T", "Special Ammo Time", client, fTimeNex);
 				DrawPanelText(menu, text);
-				Format(text, sizeof(text), "%T", "Special Ammo Cooldown", client, fTimeNex + GetSpecialAmmoStrength(client, TalentName, 1, true));
+				Format(text, sizeof(text), "%T", "Special Ammo Cooldown", client, fTimeNex + GetSpecialAmmoStrength(client, TalentName, 1, true, _, menuPos));
 				DrawPanelText(menu, text);
-				Format(text, sizeof(text), "%T", "Special Ammo Stamina", client, RoundToCeil(GetSpecialAmmoStrength(client, TalentName, 2, true)));
+				Format(text, sizeof(text), "%T", "Special Ammo Stamina", client, RoundToCeil(GetSpecialAmmoStrength(client, TalentName, 2, true, _, menuPos)));
 				DrawPanelText(menu, text);
-				Format(text, sizeof(text), "%T", "Special Ammo Range", client, GetSpecialAmmoStrength(client, TalentName, 3, true));
+				Format(text, sizeof(text), "%T", "Special Ammo Range", client, GetSpecialAmmoStrength(client, TalentName, 3, true, _, menuPos));
 				DrawPanelText(menu, text);
 			}
 			else {
 				Format(text, sizeof(text), "%T", "Special Ammo Time Max", client, fTimeCur);
 				DrawPanelText(menu, text);
-				Format(text, sizeof(text), "%T", "Special Ammo Cooldown Max", client, fTimeCur + GetSpecialAmmoStrength(client, TalentName, 1));
+				Format(text, sizeof(text), "%T", "Special Ammo Cooldown Max", client, fTimeCur + GetSpecialAmmoStrength(client, TalentName, 1, _, _, menuPos));
 				DrawPanelText(menu, text);
-				Format(text, sizeof(text), "%T", "Special Ammo Stamina Max", client, RoundToCeil(GetSpecialAmmoStrength(client, TalentName, 2)));
+				Format(text, sizeof(text), "%T", "Special Ammo Stamina Max", client, RoundToCeil(GetSpecialAmmoStrength(client, TalentName, 2, _, _, menuPos)));
 				DrawPanelText(menu, text);
-				Format(text, sizeof(text), "%T", "Special Ammo Range Max", client, GetSpecialAmmoStrength(client, TalentName, 3));
+				Format(text, sizeof(text), "%T", "Special Ammo Range Max", client, GetSpecialAmmoStrength(client, TalentName, 3, _, _, menuPos));
 				DrawPanelText(menu, text);
 			}
-			Format(text, sizeof(text), "%T", "Special Ammo Effect Strength", client, GetValueFloat(client, TalentName, SPECIAL_AMMO_TALENT_STRENGTH) * 100.0, pct);
+			float fSpecialAmmoEffectStrength = GetValueFloat(client, menuPos, SPECIAL_AMMO_TALENT_STRENGTH);
+			float fSpellBuffStrUp = GetAbilityStrengthByTrigger(client, _, "spellbuff", _, _, _, _, "strengthup", 0, true);
+			if (fSpellBuffStrUp > 0.0) fSpecialAmmoEffectStrength += (fSpecialAmmoEffectStrength * fSpellBuffStrUp);
 			
-			//Format(text, sizeof(text), "%T", "Special Ammo Effect Strength", client, GetArrayCell(PurchaseValues[client], SPECIAL_AMMO_TALENT_STRENGTH) * 100.0, pct);
+			Format(text, sizeof(text), "%T", "Special Ammo Effect Strength", client, fSpecialAmmoEffectStrength * 100.0, pct);
 			DrawPanelText(menu, text);
 			//DrawPanelText(menu, TalentIdCode);
 		}
@@ -3453,8 +3493,9 @@ public Handle TalentInfoScreen(client) {
 		int multiplyStrengthHeadshotHits = GetArrayCell(PurchaseValues[client], MULT_STR_CONSECUTIVE_HEADSHOTS);
 		int multiplyStrengthHeadshotMax = GetArrayCell(PurchaseValues[client], MULT_STR_CONSECUTIVE_HEADSHOTS_MAX);
 		int multiplyStrengthHeadshotDiv = GetArrayCell(PurchaseValues[client], MULT_STR_CONSECUTIVE_HEADSHOTS_DIV);
+		float fTimeSinceLastAttack = GetArrayCell(PurchaseValues[client], TIME_SINCE_LAST_ACTIVATOR_ATTACK);
 
-		if (consecutiveHitsRequired > 0 || consecutiveHeadshotsRequired ||
+		if (fTimeSinceLastAttack > 0.0 || consecutiveHitsRequired > 0 || consecutiveHeadshotsRequired ||
 			fPercentageHealthRequired > 0.0 || fPercentageHealthRequiredBelow > 0.0 || fCoherencyRange > 0.0 || fPercentageHealthAllyMissingRequired > 0.0 || fTargetRangeRequired > 0.0 ||
 			multiplyStrengthConsecutiveHits == 1 && (multiplyStrengthConsecutiveMax > 1 || multiplyStrengthConsecutiveDiv > 1) ||
 			multiplyStrengthHeadshotHits == 1 && (multiplyStrengthHeadshotMax > 1 || multiplyStrengthHeadshotDiv > 1)) {
@@ -3463,7 +3504,7 @@ public Handle TalentInfoScreen(client) {
 			Format(TalentInfo, sizeof(TalentInfo), "%T", TalentNameTranslation, client, fPercentageHealthRequired * 100.0, pct, fPercentageHealthRequiredMax * 100.0, pct,
 				   fPercentageHealthRequiredBelow * 100.0, pct, fCoherencyRange, iCoherencyMax, fTargetRangeRequired,
 				   multiplyStrengthConsecutiveMax, multiplyStrengthConsecutiveDiv, multiplyStrengthHeadshotMax, multiplyStrengthHeadshotDiv,
-				   consecutiveHitsRequired, consecutiveHeadshotsRequired, fPercentageHealthAllyMissingRequired * 100.0, pct);
+				   consecutiveHitsRequired, consecutiveHeadshotsRequired, fPercentageHealthAllyMissingRequired * 100.0, pct, fTimeSinceLastAttack);
 		}
 		else Format(TalentInfo, sizeof(TalentInfo), "%T", TalentNameTranslation, client);
 
@@ -3502,9 +3543,7 @@ public Handle TalentInfoScreen(client) {
 		char talentAttribute[64];
 		GetArrayString(PurchaseValues[client], ATTRIBUTE_MULTIPLIER, talentAttribute, sizeof(talentAttribute));
 		for (int i = 0; i < size; i++) {
-			MenuKeys[client]	= GetArrayCell(a_Menu_Talents, i, 0);
 			MenuValues[client]	= GetArrayCell(a_Menu_Talents, i, 1);
-			MenuSection[client]	= GetArrayCell(a_Menu_Talents, i, 2);
 
 			if (GetArrayCell(MenuValues[client], GET_TALENT_LAYER) != PlayerCurrentMenuLayer[client]) continue;
 			if (GetArrayCell(MenuValues[client], IS_ATTRIBUTE) == 1) continue;
@@ -3586,7 +3625,13 @@ stock GetAbilityText(client, char[] TheString, TheSize, Handle Keys, Handle Valu
 	}
 	Format(tDraft, sizeof(tDraft), "%s\n%s", tDraft, text2);
 	if (pos == ABILITY_ACTIVE_EFFECT) {
+		float fActiveTime = GetArrayCell(Values, ABILITY_ACTIVE_TIME);
+		if (!StrEqual(text2, "-1")) Format(text2, sizeof(text2), "%T", "Ability Active Time", client, fActiveTime);
+		else Format(text2, sizeof(text2), "%T", "Instant Ability", client);
 
+		Format(TheString, TheSize, "%s\n%s\n%s", text, text2, tDraft);
+	}
+	else if (pos == ABILITY_COOLDOWN_EFFECT) {
 		float fAbilityCooldown = GetArrayCell(Values, ABILITY_COOLDOWN);
 
 		TheAbilityMultiplier = GetAbilityMultiplier(client, "L");
@@ -3603,11 +3648,7 @@ stock GetAbilityText(client, char[] TheString, TheSize, Handle Keys, Handle Valu
 		if (!StrEqual(text, "-1")) Format(text, sizeof(text), "%T", "Ability Cooldown", client, fAbilityCooldown);
 		else Format(text, sizeof(text), "%T", "No Ability Cooldown", client);
 
-		float fActiveTime = GetArrayCell(Values, ABILITY_ACTIVE_TIME);
-		if (!StrEqual(text2, "-1")) Format(text2, sizeof(text2), "%T", "Ability Active Time", client, fActiveTime);
-		else Format(text2, sizeof(text2), "%T", "Instant Ability", client);
-
-		Format(TheString, TheSize, "%s\n%s\n%s", text, text2, tDraft);
+		Format(TheString, TheSize, "%s\n%s", text, tDraft);
 	}
 	else Format(TheString, TheSize, "%s", tDraft);
 }
@@ -3762,6 +3803,8 @@ public Handle UnequipAugment_Compare(int client) {
 	DrawPanelText(menu, augmentCategory);
 	if (!StrEqual(augmentActivator, "-1")) DrawPanelText(menu, augmentActivator);
 	if (!StrEqual(augmentTarget, "-1")) DrawPanelText(menu, augmentTarget);
+	int iEquippedAugmentLevel = GetArrayCell(myAugmentInfo[client], augmentSlotToEquipOn[client]) / iAugmentLevelDivisor;
+	Format(text, sizeof(text), "Augment Score: %d\n \n", iEquippedAugmentLevel);
 	Format(text, sizeof(text), "Replace above(equipped) augment with:");
 	DrawPanelItem(menu, text);
 	GetAugmentComparator(client, AugmentClientIsInspecting[client], augmentName, augmentCategory, augmentActivator, augmentTarget);
@@ -3769,6 +3812,8 @@ public Handle UnequipAugment_Compare(int client) {
 	DrawPanelText(menu, augmentCategory);
 	if (!StrEqual(augmentActivator, "-1")) DrawPanelText(menu, augmentActivator);
 	if (!StrEqual(augmentTarget, "-1")) DrawPanelText(menu, augmentTarget);
+	int iInspectedAugmentLevel = GetArrayCell(myAugmentInfo[client], AugmentClientIsInspecting[client]) / iAugmentLevelDivisor;
+	Format(text, sizeof(text), "Augment Score: %d\n \n", iInspectedAugmentLevel);
 	Format(text, sizeof(text), "%T", "return to talent menu", client);
 	DrawPanelItem(menu, text);
 	
@@ -3814,6 +3859,12 @@ stock void GetAugmentComparator(int client, int slot, char[] augmentName, char[]
 	int iItemLevel = 0;
 	int activatorRating = -1;
 	int targetRating = -1;
+	if (isAugmentEquipped && slot >= GetArraySize(equippedAugments[client]) ||
+		!isAugmentEquipped && slot >= GetArraySize(myAugmentInfo[client])) {
+		// they cleared or something
+		BuildMenu(client);
+		return;
+	}
 
 	if (isAugmentEquipped) {
 		iItemLevel = GetArrayCell(equippedAugments[client], slot, 2);
@@ -3899,46 +3950,50 @@ public UnequipAugment_Compare_Init(Handle topmenu, MenuAction action, client, pa
 
 stock bool UnequipAugment_Confirm(client, char[] augmentID) {
 	int size = GetArraySize(myAugmentIDCodes[client]);
-	char text[64];
+	char text[512];
 	for (int i = 0; i < size; i++) {
-		GetArrayString(myAugmentIDCodes[client], i, text, 64);
+		GetArrayString(myAugmentIDCodes[client], i, text, sizeof(text));
 		if (!StrEqual(text, augmentID)) continue;
-		SetArrayCell(myAugmentInfo[client], i, -1, 3);
+		GetArrayString(myAugmentSavedProfiles[client], i, text, sizeof(text));
+		bool isSaved = (StrEqual(text, "none")) ? true : false;
+		if (!isSaved) SetArrayCell(myAugmentInfo[client], i, -1, 3);
+		else SetArrayCell(myAugmentInfo[client], i, -3, 3);
 
 		char sql[512];
-		Format(sql, sizeof(sql), "UPDATE `%s_loot` SET `isequipped` = '-1' WHERE (`itemid` = '%s');", TheDBPrefix, augmentID);
- 		SQL_TQuery(hDatabase, QueryResults, sql);
+		Format(sql, sizeof(sql), "UPDATE `%s_loot` SET `isequipped` = '%d' WHERE (`itemid` = '%s');", TheDBPrefix, ((!isSaved) ? -1 : -3), augmentID);
+ 		SQL_TQuery(hDatabase, QueryResults, sql, client);
 
 		return true;
 	}
 	return false;
 }
 
-stock EquipAugment_Confirm(int client, int pos) {
+stock EquipAugment_Confirm(int client, int pos, int augmentInspectionOverride = -1) {
+	int augmentPos = (augmentInspectionOverride == -1) ? AugmentClientIsInspecting[client] : augmentInspectionOverride;
 	// there's a lot of augment data that needs to be stored in the equipped augment arrays.
 	char baseMenuText[64];
 	char activatorText[64];
 	char targetText[64];
-	GetArrayString(myAugmentCategories[client], AugmentClientIsInspecting[client], baseMenuText, 64);
-	GetArrayString(myAugmentActivatorEffects[client], AugmentClientIsInspecting[client], activatorText, 64);
-	GetArrayString(myAugmentTargetEffects[client], AugmentClientIsInspecting[client], targetText, 64);
-	int itemRating = GetArrayCell(myAugmentInfo[client], AugmentClientIsInspecting[client]);
-	int activatorRating = GetArrayCell(myAugmentInfo[client], AugmentClientIsInspecting[client], 4);
-	int targetRating = GetArrayCell(myAugmentInfo[client], AugmentClientIsInspecting[client], 5);
+	GetArrayString(myAugmentCategories[client], augmentPos, baseMenuText, 64);
+	GetArrayString(myAugmentActivatorEffects[client], augmentPos, activatorText, 64);
+	GetArrayString(myAugmentTargetEffects[client], augmentPos, targetText, 64);
+	int itemRating = GetArrayCell(myAugmentInfo[client], augmentPos);
+	int activatorRating = GetArrayCell(myAugmentInfo[client], augmentPos, 4);
+	int targetRating = GetArrayCell(myAugmentInfo[client], augmentPos, 5);
 	//int isEquipped = GetArrayCell(myAugmentInfo[client], AugmentClientIsInspecting[client], 3);
-	int itemCost = GetArrayCell(myAugmentInfo[client], AugmentClientIsInspecting[client], 1);
-	int iItemLevel = GetArrayCell(myAugmentInfo[client], AugmentClientIsInspecting[client]);
+	int itemCost = GetArrayCell(myAugmentInfo[client], augmentPos, 1);
+	int iItemLevel = GetArrayCell(myAugmentInfo[client], augmentPos);
 
 
-	SetArrayCell(myAugmentInfo[client], AugmentClientIsInspecting[client], pos, 3);
+	SetArrayCell(myAugmentInfo[client], augmentPos, pos, 3);
 	
 	char itemCode[64];
-	GetArrayString(myAugmentIDCodes[client], AugmentClientIsInspecting[client], itemCode, 64);
+	GetArrayString(myAugmentIDCodes[client], augmentPos, itemCode, 64);
 	SetArrayString(equippedAugmentsIDCodes[client], pos, itemCode);
 
 	char sql[512];
 	Format(sql, sizeof(sql), "UPDATE `%s_loot` SET `isequipped` = '%d' WHERE (`itemid` = '%s');", TheDBPrefix, pos, itemCode);
-	SQL_TQuery(hDatabase, QueryResults, sql);
+	SQL_TQuery(hDatabase, QueryResults, sql, client);
 
 	SetArrayCell(equippedAugments[client], pos, iItemLevel);
 	SetArrayCell(equippedAugments[client], pos, itemCost, 1);
@@ -3949,9 +4004,10 @@ stock EquipAugment_Confirm(int client, int pos) {
 	SetArrayString(equippedAugmentsTarget[client], pos, targetText);
 	SetArrayCell(equippedAugments[client], pos, targetRating, 5);
 	SetClientTalentStrength(client);	// talent strengths need to be updated when an augment is equipped or unequipped.
+	FormatPlayerName(client);
 }
 
-stock void GetAugmentSurname(int client, int pos, char[] surname, int surnameSize, char[] surname2, int surname2Size, bool:bFormatTranslation = true) {
+stock void GetAugmentSurname(int client, int pos, char[] surname, int surnameSize, char[] surname2, int surname2Size, bool bFormatTranslation = true) {
 	GetArrayString(myAugmentActivatorEffects[client], pos, surname, surnameSize);
 	if (!StrEqual(surname, "-1")) {
 		Format(surname, surnameSize, "%s major surname", surname);
@@ -3971,23 +4027,68 @@ public Handle Inspect_Augment(client, slot) {
 	char augmentName[64];
 	char augmentCategory[64], augmentActivator[64], augmentTarget[64];
 	GetAugmentComparator(client, AugmentClientIsInspecting[client], augmentName, augmentCategory, augmentActivator, augmentTarget);
+	char augmentOwner[64];
+	GetArrayString(myAugmentOwners[client], slot, augmentOwner, sizeof(augmentOwner));
+	char augmentOwnerName[64];
+	GetArrayString(myAugmentOwnersName[client], slot, augmentOwnerName, sizeof(augmentOwnerName));
+	char key[64];
+	GetClientAuthId(client, AuthId_Steam2, key, sizeof(key));
+	bool isNotOriginalOwner = (StrContains(augmentOwner, key, false) == -1) ? true : false;
+
 	int isEquipped = GetArrayCell(myAugmentInfo[client], slot, 3);
 	if (isEquipped == -2) Format(augmentName, sizeof(augmentName), "%s*", augmentName);
+	if (isNotOriginalOwner) {
+		Format(augmentName, sizeof(augmentName), "%s^", augmentName);
+		LogMessage("Original owner: %s, current owner: %s", augmentOwner, key);
+	}
 	char scrap[64];
 	AddCommasToString(augmentParts[client], scrap, 64);
-	Format(text, sizeof(text), "Scrap: %s\n \n%s\n%s", scrap, augmentName, augmentCategory);
+	char augAvgLvl[64];
+	AddCommasToString(playerCurrentAugmentAverageLevel[client], augAvgLvl, 64);
+	Format(text, sizeof(text), "Avg Augment Lv. %s\nScrap: %s\n \n%s\n%s", augAvgLvl, scrap, augmentName, augmentCategory);
 	if (!StrEqual(augmentActivator, "-1")) Format(text, sizeof(text), "%s\n%s", text, augmentActivator);
 	if (!StrEqual(augmentTarget, "-1")) Format(text, sizeof(text), "%s\n%s", text, augmentTarget);
 	Format(text, sizeof(text), "%s\n \n", text);
 	DrawPanelText(menu, text);
+	int currentCategoryScoreRoll = GetArrayCell(myAugmentInfo[client], slot);
+	int iThisAugmentLevel = currentCategoryScoreRoll / iAugmentLevelDivisor;
+	char myAugLevelFormatted[10];
+	AddCommasToString(iThisAugmentLevel, myAugLevelFormatted, sizeof(myAugLevelFormatted));
+	Format(text, sizeof(text), "Augment Score: %s", myAugLevelFormatted);
+	
+	if (isNotOriginalOwner) {
+		// client is not the original owner of this augment.
+		Format(text, sizeof(text), "%s\nStolen From: %s", text, augmentOwnerName);
+	}
+	else Format(text, sizeof(text), "%s\nDiscovered By: You", text);
+	Format(text, sizeof(text), "%s\n \n", text);
+
+	char profilesThisAugmentIsSavedIn[512];
+	GetArrayString(myAugmentSavedProfiles[client], slot, profilesThisAugmentIsSavedIn, sizeof(profilesThisAugmentIsSavedIn));
+	if (StrEqual(profilesThisAugmentIsSavedIn, "none")) {
+		Format(text, sizeof(text), "%s\nThis augment is not saved to any profiles.", text);
+	}
+	else Format(text, sizeof(text), "%s\nSaved to:\n%s", text, profilesThisAugmentIsSavedIn);
+	Format(text, sizeof(text), "%s\n \n \n", text);
+
+	DrawPanelText(menu, text);
 	ClearArray(EquipAugmentPanel[client]);
-	if (isEquipped < 0) {
-		Format(text, sizeof(text), "%T", "equip augment", client);
-		PushArrayString(EquipAugmentPanel[client], "equip augment");
+	int thisClientMaxAugmentLevel = (playerCurrentAugmentAverageLevel[client] > 0) ? playerCurrentAugmentAverageLevel[client] + RoundToCeil(playerCurrentAugmentAverageLevel[client] * fAugmentLevelDifferenceForStolen) : 0;
+	if (isEquipped < 0 && isNotOriginalOwner && thisClientMaxAugmentLevel < iThisAugmentLevel) {
+		char maxAllowedLevel[10];
+		AddCommasToString(thisClientMaxAugmentLevel, maxAllowedLevel, 10);
+		Format(text, sizeof(text), "%T", "augment restricted", client, maxAllowedLevel);
+		PushArrayString(EquipAugmentPanel[client], "req not met");
 	}
 	else {
-		Format(text, sizeof(text), "%T", "unequip augment", client);
-		PushArrayString(EquipAugmentPanel[client], "unequip augment");
+		if (isEquipped < 0) {
+			Format(text, sizeof(text), "%T", "equip augment", client);
+			PushArrayString(EquipAugmentPanel[client], "equip augment");
+		}
+		else {
+			Format(text, sizeof(text), "%T", "unequip augment", client);
+			PushArrayString(EquipAugmentPanel[client], "unequip augment");
+		}
 	}
 	DrawPanelItem(menu, text);
 	if (isEquipped == -1) {
@@ -4001,7 +4102,43 @@ public Handle Inspect_Augment(client, slot) {
 		PushArrayString(EquipAugmentPanel[client], "reroll augment");
 		DrawPanelItem(menu, text);
 	}
-	if (isEquipped < 0) {
+	int currentActivatorScoreRoll = GetArrayCell(myAugmentInfo[client], slot, 4);
+	int currentTargetScoreRoll = GetArrayCell(myAugmentInfo[client], slot, 5);
+	int maxCategoryScoreRoll = GetArrayCell(myAugmentInfo[client], slot, 6);
+	int maxActivatorScoreRoll = GetArrayCell(myAugmentInfo[client], slot, 7);
+	int maxTargetScoreRoll = GetArrayCell(myAugmentInfo[client], slot, 8);
+	// only show the upgrade screen if all 3 categories aren't fully-upgraded
+	// god help the soul that actually does this and blows through all those materials :rofl:
+	if (currentCategoryScoreRoll < maxCategoryScoreRoll || currentActivatorScoreRoll > 0 && currentActivatorScoreRoll < maxActivatorScoreRoll || currentTargetScoreRoll > 0 && currentTargetScoreRoll < maxTargetScoreRoll) {
+		char augmentNameCopy[64];
+		char augmentCategoryName[64];
+		char augmentActivatorName[64];
+		char augmentTargetName[64];
+		GetAugmentComparator(client, AugmentClientIsInspecting[client], augmentNameCopy, augmentCategoryName, augmentActivatorName, augmentTargetName, _, true);
+		char pct[4];
+		Format(pct, sizeof(pct), "%");
+		Format(text, sizeof(text), "%T", "upgrade augment", client);
+		PushArrayString(EquipAugmentPanel[client], "upgrade augment");
+		DrawPanelItem(menu, text);
+		if (currentCategoryScoreRoll < maxCategoryScoreRoll) {
+			Format(text, sizeof(text), "%s: +%3.1f%s -> +%3.1f%s", augmentCategoryName, (currentCategoryScoreRoll * fAugmentRatingMultiplier) * 100.0, pct, (maxCategoryScoreRoll * fAugmentRatingMultiplier) * 100.0, pct);
+			DrawPanelText(menu, text);
+		}
+		if (currentActivatorScoreRoll > 0 && currentActivatorScoreRoll < maxActivatorScoreRoll) {
+			Format(text, sizeof(text), "%s: +%3.1f%s -> +%3.1f%s", augmentActivatorName, (currentActivatorScoreRoll * fAugmentActivatorRatingMultiplier) * 100.0, pct, (maxActivatorScoreRoll * fAugmentActivatorRatingMultiplier) * 100.0, pct);
+			DrawPanelText(menu, text);
+		}
+		if (currentTargetScoreRoll > 0 && currentTargetScoreRoll < maxTargetScoreRoll) {
+			Format(text, sizeof(text), "%s: +%3.1f%s -> +%3.1f%s", augmentTargetName, (currentTargetScoreRoll * fAugmentTargetRatingMultiplier) * 100.0, pct, (maxTargetScoreRoll * fAugmentTargetRatingMultiplier) * 100.0, pct);
+			DrawPanelText(menu, text);
+		}
+		Format(text, sizeof(text), "\n \n");
+		DrawPanelText(menu, text);
+	}
+	char isSavedText[512];
+	GetArrayString(myAugmentSavedProfiles[client], AugmentClientIsInspecting[client], isSavedText, sizeof(isSavedText));
+	bool isSaved = (StrEqual(isSavedText, "none")) ? false : true;
+	if (isEquipped < 0 && !isSaved) {
 		if (isEquipped == -1) {
 			Format(text, sizeof(text), "%T", "lock augment", client);
 			PushArrayString(EquipAugmentPanel[client], "lock augment");
@@ -4031,12 +4168,26 @@ public Inspect_Augment_Handle (Handle topmenu, MenuAction action, client, param2
 			SendPanelToClientAndClose(Inspect_Augment(client, AugmentClientIsInspecting[client]), client, Inspect_Augment_Handle, MENU_TIME_FOREVER);
 			return;
 		}
+		char text[512];
+		GetArrayString(myAugmentSavedProfiles[client], AugmentClientIsInspecting[client], text, sizeof(text));
+		bool isSaved = (StrEqual(text, "none")) ? false : true;
+		
 		GetArrayString(EquipAugmentPanel[client], param2-1, menuSelection, sizeof(menuSelection));
-		if (StrEqual(menuSelection, "equip augment")) SendPanelToClientAndClose(Augments_Equip(client), client, Augments_Equip_Init, MENU_TIME_FOREVER);
+		if (StrEqual(menuSelection, "req not met")) {
+			SendPanelToClientAndClose(Inspect_Augment(client, AugmentClientIsInspecting[client]), client, Inspect_Augment_Handle, MENU_TIME_FOREVER);
+		}
+		else if (StrEqual(menuSelection, "upgrade augment")) {
+			// until this is built, we just send the user back to the inspect page.
+			// i want to make sure it's tracking this data properly first.
+			SendPanelToClientAndClose(Upgrade_Augment(client), client, Upgrade_Augment_Handle, MENU_TIME_FOREVER);
+		}
+		else if (StrEqual(menuSelection, "equip augment")) SendPanelToClientAndClose(Augments_Equip(client), client, Augments_Equip_Init, MENU_TIME_FOREVER);
 		else if (StrEqual(menuSelection, "unequip augment")) {
-			Format(sql, sizeof(sql), "UPDATE `%s_loot` SET `isequipped` = '-1' WHERE (`itemid` = '%s');", TheDBPrefix, itemCode);
-			SQL_TQuery(hDatabase, QueryResults, sql);
-			SetArrayCell(myAugmentInfo[client], AugmentClientIsInspecting[client], -1, 3);
+			Format(sql, sizeof(sql), "UPDATE `%s_loot` SET `isequipped` = '%d' WHERE (`itemid` = '%s');", TheDBPrefix, ((!isSaved) ? -1 : -3), itemCode);
+			SQL_TQuery(hDatabase, QueryResults, sql, client);
+
+			if (!isSaved) SetArrayCell(myAugmentInfo[client], AugmentClientIsInspecting[client], -1, 3);
+			else SetArrayCell(myAugmentInfo[client], AugmentClientIsInspecting[client], -3, 3);
 			
 			SetArrayString(equippedAugmentsIDCodes[client], isEquipped, "none");
 			SetArrayCell(equippedAugments[client], isEquipped, -1);
@@ -4050,6 +4201,7 @@ public Inspect_Augment_Handle (Handle topmenu, MenuAction action, client, param2
 			SetArrayString(equippedAugmentsTarget[client], isEquipped, "");
 			SetArrayCell(equippedAugments[client], isEquipped, -1, 5);
 			SetClientTalentStrength(client);	// talent strengths need to be updated when an augment is equipped or unequipped.
+			FormatPlayerName(client);
 
 			SendPanelToClientAndClose(Inspect_Augment(client, AugmentClientIsInspecting[client]), client, Inspect_Augment_Handle, MENU_TIME_FOREVER);
 		}
@@ -4065,6 +4217,7 @@ public Inspect_Augment_Handle (Handle topmenu, MenuAction action, client, param2
 				RemoveFromArray(myAugmentInfo[client], AugmentClientIsInspecting[client]);
 				RemoveFromArray(myAugmentTargetEffects[client], AugmentClientIsInspecting[client]);
 				RemoveFromArray(myAugmentActivatorEffects[client], AugmentClientIsInspecting[client]);
+				RemoveFromArray(myAugmentSavedProfiles[client], AugmentClientIsInspecting[client]);
 				if (GetArraySize(myAugmentIDCodes[client]) > 0) Augments_Inventory(client);
 				else BuildMenu(client);
 			}
@@ -4076,14 +4229,15 @@ public Inspect_Augment_Handle (Handle topmenu, MenuAction action, client, param2
 		else if (StrEqual(menuSelection, "reroll augment")) SendPanelToClientAndClose(Reroll_Augment(client), client, Reroll_Augment_Handle, MENU_TIME_FOREVER);
 		else if (StrEqual(menuSelection, "lock augment")) {
 			Format(sql, sizeof(sql), "UPDATE `%s_loot` SET `isequipped` = '-2' WHERE (`itemid` = '%s');", TheDBPrefix, itemCode);
-			SQL_TQuery(hDatabase, QueryResults, sql);
+			SQL_TQuery(hDatabase, QueryResults, sql, client);
 			SetArrayCell(myAugmentInfo[client], AugmentClientIsInspecting[client], -2, 3);
 			SendPanelToClientAndClose(Inspect_Augment(client, AugmentClientIsInspecting[client]), client, Inspect_Augment_Handle, MENU_TIME_FOREVER);
 		}
-		else if (StrEqual(menuSelection, "unlock augment")) {
-			Format(sql, sizeof(sql), "UPDATE `%s_loot` SET `isequipped` = '-1' WHERE (`itemid` = '%s');", TheDBPrefix, itemCode);
-			SQL_TQuery(hDatabase, QueryResults, sql);
-			SetArrayCell(myAugmentInfo[client], AugmentClientIsInspecting[client], -1, 3);
+		else if (StrEqual(menuSelection, "unlock augment")) {			
+			Format(sql, sizeof(sql), "UPDATE `%s_loot` SET `isequipped` = '%d' WHERE (`itemid` = '%s');", TheDBPrefix, ((!isSaved) ? -1 : -3), itemCode);
+			SQL_TQuery(hDatabase, QueryResults, sql, client);
+			if (!isSaved) SetArrayCell(myAugmentInfo[client], AugmentClientIsInspecting[client], -1, 3);
+			else SetArrayCell(myAugmentInfo[client], AugmentClientIsInspecting[client], -3, 3);
 			SendPanelToClientAndClose(Inspect_Augment(client, AugmentClientIsInspecting[client]), client, Inspect_Augment_Handle, MENU_TIME_FOREVER);
 		}
 		else if (StrEqual(menuSelection, "return")) Augments_Inventory(client);
@@ -4297,6 +4451,133 @@ public Reroll_Augment_Handle (Handle topmenu, MenuAction action, client, param2)
 	}
 }
 
+public Handle Upgrade_Augment(client) {
+	ClearArray(EquipAugmentPanel[client]);
+	Handle menu = CreatePanel();
+	char augmentName[64];
+	char augmentCategory[64], augmentCategoryName[64];
+	char augmentActivator[64], augmentActivatorName[64];
+	char augmentTarget[64], augmentTargetName[64];
+	GetAugmentComparator(client, AugmentClientIsInspecting[client], augmentName, augmentCategory, augmentActivator, augmentTarget);
+	GetAugmentComparator(client, AugmentClientIsInspecting[client], augmentName, augmentCategoryName, augmentActivatorName, augmentTargetName, _, true);
+	char text[512];
+	char scrap[64];
+	AddCommasToString(augmentParts[client], scrap, 64);
+	Format(text, sizeof(text), "Scrap: %s\n \n", scrap);
+	DrawPanelText(menu, text);
+
+	DrawPanelText(menu, augmentName);
+	DrawPanelText(menu, augmentCategory);
+	if (!StrEqual(augmentActivator, "-1")) DrawPanelText(menu, augmentActivator);
+	if (!StrEqual(augmentTarget, "-1")) DrawPanelText(menu, augmentTarget);
+	DrawPanelText(menu, "\n \n");
+
+	int currentCategoryScoreRoll = GetArrayCell(myAugmentInfo[client], AugmentClientIsInspecting[client]);
+	int currentActivatorScoreRoll = GetArrayCell(myAugmentInfo[client], AugmentClientIsInspecting[client], 4);
+	int currentTargetScoreRoll = GetArrayCell(myAugmentInfo[client], AugmentClientIsInspecting[client], 5);
+	int maxCategoryScoreRoll = GetArrayCell(myAugmentInfo[client], AugmentClientIsInspecting[client], 6);
+	int maxActivatorScoreRoll = GetArrayCell(myAugmentInfo[client], AugmentClientIsInspecting[client], 7);
+	int maxTargetScoreRoll = GetArrayCell(myAugmentInfo[client], AugmentClientIsInspecting[client], 8);
+	// only show the upgrade screen if all 3 categories aren't fully-upgraded
+	// god help the soul that actually does this and blows through all those materials :rofl:
+	if (currentCategoryScoreRoll < maxCategoryScoreRoll || currentActivatorScoreRoll > 0 && currentActivatorScoreRoll < maxActivatorScoreRoll || currentTargetScoreRoll > 0 && currentTargetScoreRoll < maxTargetScoreRoll) {
+		char pct[4];
+		Format(pct, sizeof(pct), "%");
+		if (currentCategoryScoreRoll < maxCategoryScoreRoll) {
+			Format(text, sizeof(text), "(%d scrap) Upgrade %s", iAugmentCategoryUpgradeCost, augmentCategoryName);
+			DrawPanelItem(menu, text);
+			Format(text, sizeof(text), "+%3.1f%s up to +%3.1f%s", ((currentCategoryScoreRoll + 1) * fAugmentRatingMultiplier) * 100.0, pct, (maxCategoryScoreRoll * fAugmentRatingMultiplier) * 100.0, pct);
+			DrawPanelText(menu, text);
+			PushArrayString(EquipAugmentPanel[client], "upgrade category");
+		}
+		if (currentActivatorScoreRoll > 0 && currentActivatorScoreRoll < maxActivatorScoreRoll) {
+			Format(text, sizeof(text), "(%d scrap) Upgrade %s", iAugmentActivatorUpgradeCost, augmentActivatorName);
+			DrawPanelItem(menu, text);
+			Format(text, sizeof(text), "+%3.1f%s up to +%3.1f%s", ((currentActivatorScoreRoll + 1) * fAugmentActivatorRatingMultiplier) * 100.0, pct, (maxActivatorScoreRoll * fAugmentActivatorRatingMultiplier) * 100.0, pct);
+			DrawPanelText(menu, text);
+			PushArrayString(EquipAugmentPanel[client], "upgrade activator");
+		}
+		if (currentTargetScoreRoll > 0 && currentTargetScoreRoll < maxTargetScoreRoll) {
+			Format(text, sizeof(text), "(%d scrap) Upgrade %s", iAugmentTargetUpgradeCost, augmentTargetName);
+			DrawPanelItem(menu, text);
+			Format(text, sizeof(text), "+%3.1f%s up to +%3.1f%s", ((currentTargetScoreRoll + 1) * fAugmentTargetRatingMultiplier) * 100.0, pct, (maxTargetScoreRoll * fAugmentTargetRatingMultiplier) * 100.0, pct);
+			DrawPanelText(menu, text);
+			PushArrayString(EquipAugmentPanel[client], "upgrade target");
+		}
+	}
+	Format(text, sizeof(text), "%T", "return to talent menu", client);
+	DrawPanelItem(menu, text);
+	PushArrayString(EquipAugmentPanel[client], "menu return");
+	return menu;
+}
+
+public Upgrade_Augment_Handle (Handle topmenu, MenuAction action, client, param2) {
+	if (action == MenuAction_Select) {
+		char menuSelection[64];
+		if (param2-1 >= GetArraySize(EquipAugmentPanel[client])) {
+			SendPanelToClientAndClose(Inspect_Augment(client, AugmentClientIsInspecting[client]), client, Inspect_Augment_Handle, MENU_TIME_FOREVER);
+			return;
+		}
+		GetArrayString(EquipAugmentPanel[client], param2-1, menuSelection, sizeof(menuSelection));
+
+		char sItemCode[512];
+		GetArrayString(myAugmentIDCodes[client], AugmentClientIsInspecting[client], sItemCode, sizeof(sItemCode));
+		int isEquipped = GetArrayCell(myAugmentInfo[client], AugmentClientIsInspecting[client], 3);
+		bool bUpgradeHasOccurred = false;	// flag
+
+		char tquery[512];
+
+		if (StrEqual(menuSelection, "menu return")) {
+			SendPanelToClientAndClose(Inspect_Augment(client, AugmentClientIsInspecting[client]), client, Inspect_Augment_Handle, MENU_TIME_FOREVER);
+			return;
+		}
+		else if (StrEqual(menuSelection, "upgrade category")) {
+			if (augmentParts[client] >= iAugmentCategoryUpgradeCost) {
+				bUpgradeHasOccurred = true;
+				augmentParts[client] -= iAugmentCategoryUpgradeCost;
+				int currentCategoryScoreRoll = GetArrayCell(myAugmentInfo[client], AugmentClientIsInspecting[client]);
+				int maxCategoryScoreRoll = GetArrayCell(myAugmentInfo[client], AugmentClientIsInspecting[client], 6);
+				int catRoll = GetRandomInt(currentCategoryScoreRoll, maxCategoryScoreRoll);
+				SetArrayCell(myAugmentInfo[client], AugmentClientIsInspecting[client], catRoll);
+				Format(tquery, sizeof(tquery), "UPDATE `%s_loot` SET `rating` = '%d' WHERE (`itemid` = '%s');", TheDBPrefix, catRoll, sItemCode);
+			}
+		}
+		else if (StrEqual(menuSelection, "upgrade activator")) {
+			if (augmentParts[client] >= iAugmentActivatorUpgradeCost) {
+				bUpgradeHasOccurred = true;
+				augmentParts[client] -= iAugmentActivatorUpgradeCost;
+				int currentActivatorScoreRoll = GetArrayCell(myAugmentInfo[client], AugmentClientIsInspecting[client], 4);
+				int maxActivatorScoreRoll = GetArrayCell(myAugmentInfo[client], AugmentClientIsInspecting[client], 7);
+				int actRoll = GetRandomInt(currentActivatorScoreRoll, maxActivatorScoreRoll);
+				SetArrayCell(myAugmentInfo[client], AugmentClientIsInspecting[client], actRoll, 4);
+				Format(tquery, sizeof(tquery), "UPDATE `%s_loot` SET `actrating` = '%d' WHERE (`itemid` = '%s');", TheDBPrefix, actRoll, sItemCode);
+			}
+		}
+		else if (StrEqual(menuSelection, "upgrade target")) {
+			if (augmentParts[client] >= iAugmentTargetUpgradeCost) {
+				bUpgradeHasOccurred = true;
+				augmentParts[client] -= iAugmentTargetUpgradeCost;
+				int currentTargetScoreRoll = GetArrayCell(myAugmentInfo[client], AugmentClientIsInspecting[client], 5);
+				int maxTargetScoreRoll = GetArrayCell(myAugmentInfo[client], AugmentClientIsInspecting[client], 8);
+				int tarRoll = GetRandomInt(currentTargetScoreRoll, maxTargetScoreRoll);
+				SetArrayCell(myAugmentInfo[client], AugmentClientIsInspecting[client], tarRoll, 5);
+				Format(tquery, sizeof(tquery), "UPDATE `%s_loot` SET `tarrating` = '%d' WHERE (`itemid` = '%s');", TheDBPrefix, tarRoll, sItemCode);
+			}
+		}
+
+		// just so I don't have to rewrite this code several times or move it somewhere else
+		if (bUpgradeHasOccurred) {
+			SQL_TQuery(hDatabase, QueryResults, tquery);
+			// if the augment we're modifying is equipped, we just unequip/re-equip the augment which will trigger updating the players stats.
+			if (isEquipped >= 0) {
+				UnequipAugment_Confirm(client, sItemCode);
+				EquipAugment_Confirm(client, isEquipped);
+			}
+		}
+		SendPanelToClientAndClose(Upgrade_Augment(client), client, Upgrade_Augment_Handle, MENU_TIME_FOREVER);
+	}
+}
+
 stock HandicapMenu(client) {
 	Handle menu = CreateMenu(HandicapMenu_Handle);
 	char pct[4];
@@ -4368,7 +4649,7 @@ stock void SetClientHandicapValues(client, bool skipArrayCheck = false) {
 
 	// make sure the bot handicaps are set to the highest handicap player in the server.
 	for (int i = 1; i <= MaxClients; i++) {
-		if (!IsLegitimateClient(i) || !IsFakeClient(i) || GetClientTeam(i) != TEAM_SURVIVOR) continue;
+		if (!IsLegitimateClient(i) || !IsFakeClient(i) || myCurrentTeam[i] != TEAM_SURVIVOR) continue;
 		if (handicapLevel[i] >= handicapLevel[client]) continue;
 		handicapLevel[i] = handicapLevel[client];
 		if (GetArraySize(HandicapSelectedValues[i]) != 4) ResizeArray(HandicapSelectedValues[i], 4);
@@ -4382,13 +4663,13 @@ stock void SetClientHandicapValues(client, bool skipArrayCheck = false) {
 stock void SetBotClientHandicapValues(int clientToIgnore = 0) {
 	int client = -1;
 	for (int i = 1; i <= MaxClients; i++) {
-		if (!IsLegitimateClient(i) || IsFakeClient(i) || GetClientTeam(i) != TEAM_SURVIVOR || handicapLevel[i] < 1) continue;
+		if (!IsLegitimateClient(i) || IsFakeClient(i) || myCurrentTeam[i] != TEAM_SURVIVOR || handicapLevel[i] < 1) continue;
 		if (clientToIgnore > 0 && i == clientToIgnore) continue;
 		if (client == -1 || handicapLevel[i] > handicapLevel[client]) client = i;
 	}
 	if (client == -1) {
 		for (int i = 1; i <= MaxClients; i++) {
-			if (!IsLegitimateClient(i) || !IsFakeClient(i) || GetClientTeam(i) != TEAM_SURVIVOR) continue;
+			if (!IsLegitimateClient(i) || !IsFakeClient(i) || myCurrentTeam[i] != TEAM_SURVIVOR) continue;
 			if (GetArraySize(HandicapSelectedValues[i]) != 4) ResizeArray(HandicapSelectedValues[i], 4);
 			SetArrayCell(HandicapSelectedValues[i], 0, 0.0);
 			SetArrayCell(HandicapSelectedValues[i], 1, 0.0);
@@ -4403,7 +4684,7 @@ stock void SetBotClientHandicapValues(int clientToIgnore = 0) {
 	int lootFindBonus	 = GetArrayCell(SetHandicapValues[client], HANDICAP_LOOTFIND);
 	float scoreMult		 = GetArrayCell(SetHandicapValues[client], HANDICAP_SCORE_MULTIPLIER);
 	for (int i = 1; i <= MaxClients; i++) {
-		if (!IsLegitimateClient(i) || !IsFakeClient(i) || GetClientTeam(i) != TEAM_SURVIVOR) continue;
+		if (!IsLegitimateClient(i) || !IsFakeClient(i) || myCurrentTeam[i] != TEAM_SURVIVOR) continue;
 		if (handicapLevel[i] >= handicapLevel[client]) continue;
 		handicapLevel[i] = handicapLevel[client];
 		if (GetArraySize(HandicapSelectedValues[i]) != 4) ResizeArray(HandicapSelectedValues[i], 4);
@@ -4443,8 +4724,64 @@ stock Augments_Inventory(client) {
 	SetMenuTitle(menu, text);
 	//SortADTArray(myAugmentInfo[client], Sort_Ascending, Sort_Integer);
 	if (size > 0) {
+		char key[64];
+		GetClientAuthId(client, AuthId_Steam2, key, sizeof(key));
+
+		ClearArray(augmentInventoryPosition[client]);
+		// show equipped augments, in order, first.
+		int currentAugment = 0;
+		while (currentAugment < iNumAugments) {
+			for (int i = 0; i < size; i++) {
+				int isEquipped = GetArrayCell(myAugmentInfo[client], i, 3);
+				if (isEquipped != currentAugment) continue;
+				// I'm using an arraylist to store which position of the inventory to actually load, so that I can
+				// show players their equipped augments, ordered, before all other augments.
+				int currentPositionsStored = GetArraySize(augmentInventoryPosition[client]);
+				ResizeArray(augmentInventoryPosition[client], currentPositionsStored + 1);
+				SetArrayCell(augmentInventoryPosition[client], currentPositionsStored, i);
+
+				char augmentName[64], augmentCategory[64], augmentActivator[64], augmentTarget[64];
+				GetAugmentComparator(client, i, augmentName, augmentCategory, augmentActivator, augmentTarget, _, true);
+				char augmentCatStr[64], augmentActStr[64], augmentTarStr[64];
+				GetAugmentStrength(client, i, 0, augmentCatStr);
+				GetAugmentStrength(client, i, 1, augmentActStr);
+				GetAugmentStrength(client, i, 2, augmentTarStr);
+				Format(augmentCatStr, sizeof(augmentCatStr), "%s %s", augmentCatStr, augmentCategory);
+				Format(augmentCatStr, sizeof(augmentCatStr), "%s (slot %d)", augmentCatStr, isEquipped+1);
+				char augmentOwner[64];
+				GetArrayString(myAugmentOwners[client], i, augmentOwner, sizeof(augmentOwner));
+				
+				bool isNotOriginalOwner = (StrContains(augmentOwner, key, false) == -1) ? true : false;
+				if (isNotOriginalOwner) Format(augmentCatStr, sizeof(augmentCatStr), "%s^", augmentCatStr);
+
+				char profilesSavedTo[64];
+				GetArrayString(myAugmentSavedProfiles[client], i, profilesSavedTo, sizeof(profilesSavedTo));
+				if (!StrEqual(profilesSavedTo, "none")) Format(augmentCatStr, sizeof(augmentCatStr), "%s!", augmentCatStr);
+
+				Format(text, sizeof(text), "%s", augmentCatStr);
+				if (!StrEqual(augmentActivator, "-1")) {
+					Format(augmentActStr, sizeof(augmentActStr), "%s %s", augmentActStr, augmentActivator);
+					Format(text, sizeof(text), "%s\n%s", text, augmentActStr);
+				}
+				if (!StrEqual(augmentTarget, "-1")) {
+					Format(augmentTarStr, sizeof(augmentTarStr), "%s %s", augmentTarStr, augmentTarget);
+					Format(text, sizeof(text), "%s\n%s", text, augmentTarStr);
+				}
+				AddMenuItem(menu, text, text);
+				break;
+			}
+			currentAugment++;
+		}
+		// unequipped augments now.
 		for (int i = 0; i < size; i++) {
 			int isEquipped = GetArrayCell(myAugmentInfo[client], i, 3);
+			if (isEquipped >= 0) continue;
+			// I'm using an arraylist to store which position of the inventory to actually load, so that I can
+			// show players their equipped augments, ordered, before all other augments.
+			int currentPositionsStored = GetArraySize(augmentInventoryPosition[client]);
+			ResizeArray(augmentInventoryPosition[client], currentPositionsStored + 1);
+			SetArrayCell(augmentInventoryPosition[client], currentPositionsStored, i);
+
 			char augmentName[64], augmentCategory[64], augmentActivator[64], augmentTarget[64];
 			GetAugmentComparator(client, i, augmentName, augmentCategory, augmentActivator, augmentTarget, _, true);
 			char augmentCatStr[64], augmentActStr[64], augmentTarStr[64];
@@ -4452,8 +4789,18 @@ stock Augments_Inventory(client) {
 			GetAugmentStrength(client, i, 1, augmentActStr);
 			GetAugmentStrength(client, i, 2, augmentTarStr);
 			Format(augmentCatStr, sizeof(augmentCatStr), "%s %s", augmentCatStr, augmentCategory);
-			if (isEquipped >= 0) Format(augmentCatStr, sizeof(augmentCatStr), "%s (slot %d)", augmentCatStr, isEquipped+1);
-			else if (isEquipped == -2) Format(augmentCatStr, sizeof(augmentCatStr), "%s*", augmentCatStr);
+			if (isEquipped == -2) Format(augmentCatStr, sizeof(augmentCatStr), "%s*", augmentCatStr);
+			
+			char augmentOwner[64];
+			GetArrayString(myAugmentOwners[client], i, augmentOwner, sizeof(augmentOwner));
+			
+			bool isNotOriginalOwner = (StrContains(augmentOwner, key, false) == -1) ? true : false;
+			if (isNotOriginalOwner) Format(augmentCatStr, sizeof(augmentCatStr), "%s^", augmentCatStr);
+			
+			char profilesSavedTo[64];
+			GetArrayString(myAugmentSavedProfiles[client], i, profilesSavedTo, sizeof(profilesSavedTo));
+			if (!StrEqual(profilesSavedTo, "none")) Format(augmentCatStr, sizeof(augmentCatStr), "%s!", augmentCatStr);
+
 			Format(text, sizeof(text), "%s", augmentCatStr);
 			if (!StrEqual(augmentActivator, "-1")) {
 				Format(augmentActStr, sizeof(augmentActStr), "%s %s", augmentActStr, augmentActivator);
@@ -4463,7 +4810,6 @@ stock Augments_Inventory(client) {
 				Format(augmentTarStr, sizeof(augmentTarStr), "%s %s", augmentTarStr, augmentTarget);
 				Format(text, sizeof(text), "%s\n%s", text, augmentTarStr);
 			}
-			
 			AddMenuItem(menu, text, text);
 		}
 	}
@@ -4472,7 +4818,7 @@ stock Augments_Inventory(client) {
 }
 
 public Augments_Inventory_Handle(Handle menu, MenuAction action, client, slot) {
-	if (action == MenuAction_Select) SendPanelToClientAndClose(Inspect_Augment(client, slot), client, Inspect_Augment_Handle, MENU_TIME_FOREVER);
+	if (action == MenuAction_Select) SendPanelToClientAndClose(Inspect_Augment(client, GetArrayCell(augmentInventoryPosition[client], slot)), client, Inspect_Augment_Handle, MENU_TIME_FOREVER);
 	else if (action == MenuAction_Cancel) {
 		if (slot == MenuCancel_ExitBack) BuildMenu(client);
 	}
@@ -4484,9 +4830,10 @@ public Handle TalentInfoScreen_Special (client) {
 	Format(TalentName, sizeof(TalentName), "%s", PurchaseTalentName[client]);
 
 	Handle menu = CreatePanel();
+	int menuPos					= GetMenuPosition(client, TalentName);
 
 	int AbilityTalent			= GetArrayCell(PurchaseValues[client], IS_TALENT_ABILITY);
-	int TalentPointAmount		= GetTalentStrength(client, TalentName);
+	int TalentPointAmount		= GetTalentStrength(client, TalentName, _, menuPos);
 	int TalentPointMaximum		= 1;
 
 	char TalentIdCode[64];
@@ -4522,18 +4869,18 @@ public Handle TalentInfoScreen_Special (client) {
 		else Format(text, sizeof(text), "%T", "Talent Upgrade Title Free", client, TalentName_Temp, TalentPointAmount, TalentPointMaximum, FreeUpgrades[client]);
 		SetPanelTitle(menu, text);
 
-		float fltime = GetSpecialAmmoStrength(client, TalentName);
-		float fltimen = GetSpecialAmmoStrength(client, TalentName, 0, true);
+		float fltime = GetSpecialAmmoStrength(client, TalentName, _, _, _, menuPos);
+		float fltimen = GetSpecialAmmoStrength(client, TalentName, 0, true, _, menuPos);
 
 		Format(text, sizeof(text), "%T", "Special Ammo Time", client, fltime, fltimen);
 		DrawPanelText(menu, text);
 		//Format(text, sizeof(text), "%T", "Special Ammo Interval", client, GetSpecialAmmoStrength(client, TalentName, 4), GetSpecialAmmoStrength(client, TalentName, 4, true));
 		//DrawPanelText(menu, text);
-		Format(text, sizeof(text), "%T", "Special Ammo Cooldown", client, fltime + GetSpecialAmmoStrength(client, TalentName, 1), fltimen + GetSpecialAmmoStrength(client, TalentName, 1, true));
+		Format(text, sizeof(text), "%T", "Special Ammo Cooldown", client, fltime + GetSpecialAmmoStrength(client, TalentName, 1, _, _, menuPos), fltimen + GetSpecialAmmoStrength(client, TalentName, 1, true, _, menuPos));
 		DrawPanelText(menu, text);
-		Format(text, sizeof(text), "%T", "Special Ammo Stamina", client, RoundToCeil(GetSpecialAmmoStrength(client, TalentName, 2)), RoundToCeil(GetSpecialAmmoStrength(client, TalentName, 2, true)));
+		Format(text, sizeof(text), "%T", "Special Ammo Stamina", client, RoundToCeil(GetSpecialAmmoStrength(client, TalentName, 2, _, _, menuPos)), RoundToCeil(GetSpecialAmmoStrength(client, TalentName, 2, true, _, menuPos)));
 		DrawPanelText(menu, text);
-		Format(text, sizeof(text), "%T", "Special Ammo Range", client, GetSpecialAmmoStrength(client, TalentName, 3), GetSpecialAmmoStrength(client, TalentName, 3, true));
+		Format(text, sizeof(text), "%T", "Special Ammo Range", client, GetSpecialAmmoStrength(client, TalentName, 3, _, _, menuPos), GetSpecialAmmoStrength(client, TalentName, 3, true, _, menuPos));
 		DrawPanelText(menu, text);
 		DrawPanelText(menu, TalentIdCode);
 	}
@@ -4590,6 +4937,7 @@ public TalentInfoScreen_Init (Handle topmenu, MenuAction action, client, param2)
 		int TalentStrength = GetTalentStrength(client, PurchaseTalentName[client]);
 		char TalentName[64];
 		Format(TalentName, sizeof(TalentName), "%s", PurchaseTalentName[client]);
+		int menuPos = GetMenuPosition(client, TalentName);
 
 		//decl String:sTalentsRequired[64];
 		//FormatKeyValue(sTalentsRequired, sizeof(sTalentsRequired), PurchaseKeys[client], PurchaseValues[client], "talents required?");
@@ -4626,7 +4974,7 @@ public TalentInfoScreen_Init (Handle topmenu, MenuAction action, client, param2)
 							TryToTellPeopleYouUpgraded(client);
 							PlayerUpgradesTotal[client]++;
 							PurchaseTalentPoints[client]++;
-							AddTalentPoints(client, PurchaseTalentName[client], PurchaseTalentPoints[client]);
+							AddTalentPoints(client, menuPos, PurchaseTalentPoints[client]);
 							SetClientTalentStrength(client);
 							SendPanelToClientAndClose(TalentInfoScreen(client), client, TalentInfoScreen_Init, MENU_TIME_FOREVER);
 						}
@@ -4635,7 +4983,7 @@ public TalentInfoScreen_Init (Handle topmenu, MenuAction action, client, param2)
 						PlayerUpgradesTotal[client]--;
 						PurchaseTalentPoints[client]--;
 						FreeUpgrades[client] += nodeUnlockCost;
-						AddTalentPoints(client, PurchaseTalentName[client], PurchaseTalentPoints[client]);
+						AddTalentPoints(client, menuPos, PurchaseTalentPoints[client]);
 
 						// Check if locking this node makes them ineligible for deeper trees, and remove points
 						// in those talents if it's the case, locking the nodes.
@@ -4674,11 +5022,12 @@ public TalentInfoScreen_Special_Init (Handle topmenu, MenuAction action, client,
 			char currentlyEquippedAction[64];
 			GetArrayString(ActionBar[client], param2 - 1, currentlyEquippedAction, sizeof(currentlyEquippedAction));
 			if (!SwapActions(client, PurchaseTalentName[client], param2 - 1)) {
+				int menuPos = GetMenuPosition(client, PurchaseTalentName[client]);
 				//	Prevent an ability (or spell) on cooldown from being removed from the action bar
 				//	Abilities now require an upgrade point in their node in order to be used.
-				if (!IsAmmoActive(client, currentlyEquippedAction) && GetTalentStrength(client, PurchaseTalentName[client]) > 0) {
+				if (!IsAmmoActive(client, currentlyEquippedAction) && GetTalentStrength(client, PurchaseTalentName[client], _, menuPos) > 0) {
 					SetArrayString(ActionBar[client], param2 - 1, PurchaseTalentName[client]);
-					SetArrayCell(ActionBarMenuPos[client], param2 - 1, GetMenuPosition(client, PurchaseTalentName[client]));
+					SetArrayCell(ActionBarMenuPos[client], param2 - 1, menuPos);
 				}
 			}
 			SendPanelToClientAndClose(TalentInfoScreen_Special(client), client, TalentInfoScreen_Special_Init, MENU_TIME_FOREVER);
@@ -4714,19 +5063,16 @@ stock TryToTellPeopleYouUpgraded(client) {
 
 	if (FreeUpgrades[client] == 0 && GetConfigValueInt("display when players upgrade to team?") == 1) {
 
-		char text2[64];
+		char text2[512];
 		char PlayerName[64];
-		char translationText[64];
-		GetClientName(client, PlayerName, sizeof(PlayerName));
+		char translationText[512];
+		GetFormattedPlayerName(client, PlayerName, sizeof(PlayerName));
 		GetTranslationOfTalentName(client, PurchaseTalentName[client], translationText, sizeof(translationText), true);
-		for (int k = 1; k <= MaxClients; k++) {
-
-			if (IsLegitimateClient(k) && !IsFakeClient(k) && GetClientTeam(k) == GetClientTeam(client)) {
-
-				Format(text2, sizeof(text2), "%T", translationText, k);
-				if (GetClientTeam(client) == TEAM_SURVIVOR) PrintToChat(k, "%T", "Player upgrades ability", k, blue, PlayerName, white, green, text2, white);
-				else if (GetClientTeam(client) == TEAM_INFECTED) PrintToChat(k, "%T", "Player upgrades ability", k, orange, PlayerName, white, green, text2, white);
-			}
+		Format(text2, sizeof(text2), "%t", translationText);
+		Format(text2, sizeof(text2), "%t", "Player upgrades ability", PlayerName, text2);
+		for (int i = 1; i <= MaxClients; i++) {
+			if (!IsLegitimateClient(i) || IsFakeClient(i)) continue;
+			Client_PrintToChat(i, true, text2);
 		}
 	}
 }
@@ -4752,26 +5098,15 @@ stock FindTalentPoints(client, char[] Name) {
 	return 0;	// this will be removed. only for testing.
 }
 
-stock AddTalentPoints(client, char[] Name, TalentPoints) {
-
+stock AddTalentPoints(client, int menuPos, TalentPoints) {
 	if (!IsLegitimateClient(client)) return;
-	
 	char text[64];
-	int a_Size							=	GetArraySize(a_Database_Talents);
+	SetArrayCell(a_Database_PlayerTalents[client], menuPos, TalentPoints);
+	GetTalentKeyValue(client, IS_TALENT_ABILITY, text, sizeof(text), menuPos);
+	if (StringToInt(text) == 1) return;
 
-	for (int i = 0; i < a_Size; i++) {
-
-		GetArrayString(a_Database_Talents, i, text, sizeof(text));
-		if (!StrEqual(text, Name)) continue;
-		SetArrayCell(a_Database_PlayerTalents[client], i, TalentPoints);
-
-		GetTalentKeyValue(client, Name, IS_TALENT_ABILITY, text, sizeof(text));
-		if (StringToInt(text) == 1) break;
-
-		if (TalentPoints == 0) RemoveTalentFromPossibleLootPool(client, i);
-		else if (TalentPoints == 1) PushArrayCell(possibleLootPool[client], i);
-		break;
-	}
+	if (TalentPoints == 0) RemoveTalentFromPossibleLootPool(client, menuPos);
+	else if (TalentPoints == 1) PushArrayCell(possibleLootPool[client], menuPos);
 }
 
 stock RemoveTalentFromPossibleLootPool(client, value) {
@@ -4849,12 +5184,11 @@ stock bool IsTalentLocked(client, char[] Name) {
 }
 
 stock WipeTalentPoints(client) {
-	if (!IsLegitimateClient(client) || IsFakeClient(client)) return;
+	int size = GetArraySize(a_Menu_Talents);
+	if (!IsLegitimateClient(client) || GetArraySize(a_Database_PlayerTalents[client]) != size) return;
 	UpgradesAwarded[client] = 0;
-	int size							= GetArraySize(a_Menu_Talents);
-	if (GetArraySize(a_Database_PlayerTalents[client]) != size) ResizeArray(a_Database_PlayerTalents[client], size);
 	int value = 0;
-	for (int i = 0; i < size; i++) {	// We only reset talents a player has points in, so locked talents don't become unlocked.
+	for (int i = 0; i < size; i++) {
 		value = GetArrayCell(a_Database_PlayerTalents[client], i);
 		if (value > 0) SetArrayCell(a_Database_PlayerTalents[client], i, 0);
 	}

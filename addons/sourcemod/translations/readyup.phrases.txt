@@ -1,128 +1,193 @@
-"Phrases"
+﻿"Phrases"
 {
-	"Tag"
+	"i am ready"
 	{
-		"en"		"[{green}!{default}]"
+		"en"			"Ready!"
 	}
-	// readyup/action.inc
-	"LiveCountdownBegin"
+	"i am not ready"
 	{
-		"en"		"Going live!\nSay !unready / Press F2 to cancel"
+		"en"			"Not Ready!"
 	}
-	"RoundIsLive"
+	"readyup panel info"
 	{
-		"en"		"Round is live!"
+		"#format"		"{1:s},{2:i},{3:i},{4:i},{5:i}"
+		"en"			" \nReady Up! v. {1}\nSurvivors: ({2}) {3} / {4}\nReady: {5}\n "
 	}
-	"LiveCountdown"
+	"bot count adjusted"
 	{
-		"#format"	"{1:d}"
-		"en"		"Live in: {1}\nSay !unready / Press F2 to cancel"
+		"#format"		"{1:s},{2:s},{3:s},{4:i}"
+		"en"			"{1}Survivor bots {2}have been changed to {3}{4}"
 	}
-	"AutoStartNotEnoughPlayers"
+	"bot adjustment aborted"
 	{
-		"en"		"More players are required..."
+		"#format"		"{1:s},{2:s}"
+		"en"			"{1}A majority of the human players have voted {2}against the survivor bot change."
 	}
-	"AutoStartWaiting"
+	"adjust bot count"
 	{
-		"en"		"Waiting for loading players..."
+		"#format"		"{1:s},{2:s},{3:s},{4:i},{5:s},{6:s},{7:i},{8:s}"
+		"en"			"{1}Survivor Bot adjustment vote {2}to change the Survivor Bots to {3}{4} {5}will end in {6}{7} {8}seconds."
 	}
-	"InitiateAutoStart"
+	"no bot vote in progress"
 	{
-		"en"		"Game will automatically start!"
+		"#format"		"{1:s},{2:s},{3:s}"
+		"en"			"{1}There is currently {2}no bot vote in progress{3}!"
 	}
-	"AutoStartCountdown"
+	"bot vote: yes"
 	{
-		"#format"	"{1:d}"
-		"en"		"Game starts in: {1}"
+		"#format"		"{1:s},{2:s}"
+		"en"			"{1}You have voted {2}in favour of the vote."
 	}
-	"LiveCountdownCancelled"
+	"bot vote: no"
 	{
-		"en"		"Countdown Cancelled!"
+		"#format"		"{1:s},{2:s}"
+		"en"			"{1}You have voted {2}against the vote."
 	}
-	"CountUnReady"
+	"bot adjustment vote offer"
 	{
-		"#format"	"{1:d}{2:d}"	// 1:GetUnReadyCount(client), 2:l4d_ready_unready_limit.IntValue
-		"en"		" [{green}{1}{default}/{green}{2}{default}]"
+		"#format"		"{1:s},{2:s},{3:i},{4:s},{5:s},{6:s}"
+		"en"			"{1}The current number of survivor bots is {2}{3}\n{4}You can start a vote to change this value with {5}!survivors {6}command."
 	}
-	"UnReadyLimit"
+	"bot count restricted"
 	{
-		"en"		"You have reached your {red}unready limit{default} [{green}%d{default}]"
+		"#format"		"{1:s},{2:s}"
+		"en"			"{1}You cannote vote to change the bot count {2}after the round has begun."
 	}
-	// readyup/command.inc
-	"ForceStartAdmin"
+	"bot adjustment vote called"
 	{
-		"#format"	"{1:N}"
-		"en"		"{blue}Game{default} start is {green}forced{default} by {blue}Admin{default} ({olive}{1}{default})"
+		"#format"		"{1:s},{2:s},{3:i},{4:s},{5:s},{6:i},{7:s},{8:s},{9:s},{10:s}"
+		"en"			"{1}A vote has been called to change the # of survivor bots from {2}{3} {4}to {5}{6}.\n{7}Say {8}!{9} {10}in chat to toggle your vote between yes/no."
 	}
-	"PanelHide"
+	"command sm_forcestart is unavailable"
 	{
-		"en"		"Panel is now {red}off{default}"
+		"#format"		"{1:s}"
+		"en"			"{1} Command sm_forcestart is unavailable."
 	}
-	"PanelShow"
+	"hud enabled"
 	{
-		"en"		"Panel is now {blue}on{default}"
+		"#format"		"{1:s},{2:s}"
+		"en"			"{1} HUD Display {2}enabled"
 	}
-	// readyup/panel.inc
-	"HintReady"
+	"hud disabled"
 	{
-		"en"		"You are ready.\nSay !unready / Press F2 to unready."
+		"#format"		"{1:s},{2:s}"
+		"en"			"{1} HUD Display {2}disabled"
 	}
-	"HintUnready"
+	"not ready"
 	{
-		"en"		"You are not ready.\nSay !ready / Press F1 to ready up."
+		"#format"		"{1:s},{2:s}"
+		"en"			"{1} Status set: {2}not ready"
 	}
-	"PanelSlots"
+	"ready"
 	{
-		"#format"	"{1:s},{2:d},{3:d},{4:s}"	// 1:ServerName, 2:GetSeriousClientCount(), 3:FindConVar("sv_maxplayers").IntValue, 4:cfgName
-		"en"		"▸ Server: {1} \n▸ Slots: {2}/{3}\n▸ Config: {4}"
+		"#format"		"{1:s},{2:s}"
+		"en"			"{1} Status set: {2}ready"
 	}
-	"PanelCommands"
+	"alltalk enabled"
 	{
-		"en"		"▸ Commands:"
+		"#format"		"{1:s},{2:s}"
+		"en"			"{1} Alltalk {2}enabled"
 	}
-	"PanelSurvivors"
+	"alltalk disabled"
 	{
-		"#format"	"{1:d},{2:s}"	// 1:++textCount, 2:isTeamReadyMode ? teamReadySymbol[survivorReady] : ""
-		"en"		"->{1}. Survivors{2}"
+		"#format"		"{1:s},{2:s}"
+		"en"			"{1} Alltalk {2}disabled"
 	}
-	"PanelInfected"
+	"ready up time remaining"
 	{
-		"#format"	"{1:d},{2:s}"	// 1:++textCount, 2:isTeamReadyMode ? teamReadySymbol[survivorReady] : ""
-		"en"		"->{1}. Infected{2}"
+		"#format"		"{1:s},{2:s},{3:i},{4:s},{5:s},{6:i},{7:s}"
+		"en"			"{1} Ready up ends in {2}{3}{4}m {5}{6}{7}s"
 	}
-	"PanelCaster"
+	"match ready up"
 	{
-		"#format"	"{1:d},{2:s}"	// 1:++textCount, 2:casterCount > 1 ? "s" : ""
-		"en"		"->{1}. Caster{2}"
+		"#format"		"{1:s},{2:s}"
+		"en"			"{1} Ready Up Period: {2}active"
 	}
-	"PanelSpectator"
+	"match is live"
 	{
-		"#format"	"{1:d},{2:s}"	// 1:++textCount, 2:specCount > 1 ? "s" : ""
-		"en"		"->{1}. Spectator{2}"
+		"#format"		"{1:s},{2:s}"
+		"en"			"{1} Ready Up Period: {2}match is live"
 	}
-	"PanelMany"
+	"client connected"
 	{
-		"en"		"**Many** (%d)"
+		"#format"		"{1:s},{2:s},{3:s},{4:s}"
+		"en"			"{1} {2}{3} {4}is connecting..."
 	}
-	// g_sDisruptReason[]
-	"Player marked unready"
+	"client loaded"
 	{
-		"#format"	"{1:N}"
-		"en"		"{green}Countdown Cancelled!{default} ({teamcolor}{1}{green} marked unready{default})"
+		"#format"		"{1:s},{2:s},{3:s},{4:s}"
+		"en"			"{1} {2}{3} {4}has entered the game."
 	}
-	"Player switched team"
+	"connection timeout"
 	{
-		"#format"	"{1:N}"
-		"en"		"{green}Countdown Cancelled!{default} ({teamcolor}{1}{olive} switched team{default})"
+		"#format"		"{1:i},{2:i}"
+		"en"			"ready up period: starts in {i}m {2}s"
 	}
-	"Player disconnected"
+	"warmup time remaining"
 	{
-		"#format"	"{1:N}"
-		"en"		"{green}Countdown Cancelled!{default} ({teamcolor}{1}{green} disconnected{default})"
+		"#format"		"{1:i},{2:i}"
+		"en"			"ready up period: match live in {1}m {2}s"
 	}
-	"Admin aborted"
+	"menu clients loading"
 	{
-		"#format"	"{1:N}"
-		"en"		"{green}Force Start Aborted!{default} ({olive}{1}{green} issued{default})"
+		"#format"		"{1:i},{2:i},{3:i}"
+		"en"			"ready up starts in {1}m {2}s\nplayers loading: {3}"
+	}
+	"ready up countdown"
+	{
+		"#format"		"{1:i},{2:i}"
+		"en"			"ready up ends in {1}m {2}s\n"
+	}
+	"match begin notice"
+	{
+		"#format"		"{1:i}"
+		"en"			"match will begin when all\nclients have loaded.\nplayers loading: {1}"
+	}
+	"players waiting"
+	{
+		"en"			"players waiting:"
+	}
+	"players loading"
+	{
+		"en"			"players loading:"
+	}
+	"players ready"
+	{
+		"en"			"players ready:"
+	}
+	"players not ready"
+	{
+		"en"			"players not ready:"
+	}
+	"spectators"
+	{
+		"en"			"spectators:"
+	}
+	"toggle ready"
+	{
+		"en"			"toggle status: ready"
+	}
+	"toggle not ready"
+	{
+		"en"			"toggle status: not ready"
+	}
+	"hide hud"
+	{
+		"en"			"hide HUD"
+	}
+	"intermission"
+	{
+		"#format"		"{1:s}"
+		"en"			"{1} Pre-game will occur before the second half"
+	}
+	"timer match countdown aborted"
+	{
+		"#format"		"{1:s}"
+		"en"			"{1}Majority override aborted..."
+	}
+	"timer match countdown"
+	{
+		"#format"		"{1:i}"
+		"en"			"Round will begin in {1}"
 	}
 }

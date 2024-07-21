@@ -45,7 +45,7 @@ forward ReadyUp_ReadyUpEnd();
  *	@param gamemode		The gamemode type (0) Error (1) Coop (2) Versus (3) Survival
  *	@noreturn
  */
-forward ReadyUp_RoundIsOver(gamemode);
+forward ReadyUp_RoundIsOver(int gamemode);
 
 /*
  *	Called when the start of map saferoom door opens for the first time.
@@ -71,7 +71,7 @@ forward ReadyUp_CampaignComplete();
  *	@param gamemode		The gamemode type (0) Error (1) Coop (2) Versus (3) Survival
  *	@noreturn
  */
-forward ReadyUp_CoopMapFailed(gamemode);
+forward ReadyUp_CoopMapFailed(int gamemode);
 
 /*
  *	Called when the start of map Saferoom door is first locked.
@@ -86,7 +86,7 @@ forward ReadyUp_SaferoomLocked();
  *	@param client		The userid of the player who has fully loaded.
  *	@noreturn
  */
-forward ReadyUp_IsClientLoaded(client);
+forward ReadyUp_IsClientLoaded(int client);
 
 /*
  *	Called when a ParsedConfig request has completed.
@@ -95,7 +95,7 @@ forward ReadyUp_IsClientLoaded(client);
  *	@param value		An adt_array holding all of the values from a config file.
  *	@noreturn
  */
-forward ReadyUp_LoadFromConfig(Handle:key, Handle:value);
+forward ReadyUp_LoadFromConfig(Handle key, Handle value);
 
 /*
  *	Called when a ParsedConfig request has completed.
@@ -105,7 +105,7 @@ forward ReadyUp_LoadFromConfig(Handle:key, Handle:value);
  *	@param section		An adt_array holding the current section of the config being parsed.
  *	@noreturn
  */
-forward ReadyUp_LoadFromConfigEx(Handle:key, Handle:value, Handle:section, String:configname[], KeyCount);
+forward ReadyUp_LoadFromConfigEx(Handle key, Handle value, Handle section, char[] configname, int KeyCount);
 
 /*
  *	Called when ReadyUp_ParseConfig() fails to parse.
@@ -114,7 +114,7 @@ forward ReadyUp_LoadFromConfigEx(Handle:key, Handle:value, Handle:section, Strin
  *	@param error		the error message explaining why the file failed to parse.
  *	@noreturn
  */
-forward ReadyUp_ParseConfigFailed(String:config[], String:error[]);
+forward ReadyUp_ParseConfigFailed(char[] config, char[] error);
 
 /*
  *	Called when a client uses one of the commands in the Ready Up Commands Library.
@@ -123,7 +123,7 @@ forward ReadyUp_ParseConfigFailed(String:config[], String:error[]);
  *	@param command		The string command the player used.
  *	@noreturn
  */
-forward ReadyUp_Command(client, String:command[]);
+forward ReadyUp_Command(int client, char[] command);
 
 /*
  *	Called when a plugin or player requests the commands in the Ready Up Commands Library.
@@ -134,7 +134,7 @@ forward ReadyUp_Command(client, String:command[]);
  *	@param flags		An adt_array holding all of the commands flags required.
  *	@noreturn
  */
-forward ReadyUp_ListCommands(client, Handle:commands, Handle:descriptions, Handle:flags);
+forward ReadyUp_ListCommands(int client, Handle commands, Handle descriptions, Handle flags);
 
 /*
  *	Called when a player actually disconnects from the server.
@@ -142,7 +142,7 @@ forward ReadyUp_ListCommands(client, Handle:commands, Handle:descriptions, Handl
  *	@param client		The userid of the player who disconnected.
  *	@noreturn
  */
-forward ReadyUp_TrueDisconnect(client);
+forward ReadyUp_TrueDisconnect(int client);
 
 /*
  *	Called when Ready Up is notified of a slot change by a module.
@@ -164,7 +164,7 @@ forward ReadyUp_FwdEntryDenied();
  *	@param header		The header string as defined in the readyup config.
  *	@noreturn
  */
-forward ReadyUp_FwdGetHeader(const String:header[]);
+forward ReadyUp_FwdGetHeader(const char[] header);
 
 /*
  *	Called when Ready Up is notified of any player being allowed entry into the server.
@@ -172,7 +172,7 @@ forward ReadyUp_FwdGetHeader(const String:header[]);
  *	@param client		The userid of the client who was allowed to enter the server.
  *	@noreturn
  */
-forward ReadyUp_FwdEntryAllowed(client);
+forward ReadyUp_FwdEntryAllowed(int client);
 
 /*
  *	Called when Ready Up is notified of any player being assigned to a team.
@@ -181,7 +181,7 @@ forward ReadyUp_FwdEntryAllowed(client);
  *	@param team			The team the client was assigned to.
  *	@noreturn
  */
-forward ReadyUp_FwdTeamAssigned(client, team);
+forward ReadyUp_FwdTeamAssigned(int client, int team);
 
 /*
  *	Called when a module asks Ready Up to send information to another module.
@@ -191,19 +191,19 @@ forward ReadyUp_FwdTeamAssigned(client, team);
  *	@param value		The value of the command to send to the target module.
  *	@noreturn
  */
-forward ReadyUp_FwdCallModule(String:nameConfig[], String:nameCommand[], value);
+forward ReadyUp_FwdCallModule(char[] nameConfig, char[] nameCommand, int value);
 
 /*
  *	Called when a player connects to the server, this sets the minimum survivors that should exist.
  *
  */
-forward ReadyUp_SetSurvivorMinimum(iMin);
+forward ReadyUp_SetSurvivorMinimum(int iMin);
 
 /*
  *	Called when a plugin creates a companion.
  *
  */
-forward ReadyUp_CreateCompanion(client, String:CompanionName[]);
+forward ReadyUp_CreateCompanion(int client, char[] CompanionName);
 
 /*
  *	Called when a client joins a team.
@@ -211,14 +211,14 @@ forward ReadyUp_CreateCompanion(client, String:CompanionName[]);
  *	@param client		The userid of the client who joined a team.
  *	@noreturn
  */
-forward ReadyUp_FwdChangeTeam(client, team);
+forward ReadyUp_FwdChangeTeam(int client, int team);
 
 /*
  *	Called when friendly fire values are transferred across modules.
  *
  *	@noreturn
  */
-forward ReadyUp_FwdFriendlyFire(client, victim, amount, victimamount, isfire, bonusDamage);
+forward ReadyUp_FwdFriendlyFire(int client, int victim, int amount, int victimamount, int isfire, int bonusDamage);
 
 /*
  *	Called on ReadyUp_NtvIsEmptyOnDisconnect().
@@ -232,7 +232,7 @@ forward ReadyUp_IsEmptyOnDisconnect();
  *
  *	@noreturn
  */
-forward ReadyUp_FwdGetMapList(Handle:MapList1, Handle:MapList2, Handle:MapListIdentifier, Handle:MapListDescription);
+forward ReadyUp_FwdGetMapList(Handle MapList1, Handle MapList2, Handle MapListIdentifier, Handle MapListDescription);
 
 /*
  *	Called when a module calls ReadyUp_NtvGetCampaignName from Ready Up requesting the current campaign name.
@@ -240,7 +240,7 @@ forward ReadyUp_FwdGetMapList(Handle:MapList1, Handle:MapList2, Handle:MapListId
  *	@param description	The name of the current campaign in rotation.
  *	@noreturn
  */
-forward ReadyUp_FwdGetCampaignName(const String:mapname[]);
+forward ReadyUp_FwdGetCampaignName(const char[] mapname);
 
 /*
  *	Called when a plugin invokes a change to the maximum infected count.
@@ -248,7 +248,7 @@ forward ReadyUp_FwdGetCampaignName(const String:mapname[]);
  *	@param count	The maximum infected count.
  *	@noreturn
  */
-forward ReadyUp_SetInfectedBotLimit(infectedCount);
+forward ReadyUp_SetInfectedBotLimit(int infectedCount);
 
 /*
  *
@@ -257,7 +257,7 @@ forward ReadyUp_SetInfectedBotLimit(infectedCount);
  *	@param client		The client id
  *	@param groupStatus	The status of membership (1 - member, 0 no member)
  */
-forward ReadyUp_GroupMemberStatus(client, groupStatus);
+forward ReadyUp_GroupMemberStatus(int client, int groupStatus);
 
 /*
  *
@@ -267,7 +267,7 @@ forward ReadyUp_GroupMemberStatus(client, groupStatus);
  *	@param type         The type of statistic to receive.
  *  @param amount       The amount to add to the specified statistic type.
  */
-forward ReadyUp_FwdStatistics(client, type, amount);
+forward ReadyUp_FwdStatistics(int client, int type, int amount);
 
 /*
  *
@@ -275,7 +275,7 @@ forward ReadyUp_FwdStatistics(client, type, amount);
  *
  *	@param client		The client id
  */
-forward ReadyUp_SurvivorEnteredCheckpoint(client);
+forward ReadyUp_SurvivorEnteredCheckpoint(int client);
 
 /*
  *
@@ -285,7 +285,7 @@ forward ReadyUp_SurvivorEnteredCheckpoint(client);
  *	@param type         The type of statistic to send out.
  *  @param amount       The amount to add to the specified statistic type.
  */
-native ReadyUp_NtvStatistics(client, type, amount);
+native ReadyUp_NtvStatistics(int client, int type, int amount);
 
 /*
  *	Calls forward ReadyUp_IsEmptyOnDisconnect()
@@ -300,7 +300,7 @@ native ReadyUp_NtvIsEmptyOnDisconnect();
  *	@param client	The client id
  *	@param groupStatus The clients group status
  */
-native ReadyUp_NtvGroupMemberStatus(client, groupStatus);
+native ReadyUp_NtvGroupMemberStatus(int client, int groupStatus);
 
 /*
  *	Called when SKYRPG solo survivor handicap is locked into place.
@@ -308,7 +308,7 @@ native ReadyUp_NtvGroupMemberStatus(client, groupStatus);
  *	@param handicaplevel	The handicap level of the player.
  *	@noreturn;
  */
-native ReadyUp_NtvHandicapChanged(handicaplevel);
+native ReadyUp_NtvHandicapChanged(int handicaplevel);
 
 /*
  *
@@ -317,14 +317,14 @@ native ReadyUp_NtvHandicapChanged(handicaplevel);
  *	-1 if it's any map in between
  *
  */
-forward ReadyUp_GetCampaignStatus(mapposition);
+forward ReadyUp_GetCampaignStatus(int mapposition);
 
 /*
  *
  *	Called when a plugin needs to create a new companion for a survivor.
  *
  */
-native ReadyUp_NtvCreateCompanion(client, String:CompanionName[]);
+native ReadyUp_NtvCreateCompanion(int client, char[] CompanionName);
 
 /*
  *	Called when Ready Up is notified when a client controls a survivor.
@@ -332,7 +332,7 @@ native ReadyUp_NtvCreateCompanion(client, String:CompanionName[]);
  *	@param client		The userid of the client who is now controlling the survivor.
  *	@noreturn
  */
-native ReadyUp_FwdSurvivorControl(client);
+native ReadyUp_FwdSurvivorControl(int client);
 
 /*
  *	Called when a plugin requests to find out whether or not it's the last map of a given campaign.
@@ -353,7 +353,7 @@ native ReadyUp_NtvConfigProcessing();
  *
  *	@noreturn
  */
-native ReadyUp_NtvFriendlyFire(client, victim, amount, victimamount, isfire, bonusDamage);
+native ReadyUp_NtvFriendlyFire(int client, int victim, int amount, int victimamount, int isfire, int bonusDamage);
 
 /*
  *	Checks whether or not the teams are flipped.
@@ -373,7 +373,7 @@ native ReadyUp_RoundRestartedByVote();
  *	@param config		The name of the config. .../configs/readyup/ is the base path.
  *	@noreturn
  */
-native ReadyUp_ParseConfig(String:config[]);
+native ReadyUp_ParseConfig(char[] config);
 
 /*
  *	Returns the current gamemode. (0) Error (1) Coop (2) Versus (3) Survival
@@ -389,7 +389,7 @@ native ReadyUp_GetGameMode();
  *	@param flags		The flags required to use the command.
  *	@return				True if successful, otherwise false.
  */
-native ReadyUp_RegisterCommand(String:command[], String:description[], flags);
+native ReadyUp_RegisterCommand(char[] command, char[] description, int flags);
 
 /*
  *	Attempts to unregister a command in the Ready Up Commands Library.
@@ -397,7 +397,7 @@ native ReadyUp_RegisterCommand(String:command[], String:description[], flags);
  *	@param command		The command string to unregister.
  *	@return				True if successful, otherwise false.
  */
-native ReadyUp_RemoveCommand(String:command[]);
+native ReadyUp_RemoveCommand(char[] command);
 
 /*
  *	Calls the ReadyUp_ListCommands forward.
@@ -405,7 +405,7 @@ native ReadyUp_RemoveCommand(String:command[]);
  *	@param client		The userid of the player who used the command.
  *	@noreturn
  */
-native ReadyUp_GetCommands(client);
+native ReadyUp_GetCommands(int client);
 
 /*
  *	Called when a module notifies Ready Up of a slot change.
@@ -434,7 +434,7 @@ native ReadyUp_NtvEntryDenied();
  *	@param client		The userid of the player who was allowed entry.
  *	@noreturn
  */
-native ReadyUp_NtvEntryAllowed(client);
+native ReadyUp_NtvEntryAllowed(int client);
 
 /*
  *	Calls the ReadyUp_FwdTeamAssigned forward when a module notifies Ready Up of a player being assigned to a team.
@@ -443,7 +443,7 @@ native ReadyUp_NtvEntryAllowed(client);
  *	@param team			The team the client was assigned to.
  *	@noreturn
  */
-native ReadyUp_NtvTeamAssigned(client, team);
+native ReadyUp_NtvTeamAssigned(int client, int team);
 
 /*
  *	Calls the ReadyUp_FwdChangeTeam forward when a module REQUESTS that a players team change.
@@ -453,7 +453,7 @@ native ReadyUp_NtvTeamAssigned(client, team);
  *	@param team			The team the client wants to change to.
  *	@noreturn
  */
-native ReadyUp_NtvChangeTeam(client, team);
+native ReadyUp_NtvChangeTeam(int client, int team);
 
 /*
  *	Calls the ReadyUp_FwdSurvivorControl forward when a module notifies Ready Up when a client controls a survivor.
@@ -461,7 +461,7 @@ native ReadyUp_NtvChangeTeam(client, team);
  *	@param client		The userid of the client who is now controlling the survivor.
  *	@noreturn
  */
-native ReadyUp_NtvSurvivorControl(client);
+native ReadyUp_NtvSurvivorControl(int client);
 
 /*
  *	Calls the ReadyUp_FwdCallModule forward when a module asks Ready Up to send information to another module.
@@ -471,7 +471,7 @@ native ReadyUp_NtvSurvivorControl(client);
  *	@param value		The value of the command to send to the target module.
  *	@noreturn
  */
-native ReadyUp_NtvCallModule(String:nameConfig[], String:nameCommand[], value);
+native ReadyUp_NtvCallModule(char[] nameConfig, char[] nameCommand, int value);
 
 /*
  *	Calls the ReadyUp_FwdGetMapList forward which sends the maplist.cfg rotation to any modules that use the information.

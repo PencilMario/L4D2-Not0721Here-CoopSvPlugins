@@ -104,7 +104,7 @@
 		}
 		"coop_rpg"
 		{
-			"name"		"战役|Sky rpg v3.4.6.9"
+			"name"		"战役|Sky rpg v3.4.7.8"
 		}
 	}
 }

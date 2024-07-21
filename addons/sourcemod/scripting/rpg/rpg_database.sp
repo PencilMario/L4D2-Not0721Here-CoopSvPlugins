@@ -131,6 +131,8 @@ public void DBConnect(Handle owner, Handle hndl, const char[] error, any data)
 		SQL_TQuery(hDatabase, QueryResults, tquery);
 		Format(tquery, sizeof(tquery), "ALTER TABLE `%s` ADD `resr` int(32) NOT NULL DEFAULT '0';", TheDBPrefix);
 		SQL_TQuery(hDatabase, QueryResults, tquery);
+		Format(tquery, sizeof(tquery), "ALTER TABLE `%s` ADD `dals` int(32) NOT NULL DEFAULT '0';", TheDBPrefix);
+		SQL_TQuery(hDatabase, QueryResults, tquery);
 		Format(tquery, sizeof(tquery), "ALTER TABLE `%s` ADD `survpoints` varchar(32) NOT NULL DEFAULT '0.0';", TheDBPrefix);
 		SQL_TQuery(hDatabase, QueryResults, tquery);
 		Format(tquery, sizeof(tquery), "ALTER TABLE `%s` ADD `bec` int(32) NOT NULL DEFAULT '0';", TheDBPrefix);
@@ -214,6 +216,8 @@ public void DBConnect(Handle owner, Handle hndl, const char[] error, any data)
 		SQL_TQuery(hDatabase, QueryResults, tquery);
 		Format(tquery, sizeof(tquery), "ALTER TABLE `%s_loot` ADD `firstowner` varchar(32) NOT NULL DEFAULT 'none';", TheDBPrefix);
 		SQL_TQuery(hDatabase, QueryResults, tquery);
+		Format(tquery, sizeof(tquery), "ALTER TABLE `%s_loot` ADD `firstownername` varchar(32) NOT NULL DEFAULT 'none';", TheDBPrefix);
+		SQL_TQuery(hDatabase, QueryResults, tquery);
 		Format(tquery, sizeof(tquery), "ALTER TABLE `%s_loot` ADD `rating` int(32) NOT NULL DEFAULT '1';", TheDBPrefix);
 		SQL_TQuery(hDatabase, QueryResults, tquery);
 		Format(tquery, sizeof(tquery), "ALTER TABLE `%s_loot` ADD `category` varchar(32) NOT NULL DEFAULT '0';", TheDBPrefix);
@@ -230,7 +234,13 @@ public void DBConnect(Handle owner, Handle hndl, const char[] error, any data)
 		SQL_TQuery(hDatabase, QueryResults, tquery);
 		Format(tquery, sizeof(tquery), "ALTER TABLE `%s_loot` ADD `tareffects` varchar(32) NOT NULL DEFAULT 'none';", TheDBPrefix);
 		SQL_TQuery(hDatabase, QueryResults, tquery);
-		Format(tquery, sizeof(tquery), "ALTER TABLE `%s_loot` ADD `tarrating` int(4) NOT NULL DEFAULT '-1';", TheDBPrefix);
+		Format(tquery, sizeof(tquery), "ALTER TABLE `%s_loot` ADD `tarrating` int(32) NOT NULL DEFAULT '-1';", TheDBPrefix);
+		SQL_TQuery(hDatabase, QueryResults, tquery);
+		Format(tquery, sizeof(tquery), "ALTER TABLE `%s_loot` ADD `maxscoreroll` int(32) NOT NULL DEFAULT '0';", TheDBPrefix);
+		SQL_TQuery(hDatabase, QueryResults, tquery);
+		Format(tquery, sizeof(tquery), "ALTER TABLE `%s_loot` ADD `maxactroll` int(32) NOT NULL DEFAULT '0';", TheDBPrefix);
+		SQL_TQuery(hDatabase, QueryResults, tquery);
+		Format(tquery, sizeof(tquery), "ALTER TABLE `%s_loot` ADD `maxtarroll` int(32) NOT NULL DEFAULT '0';", TheDBPrefix);
 		SQL_TQuery(hDatabase, QueryResults, tquery);
 
 		Format(tquery, sizeof(tquery), "CREATE TABLE IF NOT EXISTS `%s_profiles` (`steam_id` varchar(128) NOT NULL, PRIMARY KEY (`steam_id`)) ENGINE=InnoDB;", TheDBPrefix);
@@ -261,6 +271,21 @@ public void DBConnect(Handle owner, Handle hndl, const char[] error, any data)
 		Format(tquery, sizeof(tquery), "ALTER TABLE `%s_profiles` ADD `total upgrades` int(32) NOT NULL DEFAULT '0';", TheDBPrefix);
 		SQL_TQuery(hDatabase, QueryResults, tquery);
 		Format(tquery, sizeof(tquery), "ALTER TABLE `%s_profiles` ADD `free upgrades` int(32) NOT NULL DEFAULT '0';", TheDBPrefix);
+		SQL_TQuery(hDatabase, QueryResults, tquery);
+		for (int i = 0; i < iNumAugments; i++) {
+			Format(tquery, sizeof(tquery), "ALTER TABLE `%s_profiles` ADD `augment%d` varchar(32) NOT NULL DEFAULT 'none';", TheDBPrefix, i+1);
+			SQL_TQuery(hDatabase, QueryResults, tquery);
+		}
+
+		Format(tquery, sizeof(tquery), "CREATE TABLE IF NOT EXISTS `%s_mail` (`steam_id` varchar(64) NOT NULL, PRIMARY KEY (`steam_id`)) ENGINE=InnoDB;", TheDBPrefix);
+		SQL_TQuery(hDatabase, QueryResults, tquery);
+		Format(tquery, sizeof(tquery), "ALTER TABLE `%s_mail` CHARACTER SET utf8 COLLATE utf8_general_ci;", TheDBPrefix);
+		SQL_TQuery(hDatabase, QueryResults, tquery);
+		Format(tquery, sizeof(tquery), "ALTER TABLE `%s_mail` ADD `message` varchar(64) NOT NULL DEFAULT 'none';", TheDBPrefix);
+		SQL_TQuery(hDatabase, QueryResults, tquery);
+		Format(tquery, sizeof(tquery), "ALTER TABLE `%s_mail` ADD `currency` varchar(32) NOT NULL DEFAULT 'none';", TheDBPrefix);
+		SQL_TQuery(hDatabase, QueryResults, tquery);
+		Format(tquery, sizeof(tquery), "ALTER TABLE `%s_mail` ADD `expiration` int(32) NOT NULL DEFAULT '-1';", TheDBPrefix);
 
 		/*new size			=	GetArraySize(a_Database_Talents);
 
@@ -338,11 +363,11 @@ public void DBConnect(Handle owner, Handle hndl, const char[] error, any data)
 public void QuerySaveNewPlayer(Handle owner, Handle hndl, const char[] error, any client) {
 
 	if (hndl == INVALID_HANDLE) {
-
 		if (StrContains(error, "Duplicate column name", false) == -1) LogMessage("QuerySaveNewPlayer Error %s", error);
 		return;
 	}
 	if (IsLegitimateClient(client)) {
+		b_IsLoading[client] = false;
 		SavePlayerData(client, _, true);
 		FormatPlayerName(client);
 	}
@@ -580,6 +605,9 @@ stock void ResetData(int client) {
 	bIsMeleeCooldown[client]		= false;
 	shotgunCooldown[client]			= false;
 	ClearArray(InfectedHealth[client]);
+	ClearArray(WitchDamage[client]);
+	ClearArray(SpecialCommon[client]);
+	ClearArray(CommonInfected[client]);
 	ClearArray(PlayerActiveAmmo[client]);
 	ClearArray(PlayActiveAbilities[client]);
 	ClearArray(ApplyDebuffCooldowns[client]);
@@ -631,11 +659,11 @@ stock void ClearAndLoad(int client, bool IgnoreLoad = false) {
 	ClearArray(myAugmentIDCodes[client]);
 	ClearArray(myAugmentCategories[client]);
 	ClearArray(myAugmentOwners[client]);
+	ClearArray(myAugmentOwnersName[client]);
 	ClearArray(myAugmentInfo[client]);
 	ClearArray(myAugmentActivatorEffects[client]);
 	ClearArray(myAugmentTargetEffects[client]);
-
-	SetPlayerDatabaseArray(client, true);
+	ClearArray(myAugmentSavedProfiles[client]);
 
 	char text[64];
 	Format(text, sizeof(text), "none");
@@ -658,7 +686,7 @@ stock void ClearAndLoad(int client, bool IgnoreLoad = false) {
 	char tquery[2048];
 	char themenu[64];
 	GetConfigValue(themenu, sizeof(themenu), "sky points menu name?");
-	Format(tquery, sizeof(tquery), "SELECT `steam_id`, `exp`, `expov`, `upgrade cost`, `level`, `skylevel`, `%s`, `time played`, `talent points`, `total upgrades`, `free upgrades`, `restt`, `restexp`, `lpl`, `resr`, `survpoints`, `bec`, `rem`, `pri`, `xpdebt`, `upav`, `upawarded`, `%s`, `myrating %s`, `handicaplevel %s`, `lastserver`, `myseason`, `lvlpaused`, `itrails`, `pistol_xp`, `melee_xp`, `uzi_xp`, `shotgun_xp`, `sniper_xp`, `assault_xp`, `medic_xp`, `grenade_xp`, `augmentparts`, `dismantlescore`, `dismantleminor` FROM `%s` WHERE (`steam_id` = '%s');", themenu, RatingType, RatingType, RatingType, TheDBPrefix, key);
+	Format(tquery, sizeof(tquery), "SELECT `steam_id`, `exp`, `expov`, `upgrade cost`, `level`, `skylevel`, `%s`, `time played`, `talent points`, `total upgrades`, `free upgrades`, `restt`, `restexp`, `lpl`, `resr`, `survpoints`, `bec`, `rem`, `pri`, `xpdebt`, `upav`, `upawarded`, `%s`, `myrating %s`, `handicaplevel %s`, `lastserver`, `myseason`, `lvlpaused`, `itrails`, `pistol_xp`, `melee_xp`, `uzi_xp`, `shotgun_xp`, `sniper_xp`, `assault_xp`, `medic_xp`, `grenade_xp`, `augmentparts`, `dismantlescore`, `dismantleminor`, `dals` FROM `%s` WHERE (`steam_id` = '%s');", themenu, RatingType, RatingType, RatingType, TheDBPrefix, key);
 	// maybe set a value equal to the users steamid integer only, so if steam:0:1:23456, set the value of "client" equal to 23456 and then set the client equal to whatever client's steamid contains 23456?
 	SQL_TQuery(hDatabase, QueryResults_Load, tquery, client);
 }
@@ -799,6 +827,7 @@ stock void CreateNewPlayerEx(int client) {
 	SetTotalExperienceByLevel(client, PlayerLevel[client]);
 	ChallengeEverything(client);
 	//FormatPlayerName(client);
+	bIsLoadingCustomProfile[client] = false;
 	pistolXP[client] = 0;
 	meleeXP[client] = 0;
 	uziXP[client] = 0;
@@ -858,12 +887,12 @@ stock void CreateNewPlayerEx(int client) {
 		SetArrayString(a_Store_Player[client], i, "0");				// We clear all players arrays for the store.
 	}
 	BuildMenu(client);
-	FormatPlayerName(client);
+	FormatPlayerName(client, true);
 	Format(TagName, sizeof(TagName), "%s", baseName[client]);
 	SQL_EscapeString(hDatabase, TagName, TagName, sizeof(TagName));
 	//Format(tquery, sizeof(tquery), "INSERT INTO `%s` (`steam_id`, `exp`, `expov`, `upgrade cost`, `level`, `%s`, `time played`, `talent points`, `total upgrades`, `free upgrades`, `tcolour`, `tname`, `ccolour`) VALUES ('%s', '%d', '%d', '%d', '%d', '%d', '%d', '%d', '%d', '%d', '%s', '%s', '%s');", TheDBPrefix, spmn, key, ExperienceLevel[client], ExperienceOverall[client], PlayerLevelUpgrades[client], PlayerLevel[client], SkyPoints[client], TimePlayed[client], TotalTalentPoints[client], PlayerUpgradesTotal[client], FreeUpgrades[client], TagColour, TagName, ChatColour);
 	Format(tquery, sizeof(tquery), "INSERT INTO `%s` (`steam_id`, `tname`) VALUES ('%s', '%s');", TheDBPrefix, key, TagName);
-	//SQL_EscapeString(hDatabase, tquery, tquery, sizeof(tquery));
+	LogMessage("Saving new player data: %s", tquery);
 	SQL_TQuery(hDatabase, QuerySaveNewPlayer, tquery, client);
 
 	CreateTimer(1.0, Timer_LoggedUsers, client, TIMER_FLAG_NO_MAPCHANGE);
@@ -906,7 +935,7 @@ public void Query_CheckIfDataExists(Handle owner, Handle hndl, const char[] erro
 	if (count < 1) {
 
 		if (!CheckServerLevelRequirements(client)) return;	// client was kicked.
-
+		LogMessage("No data for %N could be found; creating new data.", client);
 		CreateNewPlayerEx(client);
 
 			//decl String:DefaultProfileName[512];
@@ -1015,9 +1044,9 @@ stock SavePlayerData(int client, bool b_IsTrueDisconnect = false, bool IsNewPlay
 		LogMessage("Database couldn't be found, cannot save for %N", client);
 		return;
 	}
-	if (!b_IsLoaded[client]) return;
+	if (!IsNewPlayer && !b_IsLoaded[client]) return;
 	//if (GetClientTeam(client) == TEAM_SPECTATOR) return;
-	if (GetClientTeam(client) == TEAM_INFECTED) {
+	if (myCurrentTeam[client] == TEAM_INFECTED) {
 
 		SaveInfectedData(client);
 		return;
@@ -1122,7 +1151,7 @@ stock SavePlayerData(int client, bool b_IsTrueDisconnect = false, bool IsNewPlay
 	int minimumRating = RoundToCeil(BestRating[client] * fRatingFloor);
 	if (Rating[client] < minimumRating) Rating[client] = minimumRating;
 
-	Format(tquery, sizeof(tquery), "UPDATE `%s` SET `restt` = '%d', `restexp` = '%d', `lpl` = '%d', `resr` = '%d', `pri` = '%d', `survpoints` = '%s', `bec` = '%d', `%s` = '%d', `myrating %s` = '%d', `handicaplevel %s` = '%d', `augmentparts` = '%d', `dismantlescore` = '%d', `dismantleminor` = '%d' WHERE (`steam_id` = '%s');", TheDBPrefix, GetTime(), RestedExperience[client], LastPlayLength[client], resr[client], PreviousRoundIncaps[client], sPoints, BonusContainer[client], RatingType, BestRating[client], RatingType, Rating[client], RatingType, handicapLevel[client], augmentParts[client], iplayerSettingAutoDismantleScore[client], iplayerDismantleMinorAugments[client], key);
+	Format(tquery, sizeof(tquery), "UPDATE `%s` SET `restt` = '%d', `restexp` = '%d', `lpl` = '%d', `resr` = '%d', `pri` = '%d', `survpoints` = '%s', `bec` = '%d', `%s` = '%d', `myrating %s` = '%d', `handicaplevel %s` = '%d', `augmentparts` = '%d', `dismantlescore` = '%d', `dismantleminor` = '%d', `dals` = '%d' WHERE (`steam_id` = '%s');", TheDBPrefix, GetTime(), RestedExperience[client], LastPlayLength[client], resr[client], PreviousRoundIncaps[client], sPoints, BonusContainer[client], RatingType, BestRating[client], RatingType, Rating[client], RatingType, handicapLevel[client], augmentParts[client], iplayerSettingAutoDismantleScore[client], iplayerDismantleMinorAugments[client], iDontAllowLootStealing[client], key);
 	SQL_TQuery(hDatabase, QueryResults4, tquery, client);
 
 	for (int i = 0; i < size; i++) {
@@ -1138,11 +1167,13 @@ stock SavePlayerData(int client, bool b_IsTrueDisconnect = false, bool IsNewPlay
 	if (GetArraySize(ActionBar[client]) != ActionSlotSize) ResizeArray(ActionBar[client], ActionSlotSize);
 	if (GetArraySize(ActionBarMenuPos[client]) != iActionBarSlots) ResizeArray(ActionBarMenuPos[client], iActionBarSlots);
 	char ActionBarText[64];
+	int talentSize = GetArraySize(a_Menu_Talents)-1;
 	for (int i = 0; i < ActionSlotSize; i++) {	// isnt looping?
 
 		GetArrayString(ActionBar[client], i, ActionBarText, sizeof(ActionBarText));
+		int menuPos = GetArrayCell(ActionBarMenuPos[client], i);
 		//if (StrEqual(ActionBarText, "none")) continue;
-		if (!IsAbilityTalent(client, ActionBarText) && (!IsTalentExists(ActionBarText) || GetTalentStrength(client, ActionBarText) < 1)) Format(ActionBarText, sizeof(ActionBarText), "none");
+		if (menuPos < 0 || menuPos > talentSize || !IsAbilityTalent(client, menuPos) && (!IsTalentExists(ActionBarText) || GetTalentStrength(client, ActionBarText) < 1)) Format(ActionBarText, sizeof(ActionBarText), "none");
 		Format(tquery, sizeof(tquery), "UPDATE `%s` SET `aslot%d` = '%s' WHERE (`steam_id` = '%s');", TheDBPrefix, i+1, ActionBarText, key);
 		SQL_TQuery(hDatabase, QueryResults, tquery);
 	}
@@ -1155,7 +1186,7 @@ stock SavePlayerData(int client, bool b_IsTrueDisconnect = false, bool IsNewPlay
 			int bSelling = GetArrayCell(myAugmentInfo[client], i, 2);
 			int equipped = GetArrayCell(myAugmentInfo[client], i, 3);
 
-			Format(tquery, sizeof(tquery), "UPDATE `%s_loot` SET `price` = '%d', `steam_id` = '%s', `isequipped` = '%d', `isforsale` = '%d' WHERE (`itemid` = '%s');", TheDBPrefix, itemCost, key, equipped, bSelling, itemCode);
+			Format(tquery, sizeof(tquery), "UPDATE `%s_loot` SET `price` = '%d', `isequipped` = '%d', `isforsale` = '%d' WHERE (`itemid` = '%s');", TheDBPrefix, itemCost, equipped, bSelling, itemCode);
 			SQL_TQuery(hDatabase, QueryResults, tquery);
 		}
 	}
@@ -1163,7 +1194,7 @@ stock SavePlayerData(int client, bool b_IsTrueDisconnect = false, bool IsNewPlay
 	if (DisplayActionBar[client]) isDisab = 1;
 	Format(tquery, sizeof(tquery), "UPDATE `%s` SET `disab` = '%d' WHERE (`steam_id` = '%s');", TheDBPrefix, isDisab, key);
 	SQL_TQuery(hDatabase, QueryResults, tquery);
-	if (GetClientTeam(client) == TEAM_SURVIVOR) {
+	if (myCurrentTeam[client] == TEAM_SURVIVOR) {
 		if (GetArraySize(hWeaponList[client]) < 2) {
 			ResizeArray(hWeaponList[client], 2);
 			int wepid = GetPlayerWeaponSlot(client, 0);
@@ -1202,6 +1233,7 @@ stock SavePlayerData(int client, bool b_IsTrueDisconnect = false, bool IsNewPlay
 
 		ClearEquippedAugmentData(client);
 		ClearLocalClientAugmentData(client);
+		ClearLocalClientData(client);
 	}
 
 	/*size				=	GetArraySize(a_Store);
@@ -1215,6 +1247,7 @@ stock SavePlayerData(int client, bool b_IsTrueDisconnect = false, bool IsNewPlay
 		SQL_TQuery(hDatabase, QueryResults7, tquery, client);
 	}*/
 	if (IsNewPlayer) {
+		LogMessage("Loading profile for new player %N", client);
 		CreateTimer(1.0, Timer_LoadNewPlayer, client, TIMER_FLAG_NO_MAPCHANGE);
 	}
 }
@@ -1225,9 +1258,10 @@ public Action Timer_LoadNewPlayer(Handle timer, any client) {
 	else {
 		b_IsLoading[client] = true;
 		LoadTarget[client] = -1;
-		if (IsFakeClient(client) && GetClientTeam(client) == TEAM_SURVIVOR && !StrEqual(DefaultBotProfileName, "-1")) LoadProfileEx(client, DefaultBotProfileName);
-		else if (GetClientTeam(client) == TEAM_INFECTED && !StrEqual(DefaultInfectedProfileName, "-1")) LoadProfileEx(client, DefaultInfectedProfileName);
-		else if (GetClientTeam(client) == TEAM_SURVIVOR && !StrEqual(DefaultProfileName, "-1")) LoadProfileEx(client, DefaultProfileName);
+		int team = GetClientTeam(client);
+		if (IsFakeClient(client) && team == TEAM_SURVIVOR && !StrEqual(DefaultBotProfileName, "-1")) LoadProfileEx(client, DefaultBotProfileName);
+		else if (team == TEAM_INFECTED && !StrEqual(DefaultInfectedProfileName, "-1")) LoadProfileEx(client, DefaultInfectedProfileName);
+		else if (team == TEAM_SURVIVOR && !StrEqual(DefaultProfileName, "-1")) LoadProfileEx(client, DefaultProfileName);
 		else b_IsLoading[client] = false;
 	}
 	return Plugin_Stop;
@@ -1467,6 +1501,10 @@ stock bool IsClearedToLoad(int client, bool insert = false, bool remove = false)
 		if (!StrEqual(steamid, key)) continue;
 		if (remove) {
 			RemoveFromArray(ClientsPermittedToLoad, i);
+			if (b_IsLoaded[client]) {	// players loading in for the "first" time get their stamina refilled and fatigue disabled.
+				SurvivorStamina[client] = GetPlayerStamina(client);
+				bIsSurvivorFatigue[client] = false;
+			}
 		}
 		return true;
 	}
@@ -1536,6 +1574,7 @@ public void QueryResults_Load(Handle owner, Handle hndl, const char[] error, any
 			augmentParts[client] = SQL_FetchInt(hndl, 37);
 			iplayerSettingAutoDismantleScore[client] = SQL_FetchInt(hndl, 38);
 			iplayerDismantleMinorAugments[client] = SQL_FetchInt(hndl, 39);
+			iDontAllowLootStealing[client] = SQL_FetchInt(hndl, 40);
 		}
 		if (PlayerLevel[client] > 0) {
 			if (Rating[client] < 0) Rating[client] = 0;
@@ -1648,7 +1687,7 @@ public void QueryResults_LoadTalentTrees(Handle owner, Handle hndl, const char[]
 	char key[512];
 	char TheName[64];
 	//new iLevel			= 0;
-	if (client == -1 || !IsLegitimateClient(client) || IsLegitimateClient(client) && GetClientTeam(client) != TEAM_SURVIVOR && IsFakeClient(client)) {
+	if (client == -1 || !IsLegitimateClient(client) || IsLegitimateClient(client) && myCurrentTeam[client] != TEAM_SURVIVOR && IsFakeClient(client)) {
 		if (IsLegitimateClient(client)) {
 			bIsTalentTwo[client] = false;
 			b_IsLoading[client] = false;
@@ -1764,17 +1803,74 @@ stock void LoadClientAugments(client) {
 	char tquery[512];
 	GetClientAuthId(client, AuthId_Steam2, key, 64);
 	if (!StrEqual(serverKey, "-1")) Format(key, sizeof(key), "%s%s", serverKey, key);
-	Format(tquery, sizeof(tquery), "SELECT `steam_id`, `itemid`, `rating`, `category`, `price`, `isforsale`, `isequipped`, `acteffects`, `actrating`, `tareffects`, `tarrating` FROM `%s_loot` WHERE (`steam_id` = '%s');", TheDBPrefix, key);
+	Format(tquery, sizeof(tquery), "SELECT `steam_id`, `itemid`, `rating`, `category`, `price`, `isforsale`, `isequipped`, `acteffects`, `actrating`, `tareffects`, `tarrating`, `firstowner`, `firstownername`, `maxscoreroll`, `maxactroll`, `maxtarroll` FROM `%s_loot` WHERE (`steam_id` = '%s');", TheDBPrefix, key);
 	SQL_TQuery(hDatabase, QueryResults_LoadAugments, tquery, client);
+}
+
+stock void ClearLocalClientData(client) {
+	// reset base values
+	playerCurrentAugmentAverageLevel[client] = 0;
+	ExperienceLevel[client]		=	0;
+	ExperienceOverall[client]	=	0;
+	PlayerLevelUpgrades[client]	=	1;
+	PlayerLevel[client]			=	iPlayerStartingLevel;
+	SkyLevel[client]			=	0;
+	SkyPoints[client]			=	0;
+	TimePlayed[client]			=	0;
+	TotalTalentPoints[client]	=	iPlayerStartingLevel;
+	PlayerUpgradesTotal[client]	=	0;
+	FreeUpgrades[client]		=	0;
+	RestedExperience[client]	=	0;
+	LastPlayLength[client]		=	0;
+	resr[client]				=	0;
+	Points[client] = 0.0;
+	BonusContainer[client] = 0;
+	RoundExperienceMultiplier[client] = 0.0;
+	PreviousRoundIncaps[client]	=	0;
+	ExperienceDebt[client]		=	0;
+	UpgradesAvailable[client]	=	1;
+	UpgradesAwarded[client]		=	0;
+	BestRating[client] =	0;
+	Rating[client] = 0;
+	handicapLevel[client] = 0;
+	iIsLevelingPaused[client]	= 0;
+	iIsBulletTrails[client]		= 0;
+	pistolXP[client] = 0;
+	meleeXP[client] = 0;
+	uziXP[client] = 0;
+	shotgunXP[client] = 0;
+	sniperXP[client] = 0;
+	assaultXP[client] = 0;
+	medicXP[client] = 0;
+	grenadeXP[client] = 0;
+	augmentParts[client] = 0;
+	iplayerSettingAutoDismantleScore[client] = 0;
+	iplayerDismantleMinorAugments[client] = 0;
+	int size = GetArraySize(a_Menu_Talents);
+	// should never be true
+	if (GetArraySize(a_Database_PlayerTalents[client]) != size) ResizeArray(a_Database_PlayerTalents[client], size);
+	for (int i = 0; i < size; i++) {
+		// reset talent point distribution
+		SetArrayCell(a_Database_PlayerTalents[client], i, 0);
+	}
+	int numActionSlots = iActionBarSlots;
+	// should never be true
+	if (GetArraySize(ActionBar[client]) != numActionSlots) ResizeArray(ActionBar[client], numActionSlots);
+	for (int i = 0; i < numActionSlots; i++) {
+		// unequip all action slots.
+		SetArrayString(ActionBar[client], i, "none");
+	}
 }
 
 stock void ClearLocalClientAugmentData(client) {
 	ClearArray(myAugmentIDCodes[client]);
 	ClearArray(myAugmentCategories[client]);
 	ClearArray(myAugmentOwners[client]);
+	ClearArray(myAugmentOwnersName[client]);
 	ClearArray(myAugmentInfo[client]);
 	ClearArray(myAugmentActivatorEffects[client]);
 	ClearArray(myAugmentTargetEffects[client]);
+	ClearArray(myAugmentSavedProfiles[client]);
 }
 
 stock ClearEquippedAugmentData(int client) {
@@ -1810,83 +1906,288 @@ public void QueryResults_LoadAugments(Handle owner, Handle hndl, const char[] er
 		char text[512];
 		char key[64];
 
-		if (client == -1 || !IsLegitimateClient(client) || IsLegitimateClient(client) && GetClientTeam(client) != TEAM_SURVIVOR && IsFakeClient(client)) return;
-		ClearEquippedAugmentData(client);
-		ClearLocalClientAugmentData(client);
+		if (client == -1 || !IsLegitimateClient(client) || IsLegitimateClient(client) && myCurrentTeam[client] != TEAM_SURVIVOR && IsFakeClient(client)) return;
+		char loadingClientSteamID[64];
+		GetClientAuthId(client, AuthId_Steam2, loadingClientSteamID, sizeof(loadingClientSteamID));
+		if (!bIsLoadingCustomProfile[client]) {
+			ClearEquippedAugmentData(client);
+			ClearLocalClientAugmentData(client);
+		}
+		// every time we load an augment, we need to also locate EVERY single profile that augment
+		// is attached to, and store in it in dynamic string array.
+		// augmentLoadPos tracks which augment we're loading so we know where to store the info.
 		while (SQL_FetchRow(hndl)) {
 			SQL_FetchString(hndl, 0, key, sizeof(key));
-			int size = GetArraySize(myAugmentIDCodes[client]);
-			ResizeArray(myAugmentIDCodes[client], size+1);
-			ResizeArray(myAugmentCategories[client], size+1);
-			ResizeArray(myAugmentOwners[client], size+1);
-			ResizeArray(myAugmentInfo[client], size+1);
-			ResizeArray(myAugmentTargetEffects[client], size+1);
-			ResizeArray(myAugmentActivatorEffects[client], size+1);
-			char itemCode[64];
-			SQL_FetchString(hndl, 1, itemCode, 64);
-			SetArrayString(myAugmentIDCodes[client], size, itemCode);
-			int itemRating = SQL_FetchInt(hndl, 2);
-			SetArrayCell(myAugmentInfo[client], size, itemRating);
-			SQL_FetchString(hndl, 3, text, sizeof(text));
-			SetArrayString(myAugmentCategories[client], size, text);
-			int itemCost = SQL_FetchInt(hndl, 4);
-			SetArrayCell(myAugmentInfo[client], size, itemCost, 1);
-			SetArrayCell(myAugmentInfo[client], size, SQL_FetchInt(hndl, 5), 2);
-			int isEquipped = SQL_FetchInt(hndl, 6);
-			SetArrayCell(myAugmentInfo[client], size, isEquipped, 3);
+			ReplaceString(key, sizeof(key), serverKey, "", true);
+			if (!bIsLoadingCustomProfile[client]) {
+				int size = GetArraySize(myAugmentIDCodes[client]);
+				ResizeArray(myAugmentIDCodes[client], size+1);
+				ResizeArray(myAugmentCategories[client], size+1);
+				ResizeArray(myAugmentOwners[client], size+1);
+				ResizeArray(myAugmentOwnersName[client], size+1);
+				ResizeArray(myAugmentInfo[client], size+1);
+				ResizeArray(myAugmentTargetEffects[client], size+1);
+				ResizeArray(myAugmentActivatorEffects[client], size+1);
+				ResizeArray(myAugmentSavedProfiles[client], size+1);
 
-			char activatorEffects[64];
-			SQL_FetchString(hndl, 7, activatorEffects, 64);
-			int activatorEffectRating = SQL_FetchInt(hndl, 8);
-			SetArrayCell(myAugmentInfo[client], size, activatorEffectRating, 4);
-			SetArrayString(myAugmentActivatorEffects[client], size, activatorEffects);
+				char itemCode[64];
+				SQL_FetchString(hndl, 1, itemCode, 64);
+				SetArrayString(myAugmentIDCodes[client], size, itemCode);
+				int itemRating = SQL_FetchInt(hndl, 2);
+				SetArrayCell(myAugmentInfo[client], size, itemRating);
+				SQL_FetchString(hndl, 3, text, sizeof(text));
+				SetArrayString(myAugmentCategories[client], size, text);
+				int itemCost = SQL_FetchInt(hndl, 4);
+				SetArrayCell(myAugmentInfo[client], size, itemCost, 1);
+				SetArrayCell(myAugmentInfo[client], size, SQL_FetchInt(hndl, 5), 2);
+				int isEquipped = SQL_FetchInt(hndl, 6);
+				SetArrayCell(myAugmentInfo[client], size, isEquipped, 3);
+				char activatorEffects[64];
+				SQL_FetchString(hndl, 7, activatorEffects, 64);
+				int activatorEffectRating = SQL_FetchInt(hndl, 8);
+				SetArrayCell(myAugmentInfo[client], size, activatorEffectRating, 4);
+				SetArrayString(myAugmentActivatorEffects[client], size, activatorEffects);
 
-			char targetEffects[64];
-			SQL_FetchString(hndl, 9, targetEffects, 64);
-			int targetEffectRating = SQL_FetchInt(hndl, 10);
-			SetArrayCell(myAugmentInfo[client], size, targetEffectRating, 5);
-			SetArrayString(myAugmentTargetEffects[client], size, targetEffects);
+				char targetEffects[64];
+				SQL_FetchString(hndl, 9, targetEffects, 64);
+				int targetEffectRating = SQL_FetchInt(hndl, 10);
+				char ownerSteamID[64];
+				SQL_FetchString(hndl, 11, ownerSteamID, sizeof(ownerSteamID));
+				if (StrEqual(ownerSteamID, "none")) {
+					Format(ownerSteamID, sizeof(ownerSteamID), "%s", key);
+				}
+				char ownerName[64];
+				SQL_FetchString(hndl, 12, ownerName, sizeof(ownerName));
+				if (StrEqual(ownerName, "none")) {
+					Format(ownerName, sizeof(ownerName), "%s", baseName[client]);
+				}
+				SetArrayString(myAugmentOwners[client], size, ownerSteamID);
+				SetArrayString(myAugmentOwnersName[client], size, ownerName);
 
-			if (isEquipped >= 0) {
-				SetArrayString(equippedAugmentsIDCodes[client], isEquipped, itemCode);
-				SetArrayCell(equippedAugments[client], isEquipped, itemCost, 1);
-				SetArrayCell(equippedAugments[client], isEquipped, itemRating, 2);
-				SetArrayString(equippedAugmentsCategory[client], isEquipped, text);
 
-				SetArrayString(equippedAugmentsActivator[client], isEquipped, activatorEffects);
-				SetArrayCell(equippedAugments[client], isEquipped, activatorEffectRating, 4);
 
-				SetArrayString(equippedAugmentsTarget[client], isEquipped, targetEffects);
-				SetArrayCell(equippedAugments[client], isEquipped, targetEffectRating, 5);
+				SetArrayCell(myAugmentInfo[client], size, targetEffectRating, 5);
+				SetArrayString(myAugmentTargetEffects[client], size, targetEffects);
+
+				int maxCategoryScoreRoll = SQL_FetchInt(hndl, 13);
+				SetArrayCell(myAugmentInfo[client], size, maxCategoryScoreRoll, 6);
+				int maxActivatorScoreRoll = SQL_FetchInt(hndl, 14);
+				SetArrayCell(myAugmentInfo[client], size, maxActivatorScoreRoll, 7);
+				int maxTargetScoreRoll = SQL_FetchInt(hndl, 15);
+				SetArrayCell(myAugmentInfo[client], size, maxTargetScoreRoll, 8);
+
+				if (isEquipped >= 0) {
+					SetArrayString(equippedAugmentsIDCodes[client], isEquipped, itemCode);
+					SetArrayCell(equippedAugments[client], isEquipped, itemCost, 1);
+					SetArrayCell(equippedAugments[client], isEquipped, itemRating, 2);
+					SetArrayString(equippedAugmentsCategory[client], isEquipped, text);
+
+					SetArrayString(equippedAugmentsActivator[client], isEquipped, activatorEffects);
+					SetArrayCell(equippedAugments[client], isEquipped, activatorEffectRating, 4);
+
+					SetArrayString(equippedAugmentsTarget[client], isEquipped, targetEffects);
+					SetArrayCell(equippedAugments[client], isEquipped, targetEffectRating, 5);
+				}
+			}
+			else {
+				// only bots and the owner of the augment can load the augments on a profile.
+				// this feature finally enables bots to use the augments associated with a saved profile.
+				if (!IsFakeClient(client) && StrContains(key, loadingClientSteamID) == -1) {
+					LogMessage("%N's %s is not the owner of this profile (%s) so they will not load the augments associated with it.", client, loadingClientSteamID, key);
+					bIsLoadingCustomProfile[client] = false;
+					Format(customProfileKey[client], sizeof(customProfileKey[]), "none");
+					LoadedClientActions(client);
+					return;
+				}
+				// A custom profile is being loaded - the client already has their augments loaded since a custom profile CANNOT be loaded until after a client has loaded.
+				// So here instead we're going to do a new SQL call to set the augments that should be equipped for this profile.
+				// only load the augments for the profile if the client loading the profile is the person who created the profile.
+				// otherwise two players can have the same augments equipped even if they don't both own them and it doesn't cause any problems in code but it's a real mind ufck
+				char tquery[512];
+				Format(tquery, sizeof(tquery), "SELECT `augment1`");
+				for (int i = 1; i < iNumAugments; i++) {
+					Format(tquery, sizeof(tquery), "%s, `augment%d`", tquery, i+1);
+				}
+				Format(tquery, sizeof(tquery), "%s FROM `%s_profiles` WHERE (`steam_id` = '%s');", tquery, TheDBPrefix, customProfileKey[client]);
+				SQL_TQuery(hDatabase, QueryResults_LoadProfileAugments, tquery, client);
+				LoadPos[client] = 0;
+				return;
+				// to find all the profiles an augment is loaded in we need a query that does
+				// select steam_id from %s_profiles where steam_id like useridkey and (augment%d = 'augmentid' or augment%d = 'augmentid') etc.
+
+				// for (int i = 0; i < iNumAugments; i++) {
+				// 	SQL_FetchString(hndl, i+1, text, sizeof(text));
+				// 	SetArrayString(ActionBar[client], i, text);
+				// 	SetArrayCell(ActionBarMenuPos[client], i, GetMenuPosition(client, text));
+				// }
 			}
 			
 			//client = FindClientWithAuthString(key);
-			//if (client == -1 || IsLegitimateClient(client) && GetClientTeam(client) != TEAM_SURVIVOR && IsFakeClient(client)) return;
+			//if (client == -1 || IsLegitimateClient(client) && myCurrentTeam[client] != TEAM_SURVIVOR && IsFakeClient(client)) return;
+		}
+		augmentLoadPos[client] = 0;
+		int newSize = GetArraySize(myAugmentIDCodes[client]);
+		if (augmentLoadPos[client] < newSize) {
+			char currentIDCode[64];
+			GetArrayString(myAugmentIDCodes[client], augmentLoadPos[client], currentIDCode, sizeof(currentIDCode));
+
+			char tquery[512];
+			Format(tquery, sizeof(tquery), "SELECT `steam_id` FROM `%s_profiles` WHERE ((`augment1` = '%s'", TheDBPrefix, currentIDCode);
+			for (int slot = 1; slot < iNumAugments; slot++) {
+				Format(tquery, sizeof(tquery), "%s OR `augment%d` = '%s'", tquery, slot+1, currentIDCode);
+			}
+			char pct[4];
+			Format(pct, sizeof(pct), "%");
+			Format(tquery, sizeof(tquery), "%s) AND `steam_id` LIKE '%s%s%s');", tquery, pct, loadingClientSteamID, pct);
+			SQL_TQuery(hDatabase, QueryResults_LoadAugmentSavedProfiles, tquery, client);
+		}
+		else {
+			// If the player has no augments
+			bIsLoadingCustomProfile[client] = false;
+			Format(customProfileKey[client], sizeof(customProfileKey[]), "none");
+			LoadedClientActions(client);
 		}
 	}
-	if (ReadyUpGameMode != 3) CreateTimer(1.0, Timer_GiveProfileItems, client, TIMER_REPEAT|TIMER_FLAG_NO_MAPCHANGE);
+}
+
+stock int FindAugmentPosByIDCode(int client, char[] IDCode) {
+	int size = GetArraySize(myAugmentIDCodes[client]);
+	for (int i = 0; i < size; i++) {
+		char text[64];
+		GetArrayString(myAugmentIDCodes[client], i, text, sizeof(text));
+		if (StrEqual(IDCode, text)) return i;
+	}
+	return -1;
+}
+
+stock int FindProfileOwner(char[] profileKey) {
+	for (int i = 1; i <= MaxClients; i++) {
+		if (!IsLegitimateClient(i)) continue;
+		char authId[64];
+		GetClientAuthId(i, AuthId_Steam2, authId, sizeof(authId));
+		if (StrContains(profileKey, authId, false) == -1) continue;
+		return i;
+	}
+	return -1;
+}
+
+public void QueryResults_LoadProfileAugments(Handle owner, Handle hndl, const char[] error, any client) {
+	if (hndl == null) {
+		LogMessage("QueryResults_LoadProfileAugments hndl not found.");
+		return;
+	}
+	if (client == -1 || !IsLegitimateClient(client) || IsLegitimateClient(client) && myCurrentTeam[client] != TEAM_SURVIVOR && IsFakeClient(client)) return;
+
+	char clientSteamID[64];
+	GetClientAuthId(client, AuthId_Steam2, clientSteamID, sizeof(clientSteamID));
+	int profiler = client;
+	if (StrContains(customProfileKey[client], clientSteamID, false) == -1) {
+		// owner is not the client.
+		// owner of this profile must be in-game for a survivor bot to be able to load the augments associated with it.
+		profiler = FindProfileOwner(customProfileKey[client]);
+	}
+	if (profiler != -1) {
+		if (profiler != client) {
+			LogMessage("%N is loading %N's augments for their profile.", client, profiler);
+		}
+		while (SQL_FetchRow(hndl)) {
+			for (int i = 0; i < iNumAugments; i++) {
+				// if there's an augment equipped on this slot, we unequip it and then equip the augment it tells us to.
+				char currentlyEquippedAugment[64];
+				GetArrayString(equippedAugmentsIDCodes[profiler], i, currentlyEquippedAugment, sizeof(currentlyEquippedAugment));
+				UnequipAugment_Confirm(client, currentlyEquippedAugment);
+				char text[512];
+				SQL_FetchString(hndl, i, text, sizeof(text));
+				if (StrEqual(text, "none")) continue;
+				
+				int augmentPos = FindAugmentPosByIDCode(client, text);
+				if (augmentPos == -1) continue;
+				// EquipAugment_Confirm equips AugmentClientIsInspecting[client] into augment slot i or if augmentPos > = -1, overrides AugmentClientIsInspecting[client]
+				EquipAugment_Confirm(client, i, augmentPos);
+			}
+		}
+	}
+	else LogMessage("%N will not load the augments for this profile as the profile owner is offline.", client);
+	bIsLoadingCustomProfile[client] = false;
+	Format(customProfileKey[client], sizeof(customProfileKey[]), "none");
+	LoadedClientActions(client);
+}
+
+public void QueryResults_LoadAugmentSavedProfiles(Handle owner, Handle hndl, const char[] error, any client) {
+	if (hndl != null) {
+		if (client == -1 || !IsLegitimateClient(client) || IsLegitimateClient(client) && myCurrentTeam[client] != TEAM_SURVIVOR && IsFakeClient(client)) return;
+
+		char profileString[512];
+		Format(profileString, sizeof(profileString), "none");
+		int count = 0;
+		while (SQL_FetchRow(hndl)) {
+			char text[512];
+			SQL_FetchString(hndl, 0, text, sizeof(text));
+
+			char result[3][64];
+			ExplodeString(text, "+", result, 3, 64);
+
+			if (count > 0) Format(profileString, sizeof(profileString), "%s\n%s", profileString, result[1]);
+			else Format(profileString, sizeof(profileString), "%s", result[1]);
+
+			count++;
+		}
+		SetArrayString(myAugmentSavedProfiles[client], augmentLoadPos[client], profileString);
+		augmentLoadPos[client]++;
+		if (augmentLoadPos[client] < GetArraySize(myAugmentIDCodes[client])) {
+			char currentIDCode[64];
+			GetArrayString(myAugmentIDCodes[client], augmentLoadPos[client], currentIDCode, sizeof(currentIDCode));
+
+			char tquery[512];
+			Format(tquery, sizeof(tquery), "SELECT `steam_id` FROM `%s_profiles` WHERE ((`augment1` = '%s'", TheDBPrefix, currentIDCode);
+			for (int slot = 1; slot < iNumAugments; slot++) {
+				Format(tquery, sizeof(tquery), "%s OR `augment%d` = '%s'", tquery, slot+1, currentIDCode);
+			}
+			char loadingClientSteamID[64];
+			GetClientAuthId(client, AuthId_Steam2, loadingClientSteamID, sizeof(loadingClientSteamID));
+			char pct[4];
+			Format(pct, sizeof(pct), "%");
+			Format(tquery, sizeof(tquery), "%s) AND `steam_id` LIKE '%s%s%s');", tquery, pct, loadingClientSteamID, pct);
+			SQL_TQuery(hDatabase, QueryResults_LoadAugmentSavedProfiles, tquery, client);
+			return;
+		}
+		else {
+			bIsLoadingCustomProfile[client] = false;
+			Format(customProfileKey[client], sizeof(customProfileKey[]), "none");
+			LoadedClientActions(client);
+		}
+	}
+}
+
+stock void LoadedClientActions(int client) {
+	if (ReadyUpGameMode != 3 && !b_IsActiveRound) CreateTimer(1.0, Timer_GiveProfileItems, client, TIMER_REPEAT|TIMER_FLAG_NO_MAPCHANGE);
 	SetClientTalentStrength(client);
-	PrintToChatAll("\x03%N's \x04data is \x03loaded.", client);
+	myCurrentTeam[client] = GetClientTeam(client);
 	IsClearedToLoad(client, _, true);
 	//ChangeHook(client, true);
 
 	// b_IsLoaded[client] = true;
 	// b_IsLoading[client] = false;
+	b_IsLoading[client] = false;
 	iCurrentIncapCount[client] = 0;
 	b_IsLoadingTrees[client] = false;
 	bIsTalentTwo[client] = false;
 	FreeUpgrades[client]		=	MaximumPlayerUpgrades(client) - TotalPointsAssigned(client);
 	UpgradesAvailable[client]	=	0;
 	VerifyClientUnlockedTalentEligibility(client);
-	FormatPlayerName(client);
+	if (!b_IsLoaded[client]) FormatPlayerName(client, true);
+	else FormatPlayerName(client);
+	b_IsLoaded[client] = true;
 	SetMaximumHealth(client);
 	GiveMaximumHealth(client);
-	return;
+	PrintToChatAll("\x03%N's \x04data is \x03loaded.", client);
 }
 
 public Action Timer_GiveProfileItems(Handle timer, any client) {
-	if (IsPlayerAlive(client)) GiveProfileItems(client);
-	else return Plugin_Continue;
+	if (IsLegitimateClient(client)) {
+		if (IsPlayerAlive(client)) GiveProfileItems(client);
+		else return Plugin_Continue;
+	}
 	return Plugin_Stop;
 }
 
@@ -1902,7 +2203,7 @@ public void QueryResults_LoadActionBar(Handle owner, Handle hndl, const char[] e
 	int ActionSlots = iActionBarSlots;
 	// bool IsFound = false;
 
-	if (client == -1 || !IsLegitimateClient(client) || IsLegitimateClient(client) && GetClientTeam(client) != TEAM_SURVIVOR && IsFakeClient(client)) return;
+	if (client == -1 || !IsLegitimateClient(client) || IsLegitimateClient(client) && myCurrentTeam[client] != TEAM_SURVIVOR && IsFakeClient(client)) return;
 	if (GetArraySize(ActionBar[client]) != ActionSlots) ResizeArray(ActionBar[client], ActionSlots);
 	if (GetArraySize(ActionBarMenuPos[client]) != ActionSlots) ResizeArray(ActionBarMenuPos[client], ActionSlots);
 
@@ -1910,7 +2211,7 @@ public void QueryResults_LoadActionBar(Handle owner, Handle hndl, const char[] e
 	while (SQL_FetchRow(hndl)) {
 		SQL_FetchString(hndl, 0, key, sizeof(key));
 		//client = FindClientWithAuthString(key);
-		//if (client == -1 || IsLegitimateClient(client) && GetClientTeam(client) != TEAM_SURVIVOR && IsFakeClient(client)) return;
+		//if (client == -1 || IsLegitimateClient(client) && myCurrentTeam[client] != TEAM_SURVIVOR && IsFakeClient(client)) return;
 		for (int i = 0; i < ActionSlots; i++) {
 			SQL_FetchString(hndl, i+1, text, sizeof(text));
 			SetArrayString(ActionBar[client], i, text);
@@ -1944,8 +2245,8 @@ stock SetClientTalentStrength(client, bool giveAccessToAllTalents = false) {
 		SetArrayCell(MyTalentStrengths[client], i, 0.0, 2);
 		SetArrayCell(MyTalentStrength[client], i, 0);
 
-		PreloadTalentSection[client]	= GetArrayCell(a_Menu_Talents, i, 2);
-		GetArrayString(PreloadTalentSection[client], 0, TalentName, sizeof(TalentName));
+		//PreloadTalentSection[client]	= GetArrayCell(a_Menu_Talents, i, 2);
+		GetArrayString(a_Database_Talents, i, TalentName, sizeof(TalentName));
 		if (!giveAccessToAllTalents && GetTalentStrength(client, TalentName) < 1) {
 			continue;
 		}
@@ -1966,6 +2267,7 @@ stock SetClientTalentStrength(client, bool giveAccessToAllTalents = false) {
 			if (iCur > 0) iCurrentAugmentLevel += iCur;
 		}
 		playerCurrentAugmentLevel[client] = (iCurrentAugmentLevel / iAugmentLevelDivisor);
+		playerCurrentAugmentAverageLevel[client] = GetClientAverageAugment(client);
 		SetLootDropCategories(client);
 	}
 	b_IsLoading[client] = false;
@@ -1977,15 +2279,30 @@ stock SetClientTalentStrength(client, bool giveAccessToAllTalents = false) {
 	else bForcedWeakness[client] = false;
 }
 
-stock FormatPlayerName(client) {
+int GetClientAverageAugment(client) {
+	// int numEquippedAugments = 0;
+	// for (int i = 0; i < iNumAugments; i++) {
+	// 	int iCur = GetArrayCell(equippedAugments[client], i, 2);
+	// 	if (iCur > 0) numEquippedAugments++;
+	// }
+	// int averageAugmentScore = (numEquippedAugments > 0) ? (playerCurrentAugmentLevel[client] / numEquippedAugments) : playerCurrentAugmentLevel[client];
+	int averageAugmentScore = (playerCurrentAugmentLevel[client] > 0) ? (playerCurrentAugmentLevel[client] / iNumAugments) : playerCurrentAugmentLevel[client];
+	return averageAugmentScore;
+}
+
+stock FormatPlayerName(int client, bool setBaseName = false) {
 	char playerNameFormatted[512];
 	if (!IsFakeClient(client)) {
-		if (handicapLevel[client] < 1) Format(playerNameFormatted, 512, "[%d] %s", PlayerLevel[client], baseName[client]);
-		else Format(playerNameFormatted, 512, "[%d] [%d] %s", handicapLevel[client], PlayerLevel[client], baseName[client]);
+		if (setBaseName) GetClientName(client, baseName[client], sizeof(baseName[]));
+		char avgAugLvl[10];
+		AddCommasToString(playerCurrentAugmentAverageLevel[client], avgAugLvl, sizeof(avgAugLvl));
+		if (handicapLevel[client] < 1) Format(playerNameFormatted, 512, "A.%s T.%d %s", avgAugLvl, PlayerLevel[client], baseName[client]);
+		else Format(playerNameFormatted, 512, "H.%d A.%s T.%d %s", handicapLevel[client], avgAugLvl, PlayerLevel[client], baseName[client]);
 	}
 	else {
-		if (handicapLevel[client] < 1) Format(playerNameFormatted, 512, "[BOT] [%d] %s", PlayerLevel[client], baseName[client]);
-		else Format(playerNameFormatted, 512, "[BOT] [%d] [%d] %s", handicapLevel[client], PlayerLevel[client], baseName[client]);
+		if (setBaseName) GetSurvivorBotName(client, baseName[client], sizeof(baseName[]));
+		if (handicapLevel[client] < 1) Format(playerNameFormatted, 512, "[BOT] T.%d %s", PlayerLevel[client], baseName[client]);
+		else Format(playerNameFormatted, 512, "[BOT] H.%d T.%d %s", handicapLevel[client], PlayerLevel[client], baseName[client]);
 	}
 	SetClientInfo(client, "name", playerNameFormatted);
 }
@@ -2196,10 +2513,17 @@ public Action Timer_InitializeClientLoad(Handle timer, any client) {
 		TeleportEntity(client, teleportIntoSaferoom, NULL_VECTOR, NULL_VECTOR);
 	}
 	if (!IsLoadingClientBaseNameDefault(client) && b_IsLoaded[client]) {
-		FormatPlayerName(client);
-		SetMaximumHealth(client);
-		GiveMaximumHealth(client);
-		return Plugin_Stop;
+		char connectingClientSteamID[64];
+		GetClientAuthId(client, AuthId_Steam2, connectingClientSteamID, sizeof(connectingClientSteamID));
+		if (StrEqual(connectingClientSteamID, currentClientSteamID[client])) {
+			// same client has loaded in. if the round isn't live and they're alive, give them full hp.
+			LogMessage("%N connected, but their data exists.", client);
+			FormatPlayerName(client);
+			CreateTimer(1.0, Timer_Pregame, client, TIMER_REPEAT|TIMER_FLAG_NO_MAPCHANGE);
+			return Plugin_Stop;
+		}
+		// we only get here if there was a disconnect of some sort and someone loaded in with someone elses data.
+		DisconnectDataReset(client);
 	}
 	ImmuneToAllDamage[client] = false;
 	//ToggleTank(client, true);
@@ -2223,6 +2547,9 @@ public Action Timer_InitializeClientLoad(Handle timer, any client) {
 	Format(ProfileLoadQueue[client], sizeof(ProfileLoadQueue[]), "none");
 	//Format(ClassLoadQueue[client], sizeof(ClassLoadQueue[]), "none");
 	ClearArray(InfectedHealth[client]);
+	ClearArray(WitchDamage[client]);
+	ClearArray(SpecialCommon[client]);
+	ClearArray(CommonInfected[client]);
 	ResizeArray(ActionBar[client], iActionBarSlots);
 	ResizeArray(ActionBarMenuPos[client], iActionBarSlots);
 	IsClientLoadedEx(client);
@@ -2233,10 +2560,10 @@ stock IsClientLoadedEx(client) {
 
 	/*decl String:ClientName[64];
 	GetClientName(client, ClientName, sizeof(ClientName));*/
-	if (GetClientTeam(client) == TEAM_INFECTED && IsFakeClient(client)) return;	// only human players.
+	if (myCurrentTeam[client] == TEAM_INFECTED && IsFakeClient(client)) return;	// only human players.
 	//LogToFile(LogPathDirectory, "%N is loaded.", client);
 
-	/*if (!b_IsHooked[client] && GetClientTeam(client) == TEAM_SURVIVOR) {
+	/*if (!b_IsHooked[client] && myCurrentTeam[client] == TEAM_SURVIVOR) {
 
 		b_IsHooked[client] = true;
 		SDKHook(client, SDKHook_OnTakeDamage, OnTakeDamage);
@@ -2251,29 +2578,22 @@ stock bool IsLoadingClientBaseNameDefault(client) {
 }
 
 stock OnClientLoaded(client, bool IsHooked = false) {
-	//if (!IsClientConnected(client)) return;
-	if (b_IsLoaded[client] && (!b_IsActiveRound || !IsClientIdle(client))) {//} && (IsFakeClient(client) || StrContains(baseName[client], "[BOT]", true) == -1)) {
-		return;
-	}
+	LogMessage("%N has connected!", client);
+	SetPlayerDatabaseArray(client, true);
+	GetClientAuthId(client, AuthId_Steam2, currentClientSteamID[client], sizeof(currentClientSteamID[]));
+	myCurrentTeam[client] = GetClientTeam(client);
 	bTimersRunning[client] = false;
-	if (!IsFakeClient(client)) GetClientName(client, baseName[client], sizeof(baseName[]));
-	else GetSurvivorBotName(client, baseName[client], sizeof(baseName[]));
-	b_IsLoaded[client] = true;
 	bIsGiveProfileItems[client] = false;
 
 	IsGroupMemberTime[client] = 0;
 	Format(ProfileLoadQueue[client], sizeof(ProfileLoadQueue[]), "none");
-	/*if (!b_IsHooked[client]) {
-
-		b_IsHooked[client] = true;
-		SDKHook(client, SDKHook_OnTakeDamage, OnTakeDamage);
-	}*/
 	ClearEquippedAugmentData(client);
 	ClearLocalClientAugmentData(client);
 	ClearArray(ApplyDebuffCooldowns[client]);
 	if (ISFROZEN[client] != INVALID_HANDLE) {
 		ISFROZEN[client] = INVALID_HANDLE;
 	}
+	playerCurrentAugmentAverageLevel[client] = 0;
 	FreeUpgrades[client] = 0;
 	bIsHideThreat[client] = true;
 	iThreatLevel[client] = 0;
@@ -2342,7 +2662,7 @@ stock OnClientLoaded(client, bool IsHooked = false) {
 
 		bIsEligibleMapAward[client] = true;
 	}
-	CreateTimer(1.0, Timer_LoadData, client, TIMER_FLAG_NO_MAPCHANGE);
+	CreateTimer(1.0, Timer_LoadData, client, TIMER_REPEAT|TIMER_FLAG_NO_MAPCHANGE);
 	char thetext[64];
 	GetConfigValue(thetext, sizeof(thetext), "enter server flags?");
 
@@ -2359,11 +2679,22 @@ stock OnClientLoaded(client, bool IsHooked = false) {
 	}*/
 }
 
-public Action Timer_LoadData(Handle timer, any client) {
-
+public Action Timer_Pregame(Handle timer, any client) {
 	if (IsClientInGame(client)) {
+		if (!b_IsActiveRound && GetClientTeam(client) == TEAM_SURVIVOR && IsPlayerAlive(client)) {
+			SetMaximumHealth(client);
+			GiveMaximumHealth(client);
+			GiveProfileItems(client);
+		}
+	}
+	else if (IsClientConnected(client)) return Plugin_Continue;
+	return Plugin_Stop;
+}
+
+public Action Timer_LoadData(Handle timer, any client) {
+	if (IsClientInGame(client)) {
+		myCurrentTeam[client] = GetClientTeam(client);
 		ResetData(client);
-		SetPlayerDatabaseArray(client, true);
 		b_IsLoading[client] = false;
 		CreateNewPlayer(client);	// it only creates a new player if one doesn't exist.
 	}
@@ -2376,7 +2707,7 @@ public Action Timer_LoggedUsers(Handle timer, any client) {
 	if (!IsLegitimateClient(client)) return Plugin_Stop;
 	
 	//CheckGroupStatus(client);
-	if (IsPlayerAlive(client) && GetClientTeam(client) == TEAM_SURVIVOR) {
+	if (IsPlayerAlive(client) && myCurrentTeam[client] == TEAM_SURVIVOR) {
 
 		//VerifyAllActionBars(client);	// in case they don't have the gear anymore to support it?
 		//IsLogged(client, true);		// Only log them if the player isn't alive.
@@ -2427,7 +2758,7 @@ stock bool IsLogged(client, bool InsertID = false) {
 
 public Action CMD_RespawnYumYum(client, args) {
 
-	if (GetClientTeam(client) == TEAM_SURVIVOR && !IsPlayerAlive(client)) {
+	if (myCurrentTeam[client] == TEAM_SURVIVOR && !IsPlayerAlive(client)) {
 
 		for (int i = 1; i <= MaxClients; i++) {
 
@@ -2448,7 +2779,7 @@ stock FindARespawnTarget(client, sacrifice = -1) {
 		SDKCall(hRoundRespawn, client);
 		if (!IsLegitimateClient(sacrifice)) {
 			for (int i = 1; i <= MaxClients; i++) {
-				if (!IsLegitimateClientAlive(i) || GetClientTeam(i) != TEAM_SURVIVOR || i == client) continue;
+				if (!IsLegitimateClientAlive(i) || myCurrentTeam[i] != TEAM_SURVIVOR || i == client) continue;
 				MyRespawnTarget[client] = i;
 				break;
 			}

@@ -272,6 +272,12 @@
       * 投掷物没有预热时间，可以立刻丢出
       * 武器配置：v2
       </details>
+   
+   * *community5_multi 多人逛街死门*
+      > 基于community5_noobplus
+      <details>
+      * 默认刷特：基础5只0s，4人以上每多1人加1特，跳过Relax阶段
+      </details>
 
 2. **写实系列**
    > 写实模式并不在本服计划之内

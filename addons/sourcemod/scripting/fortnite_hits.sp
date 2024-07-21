@@ -57,7 +57,7 @@ public void OnPluginStart()
 	g_cvReconnectPlayer = CreateConVar("fortnite_hits_enableplayerreconnect", "0", "Enable this to force new players to reconnect to server, so they will see particle effects without need of waiting next map", FCVAR_NONE, true, 0.0, true, 1.0);
 	g_cvCommands = CreateConVar("fortnite_hits_commandnames", "sm_fortnitehits;sm_hits;sm_damage;sm_fortnite;", "Set custom names here for toggle damage display command, don't add to many commands as it may overflow buffer. (NOTE: Write command names with \"sm_\" prefix, and don't use ! or any other symbol except A-Z and 0-9 and underline symbol \"_\", also server needs to be restarted to see changes!)", FCVAR_NONE);
 	g_cvDistance = CreateConVar("fortnite_hits_distance", "50.0", "Distance between victim player and damage numbers (NOTE: Make that value lower to prevent numbers show up through the walls)", FCVAR_NONE, true, 0.0);
-	g_cvMeleeDistance = CreateConVar("fortnite_hits_distance_melee", "5.0", "Distance between victim player and damage numbers with melee (NOTE: Make that value lower to prevent numbers show up through the walls)", FCVAR_NONE, true, 0.0);
+	g_cvMeleeDistance = CreateConVar("fortnite_hits_distance_melee", "20.0", "Distance between victim player and damage numbers with melee (NOTE: Make that value lower to prevent numbers show up through the walls)", FCVAR_NONE, true, 0.0);
 	g_cvPermission = CreateConVar("fortnite_hits_flag", "", "Set any flag here if you want to restrict use of that plugin only to certain flag (NOTE: Leave it empty to allow anyone to use this plugin)", FCVAR_NONE);
 	AutoExecConfig();
 	
@@ -265,7 +265,7 @@ public void ConnectedFull_Hook(Event event, const char[] name, bool dontBroadcas
 
 public void PlayerHurt_Event(Event event, const char[] name, bool dontBroadcast)
 {
-	static int attacker, client, damage;
+	static int attacker, client, damage, type;
 	static HitGroup hitgroup;
 	static char sWeapon[32];
 	
@@ -274,6 +274,7 @@ public void PlayerHurt_Event(Event event, const char[] name, bool dontBroadcast)
 	damage = event.GetInt("dmg_health");
 	hitgroup = view_as<HitGroup>(event.GetInt("hitgroup"));
 	event.GetString("weapon", sWeapon, sizeof(sWeapon));
+	event.GetInt("type", type)
 	
 	int entity = event.GetInt("entityid", -1);
 	if (entity != -1) {
@@ -311,7 +312,7 @@ public void PlayerHurt_Event(Event event, const char[] name, bool dontBroadcast)
 		GetAbsOrigin(client, entity, g_fPlayerPosLate[client]);
 	}
 	else {
-		ShowPRTDamage(attacker, client, entity, damage, (hitgroup == HITGROUP_HEAD), (strncmp(sWeapon[7], "melee", 5, true) == 0));
+		ShowPRTDamage(attacker, client, entity, damage, (hitgroup == HITGROUP_HEAD),false, (strncmp(sWeapon, "melee", 5, true) == 0));
 	}
 }
 
@@ -409,6 +410,7 @@ stock void ShowPRTDamage(int attacker, int client, int entity, int damage, bool 
 		
 		DispatchKeyValue(ent, "effect_name", buff);
 		DispatchKeyValue(ent, "start_active", "1");
+		if (melee) DispatchKeyValue(ent, "render_in_front", "1");
 		DispatchSpawn(ent);
 		ActivateEntity(ent);
 		

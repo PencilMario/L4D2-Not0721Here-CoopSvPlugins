@@ -1173,7 +1173,7 @@
 	"utility"
 	{
 		"en"				"Utility"
-		"chi"		"支援"
+		"chi"		"杂项"
 	}
 	"attribute"
 	{
@@ -1232,7 +1232,7 @@
 	"utility talents"
 	{
 		"en"				"Utility"
-		"chi"		"支援"
+		"chi"		"杂项"
 	}
 	"attribute talents"
 	{
@@ -1724,7 +1724,7 @@
 	{
 		"#format"			"{1:i},{2:i},{3:i},{4:i}"
 		"en"				"trees {1}({4} talents, {2}/{3} talents req.)"
-		"chi"		"天赋树 {1}（{4} 个天赋，{2}/{3} 个天赋要求）"
+		"chi"		"天赋树 {1}（{4} 个天赋，{2}/{3} 个天赋解锁）"
 
 	}
 	"show tree layers single (locked)"

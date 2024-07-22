@@ -1,4 +1,4 @@
-﻿"Phrases"
+"Phrases"
 {
 	"i am ready"
 	{
@@ -135,6 +135,7 @@
 		"#format"		"{1:s},{2:s},{3:s},{4:s}"
 		"en"			"{1} {2}{3} {4}is connecting..."
 		"chi"			"{1} {2}{3} {4}正在连接..."
+		
 	}
 	"client loaded"
 	{

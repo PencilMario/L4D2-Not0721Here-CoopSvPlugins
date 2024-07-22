@@ -500,7 +500,7 @@
 
    * *realisn_jimen 几门*
       > 施工中 基于coop_base
-
+      <details>
       * 默认刷特：基础6只15s，跳过relax阶段
       * 写实模式，但倒地即死
       * 特感ai增强
@@ -510,7 +510,12 @@
       * 3倍弹药
       * 锁定专家难度
       * 过关回满血
-
+      </details>
+   * *coop_rpg skyrpg*
+      > 我去 真搞上rpg了
+      <details>
+      * !部分投票设置没有作用
+      </details>
 6. pro配置
 
    * *professional base*

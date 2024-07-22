@@ -3,232 +3,192 @@
 	"i am ready"
 	{
 		"en"			"Ready!"
-		"chi"			"已准备好!"
 	}
 	"i am not ready"
 	{
 		"en"			"Not Ready!"
-		"chi"			"未准备好!"
 	}
 	"readyup panel info"
 	{
 		"#format"		"{1:s},{2:i},{3:i},{4:i},{5:i}"
 		"en"			" \nReady Up! v. {1}\nSurvivors: ({2}) {3} / {4}\nReady: {5}\n "
-		"chi"  			"准备菜单 v. {1} \n生还者: ({2}) {3} / {4}\n已准备好: {5}\n ""
 	}
 	"bot count adjusted"
 	{
 		"#format"		"{1:s},{2:s},{3:s},{4:i}"
 		"en"			"{1}Survivor bots {2}have been changed to {3}{4}"
-		"chi"			"{1}生还者机器人{2}已更改为 {3} {4}"
 	}
 	"bot adjustment aborted"
 	{
 		"#format"		"{1:s},{2:s}"
 		"en"			"{1}A majority of the human players have voted {2}against the survivor bot change."
-		"chi"			"{1}大多数玩家已投票 {2}反对生还者机器人更改。"
 	}
 	"adjust bot count"
 	{
 		"#format"		"{1:s},{2:s},{3:s},{4:i},{5:s},{6:s},{7:i},{8:s}"
 		"en"			"{1}Survivor Bot adjustment vote {2}to change the Survivor Bots to {3}{4} {5}will end in {6}{7} {8}seconds."
-		"chi"			"{1}生还者机器人调整投票 {2}更改生还者机器人数量为 {3}{4} {5}将在 {6}{7} 秒后结束。"
 	}
 	"no bot vote in progress"
 	{
 		"#format"		"{1:s},{2:s},{3:s}"
 		"en"			"{1}There is currently {2}no bot vote in progress{3}!"
-		"chi"			"{1}目前没有正在进行的机器人投票！"
 	}
 	"bot vote: yes"
 	{
 		"#format"		"{1:s},{2:s}"
 		"en"			"{1}You have voted {2}in favour of the vote."
-		"chi"			"{1}您已投票 {2}赞成票。"
 	}
 	"bot vote: no"
 	{
 		"#format"		"{1:s},{2:s}"
 		"en"			"{1}You have voted {2}against the vote."
-		"chi"			"{1}您已投票 {2}反对票。"
 	}
 	"bot adjustment vote offer"
 	{
 		"#format"		"{1:s},{2:s},{3:i},{4:s},{5:s},{6:s}"
 		"en"			"{1}The current number of survivor bots is {2}{3}\n{4}You can start a vote to change this value with {5}!survivors {6}command."
-		"chi"			"{1}当前生还者机器人数量是 {2}{3}\n{4}您可以使用 {5}!survivors 命令启动投票更改此值。"
 	}
 	"bot count restricted"
 	{
 		"#format"		"{1:s},{2:s}"
 		"en"			"{1}You cannote vote to change the bot count {2}after the round has begun."
-		"chi"			"{1}您无法在比赛开始后投票更改机器人数量。"
 	}
 	"bot adjustment vote called"
 	{
 		"#format"		"{1:s},{2:s},{3:i},{4:s},{5:s},{6:i},{7:s},{8:s},{9:s},{10:s}"
 		"en"			"{1}A vote has been called to change the # of survivor bots from {2}{3} {4}to {5}{6}.\n{7}Say {8}!{9} {10}in chat to toggle your vote between yes/no."
-		"chi"			"{1}投票已启动以更改机器人数量从 {2}{3} {4}到 {5}{6}。\n{7}在聊天中输入 {8}!{9} {10}切换您的投票是yes/no。"
 	}
 	"command sm_forcestart is unavailable"
 	{
 		"#format"		"{1:s}"
 		"en"			"{1} Command sm_forcestart is unavailable."
-		"chi"			"{1}命令sm_forcestart不可用。"
 	}
 	"hud enabled"
 	{
 		"#format"		"{1:s},{2:s}"
 		"en"			"{1} HUD Display {2}enabled"
-		"chi"			"{1} HUD显示已启用"
 	}
 	"hud disabled"
 	{
 		"#format"		"{1:s},{2:s}"
 		"en"			"{1} HUD Display {2}disabled"
-		"chi"			"{1} HUD显示 {2}已禁用"
 	}
 	"not ready"
 	{
 		"#format"		"{1:s},{2:s}"
 		"en"			"{1} Status set: {2}not ready"
-		"chi"			"{1}状态设置为：{2}未准备好"
 	}
 	"ready"
 	{
 		"#format"		"{1:s},{2:s}"
 		"en"			"{1} Status set: {2}ready"
-		"chi"			"{1}状态设置为：{2}准备好"
 	}
 	"alltalk enabled"
 	{
 		"#format"		"{1:s},{2:s}"
 		"en"			"{1} Alltalk {2}enabled"
-		"chi"			"{1}所有对话 {2}已启用"
 	}
 	"alltalk disabled"
 	{
 		"#format"		"{1:s},{2:s}"
 		"en"			"{1} Alltalk {2}disabled"
-		"chi"			"{1}所有对话 {2}已禁用"
 	}
 	"ready up time remaining"
 	{
 		"#format"		"{1:s},{2:s},{3:i},{4:s},{5:s},{6:i},{7:s}"
 		"en"			"{1} Ready up ends in {2}{3}{4}m {5}{6}{7}s"
-		"chi"			"{1}准备菜单将在 {2}{3}{4}分 {5}{6}{7}秒后结束。"
 	}
 	"match ready up"
 	{
 		"#format"		"{1:s},{2:s}"
 		"en"			"{1} Ready Up Period: {2}active"
-		"chi"			"{1}准备菜单：{2}活动"
 	}
 	"match is live"
 	{
 		"#format"		"{1:s},{2:s}"
 		"en"			"{1} Ready Up Period: {2}match is live"
-		"chi"			"{1}准备菜单：{2}比赛进行中"
 	}
 	"client connected"
 	{
 		"#format"		"{1:s},{2:s},{3:s},{4:s}"
 		"en"			"{1} {2}{3} {4}is connecting..."
 		"chi"			"{1} {2}{3} {4}正在连接..."
-		
 	}
 	"client loaded"
 	{
 		"#format"		"{1:s},{2:s},{3:s},{4:s}"
 		"en"			"{1} {2}{3} {4}has entered the game."
-		"chi"			"{1} {2}{3} {4}已进入游戏。"
 	}
 	"connection timeout"
 	{
 		"#format"		"{1:i},{2:i}"
 		"en"			"ready up period: starts in {i}m {2}s"
-		"chi"			"准备菜单：将在 {i}分 {2}秒后启动"
 	}
 	"warmup time remaining"
 	{
 		"#format"		"{1:i},{2:i}"
 		"en"			"ready up period: match live in {1}m {2}s"
-		"chi"			"准备菜单：比赛将在 {1}分 {2}秒后开始"
 	}
 	"menu clients loading"
 	{
 		"#format"		"{1:i},{2:i},{3:i}"
 		"en"			"ready up starts in {1}m {2}s\nplayers loading: {3}"
-		"chi"			"准备菜单：将在 {1}分 {2}秒后启动\n正在加载的玩家： {3}"
 	}
 	"ready up countdown"
 	{
 		"#format"		"{1:i},{2:i}"
 		"en"			"ready up ends in {1}m {2}s\n"
-		"chi"			"准备菜单：将在 {1}分 {2}秒后结束\n"
 	}
 	"match begin notice"
 	{
 		"#format"		"{1:i}"
 		"en"			"match will begin when all\nclients have loaded.\nplayers loading: {1}"
-		"chi"			"比赛将在所有玩家加载后开始\n正在加载的玩家： {1}"
 	}
 	"players waiting"
 	{
 		"en"			"players waiting:"
-		"chi"			"正在等待的玩家："
 	}
 	"players loading"
 	{
 		"en"			"players loading:"
-		"chi"			"正在加载的玩家："
 	}
 	"players ready"
 	{
 		"en"			"players ready:"
-		"chi"			"已准备好的玩家："
 	}
 	"players not ready"
 	{
 		"en"			"players not ready:"
-		"chi"			"未准备好的玩家："
 	}
 	"spectators"
 	{
 		"en"			"spectators:"
-		"chi"			"旁观者："
 	}
 	"toggle ready"
 	{
 		"en"			"toggle status: ready"
-		"chi"			"切换状态：准备好"
 	}
 	"toggle not ready"
 	{
 		"en"			"toggle status: not ready"
-		"chi"			"切换状态：未准备好"
 	}
 	"hide hud"
 	{
 		"en"			"hide HUD"
-		"chi"			"隐藏HUD"
 	}
 	"intermission"
 	{
 		"#format"		"{1:s}"
 		"en"			"{1} Pre-game will occur before the second half"
-		"chi"			"{1}第二半场之前将发生预游戏"
 	}
 	"timer match countdown aborted"
 	{
 		"#format"		"{1:s}"
 		"en"			"{1}Majority override aborted..."
-		"chi"			"{1}多数投票已取消..."
 	}
 	"timer match countdown"
 	{
 		"#format"		"{1:i}"
 		"en"			"Round will begin in {1}"
-		"chi"			"比赛将在 {1}后开始"
 	}
 }

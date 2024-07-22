@@ -938,10 +938,13 @@
 	{
 		"#format"			"{1:s}"
 		"en"				"{PLAYTIME}\nMax Health: {MYHP}\nAvg Augment Score: {AUGAVGLVL}\nHealth RGN: {HPRGN}\nMax Stamina: {MYSTAM}\nDamage: {WDMG}\n \nConstitution:  {CON}\nAgility:\t\t\t{AGI}\nResilience:\t {RES}\nTechnique:\t {TEC}\nEndurance:\t{END}\nLuck:\t\t\t {LUC}\n \nMelee Heal: {HEALSTRMEL}\nBullet Heal: {HEALSTRGUN}"
+		"chi"		"{PLAYTIME}\n最大生命值: {MYHP}\n平均增益评分: {AUGAVGLVL}\n生命恢复: {HPRGN}\n最大体力: {MYSTAM}\n伤害: {WDMG}\n \n体质: {CON}\n敏捷: {AGI}\n恢复力: {RES}\n技巧: {TEC}\n耐力: {END}\n运气: {LUC}\n \n近战治疗: {HEALSTRMEL}\n子弹治疗: {HEALSTRGUN}"
 	}
 	"Infected Sheet Info"
 	{
 		"en"				"Infected Character Data\n \nCommons HP: {CH}\tDMG: {CD}\nWitch HP: {WH}\tDMG: {WD}\nHunter HP: {HUNTERHP}\tDMG: {HUNTERDMG}\nSmoker HP: {SMOKERHP}\tDMG: {SMOKERDMG}\nBoomer HP: {BOOMERHP}\tDMG: {BOOMERDMG}\nSpitter HP: {SPITTERHP}\tDMG: {SPITTERDMG}\nJockey HP: {JOCKEYHP}\tDMG: {JOCKEYDMG}\nCharger HP: {CHARGERHP}\tDMG: {CHARGERDMG}\nTank HP: {TANKHP}\tDMG: {TANKDMG}"
+		"chi"		"感染者角色数据\n \n普通感染者生命值: {CH}\t伤害: {CD}\n女巫生命值: {WH}\t伤害: {WD}\n猎人生命值: {HUNTERHP}\t伤害: {HUNTERDMG}\n烟雾者生命值: {SMOKERHP}\t伤害: {SMOKERDMG}\n爆破者生命值: {BOOMERHP}\t伤害: {BOOMERDMG}\n吐痰者生命值: {SPITTERHP}\t伤害: {SPITTERDMG}\n骑手生命值: {JOCKEYHP}\t伤害: {JOCKEYDMG}\n充电者生命值: {CHARGERHP}\t伤害: {CHARGERDMG}\n坦克生命值: {TANKHP}\t伤害: {TANKDMG}"
+
 	}
 	"node locked"
 	{
@@ -953,62 +956,85 @@
 	{
 		"#format"			"{1:s},{2:s}"
 		"en"				"{1} (Req. ALL)\n{2}"
+		"chi"		"{1}（要求：全部）\n{2}"
+
 	}
 	"node locked by talents multiple (treeview)"
 	{
 		"#format"			"{1:s},{2:s},{3:i}"
 		"en"				"{1} (Req. {3})\n{2}"
+		"chi"		"{1}（要求: {3}）\n{2}"
+
 	}
 	"node locked by talents single (treeview)"
 	{
 		"#format"			"{1:s},{2:s},{3:i}"
 		"en"				"{1} (Req. {3})\n{2}"
+		"chi"		"{1}（要求: {3}）\n{2}"
+
 	}
 	"node locked by talents last one (treeview)"
 	{
 		"#format"			"{1:s},{2:s}"
 		"en"				"{1} (Req.)\n{2}"
+		"chi"		"{1}（要求: {3}）\n{2}"
+
 	}
 	"node locked by talents all (talentview)"
 	{
 		"#format"			"{1:s}"
 		"en"				"Talent Locked (Req. ALL)\n{1}"
+		"chi"		"天赋锁定（要求：全部）\n{1}"
+
 	}
 	"node locked by talents multiple (talentview)"
 	{
 		"#format"			"{1:s},{2:i}"
 		"en"				"Talent Locked (Req. {2})\n{1}"
+		"chi"		"天赋锁定（要求：全部）\n{1}"
+
 	}
 	"node locked by talents single (talentview)"
 	{
 		"#format"			"{1:s},{2:i}"
 		"en"				"Talent Locked (Req. {2})\n{1}"
+		"chi"		"天赋锁定（要求：全部）\n{1}"
+
 	}
 	"node locked by talents last one (talentview)"
 	{
 		"#format"			"{1:s}"
 		"en"				"Talent Locked (Req. below Talent)\n{1}"
+		"chi"		"天赋锁定（要求：全部）\n{1}"
+
 	}
 	"node unlocked"
 	{
 		"#format"			"{1:s}"
 		"en"				"{1} (Unlocked)"//"{1} (Talent unlocked)"
+		"chi"		"{1}（解锁）"
+
 	}
 	"ability locked translation"
 	{
 		"en"				"Talent Locked"
+		"chi"		"天赋锁定"
+
 	}
 	"ability unlocked translation"
 	{
 		"en"				"Talent Unlocked"
+		"chi"		"天赋解锁"
 	}
 	"unlock node translation"
 	{
 		"en"				"Unlock Talent"
+		"chi"		"解锁天赋"
 	}
 	"lock node translation"
 	{
 		"en"				"Refund Talent"
+		"chi"		"返还天赋"
 	}
 	"tree strength display"
 	{
@@ -1018,74 +1044,104 @@
 	"magazine half empty"
 	{
 		"en"				"magazine half empty"
+		"chi"		"弹匣半满"
+
 	}
 	"magazine half empty info"
 	{
 		"en"				"damage increased when half or less bullets remaining\nup to this amount for the last bullet."
+		"chi"		"当弹匣中剩余子弹为一半或更少时，伤害增加\n最后一发子弹最多增加此伤害。"
+
 	}
 	"battle focus i"
 	{
 		"en"				"Battle Focus I"
+		"chi"		"战斗专注 I"
+
 	}
 	"battle focus ii"
 	{
 		"en"				"Battle Focus II"
+		"chi"		"战斗专注 II"
 	}
 	"battle focus i info"
 	{
 		"en"				"Chance on Hit to heal for a percentage of the damage you deal."
+		"chi"		"击中时有机会为你造成的伤害百分比恢复生命值。"
+
 	}
 	"high ground i"
 	{
 		"en"				"High Ground I"
+		"chi"		"高地 I"
+
 	}
 	"high ground ii"
 	{
 		"en"				"High Ground II"
+		"chi"		"高地 II"
 	}
 	"high ground i info"
 	{
 		"en"				"Deal increased damage when you have\na high-ground advantage over your target."
+		"chi"		"当你在高地上相对目标时，造成的伤害增加。"
+
 	}
 	"against all odds i"
 	{
 		"en"				"Against All Odds I"
+		"chi"		"逆境 I"
+
 	}
 	"against all odds ii"
 	{
 		"en"				"Against All Odds II"
+		"chi"		"逆境 II"
 	}
 	"against all odds i info"
 	{
 		"en"				"Deal increased damage when your target\nhas a high-ground advantage on you."
+		"chi"		"当你的目标在高地上时，造成的伤害增加。"
+
 	}
 	"leeching i"
 	{
 		"en"				"Leeching I"
+		"chi"		"吸血 I"
+
 	}
 	"leeching ii"
 	{
 		"en"				"Leeching II"
+		"chi"		"吸血 II"
 	}
 	"leeching i info"
 	{
 		"en"				"On infected kill, heal for a percentage of your weapon damage."
+		"chi"		"当击杀感染者时，恢复生命值百分比。"
 	}
 	"leeching ii info"
 	{
 		"en"				"When hurting infected, heal for a percentage of your weapon damage."
+		"chi"		"攻击感染者时，根据你的武器伤害恢复一定百分比的生命值。"
+
 	}
 	"damage resistance"
 	{
-		"en"				"DMG resistance"
+		"chi"		"伤害抵抗"
+
 	}
 	"damage resistance info"
 	{
 		"en"				"reduces incoming damage by a percentage."
+		"chi"		"将受到的伤害减少一定百分比。"
+
 	}
 	"progress bar speed"
 	{
 		"en"				"Progress Bar Speed"
+		"chi"		"进度条速度"
+
 	}
 	"progress bar speed info"
 	{
@@ -1094,26 +1150,35 @@
 	"talent trees"
 	{
 		"en"				"Talent Trees\nspend Talent Points here!"
+		"chi"		"减少激活进度条的物品使用时间。"
+
 	}
 	"frontline"
 	{
 		"en"				"Frontline"
+		"chi"		"前线"
+
 	}
 	"survival"
 	{
 		"en"				"Survivalist"
+		"chi"		"生存专家"
+
 	}
 	"offensive"
 	{
 		"en"				"Offensive"
+		"chi"		"攻击"
 	}
 	"utility"
 	{
 		"en"				"Utility"
+		"chi"		"支援"
 	}
 	"attribute"
 	{
 		"en"				"Attributes"
+		"chi"		"属性"
 	}
 	"hunter"
 	{
@@ -1142,30 +1207,37 @@
 	"support"
 	{
 		"en"				"Support"
+		"chi"		"支援"
 	}
 	"ambush"
 	{
 		"en"				"Ambush"
+		"chi"		"伏击"
 	}
 	"frontline talents"
 	{
 		"en"				"Frontline"
+		"chi"		"前线"
 	}
 	"survival talents"
 	{
 		"en"				"Survivalist"
+		"chi"		"生存专家"
 	}
 	"offensive talents"
 	{
 		"en"				"Offensive"
+		"chi"		"攻击"
 	}
 	"utility talents"
 	{
 		"en"				"Utility"
+		"chi"		"支援"
 	}
 	"attribute talents"
 	{
 		"en"				"Attributes"
+		"chi"		"属性"
 	}
 	"hunter talents"
 	{
@@ -1194,368 +1266,499 @@
 	"support talents"
 	{
 		"en"				"Support"
+		"chi"		"支援"
 	}
 	"ambush talents"
 	{
 		"en"				"Ambush"
+		"chi"		"伏击"
 	}
 	"proficiency level up"
 	{
 		"#format"			"{1:s},{2:s},{3:s},{4:s},{5:s},{6:s},{7:s},{8:i}"
 		"en"				"{1}{2} {3}has reached {4}{5} {6}level {7}{8}"
+		"chi"		"{1}{2} {3}已达到{4}{5} {6}等级 {7}{8}"
+
 	}
 	"pistol proficiency"
 	{
 		"en"				"Pistol"
+		"chi"		"手枪"
 	}
 	"melee proficiency"
 	{
 		"en"				"Melee"
+		"chi"		"近战"
 	}
 	"uzi proficiency"
 	{
 		"en"				"Uzi"
+		"chi"		"冲锋枪"
 	}
 	"shotgun proficiency"
 	{
 		"en"				"Shotgun"
+		"chi"		"霰弹枪"
 	}
 	"sniper proficiency"
 	{
 		"en"				"Sniper"
+		"chi"		"狙击枪"
 	}
 	"assault proficiency"
 	{
 		"en"				"Assault"
+		"chi"		"突击步枪"
 	}
 	"medic proficiency"
 	{
 		"en"				"Medic"
+		"chi"		"医疗"
 	}
 	"grenade proficiency"
 	{
 		"en"				"Grenade"
+		"chi"		"手雷"
 	}
 	"pistol proficiency up"
 	{
 		"en"				"Pistol Proficiency"
+		"chi"		"手枪熟练度"
+
 	}
 	"melee proficiency up"
 	{
 		"en"				"Melee Proficiency"
+		"chi"		"近战熟练度"
 	}
 	"uzi proficiency up"
 	{
 		"en"				"Uzi Proficiency"
+		"chi"		"冲锋枪熟练度"
 	}
 	"shotgun proficiency up"
 	{
 		"en"				"Shotgun Proficiency"
+		"chi"		"霰弹枪熟练度"
 	}
 	"sniper proficiency up"
 	{
 		"en"				"Sniper Proficiency"
+		"chi"		"狙击枪熟练度"
 	}
 	"assault proficiency up"
 	{
 		"en"				"Assault Proficiency"
+		"chi"		"突击步枪熟练度"
 	}
 	"medic proficiency up"
 	{
 		"en"				"Medic Proficiency"
+		"chi"		"医疗熟练度"
 	}
 	"grenade proficiency up"
 	{
 		"en"				"Grenade Proficiency"
-	}	
+		"chi"		"手雷熟练度"
+	}
 	"join group advertisement"
 	{
 		"#format"			"{1:3.2f},{2:s},{3:s},{4:s},{5:s},{6:s},{7:s},{8:s},{9:s},{10:s}"
 		"en"				"{3}Type '{4}motd{5}' into chat and click '{6}Join This Servers Steamgroup{7}' to earn {8}{1}{9}{2} {10}bonus experience in the server."
+		"chi"		"{3}在聊天中输入'{4}motd{5}'，然后点击'{6}加入该服务器的 Steam 组{7}'，即可在服务器中获得 {8}{1}{9}{2} {10}额外经验。"
+
 	}
 	"tank spawn:hulk"
 	{
 		"en"				"Earthquake Tank"
+		"chi"		"地震坦克"
+
 	}
 	"tank spawn:death"
 	{
 		"en"				"Death Tank"
+		"chi"		"死亡坦克"
+
 	}
 	"tank spawn:burn"
 	{
 		"en"				"Fire Tank"
+		"chi"		"火球坦克"
 	}
 	"tank spawn:teleporter"
 	{
 		"en"				"Teleporter Tank"
+		"chi"		"传送坦克"
 	}
 	"tank spawn:unstable"
 	{
 		"en"				"Unstable Tank"
+		"chi"		"不稳定坦克"
 	}
 	"tank spawn:reflect"
 	{
 		"en"				"Reflect Tank"
+		"chi"		"反射坦克"
 	}
 	"tank spawn notification"
 	{
 		"#format"			"{1:s},{2:s},{3:s},{4:s}"
 		"en"				"{1}{2} {3}has {4}Entered The Battlefield!"
+		"chi"		"{1}{2} {3}已{4}进入战场！"
+
 	}
 	"tank shift notification"
 	{
 		"#format"			"{1:s},{2:s},{3:s},{4:s}"
 		"en"				"{1}{2} {3}has {4}Entered The Battlefield!"
+		"chi"		"{1}{2} {3}已{4}进入战场！"
+
 	}
 	"round bonus multiplier"
 	{
 		"#format"			"{1:s},{2:s},{3:s},{4:s},{5:3.2f},{6:s},{7:s},{8:s}"
 		"en"				"{1}{2} {3}earning XP at a {4}{5}{6}{7} {8}rate."
+		"chi"		"{1}{2} {3}以 {4}{5}{6}{7} {8}的速率获得经验值。"
+
 	}
 	"brawler info"
 	{
 		"en"				"brawler info?"
+		"chi"		"斗士信息？"
+
 	}
 	"Vanilla"
 	{
 		"en"				"Vanilla"
+		"chi"		"原版"
+
 	}
 	"personal settings"
 	{
 		"en"				"Settings"
+		"chi"		"设置"
 	}
 	"threat menu"
 	{
 		"en"				"Threat Meter"
+		"chi"		"仇恨表"
 	}
 	"threat meter title"
 	{
 		"en"				"real-time threat meter"
+		"chi"		"实时仇恨表"
 	}
 	"hardcore mode enabled"
 	{
 		"#format"			"{1:s},{2:s},{3:i},{4:s},{5:s}"
 		"en"				"{1}You are level {2}{3}{4}: All Death Penalties are {5}Enabled"
+		"chi"		"{1}你现在是等级 {2}{3}{4}：所有死亡惩罚已{5}启用"
+
 	}
 	"the zombies are coming"
 	{
 		"#format"			"{1:s},{2:s},{3:s}"
 		"en"				"{1}>>>>> {2}THE INFECTED ARE COMING {3}<<<<<"
+		"chi"		"{1}>>>>> {2}!!感染者来了!! {3}<<<<<"
+
 	}
 	"bonus container locked"
 	{
 		"#format"			"{1:s},{2:s}"
 		"en"				"{1}Your bonus container {2}is now locked."
+		"chi"		"{1}你的奖励箱{2}现在已锁定。"
+
 	}
 	"player no longer eligible"
 	{
 		"#format"			"{1:s},{2:s},{3:s}"
 		"en"				"{1}{2} {3}was removed from the server for falling below the score requirement."
+		"chi"		"{1}{2} {3}因未达到评分要求而被移除出服务器。"
+
 	}
 	"loading data cannot open menu"
 	{
 		"#format"			"{1:s}"
 		"en"				"{1}The menu is unavailable while your data is loading."
+		"chi"		"{1}数据加载时菜单不可用。"
+
 	}
 	"Cancel Load Request"
 	{
 		"#format"			"{1:s}"
 		"en"				"View Profile Authorization Request From {1}"
+		"chi"		"查看来自 {1} 的个人资料授权请求"
+
 	}
 	"none"
 	{
 		"en"				"RPG DISABLED"
+		"chi"		"RPG 禁用"
+
 	}
 	"view class abilities"
 	{
 		"en"				"View Talent Modifiers & Class Abilities"
+		"chi"		"查看天赋修正器和职业技能"
+
 	}
 	"view class experience"
 	{
 		"en"				"View CARTEL XP modifiers" 
+		"chi"		"查看 CARTEL 经验修正器"
+
 	}
 	"select survivor bot"
 	{
 		"en"				"Select a Survivor Bot from the list\nthat you'd like to load your profile on to\n\nPressing the 'BACK' key resets targeting to YOU"
+		"chi"		"从列表中选择一个幸存者机器人\n以将你的个人资料加载到其上\n\n按 'BACK' 键可将目标重置为你自己"
+
 	}
 	"vanilla"
 	{
 		"en"				"Vanilla"
+		"chi"		"原版"
 	}
 	"Select Load Target"
 	{
 		"#format"			"{1:s}"
 		"en"				"Load Profile Onto: {1}"
+		"chi"		"将个人资料加载到: {1}"
+
 	}
 	"Yourself"
 	{
 		"en"				"Yourself"
+		"chi"		"你自己"
 	}
 	"server advertisement 1"
 	{
 		"en"	"{O}You are playing at {B}{HOST}\nSay {O}!{B}{RPGCMD} {O}into chat to open the Control Panel!"
+		"chi"		"{O}你正在游戏中 {B}{HOST}\n在聊天中输入 {O}!{B}{RPGCMD} {O}以打开控制面板！"
+
 	}
 	"server advertisement 2"
 	{
 		"en"	"{O}skyrpg discord: {B}discord.gg/YQqQU4gewu\n{O}skyrpg wiki: {B}http://skyrpg.org/wiki/"
+		"chi"		"{O}skyrpg Discord: {B}discord.gg/YQqQU4gewu\n{O}skyrpg 维基: {B}http://skyrpg.org/wiki/"
+
 	}
 	"server advertisement 3"
 	{
 		"en"	"{O}Left 4 Discord, the largest {B}ACTIVE {O}L4D2 discord: {B}discord.gg/Left4Dead2"
+		"chi"		"{O}Left 4 Discord，最大的 {B}活跃 {O}L4D2 Discord 服务器: {B}discord.gg/Left4Dead2"
+
 	}
 	"tellah"
 	{
 		"en"				"Tellah"
+		"chi"		"泰拉"
+
 	}
 	"talent level requirement not met"
 	{
 		"#format"			"{1:s},{2:s},{3:i},{4:s},{5:s},{6:s}"
 		"en"				"{1}You must be level {2}{3} {4}to access the talent {5}{6}"
+		"chi"		"{1}你必须达到等级 {2}{3} {4}才能访问天赋 {5}{6}"
+
 	}
 	"class level requirement not met"
 	{
 		"#format"			"{1:s},{2:s},{3:i},{4:s},{5:s},{6:s}"
 		"en"				"{1}You must be level {2}{3} {4}to access the class {5}{6}"
+		"chi"		"{1}你必须达到等级 {2}{3} {4}才能访问职业 {5}{6}"
 	}
 	"loading class profile"
 	{
 		"#format"			"{1:s},{2:s},{3:s}"
 		"en"				"{1}Loading your saved {2}{3}"
+		"chi"		"{1}正在加载你保存的 {2}{3}"
+
 	}
 	"class profile loaded"
 	{
 		"#format"			"{1:s},{2:s},{3:s}"
 		"en"				"{1}My life is complete; I have loaded your {2}{3}"
+		"chi"		"{1}我的人生已圆满；我已加载你的 {2}{3}"
+
 	}
 	"rejoining too fast"
 	{
 		"#format"			"{1:s}"
 		"en"				"{1}You will be respawned at a closet, or the beginning of the next round."
+		"chi"		"{1}你将在一个衣橱处重生，或者在下一轮开始时重生。"
+
 	}
 	"rejoining too fast survival"
 	{
 		"#format"			"{1:s}"
 		"en"				"{1}You will respawn with all dead players at the next 5-minute interval."
+		"chi"		"{1}你将在下一个 5 分钟的间隔中与所有死亡玩家一起重生。"
+
 	}
 	"Leaderboards Top Page"
 	{
 		"en"				"Leaderboards - Go To Top Page"
+		"chi"		"排行榜 - 前往顶页"
+
 	}
 	"Leaderboards Next Page"
 	{
 		"en"				"Leaderboards - Next Page"
+		"chi"		"排行榜 - 下一页"
 	}
 	"View My Ranking"
 	{
 		"en"				"View My Ranking"
+		"chi"		"查看我的排名"
 	}
 	"proficiency data"
 	{
 		"en"				"Weapon Proficiency Data"
+		"chi"		"武器熟练度数据"
 	}
 	"disable handicap"
 	{
 		"en"				"Disable Handicap"
+		"chi"		"禁用障碍"
+
 	}
 	"talent trees"
 	{
 		"en"				"View/Upgrade Talent Trees\nSpend your talent points here!"
+		"chi"		"查看/升级天赋树\n在这里花费你的天赋点数！"
+
 	}
 	"the leaderboards"
 	{
 		"en"				"Leaderboard"
+		"chi"		"排行榜"
 	}
 	"bullet trails (disabled)"
 	{
 		"en"				"Bullet Trails (Disabled)"
+		"chi"		"子弹轨迹（禁用）"
+
 	}
 	"bullet trails (enabled)"
 	{
 		"en"				"Bullet Trails (Enabled)"
+		"chi"		"子弹轨迹（启用）"
 	}
 	"ffa loot (disabled)"
 	{
 		"en"				"Loot Mode: Random Order\nYou cannot take other players loot\nand they cannot take yours."
+		"chi"		"战利品模式：随机顺序\n你不能拿其他玩家的战利品\n他们也不能拿你的战利品。"
+
 	}
 	"ffa loot (all)"
 	{
 		"en"				"Loot Mode: FFA (all)\nYou can steal loot from players with FFA loot enabled.\nThey can steal all your bags."
+		"chi"		"战利品模式：全员互抢\n你可以从启用了 FFA 战利品的玩家那里偷取战利品。\n他们可以偷取你所有的战利品。"
+
 	}
 	"ffa loot (major)"
 	{
 		"en"				"Loot Mode: FFA (major)\nYou can steal loot from players with FFA loot enabled.\nThey can steal your minor and major bags."
+		"chi"		"战利品模式：全员互抢（重大）\n你可以从启用了 FFA 战利品的玩家那里偷取战利品。\n他们可以偷取你的小型和大型战利品。"
+
 	}
 	"ffa loot (minor)"
 	{
 		"en"				"Loot Mode: FFA (minor)\nYou can steal loot from players with FFA loot enabled.\nThey can steal your minor bags."
+		"chi"		"战利品模式：全员互抢（小型）\n你可以从启用了 FFA 战利品的玩家那里偷取战利品。\n他们可以偷取你的小型战利品。"
+
 	}
 	"noob mode (disabled)"
 	{
 		"en"				"Noob Assistance (Disabled)"
+		"chi"		"新手助手（禁用）"
+
 	}
 	"noob mode (enabled)"
 	{
 		"en"				"Noob Assistance (Enabled)"
+		"chi"		"新手助手（启用）"
 	}
 	"auto level (locked)"
 	{
 		"#format"			"{1:3.1f},{2:s}"
 		"en"				"Auto-Level (Off-Locked)\nA level-up option is on the main page."
+		"chi"		"自动升级（关闭-已锁定）\n主页面上有一个升级选项。"
+
 	}
 	"auto level (disabled)"
 	{
 		"#format"			"{1:3.1f},{2:s}"
 		"en"				"Auto-Level (Off)\nA level-up option is on the main page."
+		"chi"		"自动升级（关闭）\n主页面上有一个升级选项。"
 	}
 	"auto level (enabled)"
 	{
 		"en"				"Auto-Level (On)\nDisable to enable manual leveling (on the main page).\n"
+		"chi"		"自动升级（开启）\n禁用此选项以启用手动升级（在主页面上）。"
+
 	}
 	"respec confirm"
 	{
 		"en"				"Confirm\nResetting your talents cannot be undone."
+		"chi"		"确认\n重置你的天赋不可恢复。"
+
 	}
 	"respec"
 	{
 		"en"				"Refund Talents"
+		"chi"		"重置天赋"
 	}
 	"lowest layer reached"
 	{
 		"en"					"Lowest Layer reached."
+		"chi"		"已到达最低层。"
 	}
 	"highest layer reached"
 	{
 		"en"					"Highest Layer reached."
+		"chi"		"已到达最高层。"
 	}
 	"show tree layers"
 	{
 		"#format"			"{1:i},{2:i},{3:i},{4:i}"
 		"en"				"trees {1}({4} talents, {2}/{3} talents req.)"
+		"chi"		"天赋树 {1}（{4} 个天赋，{2}/{3} 个天赋要求）"
+
 	}
 	"show tree layers single (locked)"
 	{
 		"#format"			"{1:i},{2:i},{3:i}"
 		"en"				"trees {1} locked({2} talents, +{3} talent req.)"
+		"chi"		"天赋树 {1} 锁定（{2} 个天赋，+{3} 个天赋要求）"
+
 	}
 	"show tree layers (locked)"
 	{
 		"#format"			"{1:i},{2:i},{3:i}"
 		"en"				"trees {1} locked({2} talents, +{3} talents req.)"
+		
 	}
 	"layer move"
 	{
 		"#format"				"{1:i}"
 		"en"				"trees {1}"
+		"chi"		"天赋树 {1}"
+
 	}
 	"layer move locked"
 	{
 		"#format"			"{1:i},{2:i},{3:i}"
 		"en"				"Trees {1}\n(preview, locked ({3})"
 		//"en"				"(Preview Only) Layer {1}\nThis layer requires {3} more upgrades before\nyou can unlock deeper layers."
+		"chi"		"天赋树 {1}\n（预览，锁定 ({3}）"
+
 	}
 	"prestige"
 	{
 		"en"				"Prestige Up!"
+		"chi"		"升阶！"
 	}
 	"collected bonus container"
 	{

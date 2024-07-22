@@ -1764,60 +1764,82 @@
 	{
 		"#format"			"{1:s},{2:s},{3:s},{4:s},{5:s},{6:s}"
 		"en"				"{1}{2} {3}collected their bonus container for {4}{6} {5}experience"
+		"chi"		"{1}{2} {3}已领取他们的奖励箱，获得 {4}{6} {5}经验"
+
 	}
 	"raid lock penalty warning"
 	{
 		"#format"			"{1:s},{2:s}"
 		"en"				"{1}You are now locked in for the round.\n{2}Leaving before the round ends will forfeit experience earned this round."
+		"chi"		"{1}你现在已被锁定在这一轮中。\n{2}在轮次结束前离开将会丧失本轮获得的经验。"
+
 	}
 	"raid lock penalty enacted"
 	{
 		"#format"			"{1:s},{2:s},{3:s},{4:s}"
 		"en"				"{1}{2} {3}left during a live round.\n{4}Their progress this round was not saved, and raid (or solo) level reset."
+		"chi"		"{1}{2} {3}在当前轮次中离开。\n{4}他们本轮的进度未被保存，且团本（或单人模式）等级已重置。"
 	}
 	"bonus container burst"
 	{
 		"#format"			"{1:s},{2:s},{3:s},{4:s},{5:3.1f},{6:s},{7:s}"
 		"en"				"{1}{2} {3}loses their {4}{5}{7} {6}XP Multiplier..."
+		"chi"		"{1}{2} {3}失去了他们的 {4}{5}{7} {6}XP 加成..."
+
 	}
 	"bonus experience waiting"
 	{
 		"#format"			"{1:s},{2:s},{3:s},{4:s},{5:s},{6:s},{7:s},{8:s},{9:s},{10:3.2f},{11:s}"
 		"en"				"{1}You have {2}{3} experience{4} available.\nType {5}!collect {6}to {7}receive the bonus now {8}and reset the multiplier.\nCurrent multiplier: {9}{10}{11}"
+		"chi"		"{1}你有 {2}{3} 经验{4} 可用。\n输入 {5}!collect {6}即可 {7}立即领取奖励 {8}并重置加成。\n当前加成： {9}{10}{11}"
+
 	}
 	"teammate bonus experience"
 	{
 		"#format"			"{1:s},{2:s},{3:3.2f},{4:s}"
 		"en"				"{1}Team Experience Bonus: {2}{3}{4}"
+		"chi"		"{1}团队经验加成：{2}{3}{4}"
+
 	}
 	"teammate has died"
 	{
 		"#format"			"{1:s},{2:s},{3:s},{4:s},{5:3.2f},{6:s}"
 		"en"				"{1}{2} {3}has died; The monsters weaken...\nTeam experience multiplier: {4}{5}{6}"
+		"chi"		"{1}{2} {3}已经死亡；怪物变弱了...\n团队经验加成：{4}{5}{6}"
+
 	}
 	"you have died - handicap disabled"
 	{
 		"#format"			"{1:s},{2:s}"
 		"en"				"{1}You have died: {2}Handicap Disabled"
+		"chi"		"{1}你已经死亡：{2}障碍已禁用"
+
 	}
 	"teammate has died - handicap reduced"
 	{
 		"#format"			"{1:s},{2:s}"
 		"en"				"{1}One of your teammates died on your watch: {2}Handicap Reduced"
+		"chi"		"{1}你的队友在你守护下死亡：{2}障碍已减少"
+
 	}
 	"you are doomed"
 	{
 		"#format"			"{1:s}"
 		"en"				"{1}The spell Doom has been cast upon you."
+		"chi"		"{1}诅咒法术已施加在你身上。"
+
 	}
 	"survivors are doomed"
 	{
 		"#format"			"{1:s}"
 		"en"				"{1}The Survivors were Doomed..."
+		"chi"		"{1}幸存者们被诅咒了……"
+
 	}
 	"Team Points"
 	{
 		"en"				"Team Points:"
+		"chi"		"团队点数："
 	}
 	"Share Points Syntax"
 	{
@@ -1828,60 +1850,88 @@
 	{
 		"#format"			"{1:s},{2:s},{3:s},{4:s},{5:3.2f},{6:s},{7:s},{8:s}"
 		"en"				"{1}{2} {3}has gifted {4}{5} {6}point(s) to {7}{8}"
+		"chi"		"{1}{2} {3}已赠送 {4}{5} {6}点数给 {7}{8}"
+
 	}
 	"combat handicap restricted"
 	{
 		"#format"			"{1:s},{2:s},{3:i}"
 		"en"				"{1}You are now locked in to {2}Handicap Lv.{3}"
+		"chi"		"{1}你现在被锁定在 {2}障碍等级 {3}"
+
 	}
 	"Overdrive damage"
 	{
 		"en"				"Overdrive DMG"
+		"chi"		"超载伤害"
+
 	}
 	"Overdrive damage info"
 	{
 		"en"				"Increases all outgoing damage during Overdrive\nbased on the number of overdrive stacks."
+		"chi"				"在超载期间，根据超载叠加层数增加所有伤害。"
+
 	}
 	"Overdrive leech"
 	{
 		"en"				"Overdrive Leech"
+		"chi"		"过载吸血"
+
 	}
 	"Overdrive leech info"
 	{
 		"en"				"You heal for some of the outgoing damage\nmultiplicative based on the stack count."
+		"chi"		"你会将部分输出伤害转化为治疗\n根据堆叠数量进行乘法计算。"
+
 	}
 	"Overdrive absorb"
 	{
 		"en"				"Overdrive DMG Shield"
+		"chi"		"过载伤害护盾"
+
 	}
 	"Overdrive absorb info"
 	{
 		"en"				"Absorb a portion of incoming damage\nPlease note this occurs after handicap/raid damage increases."
+		"chi"		"吸收部分接收的伤害\n请注意，这发生在减益/突袭伤害增加之后。"
+
 	}
 	"Overdrive reflect"
 	{
 		"en"				"Overdrive Reflect"
+		"chi"		"过载反射"
+
 	}
 	"Overdrive reflect info"
 	{
 		"en"				"Reflects damage back - based on overdrive stacks."
+		"chi"		"将伤害反弹回去 - 基于过载堆叠。"
+
 	}
 	
 	"Cleanse damage"
 	{
 		"en"				"Cleanse DMG"
+		"chi"		"清除伤害"
+
 	}
 	"Cleanse damage info"
 	{
 		"en"				"Increases all outgoing damage based on\nyour cleanse stacks."
+		"chi"		"根据你的清除堆叠，增加所有输出伤害。"
+
 	}
 	"Cleanse leech"
 	{
 		"en"				"Cleanse Leech"
+		"chi"		"清除吸血"
+
 	}
 	"Cleanse leech info"
 	{
 		"en"				"You heal for some outgoing damage based on\nyour cleanse count."
+		"chi"		"你会将部分输出伤害转化为治疗，基于你的清除次数。"
+
 	}
 	"Cleanse absorb"
 	{
@@ -1890,61 +1940,85 @@
 	"Cleanse absorb info"
 	{
 		"en"				"Absorb a portion of incoming damage based on cleanse stacks."
+		"chi"		"根据清除堆叠，吸收部分接收的伤害。"
+
 	}
 	"Cleanse reflect"
 	{
 		"en"				"Cleanse Reflect"
+		"chi"		"清除反射"
 	}
 	"Cleanse reflect info"
 	{
 		"en"				"Reflects damage back - based on cleanse stacks."
+		"chi"		"将伤害反弹回去 - 基于清除堆叠。"
+
 	}
 	"building stack change"
 	{
 		"#format"			"{1:s},{2:s},{3:s},{4:s},{5:s},{6:3.3f},{7:s}"
 		"en"				"{1}Now generating {2}{3} {4}for {5}{6} {7}second(s)."
+		"chi"		"{1}现在生成 {2}{3} {4}，持续 {5}{6} {7}秒。"
+
 	}
 	"chainsaw damage increase"
 	{
 		"en"				"Chainsaw DMG+"
+		"chi"		"链锯伤害+"
+
 	}
 	"chainsaw damage increase info"
 	{
 		"en"				"Chainsaw damage is increased."
+		"chi"		"链锯伤害增加。"
+
 	}
 	"explosion damage increase"
 	{
 		"en"				"Explosion DMG+"
+		"chi"		"爆炸伤害+"
+
 	}
 	"explosion damage increase info"
 	{
 		"en"				"Explosions (pipes, propane, etc.) deal more damage."
+		"chi"		"爆炸（如管道、丙烷等）造成更多伤害。"
+
 	}
 	"blunt damage increase"
 	{
 		"en"				"Blunt Melee DMG+"
+		"chi"		"钝击伤害+"
 	}
 	"blunt damage increase info"
 	{
 		"en"				"Blunt Melee Weapons deal more damage"
+		"chi"		"钝器近战武器造成更多伤害"
+
 	}
 	"sharp damage increase"
 	{
 		"en"				"Sharp Melee DMG+"
+		"chi"		"锐器伤害+"
 	}
 	"sharp damage increase info"
 	{
 		"en"				"Sharp Melee Weapons deal more damage"
+		"chi"		"锐器近战武器造成更多伤害"
 	}
 	"special ammo target selected"
 	{
 		"#format"			"{1:s},{2:s},{3:s}"
 		"en"				"{1}Special Ammo Target: {2}{3}"
+		"chi"		"{1}特殊弹药目标: {2}{3}"
+
 	}
 	"special ammo targeted"
 	{
 		"#format"			"{1:s},{2:s},{3:s}"
 		"en"				"{1}Special Ammo Targeting You: {2}{3}"
+		"chi"		"{1}特殊弹药锁定你: {2}{3}"
+
 	}
 	"select special ammo target"
 	{
@@ -1955,180 +2029,246 @@
 	{
 		"#format"			"{1:s},{2:s}"
 		"en"				"{1}Last special ammo target {2}forgotten."
+		"chi"		"{1}最后的特殊弹药目标 {2}已被遗忘。"
+
 	}
 	"survival intermission end"
 	{
 		"#format"			"{1:s},{2:s},{3:i}"
 		"en"				"{1}Intermission is over.\nBeginning Round {2}{3}"
+		"chi"		"{1}中场休息结束。\n开始第 {2}{3} 回合"
+
 	}
 	"survival intermission ending soon"
 	{
 		"#format"			"{1:s},{2:s},{3:i}"
 		"en"				"{1}Intermission will end in {2}{3} seconds"
+		"chi"		"{1}中场休息将在 {2}{3} 秒后结束"
 	}
 	"out of combat state"
 	{
 		"en"				"Out of Combat"
+		"chi"		"脱战状态"
 	}
 	"in combat state"
 	{
 		"#format"			"{1:3.1f}"
 		"en"				"In Combat ({1})"
+		"chi"		"战斗状态 ({1})"
 	}
 	"upgrade awarded"
 	{
 		"#format"			"{1:s},{2:s},{3:s},{4:s},{5:i}"
 		"en"				"{1}You have received {2}{5} {3}Talent Upgrades{4}!"
+		"chi"		"{1}你获得了 {2}{5} {3}天赋升级{4}！"
 	}
 	"experience debt penalty"
 	{
 		"#format"		"{1:s},{2:s},{3:s},{4:i}"
 		"en"			"{1}You have earned {2}{4} {3}experience debt for dying."
+		"chi"		"{1}你因死亡获得了 {2}{4} {3}经验惩罚。"
+
 	}
 	"Talent Id Code"
 	{
 		"en"			"ID Code:"
+		"chi"		"ID码:"
 	}
 	"Talent Menu"
 	{
 		"en"			"Talent Menu"
+		"chi"		"天赋菜单"
 	}
 	"Survivor Menu"
 	{
 		"en"			"Survivor Menu"
+		"chi"		"幸存者菜单"
 	}
 	"Infected Menu"
 	{
 		"en"			"Infected Menu"
+		"chi"		"感染者菜单"
 	}
 	"not enough damage"
 	{
 		"#format"		"{1:s},{2:s},{3:3.2f},{4:s},{5:s},{6:s},{7:3.2f},{8:s},{9:s}"
 		"en"			"{1}You contributed {2}{3}{4}PCT {5}of the required {6}{7}{8}PCT {9}contribution."
+		"chi"		"{1}你贡献了 {2}{3}{4}百分比 {5}的所需 {6}{7}{8}百分比 {9}的贡献。"
+
 	}
 	"damage experience reward"
 	{
 		"#format"			"{1:s},{2:s},{3:s},{4:s},{5:s},{6:s}"
 		"en"				"{1}Exited Combat\n{2}Damage {3}bonus: {4}{5} {6}experience"
+		"chi"		"{1}退出战斗\n{2}伤害 {3}奖励: {4}{5} {6}经验"
+
 	}
 	"base experience reward"
 	{
 		"#format"			"{1:s},{2:s},{3:s},{4:s},{5:s},{6:s}"
 		"en"				"{1}{2} {3}Killed: {4}{5} {6}experience"
+		"chi"		"{1}{2} {3}击杀: {4}{5} {6}经验"
+
 	}
 	"handicap experience reward"
 	{
 		"#format"			"{1:s},{2:s},{3:s},{4:s},{5:s}"
 		"en"				"{1}Handicap {2}bonus: {3}{4} {5}experience"
+		"chi"		"{1}减益 {2}奖励: {3}{4} {5}经验"
+
 	}
 	"sky experience reward"
 	{
 		"#format"			"{1:s},{2:s},{3:s},{4:s},{5:s}"
 		"en"				"{1}Sky level {2}bonus: {3}{4} {5}experience"
+		"chi"		"{1}天空等级 {2}奖励: {3}{4} {5}经验"
+
 	}
 	"rested experience reward"
 	{
 		"#format"			"{1:s},{2:s},{3:s},{4:s},{5:s}"
 		"en"				"{1}Rested {2}bonus: {3}{4} {5}experience"
+		"chi"		"{1}休息 {2}奖励: {3}{4} {5}经验"
+
 	}
 	"booster experience reward"
 	{
 		"#format"			"{1:s},{2:s},{3:s},{4:s},{5:s}"
 		"en"				"{1}Booster {2}bonus: {3}{4} {5}experience"
+		"chi"		"{1}增益 {2}奖励: {3}{4} {5}经验"
+
 	}
 	"tanking experience reward"
 	{
 		"#format"			"{1:s},{2:s},{3:s},{4:s},{5:s}"
 		"en"				"{1}Tanking {2}bonus: {3}{4} {5}experience"
+		"chi"		"{1}坦克 {2}奖励: {3}{4} {5}经验"
+
 	}
 	"healing experience reward"
 	{
 		"#format"			"{1:s},{2:s},{3:s},{4:s},{5:s}"
 		"en"				"{1}Healing {2}bonus: {3}{4} {5}experience"
+		"chi"		"{1}治疗 {2}奖励: {3}{4} {5}经验"
 	}
 	"buffing experience reward"
 	{
 		"#format"			"{1:s},{2:s},{3:s},{4:s},{5:s}"
 		"en"				"{1}Buffing {2}bonus: {3}{4} {5}experience"
+		"chi"		"{1}增益 {2}奖励: {3}{4} {5}经验"
+
 	}
 	"hexing experience reward"
 	{
 		"#format"			"{1:s},{2:s},{3:s},{4:s},{5:s}"
 		"en"				"{1}Hexing {2}bonus: {3}{4} {5}experience"
+		"chi"		"{1}诅咒 {2}奖励: {3}{4} {5}经验"
+
 	}
 	"points from damage reward"
 	{
 		"#format"			"{1:s},{2:s},{3:s},{4:3.3f},{5:s}"
 		"en"				"{1}Points{2}: {3}{4} {5}earned"
+		"chi"		"{1}积分{2}: {3}{4} {5}获得"
+
 	}
 	"handicap disabled for map"
 	{
 		"#format"			"{1:s}"
 		"en"				"{1}the team wiped on this map, handicap is disabled until next map."
+		"chi"		"{1}队伍在这个地图上全灭，减益在下一个地图之前被禁用。"
+
 	}
 	"received item from teammate"
 	{
 		"#format"			"{1:s},{2:s},{3:s},{4:s},{5:s}"
 		"en"				"{1}{2} {3}was purchased and given to you by {4}{5}"
+		"chi"		"{1}{2} {3}已被购买并交给你，由 {4}{5}"
+
 	}
 	"teamwork reward notification"
 	{
 		"#format"			"{1:s},{2:s},{3:s},{4:s},{5:s},{6:s},{7:s},{8:i}"
 		"en"				"{1}{2} {3}has received {4}{5}{6}: {7}{8} experience"
+		"chi"		"{1}{2} {3}已获得 {4}{5}{6}: {7}{8} 经验"
+
 	}
 	"handicap level reduced by force"
 	{
 		"#format"			"{1:s},{2:s},{3:s},{4:s},{5:i}"
 		"en"				"{1}Your handicap level has been reduced to {2}{5} {3}due to {4}incapacitation/death."
+		"chi"		"{1}你的减益等级已被降低到 {2}{5} {3}由于 {4}失能/死亡。"
+
 	}
 	"handicap level disabled by force"
 	{
 		"#format"			"{1:s},{2:s},{3:s},{4:s}"
 		"en"				"{1}Your handicap level has been {2}disabled {3}due to {4}incapacitation/death."
+		"chi"		"{1}你的减益等级已被 {2}禁用 {3}由于 {4}失能/死亡。"
+
 	}
 	"level requirement kick"
 	{
 		"#format"			"{1:i},{2:s}"
 		"en"				"Requires level {2}, You are level{1}."
+		"chi"		"需要等级 {2}，你现在是等级 {1}。"
+
 	}
 	"incap survivor health"
 	{
 		"en"				"(Incap) Survivor Health"
+		"chi"		"(失能) 幸存者健康"
+
 	}
 	"incap survivor health info"
 	{
 		"en"				"Increases the time you can rest your\nhead on the floor."
+		"chi"		"增加你可以将头部休息在地板上的时间。"
+
 	}
 	"incap health regen survivor"
 	{
 		"en"				"(Incap) Health Regen"
+		"chi"		"(失能) 幸存者健康"
+
 	}
 	"incap health regen survivor info"
 	{
 		"en"				"Regens your health while you're resting your head\ngiving you more time to rest your head."
+		"chi"		"在你休息头部时恢复健康\n让你有更多时间休息头部。"
+
 	}
 	"enable hardcore mode"
 	{
 		"en"				"Enable Hardcore Mode"
+		"chi"		"启用硬核模式"
 	}
 	"backpack fizzle"
 	{
 		"#format"			"{1:s},{2:s}"
 		"en"				"{1}The contents of the backpack are useless {2}so you toss it aside"
+		"chi"		"{1}背包的内容毫无用处 {2}所以你把它扔到一边"
+
 	}
 	"backpack roll"
 	{
 		"#format"			"{1:s},{2:s},{3:s}"
 		"en"				"{1}{2} {3}is scavenging..."
+		"chi"		"{1}{2} {3}正在搜寻..."
+
 	}
 	"nerve agent release countdown"
 	{
 		"#format"			"{1:i}"
 		"en"				"SILENT DEATH IMMINENT!!!\n{1} SECOND(S) TO GET TO THE SAFEROOM!\nSILENT DEATH IMMINENT!!!"
+		"chi"		"无声死亡即将到来！！！\n{1} 秒内前往安全房！\n无声死亡即将到来！！！"
+
 	}
 	"nerve agent released"
 	{
 		"en"				"SILENT DEATH!!!\nSTAY IN THE SAFEROOM!!!"
+		"chi"		"无声死亡！！！\n待在安全房！！！"
+
 	}
 	"Forgive Warnings Syntax"
 	{
@@ -2139,166 +2279,216 @@
 	{
 		"#format"			"{1:s},{2:s},{3:s},{4:s}"
 		"en"				"{1}You have forgiven {2}{4} {3}of their chat transgressions."
+		"chi"		"{1}你已原谅 {2}{4} {3}的聊天违规行为。"
+
 	}
 	"Chat Ban Time"
 	{
 		"#format"			"{1:i},{2:i},{3:i}"
 		"en"				"Chat Ban Time Remaining: {1} Hour(s) {2} Minute(s) {3} Second(s)"
+		"chi"		"聊天禁言剩余时间: {1} 小时 {2} 分钟 {3} 秒"
+
 	}
 	"melee against special"
 	{
 		"en"				"Melee do no damage to special infected!"
+		"chi"		"近战对特殊感染者没有伤害！"
+
 	}
 	"handicap"
 	{
 		"en"				"Handicap\nModify your (and yours alone) difficulty."
+		"chi"		"减益\n修改你（仅限你自己的）难度。"
+
 	}
 	"player handicap bonus"
 	{
 		"#format"			"{1:3.1f}"
 		"en"				"XP / Point Bonus: {1}PCT"
+		"chi"		"经验/积分奖励: {1}百分比"
+
 	}
 	"increase handicap"
 	{
 		"en"				"Increase Handicap"
+		"chi"		"增加减益"
+
 	}
 	"decrease handicap"
 	{
 		"en"				"Decrease Handicap"
+		"chi"		"重置减益"
+
 	}
 	"reset handicap"
 	{
 		"en"				"Reset Handicap"
+		"chi"		"重置减益"
 	}
 	"player handicap movement"
 	{
 		"#format"			"{1:3.1f}"
 		"en"				"Movement Speed Penalty: {1}PCT"
+		"chi"		"移动速度惩罚: {1}百分比"
 	}
 	"player handicap damage"
 	{
 		"#format"			"{1:3.1f}"
 		"en"				"Damage Output Penalty: {1}PCT"
+		"chi"		"伤害输出惩罚: {1}百分比"
 	}
 	"damage increase commons"
 	{
 		"#format"			"{1:3.1f}"
 		"en"				"Common Damage: {1}PCT"
+		"chi"		"普通僵尸伤害: {1}百分比"
 	}
 	"damage increase hunter"
 	{
 		"#format"			"{1:3.1f}"
 		"en"				"Hunter Damage: {1}PCT"
+		"chi"		"Hunter伤害: {1}百分比"
 	}
 	"damage increase smoker"
 	{
 		"#format"			"{1:3.1f}"
 		"en"				"Smoker Damage: {1}PCT"
+		"chi"		"Smoker伤害: {1}百分比"
 	}
 	"handicap health increase"
 	{
 		"#format"			"{1:3.1f}"
 		"en"				"Health Increase: {1}PCT"
+		"chi"		"生命值增加: {1}百分比"
 	}
 	"damage increase boomer"
 	{
 		"#format"			"{1:3.1f}"
 		"en"				"Boomer Damage: {1}PCT"
+		"chi"		"Boomer伤害: {1}百分比"
 	}
 	"damage increase witch"
 	{
 		"#format"			"{1:3.1f}"
 		"en"				"Witch Damage: {1}PCT"
+		"chi"		"Witch伤害: {1}百分比"
 	}
 	"damage increase jockey"
 	{
 		"#format"			"{1:3.1f}"
 		"en"				"Jockey Damage: {1}PCT"
+		"chi"		"Jockey伤害: {1}百分比"
 	}
 	"damage increase spitter"
 	{
 		"#format"			"{1:3.1f}"
 		"en"				"Spitter Damage: {1}PCT"
+		"chi"		"Spitter伤害: {1}百分比"
 	}
 	"damage increase charger"
 	{
 		"#format"			"{1:3.1f}"
 		"en"				"Charger Damage: {1}PCT"
+		"chi"		"Charger伤害: {1}百分比"
 	}
 	"damage increase tank"
 	{
 		"#format"			"{1:3.1f}"
 		"en"				"Tank Damage: {1}PCT"
+		"chi"		"Tank伤害: {1}百分比"
 	}
 	"Menu Header 0"
 	{
 		"#format"			"{1:3.3f}"
 		"en"				"Shop Points: {1}"
+		"chi"		"商店点数: {1}"
 	}
 	"Menu Header 3 Exp"
 	{
 		"#format"			"{1:s}"
 		"en"				"Upgrade Cost: {1}"
+		"chi"		"升级花费: {1}"
 	}
 	"Give Store Points Syntax"
 	{
 		"#format"			"{1:s},{2:s}"
 		"en"				"{1}Syntax: {2}!awardsp <name> <value>"
+		"chi"		"{1}语法: {2}!awardsp <玩家名称> <数值>"
 	}
 	"Store Points Award Given"
 	{
 		"#format"			"{1:s},{2:s},{3:s},{4:s},{5:s},{6:s}"
 		"en"				"{1}Awarded {2}{3} {4}Premium Credits to {5}{6}"
+		"chi"		"{1}奖励了 {2}{3} {4}高级积分给 {5}{6}"
+
 	}
 	"Store Points Award Received"
 	{
 		"#format"			"{1:s},{2:s},{3:s},{4:s}"
 		"en"				"{1}You have been awarded {2}{3} {4}Premium Credits"
+		"chi"		"{1}你已获得 {2}{3} {4}高级积分"
+
 	}
 	"Sky Points Award"
 	{
 		"#format"			"{1:s},{2:i},{3:s},{4:s},{5:s},{6:s},{7:s},{8:s}"
 		"en"				"{1}{2} {3}{4} {5}have been added to {6}{7} {8}'s account"
+		"chi"		"{1}{2} {3}{4} {5}已添加到 {6}{7} {8}的账户"
+
 	}
 	"Warn Buy Level"
 	{
 		"#format"			"{1:i},{2:i}"
 		"en"				"Upgrades this level: {1} / {2}\n \nDo you still want to level up?"
+		"chi"		"升级此等级: {1} / {2}\n \n你仍然想要升级吗？"
+
 	}
 	"Tank Limit Reached"
 	{
 		"#format"			"{1:s},{2:s},{3:i},{4:s}"
 		"en"				"{1}Tank Limit of {2}{3} {4}has been reached"
+		"chi"		"{1}坦克上限 {2}{3} {4}已到达"
 	}
 	"Tank On Cooldown"
 	{
 		"#format"			"{1:s},{2:s}"
 		"en"				"{1}Tank purchases {2}currently on cooldown"
+		"chi"		"{1}坦克购买 {2}目前处于冷却状态"
 	}
 	"Tank Cooldown Complete"
 	{
 		"#format"			"{1:s},{2:s}"
 		"en"				"{1}THE AI {2}can now purchase a tank"
+		"chi"		"{1}AI {2}现在可以购买一个坦克"
+
 	}
 	"Tank Cooldown Remaining"
 	{
 		"#format"			"{1:s},{2:3.1f},{3:s},{4:s},{5:s}"
 		"en"				"{1}{2} {3}second(s) remaining on {4}Tank {5}cooldown"
+		"chi"		"{1}{2} {3}秒剩余在 {4}坦克 {5}冷却时间"
+
 	}
 	"Store Header"
 	{
 		"#format"			"{1:i}"
 		"en"				"In-Game Store\n!Store Credits: {1}"
+		"chi"		"游戏内商店\n!商店积分: {1}"
+
 	}
 	"Store Points Award"
 	{
 		"#format"			"{1:s},{2:i},{3:s},{4:s},{5:s},{6:s},{7:s},{8:s}"
 		"en"				"{1}{2} {3}{4} {5}have been added to {6}{7} {8}'s account"
+		"chi"		"{1}{2} {3}{4} {5}已添加到 {6}{7} {8}的账户"
+
 	}
 	"Infected Health Broadcast"
 	{
 		"#format"			"{1:s},{2:s},{3:s},{4:s},{5:s}"
 		"en"				"{1}\n{2} - {3} / {4}\n{5}"
+		"chi"		"{1}\n{2} - {3} / {4}\n{5}"
+
 	}
 	"Hint Text Broadcast 0"
 	{
@@ -2314,36 +2504,50 @@
 	{
 		"#format"			"{1:s},{2:s},{3:s},{4:3.3f}"
 		"en"				"{1}\n{2} / {3}\n{4} Buy Point(s)"
+		"chi"		"{1}\n{2} / {3}\n{4} 购买点数"
+
 	}
 	"Respawn Timer"
 	{
 		"#format"			"{1:i}"
 		"en"				"Time until respawn\n{1} sec(s)"
+		"chi"		"重生倒计时\n{1} 秒"
+
 	}
 	"Time Played"
 	{
 		"#format"			"{1:s},{2:s},{3:s},{4:s}"
 		"en"				"{1} Day(s), {2} Hour(s), {3} Min(s), {4} sec(s)"
+		"chi"		"{1} 天, {2} 小时, {3} 分钟, {4} 秒"
+
 	}
 	"Menu Header 1 Talents"
 	{
 		"#format"			"{1:i},{2:i},{3:s},{4:s},{5:i},{6:s},{7:i}"
 		"en"				"Lv: {1} of {2}\nXP: {3} of {4}\n \nTalent Points: {5} ({6})\nPremium Credits: {7}"
+		"chi"		"等级: {1} / {2}\n经验: {3} / {4}\n \n天赋点: {5} ({6})\n高级积分: {7}"
+
 	}
 	"Menu Header 1 Exp"
 	{
 		"#format"			"{1:i},{2:i},{3:s},{4:s},{5:s},{6:s},{7:i},{8:s},{9:s}"
 		"en"				"Lv: {1} of {2} {9}\n\nXP: {3} of {4} ({5})\n \nUpgrade Cost: {6} XP\nPremium Credits: {7}\n \n{8}"
+		"chi"		"等级: {1} / {2} {9}\n\n经验: {3} / {4} ({5})\n \n升级费用: {6} 经验\n高级积分: {7}\n \n{8}"
+
 	}
 	"Menu Header 2 Talents"
 	{
 		"#format"			"{1:i},{2:i},{3:s},{4:s},{5:i},{6:s},{7:3.3f},{8:i}"
 		"en"				"Lv: {1} of {2}\nXP: {3} of {4}\n \nTalent Points: {5} ({6})\nZShop Credits: {7}\nPremium Credits: {8}"
+		"chi"		"等级: {1} / {2}\n经验: {3} / {4}\n \n天赋点: {5} ({6})\nZShop 积分: {7}\n高级积分: {8}"
+
 	}
 	"Menu Header 2 Exp"
 	{
 		"#format"			"{1:i},{2:i},{3:s},{4:s},{5:s},{6:s},{7:3.3f},{8:i},{9:s},{10:s}"
 		"en"				"Lv: {1} of {2} {10}\nXP: {3} of {4} ({5})\n \nUpgrade Cost: {6} XP\nShop Credits: {7}\nPremium Credits: {8}\n \n{9}"
+		"chi"		"等级: {1} / {2}\n经验: {3} / {4}\n \n天赋点: {5} ({6})\nShop 积分: {7}\n高级积分: {8}"
+
 	}
 	"Points Text"
 	{
@@ -2354,88 +2558,122 @@
 	{
 		"#format"			"{1:i},{2:i},{3:s}"
 		"en"				"Prestige Lv.{1} {3}"
+		"chi"		"声望等级.{1} {3}"
+
 	}
 	"Player Level Text"
 	{
 		"#format"			"{1:i},{2:i},{3:s},{4:s},{5:s},{6:s},{7:s},{8:s}"
 		"en"				"{3}xp{4}{5}xp\nScore: {6}\t\t Scrap: {7}\nTalent Lv.{1}/{2}\t Augment Lv.{8}"
+		"chi"		"{3}经验{4}{5}经验\n分数: {6}\t\t 废料: {7}\n天赋等级.{1}/{2}\t 增强等级.{8}"
+
 	}
 	"XP Level Cap"
 	{
 		"#format"			"{1:s},{2:i}"
 		"en"				"This server caps XP earning at Lv.{2}\n \n{1}"
+		"chi"		"此服务器的经验上限为等级.{2}\n \n{1}"
+
 	}
 	"XP Level Cap Reached"
 	{
 		"#format"			"{1:s},{2:i}"
 		"en"				"You earn no XP on this server (>= Lv.{2})\n \n{1}"
+		"chi"		"你在此服务器上无法获得经验（>= 等级.{2}）\n \n{1}"
+
 	}
 	"Sky Level Text"
 	{
 		"#format"			"{1:i},{2:s},{3:s},{4:s}"
 		"en"				"Sky Lv. {1}\t{2}{3}{4}"
+		"chi"		"天际等级 {1}\t{2}{3}{4}"
+
 	}
 	"RPG Header"
 	{
 		"#format"			"{1:s},{2:i},{3:i},{4:i}"
 		"en"				"{1}\nTalent points: {4}\t\tUnlocked: {2}/{3}"
+		"chi"		"{1}\n天赋点: {4}\t\t解锁: {2}/{3}"
+
 	}
 	"RPG Header minor"
 	{
 		"#format"			"{1:i},{2:i},{3:i}"
 		"en"				"Talent points: {3}\t\tUnlocked: {1}/{2}"
+		"chi"		"天赋点: {3}\t\t解锁: {1}/{2}"
+
 	}
 	"RPG Layer Eligible"
 	{
 		"#format"			"{1:s},{2:i},{3:i},{4:i}"
 		//"en"				"{1}\n \n{3}/{4} required unlocks in Talent Tree {2}."
 		"en"				"{1}\nTalent Tree {2} talents required: {3}/{4}"
+		"chi"		"{1}\n天赋树 {2} 所需天赋: {3}/{4}"
+
 	}
 	"RPG Layer Not Eligible"
 	{
 		"#format"			"{1:s},{2:i}"
 		"en"				"{1}\n \nTalent Tree {2} is locked, but you can\nstill view this tree."
+		"chi"		"{1}\n \n天赋树 {2} 已锁定，但你仍然可以查看此天赋树。"
+
 	}
 	"attribute no layer progress"
 	{
 		"en"				"Attribute Talents do not contribute\nto unlocking the next talent layer."
+		"chi"		"属性天赋不会影响\n解锁下一个天赋层级。"
+
 	}
 	"Class Level Text"
 	{
 		"#format"			"{1:s},{2:s}"
 		"en"				"{1} Lv.{2}"
+		"chi"		"{1} 等级.{2}"
+
 	}
 	"Data Saved"
 	{
 		"#format"			"{1:s},{2:s}"
 		"en"				"{1}All player data {2}has been saved!"
+		"chi"		"{1}所有玩家数据 {2}已保存！"
+
 	}
 	"Witch Name"
 	{
 		"en"				"Kyles Mom"
+		"chi"		"凯尔的妈妈"
+
 	}
 	"Director Think Process"
 	{
 		"#format"			"{1:s},{2:s}"
 		"en"				"{1}The Director {2}is plotting its next move..."
+		"chi"		"{1}导演 {2}正在策划下一步行动..."
+
 	}
 	"Not Enough Points"
 	{
 		"#format"			"{1:s},{2:s},{3:3.3f}"
 		"en"				"{1}Not enough Points ( {3} ) {2}to make this purchase"
+		"chi"		"{1}积分不足 ( {3} ) {2}无法进行此购买"
+
 	}
 	"Not Enough Experience"
 	{
 		"#format"			"{1:s},{2:s},{3:i}"
 		"en"				"{1}Not enough Experience  ( {3} ) {2}to make this purchase"
+		"chi"		"{1}经验不足 ( {3} ) {2}无法进行此购买"
+
 	}
 	"Buy Menu"
 	{
 		"en"				"!buy Menu"
+		"chi"		"!buy 菜单"
 	}
 	"RPG Menu"
 	{
 		"en"				"Talent Trees"
+		"chi"		"天赋树"
 	}
 	"Buy Menu Option 1"
 	{
@@ -2446,11 +2684,15 @@
 	{
 		"#format"			"{1:s},{2:3.1f},{3:s}"
 		"en"				"{1} Cost: {2} !buy credit(s) ({3})"
+		"chi"		"{1} 花费: {2} !buy 积分 ({3})"
+
 	}
 	"Buy Menu Option 3"
 	{
 		"#format"			"{1:s},{2:i},{3:s}"
 		"en"				"{1} Cost: {2} XP ({3})"
+		"chi"		"{1} 花费: {2} XP ({3})"
+
 	}
 	"Command Information"
 	{
@@ -2461,18 +2703,24 @@
 	{
 		"#format"			"{1:s},{2:s},{3:s}"
 		"en"				"{1}Quick Commands {2}have been printed to your {3}Console"
+		"chi"		"{1}快捷命令 {2}已打印到你的 {3}控制台"
+
 	}
 	"Upgrades Used"
 	{
 		"en"				"Upgrades Assigned"
+		"chi"		"已分配升级"
 	}
 	"Points"
 	{
 		"en"				"Credit(s)"
+		"chi"		"积分"
 	}
 	"respawn"
 	{
 		"en"				"Respawn (at death spot)"
+		"chi"		"复活（在死亡点）"
+
 	}
 	"respawn bind"
 	{

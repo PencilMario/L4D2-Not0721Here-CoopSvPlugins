@@ -7,727 +7,931 @@
 	{
 		"#format"			"{1:3.1f},{2:s}"
 		"en"				"Health required: {1}{2}"
+		"chi"				"需消耗HP: {1}{2}"
 	}
 	"Activator Health Cost"
 	{
 		"#format"			"{1:3.1f},{2:s},{3:i}"
 		"en"				"Health cost: {1}{2} ({3})"
+		"chi"				"HP消耗: {1}{2} ({3})"
 	}
 	"Multiply Strength Nearby Downed Allies"
 	{
 		"#format"			"{1:3.1f},{2:s}"
 		"en"				"Talent strength *= {1}{2} for each incapacitated ally in coherency range."
+		"chi"				"天赋强度 *= {1}{2} 每个在协调范围内的倒地盟友。"
 	}
+
 	"handicap level unlocked"
 	{
 		"#format"			"{1:s},{2:s},{3:s},{4:s},{5:s},{6:s},{7:s},{8:s},{9:s}"
 		"en"				"{1}: +{2}{3}/+{4}{5}❤, +{6}{7}loot, {9}{8} score"
+		"chi"				"{1}: +{2}{3}/+{4}{5}❤, +{6}{7}loot, {9}{8} 积分"
 	}
 	"handicap level locked"
 	{
 		"#format"			"{1:s},{2:s},{3:s},{4:s},{5:s},{6:s},{7:s},{8:s},{9:s},{10:s}"
 		"en"				"{1}(locked): +{2}{3}/+{4}{5}❤, +{6}{7}loot, {10}{9} score"
+		"chi"				"{1}(锁定): +{2}{3}/+{4}{5}❤, +{6}{7}loot, {10}{9} 积分"
 	}
 	"savior complex i"
 	{
 		"en"				"Savior Complex I"
+		"chi"				"救世情结 I"
 	}
 	"savior complex i info"
 	{
 		"#format"			"{1:3.2f},{2:s},{3:3.2f},{4:s},{5:3.2f},{6:s},{7:3.2f},{8:i},{9:3.2f},{10:i},{11:i},{12:i},{13:i},{14:i},{15:i},{16:3.2f},{17:s},{18:3.2f}"
 		"en"				"Deal increased melee damage per stack to special infected\nthat have an ensnared Survivor, up to {10} stacks."
-	}
+		"chi" 				"对捕获了幸存者的特殊感染者，每层叠加的状态都会增加近战伤害，最多可叠加 {10} 层。"
+	}	
 	"savior complex ii"
 	{
 		"en"				"Savior Complex II"
+		"chi"				"救世情结 II"
 	}
 	"savior complex ii info"
 	{
 		"#format"			"{1:3.2f},{2:s},{3:3.2f},{4:s},{5:3.2f},{6:s},{7:3.2f},{8:i},{9:3.2f},{10:i},{11:i},{12:i},{13:i},{14:i},{15:i},{16:3.2f},{17:s},{18:3.2f}"
 		"en"				"Deal increased melee damage to special infected\nthat have an ensnared Survivor for each {1}{2} health\nmissing while you have less than {5}{6} health."
+		"chi" 				"当你的生命值低于{5}{6}时，对困住幸存者的特殊感染者造成额外的近战伤害，每失去{1}{2}点生命值就增加伤害。"
 	}
 	"savior complex iii"
 	{
 		"en"				"Savior Complex III"
+		"chi"				"救世情结 III"
 	}
 	"savior complex iii info"
 	{
 		"#format"			"{1:3.2f},{2:s},{3:3.2f},{4:s},{5:3.2f},{6:s},{7:3.2f},{8:i},{9:3.2f},{10:i},{11:i},{12:i},{13:i},{14:i},{15:i},{16:3.2f},{17:s},{18:3.2f}"
 		"en"				"When healed by an ally, hurt yourself, exploding for\nAoE damage when within {7}units of an ensnared ally."
+		"chi" 				"被盟友治疗时，伤害自己，在距离被困盟友{7}单位范围内造成范围伤害。"
 	}
 	"determination i"
 	{
 		"en"				"Determination I"
+		"chi"				"决心 I"
 	}
 	"determination i info"
 	{
 		"#format"			"{1:3.2f},{2:s},{3:3.2f},{4:s},{5:3.2f},{6:s},{7:3.2f},{8:i},{9:3.2f},{10:i},{11:i},{12:i},{13:i},{14:i},{15:i},{16:3.2f},{17:s},{18:3.2f}"
 		"en"				"Deal increased melee damage per stack, up to {10} stacks\nwhen within {7}units of an ensnared Survivor."
+		"chi"				"每层增加近战伤害，最多可叠加{10}层\n在距离被困幸存者{7}单位范围内。"
 	}
 	"barrier i"
 	{
 		"en"				"Barrier I"
+		"chi"				"屏障 I"
+
 	}
 	"barrier i info"
 	{
 		"#format"			"{1:3.2f},{2:s},{3:3.2f},{4:s},{5:3.2f},{6:s},{7:3.2f},{8:i},{9:3.2f},{10:i},{11:i},{12:i},{13:i},{14:i},{15:i},{16:3.2f},{17:s},{18:3.2f}"
 		"en"				"Knocks back any non-Tank special infected\nthat get within {7}units of you."
+		"chi"				"击退任何距离你{7}单位范围内的非坦克特殊感染者。"
+
 	}
 	"barrier ii"
 	{
 		"en"				"Barrier II"
+		"chi"				"屏障 II"
 	}
 	"barrier ii info"
 	{
 		"#format"			"{1:3.2f},{2:s},{3:3.2f},{4:s},{5:3.2f},{6:s},{7:3.2f},{8:i},{9:3.2f},{10:i},{11:i},{12:i},{13:i},{14:i},{15:i},{16:3.2f},{17:s},{18:3.2f}"
 		"en"				"Knocks back Tanks that get within {7}units of you."
+		"chi"				"击退任何距离你{7}单位范围内的坦克。"
+
 	}
 	"precision path iii"
 	{
 		"en"				"Precision III"
+		"chi"				"精准 III"
 	}
 	"precision path iii info"
 	{
 		"#format"			"{1:3.2f},{2:s},{3:3.2f},{4:s},{5:3.2f},{6:s},{7:3.2f},{8:i},{9:3.2f},{10:i},{11:i},{12:i},{13:i},{14:i},{15:i},{16:3.2f},{17:s},{18:3.2f}"
 		"en"				"When using sniper rifles, deal bonus damage when\nhitting limbs of enemies further than {9}units from you."
+		"chi"				"使用狙击步枪时，当击中距离你{9}单位之外的敌人四肢时，造成额外伤害。"
 	}
 	"knockback i"
 	{
 		"en"				"Knockback I"
+		"chi"				"击退 I"
 	}
 	"knockback i info"
 	{
 		"#format"			"{1:3.2f},{2:s},{3:3.2f},{4:s},{5:3.2f},{6:s},{7:3.2f},{8:i},{9:3.2f},{10:i},{11:i},{12:i},{13:i},{14:i},{15:i},{16:3.2f},{17:s},{18:3.2f}"
 		"en"				"Knocks back any non-Tank special infected\nthat you shoot within {7}units of you."
+		"chi"				"击退任何在你{7}单位范围内的非坦克特殊感染者，前提是你射击他们。"
 	}
 	"knockback ii"
 	{
 		"en"				"Knockback II"
+		"chi"				"击退 II"
 	}
 	"knockback ii info"
 	{
 		"#format"			"{1:3.2f},{2:s},{3:3.2f},{4:s},{5:3.2f},{6:s},{7:3.2f},{8:i},{9:3.2f},{10:i},{11:i},{12:i},{13:i},{14:i},{15:i},{16:3.2f},{17:s},{18:3.2f}"
 		"en"				"Knocks back any special infected that\nhurts you and is within {7}units of you."
+		"chi"				"击退任何在你{7}单位范围内伤害你的特殊感染者。"
+
 	}
 	"explosives i"
 	{
 		"en"				"Explosives I"
+		"chi"				"爆炸 I"
 	}
 	"explosives ii"
 	{
 		"en"				"Explosives II"
+		"chi"				"爆炸 II"
 	}
 	"explosives iii"
 	{
 		"en"				"Explosives III"
+		"chi"				"爆炸 III"
 	}
 	"explosives i info"
 	{
 		"en"				"Increase your explosive ammo/pipebomb/firework damage."
+		"chi"				"增加你的爆炸弹药/土质手雷/烟花伤害。"
 	}
 	"healmelee perfect surname"
 	{
 		"en"				"Shaman"
+		"chi"				"萨满"
 	}
 	"healmelee major surname"
 	{
 		"en"				"Shaman"
+		"chi"				"萨满"
+
 	}
 	"cleric perfect surname"
 	{
 		"en"				"Clerics"
+		"chi"				"牧师"
 	}
 	"H perfect surname"
 	{
 		"en"				"Healthy"
+		"chi"				"健康"
+
 	}
 	"rrbullet perfect surname"
 	{
 		"en"				"Efficient"
+		"chi"				"高效"
 	}
 	"noffexplode perfect surname"
 	{
 		"en"				"Explosive"
+		"chi"				"爆炸"
+
 	}
 	"ffexplode perfect surname"
 	{
 		"en"				"Explosive"
+		"chi"				"爆炸"
 	}
 	"ammoreserve perfect surname"
 	{
 		"en"				"Reservist"
+		"chi"				"预备役"
 	}
 	"rpbullet perfect surname"
 	{
 		"en"				"Efficient"
+		"chi"				"高效"
 	}
 	"o perfect surname"
 	{
 		"en"				"Tanky"
+		"chi"				"坦克"
 	}
 	"h perfect surname"
 	{
 		"en"				"Regen"
+		"chi"				"回复"
 	}
 	"d perfect surname"
 	{
 		"en"				"Fighters"
+		"chi"				"战士"
 	}
 	"aoeheal perfect surname"
 	{
 		"en"				"Healers"
+		"chi"				"治疗"
 	}
 	"stamina perfect surname"
 	{
 		"en"				"Scouts"
+		"chi"				"侦察"
 	}
 	"giveitem perfect surname"
 	{
 		"en"				"Magical"
+		"chi"				"魔法"
 	}
 	"vampire perfect surname"
 	{
 		"en"				"Vampiric"
+		"chi"				"吸血"
 	}
 	"cdr perfect surname"
 	{
 		"en"				"Accelerating"
+		"chi"				"加速"
 	}
 	"speed perfect surname"
 	{
 		"en"				"Swift"
+		"chi"				"迅捷"
 	}
 	"maghalfempty perfect surname"
 	{
 		"en"				"Optimist"
+		"chi"				"乐观"
 	}
 	"cleric major surname"
 	{
 		"en"				"Clerics"
+		"chi"				"牧师"
 	}
 	"snipersmark major surname"
 	{
 		"en"				"Snipers Mark"
+		"chi"				"狙击手"
 	}
 	"snipersmark perfect surname"
 	{
 		"en"				"Snipers Mark"
+		"chi"				"狙击手"
 	}
 	"b perfect surname"
 	{
 		"en"				"Bean Bag"
+		"chi"				"豆包"
 	}
 	"b major surname"
 	{
 		"en"				"Bean Bag"
+		"chi"				"豆包"
 	}
 	"H major surname"
 	{
 		"en"				"Healthy"
+		"chi"				"健康"
 	}
 	"rrbullet major surname"
 	{
 		"en"				"Efficient"
+		"chi"				"高效"
 	}
 	"noffexplode major surname"
 	{
 		"en"				"Explosive"
+		"chi"				"爆炸"
 	}
 	"ffexplode major surname"
 	{
 		"en"				"Explosive"
+		"chi"				"爆炸"
 	}
 	"ammoreserve major surname"
 	{
 		"en"				"Reservist"
+		"chi"				"预备役"
 	}
 	"rpbullet major surname"
 	{
 		"en"				"Efficient"
+		"chi"				"高效"
 	}
 	"o major surname"
 	{
 		"en"				"Tanky"
+		"chi"				"坦克"
 	}
 	"h major surname"
 	{
 		"en"				"Regen"
+		"chi"				"回复"
 	}
 	"d major surname"
 	{
 		"en"				"Fighters"
+		"chi"				"战士"
 	}
 	"aoeheal major surname"
 	{
 		"en"				"Healers"
+		"chi"				"治疗"
 	}
 	"stamina major surname"
 	{
 		"en"				"Scouts"
+		"chi"				"侦察"
 	}
 	"giveitem major surname"
 	{
 		"en"				"Magical"
+		"chi"				"魔法"
 	}
 	"vampire major surname"
 	{
 		"en"				"Vampiric"
+		"chi"				"吸血"
 	}
 	"cdr major surname"
 	{
 		"en"				"Accelerating"
+		"chi"				"加速"
 	}
 	"speed major surname"
 	{
 		"en"				"Swift"
+		"chi"				"迅捷"
 	}
 	"maghalfempty major surname"
 	{
 		"en"				"Optimist"
+		"chi"				"乐观"
 	}
 	"activetime major surname"
 	{
 		"en"				"Spellcasters"
+		"chi"				"法术师"
 	}
 	"weak damage increase i"
 	{
 		"en"				"Shadow Damage I"
+		"chi"				"暗影伤害 I"
 	}
 	"weak damage increase ii"
 	{
 		"en"				"Shadow Damage II"
+		"chi"				"暗影伤害 II"
 	}
 	"weak damage increase iii"
 	{
 		"en"				"Shadow Damage III"
+		"chi"				"暗影伤害 III"
 	}
 	"weak damage increase"
 	{
 		"en"				"Deal increased damage from all sources while black and white."
+		"chi"				"在黑白状态下，从所有来源造成的伤害增加。"
 	}
 	"heal spec i"
 	{
 		"en"				"Healer Proficiency I"
+		"chi"				"治疗专家 I"
 	}
 	"heal spec ii"
 	{
 		"en"				"Healer Proficiency II"
+		"chi"				"治疗专家 II"
 	}
 	"heal spec i info"
 	{
 		"en"				"Unlike normal talents, proficiencies are multiplicative.\nIncreases all healing, but also reduces all outgoing damage."
+		"chi"				"与普通天赋不同，专长是乘法的。\n增加所有治疗量，但也减少所有输出伤害。"
+
 	}
 	"heal spec ii info"
 	{
 		"en"				"Unlike normal talents, proficiencies are multiplicative.\nIncreases all healing, but also increases all damage taken."
+		"chi"				"与普通天赋不同，专长是乘法的。\n增加所有治疗量，但也增加所有受到的伤害。"
+
 	}
 	"tank spec i"
 	{
 		"en"				"Tank Proficiency I"
+		"chi"				"坦克专家 I"
 	}
 	"tank spec ii"
 	{
 		"en"				"Tank Proficiency II"
+		"chi"				"坦克专家 II"
 	}
 	"tank spec i info"
 	{
 		"en"				"Unlike normal talents, proficiencies are multiplicative.\nReduces all damage taken, but also reduces all healing."
+		"chi"				"与普通天赋不同，专长是乘法的。\n减少所有受到的伤害，但也减少所有治疗量。"
+
 	}
 	"tank spec ii info"
 	{
 		"en"				"Unlike normal talents, proficiencies are multiplicative.\nReduces all damage taken, but also reduces all damage dealt."
+		"chi"				"与普通天赋不同，专长是乘法的。\n减少所有受到的伤害，但也减少所有造成的伤害。"
+
 	}
 	"damage spec i"
 	{
 		"en"				"DPS Proficiency I"
+		"chi"				"DPS专家 I"
 	}
 	"damage spec ii"
 	{
 		"en"				"DPS Proficiency II"
+		"chi"				"DPS专家 II"
 	}
 	"damage spec i info"
 	{
 		"en"				"Unlike normal talents, proficiencies are multiplicative.\nIncreases all damage dealt, but also reduces all healing."
+		"chi"				"与普通天赋不同，专长是乘法的。\n增加所有造成的伤害，但也减少所有治疗量。"
+
 	}
 	"damage spec ii info"
 	{
 		"en"				"Unlike normal talents, proficiencies are multiplicative.\nIncreases all damage dealt, but also increases all damage taken."
+		"chi"				"与普通天赋不同，专长是乘法的。\n增加所有造成的伤害，但也增加所有受到的伤害。"
+
 	}
 	"player end of map roll award"
 	{
 		"#format"			"{1:s},{2:s},{3:s},{4:s},{5:3.3f},{6:s},{7:s},{8:s},{9:s},{10:s},{11:s}"
 		"en"				"{1}{2} {3}received a {4}+{5}{6} {7} {8} {9} {10}augment {11}for surviving."
+		"chi"				"{1}{2} {3}获得了一个 {4}+{5}{6} {7} {8} {9} {10}增益 {11}以示幸存。"
+
 	}
 	"player loot award"
 	{
 		"#format"			"{1:s},{2:s},{3:s},{4:s},{5:3.3f},{6:s},{7:s},{8:s},{9:s},{10:s},{11:s}"
 		"en"				"{1}{2} {3}found a {4}+{5}{6} {7} {8} {9} {10}augment {11}on an infected corpse."
+		"chi"				"{1}{2} {3}在一个感染者尸体上发现了一个 {4}+{5}{6} {7} {8} {9} {10}增益 {11}。"
+
 	}
 	"end of map augment rolls"
 	{
 		"#format"			"{1:s},{2:s},{3:i},{4:s},{5:s}"
 		"en"				"{1}Attempting {2}{3} {4}augment rolls for all {5}"
+		"chi"				"{1}尝试 {2}{3} {4}增益卷轴，适用于所有 {5}"
+
 	}
 	"snipersmark perfect surname"
 	{
 		"en"				"Snipers Mark"
+		"chi"				"狙击手标记"
+
 	}
 	"snipersmark major surname"
 	{
 		"en"				"Snipers Mark"
+		"chi"				"狙击手标记"
+
 	}
 	"snipersmark augment info"
 	{
 		"en"				"Snipers Mark"
+		"chi"				"狙击手标记"
+
 	}
 	"healmelee augment info"
 	{
 		"en"				"Shaman"
+		"chi"				"萨满"
 	}
 	"R perfect surname"
 	{
 		"en"				"Thorns"
+		"chi"				"荆棘"
 	}
 	"R major surname"
 	{
 		"en"				"Thorns"
+		"chi"				"荆棘"
 	}
 	"R augment info"
 	{
 		"en"				"Thorns"
+		"chi"				"荆棘"
 	}
 	"acidburn perfect surname"
 	{
 		"en"				"Acidic"
+		"chi"				"酸性"
 	}
 	"acidburn major surname"
 	{
 		"en"				"Acidic"
+		"chi"				"酸性"
 	}
 	"acidburn augment info"
 	{
 		"en"				"Acid Burn"
+		"chi"				"酸烧"
 	}
 	"c perfect surname"
 	{
 		"en"				"Burning"
+		"chi"				"燃烧"
 	}
 	"c major surname"
 	{
 		"en"				"Burning"
+		"chi"				"燃烧"
 	}
 	"c augment info"
 	{
 		"en"				"Burn"
+		"chi"				"燃烧"
 	}
 	"cleric perfect surname"
 	{
 		"en"				"Cleric"
+		"chi"				"牧师"
 	}
 	"cleric major surname"
 	{
 		"en"				"Cleric"
+		"chi"				"牧师"
 	}
 	"cleric augment info"
 	{
 		"en"				"Cleric"
+		"chi"				"牧师"
 	}
 	"H augment info"
 	{
 		"en"				"Health"
+		"chi"				"生命"
 	}
 	"rrbullet augment info"
 	{
 		"en"				"Bullet Refund"
+		"chi"				"弹药返还"
 	}
 	"noffexplode augment info"
 	{
 		"en"				"Explosion (no ff)"
+		"chi"				"爆炸(无友伤)"
 	}
 	"ffexplode augment info"
 	{
 		"en"				"Explosion"
+		"chi"				"爆炸"
 	}
 	"ammoreserve augment info"
 	{
 		"en"				"Ammo Reserve"
+		"chi"				"弹药储备"
 	}
 	"rpbullet augment info"
 	{
 		"en"				"Ammo Percentage Refund"
+		"chi"				"弹药返还"
 	}
 	"activetime"
 	{
 		"en"				"Spell Active Time"
+		"chi"				"技能持续时间"
 	}
 	"o augment info"
 	{
 		"en"				"DR"
+		"chi"				"DR"
 	}
 	"h augment info"
 	{
 		"en"				"Health Regen"
+		"chi"				"生命回复"
 	}
 	"d augment info"
 	{
 		"en"				"Damage"
+		"chi"				"伤害"
 	}
 	"aoeheal augment info"
 	{
 		"en"				"AoE Heal"
+		"chi"				"范围治疗"
 	}
 	"stamina augment info"
 	{
 		"en"				"Stamina"
+		"chi"				"耐力"
 	}
 	"giveitem augment info"
 	{
 		"en"				"Gifted Item"
+		"chi"				"赠送物品"
+
 	}
 	"vampire augment info"
 	{
 		"en"				"Vampire"
+		"chi"				"吸血"
 	}
 	"cdr augment info"
 	{
 		"en"				"CDR"
+		"chi"				"CDR"
 	}
 	"speed augment info"
 	{
 		"en"				"Movement Speed"
+		"chi"				"移动速度"
 	}
 	"maghalfempty augment info"
 	{
 		"en"				"Mag Half-Empty"
+		"chi"				"弹匣半空"
 	}
 	"activetime augment info"
 	{
 		"en"				"Spellcasters"
+		"chi"				"施法者"
 	}
 	"b augment info"
 	{
 		"en"				"Bean Bag"
+		"chi"				"豆袋"
+
 	}
 	"1ststrike major surname"
 	{
 		"en"				"1st Strike"
+		"chi"				"首次攻击"
+
 	}
 	"1ststrike perfect surname"
 	{
 		"en"				"1st Strike"
+		"chi"				"首次攻击"
 	}
 	"1ststrike augment info"
 	{
 		"en"				"1st Strike"
+		"chi"				"首次攻击"
 	}
 	"strengthup major surname"
 	{
 		"en"				"Battlemage"
+		"chi"				"战斗法师"
+
 	}
 	"strengthup perfect surname"
 	{
 		"en"				"Battlemage"
+		"chi"				"战斗法师"
+
 	}
 	"strengthup augment info"
 	{
 		"en"				"Ammo Circle Strength"
+		"chi"				"弹药圆圈强度"
+
 	}
 	"range major surname"
 	{
 		"en"				"Sorcerer"
+		"chi"				"术士"
 	}
 	"range perfect surname"
 	{
 		"en"				"Sorcerer"
+		"chi"				"术士"
 	}
 	"range augment info"
 	{
 		"en"				"Ammo Circle Range"
+		"chi"				"弹药圆圈射程"
 	}
 	"staminacost major surname"
 	{
 		"en"				"Rogue"
+		"chi"				"盗贼"
 	}
 	"staminacost perfect surname"
 	{
-		"en"				"Rogue"
+		"en"				"盗贼"
 	}
 	"staminacost augment info"
 	{
 		"en"				"Ammo Circle Stamina Cost"
+		"chi"		"弹药圈体力消耗"
+
 	}
 	"cooldown major surname"
 	{
 		"en"				"Paladin"
+		"chi"				"圣骑士"
 	}
 	"cooldown perfect surname"
 	{
 		"en"				"Paladin"
+		"chi"				"圣骑士"
 	}
 	"cooldown augment info"
 	{
 		"en"				"Ammo Circle Cooldown Reduction"
+		"chi"		"弹药圈冷却时间缩减"
+
 	}
 	"activetime major surname"
 	{
 		"en"				"Bard"
+		"chi"				"吟游诗人"
 	}
 	"activetime perfect surname"
 	{
 		"en"				"Bard"
+		"chi"				"吟游诗人"
 	}
 	"activetime augment info"
 	{
 		"en"				"Ammo Time"
+		"chi"				"弹药时间"
 	}
 	"augment restricted"
 	{
 		"#format"			"{1:s}"
 		"en"				"Cannot equip\nYour max equippable augment score: {1}"
+		"chi"		"无法装备\n你最多可以装备的增益评分: {1}"
+
 	}
 	"equip augment"
 	{
 		"en"				"Equip"
+		"chi"				"装备"
 	}
 	"unequip augment"
 	{
 		"en"				"Un-Equip"
+		"chi"				"卸下"
 	}
 	"sell augment"
 	{
 		"en"				"Sell on the marketplace"
+		"chi"				"在市场上出售"
 	}
 	"cannot sell equipped augment"
 	{
 		"en"				"Cannot sell (Augment is equipped)"
+		"chi"				"无法出售(已装备)"
 	}
 	"giveaway augment"
 	{
 		"en"				"Put on the marketplace for free"
+		"chi"				"免费上架市场"
 	}
 	"cannot equip forsale augment"
 	{
 		"en"				"Equip unavailable (listed on market)"
+		"chi"				"无法装备(已在市场上)"
 	}
 	"remove augment from sale"
 	{
 		"en"				"Remove market listing"
+		"chi"				"移除市场列表"
 	}
 	"disassemble augment"
 	{
 		"en"				"Disassemble"
+		"chi"				"分解"
 	}
 	"confirm disassemble augment"
 	{
 		"en"				"Confirm to disassemble this augment"
+		"chi"				"确认分解"
 	}
 	"reroll augment"
 	{
 		"en"				"Reroll Augment"
+		"chi"				"重选"
 	}
 	"lock augment"
 	{
 		"en"				"Favourite Augment"
+		"chi"				"收藏"
 	}
 	"unlock augment"
 	{
 		"en"				"Unlock Augment"
+		"chi"				"解锁"
 	}
 	"upgrade augment"
 	{
 		"en"				"Upgrade Augment"
+		"chi"				"升级"
 	}
 	"toggle lootmode"
 	{
 		"en"				"Toggle Lootmode"
+		"chi"				"切换拾取模式"
 	}
 	"view augment inventory"
 	{
 		"en"				"Augments\nMy version of equipment/loot!\n!autodismantle in chat for more info."
+		"chi"				"装备\n我的装备/掉落物\n!autodismantle 在聊天窗口查看更多信息。"
+
 	}
 	"equip augment inventory"
 	{
 		"en"				"Equip Augments"
+		"chi"				"装备"
 	}
 	"survivalist bonus experience"
 	{
 		"#format"			"{1:s},{2:s},{3:s},{4:3.2f},{5:s},{6:s}"
 		"en"				"{1}Round Survivalist bonus experience{2}: {3}{4}{5}{6}"
+		"chi"				"{1}生存者奖励经验{2}: {3}{4}{5}{6}"
 	}
 	"director points earned"
 	{
 		"#format"			"{1:s},{2:s},{3:3.3f},{4:s},{5:s}"
 		"en"				"{1}{5} {2}earns {3} {4}point(s) for SkyNet."
+		"chi"				"{1}{5} {2}获得{3}点{4}点经验。"
 	}
 	"director purchase announcement"
 	{
 		"#format"			"{1:s},{2:s},{3:s},{4:s},{5:s},{6:s},{7:3.3f},{8:s}"
 		"en"				"{1}SkyNet {2}buys {3}{4} {5}for {6}{7} {8}points."
+		"chi"				"{1}SkyNet {2}购买了{3}{4} {5}花费{6}{7}点经验。"
 	}
 	"buff visual display text"
 	{
 		"#format"			"{1:s}"
 		"en"				"{1}"
+		"chi"				"{1}"
 	}
 	"compounding talent info"
 	{
 		"en"				"This talent stacks with other talents."
+		"chi"				"这个天赋可以叠加其他天赋。"
 	}
 	"not compounding talent info"
 	{
 		"en"				"This talents output is independent of other talents."
+		"chi"				"这个天赋的输出是独立的其他天赋。"
 	}
 	"effect over time talent info"
 	{
 		"en"				"Effect-Over-Time"
+		"chi"				"持续效果"
 	}
 	"in combat state required"
 	{
 		"en"				"Combat State: In-Combat [Ic]"
+		"chi"				"战斗状态: 战斗中 [Ic]"
 	}
 	"no combat state required"
 	{
 		"en"				"Combat State: Out-of-Combat [Oc]"
+		"chi"				"战斗状态: 非战斗中 [Oc]"
 	}
 	"combat state formatted improperly"
 	{
 		"en"				"bad combat state check your config file."
+		"chi"				"战斗状态格式错误，请检查配置文件。"
 	}
 	"You cannot aim at anything"
 	{
 		"en"				"No aim target"
+		"chi"				"无法瞄准"
 	}
 	"common aim target"
 	{
 		"en"				"Common"
+		"chi"				"普通"
 	}
 	"special common aim target"
 	{
 		"en"				"Super"
+		"chi"				"特殊"
 	}
 	"witch aim target"
 	{
 		"en"				"Witch"
+		"chi"				"Witch"
 	}
 	"Node Governing Attribute"
 	{
 		"#format"			"{1:s}"
 		"en"				"Governed By: {1}"
+		"chi"				"控制属性: {1}"
 	}
 	"primary aoe range"
 	{
 		"#format"			"{1:3.2f}"
 		"en"				"Primary AoE Range: {1}"
+		"chi"				"主AOE范围: {1}"
 	}
 	"secondary aoe range"
 	{
 		"#format"			"{1:3.2f}"
 		"en"				"Secondary AoE Range: {1}"
+		"chi"				"辅助AOE范围: {1}"
 	}
 	"multiply aoe range"
 	{
 		"#format"			"{1:3.2f}"
 		"en"				"Multiply Range: {1}"
+		"chi"				"AOE范围倍率: {1}"
 	}
 	"Survivor Sheet Info"
 	{
@@ -742,6 +946,7 @@
 	{
 		"#format"			"{1:s},{2:i}"
 		"en"				"{1}"//"{1} (Cost: {2} upgrade points)"
+		"chi"				"{1}"//"{1} (Cost: {2}升级点)"
 	}
 	"node locked by talents all (treeview)"
 	{

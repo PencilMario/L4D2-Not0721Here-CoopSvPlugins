@@ -2725,440 +2725,600 @@
 	"respawn bind"
 	{
 		"en"				"buy your way back to life!"
+		"chi"		"买回你的生命！"
+
 	}
 	"Experience"
 	{
 		"en"				"Experience"
+		"chi"		"经验"
+
 	}
 	"weapons bind"
 	{
 		"en"				"opens the weapons buy menu"
+		"chi"		"打开武器购买菜单"
+
 	}
 	"health bind"
 	{
 		"en"				"opens the health items buy menu"
+		"chi"		"打开医疗物品购买菜单"
+
 	}
 	"grenade bind"
 	{
 		"en"				"opens the grenade items buy menu"
+		"chi"		"打开手雷物品购买菜单"
+
 	}
 	"upgrades bind"
 	{
 		"en"				"opens the upgrade items buy menu"
+		"chi"		"打开升级物品购买菜单"
+
 	}
 	"free weapons bind"
 	{
 		"en"				"opens the weapons buy menu"
+		"chi"		"打开武器购买菜单"
 	}
 	"baseball_bat bind"
 	{
 		"en"			"purchases the baseball bat melee weapon"
+		"chi"		"购买棒球棒近战武器"
 	}
 	"fireaxe bind"
 	{
 		"en"				"purchases the fireaxe melee weapon"
+		"chi"		"购买火斧近战武器"
 	}
 	"pitchfork bind"
 	{
 		"en"				"purchase the pitchfork melee weapon"
+		"chi"		"购买草叉近战武器"
 	}
 	"shovel bind"
 	{
 		"en"				"purchases the shovel melee weapon"
+		"chi"		"购买铲子近战武器"
 	}
 	"knife bind"
 	{
 		"en"				"purchases the knife melee weapon"
+		"chi"		"购买匕首近战武器"
 	}
 	"tonfa bind"
 	{
 		"en"				"purchases the tonfa melee weapon"
+		"chi"		"购买短棍近战武器"
+
 	}
 	"cricketbat bind"
 	{
 		"en"				"purchases the cricketbat melee weapon"
+		"chi"		"购买板球棒近战武器"
+
 	}
 	"melee weapons bind"
 	{
 		"en"				"opens the melee weapons buy menu"
+		"chi"		"打开近战武器购买菜单"
+
 	}
 	"rifles bind"
 	{
 		"en"				"opens the tier 2 rifles buy menu"
+		"chi"		"打开tier 2步枪购买菜单"
 	}
 	"shotguns bind"
 	{
 		"en"				"opens the tier 2 shotguns buy menu"
+		"chi"		"打开tier 2霰弹枪购买菜单"
 	}
 	"snipers bind"
 	{
 		"en"				"opens the tier 2 sniper rifles buy menu"
+		"chi"		"打开tier 2狙击枪购买菜单"
 	}
 	"chainsaw bind"
 	{
 		"en"				"Buy the chainsaw (melee weapon)"
+		"chi"		"购买链锯（近战武器）"
 	}
 	"grenade launcher bind"
 	{
 		"en"				"Buy the grenade launcher"
+		"chi"		"购买榴弹发射器"
 	}
 	"ammo bind"
 	{
 		"en"				"Buy ammo refill"
+		"chi"		"购买弹药补充"
 	}
 	"pumpshotgun bind"
 	{
 		"en"				"Buy the pump shotgun"
+		"chi"		"购买pump shotgun"
 	}
 	"uzi bind"
 	{
 		"en"				"Buy the uzi"
+		"chi"		"购买UZI"
 	}
 	"tmp5 bind"
 	{
 		"en"				"Buy the tmp5"
+		"chi"		"购买smg"
 	}
 	"mp5 bind"
 	{
 		"en"				"Buy the mp5"
+		"chi"		"购买mp5"
 	}
 	"pistol bind"
 	{
 		"en"				"Buy the pistol"
+		"chi"		"购买手枪"
 	}
 	"dual pistol bind"
 	{
 		"en"				"Buy Dual Pistols"
+		"chi"		"购买双手枪"
 	}
 	"magnum bind"
 	{
 		"en"				"Buy the magnum"
+		"chi"		"购买 Magnum"
 	}
 	"m4a1 bind"
 	{
 		"en"				"Buy the M4A1"
+		"chi"		"购买M4A1"
 	}
 	"ak47 bind"
 	{
 		"en"				"Buy the AK47"
+		"chi"		"购买AK47"
 	}
 	"desert bind"
 	{
 		"en"				"Buy the Desert Rifle"
+		"chi"		"购买沙漠步枪"
 	}
 	"sg552 bind"
 	{
 		"en"				"Buy the SG552"
+		"chi"		"购买SG552"
 	}
 	"m60 bind"
 	{
 		"en"				"Buy the M60"
+		"chi"		"购买M60"
 	}
 	"autoshotgun bind"
 	{
 		"en"				"Buy the Autoshotgun"
+		"chi"		"购买自动霰弹枪"
 	}
 	"spas bind"
 	{
 		"en"				"Buy the SPAS Shotgun"
+		"chi"		"购买SPAS霰弹枪"
 	}
 	"hunt bind"
 	{
 		"en"				"Buy the Hunting Rifle"
+		"chi"		"购买木狙"
 	}
 	"military bind"
 	{
 		"en"				"Buy the Military Rifle"
+		"chi"		"购买军狙"
 	}
 	"scout bind"
 	{
 		"en"				"Buy the Scout Sniper Rifle"
+		"chi"		"购买鸟枪"
 	}
 	"awp bind"
 	{
 		"en"				"Buy the AWP Sniper Rifle"
+		"chi"		"购买AWP狙击枪"
 	}
 	"adren bind"
 	{
 		"en"				"Buy Adrenaline"
+		"chi"		"购买肾上腺素"
 	}
 	"pills bind"
 	{
 		"en"				"Buy Pain Pills"
+		"chi"		"购买止痛药"
 	}
 	"medkit bind"
 	{
 		"en"				"Buy a First Aid Kit"
+		"chi"		"购买急救包"
 	}
 	"defib bind"
 	{
 		"en"				"Buy a Defibrillator"
+		"chi"		"购买电击器"
 	}
 	"heal bind"
 	{
 		"en"				"Buy an Instant Heal (will stand you up if incapped)"
+		"chi"		"购买立刻恢复健康（倒地使用将让你站起来）"
 	}
 	"molotov bind"
 	{
 		"en"				"Buy a Molotov"
+		"chi"		"购买莫洛托夫"
 	}
 	"pipe bind"
 	{
 		"en"				"Buy a Pipe Bomb"
+		"chi"		"购买土质手榴弹"
 	}
 	"vomitjar bind"
 	{
 		"en"				"Buy a Vomitjar"
+		"chi"		"购买胆汁罐"
 	}
 	"gascan bind"
 	{
 		"en"				"Buy a Gascan (useable on generator/gas events)"
+		"chi"		"购买油罐（可用在发电机/灌油事件上）"
 	}
 	"firework bind"
 	{
 		"en"				"Buy a firework crate"
+		"chi"		"购买烟花盒"
 	}
 	"explosiveammo bind"
 	{
 		"en"				"Buy (single) explosive ammo clip"
+		"chi"		"购买（单个）爆炸性弹药夹"
+
 	}
 	"incendiaryammo bind"
 	{
 		"en"				"Buy (single) incendiary ammo clip"
+		"chi"		"购买（单个）燃烧性弹药夹"
+
 	}
 	"laser bind"
 	{
 		"en"				"Buy a laser sight"
+		"chi"		"购买激光瞄准器"
+
 	}
 	"explosivepack bind"
 	{
 		"en"				"Buy explosive upgrade pack (medkit slot)"
+		"chi"		"购买爆炸性升级包（医疗包槽）"
+
 	}
 	"incendiarypack bind"
 	{
 		"en"				"Buy incendiary upgrade pack (medkit slot)"
+		"chi"		"购买燃烧性升级包（医疗包槽）"
+
 	}
 	"class bind"
 	{
 		"en"				"Open the class change menu"
+		"chi"		"打开特感类型更换菜单"
+
 	}
 	"hunter bind"
 	{
 		"en"				"Buy (free if in ghost) a class change to hunter"
+		"chi"		"购买（在幽灵状态下免费）更换为HUNTER"
+
 	}
 	"smoker bind"
 	{
 		"en"				"Buy (free if in ghost) a class change to smoker"
+		"chi"		"购买（在幽灵状态下免费）更换为SMOKER"
 	}
 	"boomer bind"
 	{
 		"en"				"Buy (free if in ghost) a class change to boomer"
+		"chi"		"购买（在幽灵状态下免费）更换为BOOMER"
 	}
 	"jockey bind"
 	{
 		"en"				"Buy (free if in ghost) a class change to jockey"
+		"chi"		"购买（在幽灵状态下免费）更换为JOCKEY"
 	}
 	"spitter bind"
 	{
 		"en"				"Buy (free if in ghost) a class change to spitter"
+		"chi"		"购买（在幽灵状态下免费）更换为SPITTER"
 	}
 	"charger bind"
 	{
 		"en"				"Buy (free if in ghost) a class change to charger"
+		"chi"		"购买（在幽灵状态下免费）更换为CHARGER"
 	}
 	"tank bind"
 	{
 		"en"				"Buy a class change to tank (it is never free, btw)"
+		"chi"		"购买坦克类型（永远免费）"
 	}
 	"panic bind"
 	{
 		"en"				"Buy a panic event"
+		"chi"		"购买尸潮事件"
 	}
 	"witch bind"
 	{
 		"en"				"Buy a witch drop where you are looking"
+		"chi"		"在你瞄准位置生成witch"
+
 	}
 	"riotdrop bind"
 	{
 		"en"				"Buy a riot police drop where you are looking"
+		"chi"				"在你瞄准位置生成防暴警察"
 	}
 	"riotqueue bind"
 	{
 		"en"				"Buy a riot police queue"
+		"chi"		"购买防暴警察队列"
+
 	}
 	"jimmydrop bind"
 	{
 		"en"				"Buy a jimmy gibbs drop where you are looking"
+		"chi"		"在你瞄准位置生成Jimmy Gibbs"
 	}
 	"jimmyqueue bind"
 	{
 		"en"				"Buy a jimmy gibbs queue"
+		"chi"		"购买Jimmy Gibbs队列"
 	}
 	"Buy Menu Option Cooldown"
 	{
 		"#format"			"{1:s}"
 		"en"				"{1} (Cooldown)"
+		"chi"		"{1}（冷却中）"
 	}
 	"Menu Option is On Cooldown"
 	{
 		"#format"			"{1:s},{2:s},{3:s}"
 		"en"				"{1}{2} {3}is on cooldown, the director cannot buy this!"
+		"chi"		"{1}{2} {3}正在冷却中，导演无法购买！"
 	}
 	"Director Talents Enabled, No Survivor Talents"
 	{
 		"#format"			"{1:s},{2:s},{3:s},{4:s},{5:s}"
 		"en"				"{1}Director Talents are Enabled {2}please use {3}{4} {5}to disable before accessing the talent menus."
+		"chi"		"{1}导演天赋已启用 {2}请使用 {3}{4} {5}在访问天赋菜单之前禁用。"
+
 	}
 	"Director Talents Disabled"
 	{
 		"#format"			"{1:s},{2:s}"
 		"en"				"{1}Director Talents {2}Disabled"
+		"chi"		"{1}导演天赋 {2}已禁用"
+
 	}
 	"Director Talents Enabled"
 	{
 		"#format"			"{1:s},{2:s}"
 		"en"				"{1}Director Talents {2}Enabled"
+		"chi"		"{1}导演天赋 {2}已启用"
+
 	}
 	"Director Priority Save Disabled"
 	{
 		"#format"			"{1:s},{2:s}"
 		"en"				"{1}Director Priority Save {2}Disabled"
+		"chi"		"{1}导演优先级保存 {2}已禁用"
 	}
 	"Director Priority Save Enabled"
 	{
 		"#format"			"{1:s},{2:s}"
 		"en"				"{1}Director Priority Save {2}Enabled"
+		"chi"		"{1}导演优先级保存 {2}已启用"
 	}
 	"constitution"
 	{
 		"en"				"Constitution"
+		"chi"		"体质"
+
 	}
 	"constitution info"
 	{
 		"en"				"Talents:\n+1st Upgrade Strength\n+Cooldown Time\n\nSpells:\n+1st Upgrade Lifetime\n+Base Stamina Cost\n+Cooldown Time"
+		"chi"		"天赋：\n+1st 升级力量\n+冷却时间\n\n法术：\n+1st 升级生命时间\n+基础耐力消耗\n+冷却时间"
+
 	}
 	"agility"
 	{
 		"en"				"Agility"
+		"chi"		"敏捷"
+
 	}
 	"agility info"
 	{
 		"en"				"Talents:\n+Each Upgrade Strength\n+Cooldown Time\n\nSpells:\n-Range"
+		"chi"		"天赋：\n+每次升级力量\n+冷却时间\n\n法术：\n-范围"
+
 	}
 	"resilience"
 	{
 		"en"				"Resilience"
+		"chi"		"韧性"
+
 	}
 	"resilience info"
 	{
 		"en"				"Talents:\n-Talent Cooldown Time\n\nSpells:\n+Each Upgrade Stamina Cost\n-Each Upgrade Cooldown Time"
+		"chi"		"天赋：\n-天赋冷却时间\n\n法术：\n+每次升级耐力消耗\n-每次升级冷却时间"
+
 	}
 	"technique"
 	{
 		"en"				"Technique"
+		"chi"		"技巧"
+
 	}
 	"technique info"
 	{
 		"en"				"Talents:\n+Each Upgrade Ability Time\n\nSpells:\n+1st Upgrade \"On\" Time"
+		"chi"		"天赋：\n+每次升级能力时间\n\n法术：\n+1st 升级“开启”时间"
+
 	}
 	"endurance"
 	{
 		"en"				"Endurance"
+		"chi"		"耐力"
+
 	}
 	"endurance info"
 	{
 		"en"				"Does not affect Talents.\n\nSpells:\n+1st Upgrade Lifetime\n-1st Upgrade Stamina Cost\n+Each Upgrade Range"
+		"chi"		"不影响天赋。\n\n法术：\n+1st 升级生命时间\n-1st 升级耐力消耗\n+每次升级范围"
+
 	}
 	"luck"
 	{
 		"en"				"Luck"
+		"chi"		"幸运"
+
 	}
 	"luck info"
 	{
 		"en"				"Increases the likelihood of critical events."
+		"chi"		"增加关键事件发生的可能性。"
+
 	}
 	"talent level up"
 	{
 		"#format"			"{1:s},{2:s},{3:s},{4:s},{5:i},{6:s},{7:s},{8:s}"
 		"en"				"{1}{2} {3}has gained {4}{5} {6}points of {7}{8}"
+		"chi"		"{1}{2} {3}获得了 {4}{5} {6}点 {7}{8}"
+
 	}
 	"cartel experience screen"
 	{
 		"#format"			"{1:i},{2:s},{3:s},{4:s},{5:s}"
 		"en"				"{4} Lv.{1}:\t{2}XP {5} {3}XP"
+		"chi"		"{4} Lv.{1}:\t{2}XP {5} {3}XP"
+
 	}
 	"Survivor Cartel"
 	{
 		"en"				"Attribute Levels\n \n \n \n"
+		"chi"		"属性等级\n \n \n \n"
+
+
 	}
 	"Character Sheet"
 	{
 		"en"				"Level/Enemy Info"
+		"chi"		"等级/敌人信息"
+
 	}
 	"Handicap Sheet"
 	{
 		"en"				"Handicap (Difficulty Modifiers)"
+		"chi"		"难度（难度修正）"
+
 	}
 	"Character Sheet (Survivor Page)"
 	{
 		"en"				"Survivor Info"
+		"chi"		"幸存者信息"
+
 	}
 	"Character Sheet (Infected Page)"
 	{
 		"en"				"Infected Info"
+		"chi"		"感染者信息"
 	}
 	"Load And Go"
 	{
 		"en"				"Load 'n Go\nLoad an existing profile and go kill some shit!"
+		"chi"		"加载并出发\n加载现有档案，去干掉一些东西！"
+
 	}
 	"Survivor Classes"
 	{
 		"en"				"Job Class"
+		"chi"		"特感类别"
+
 	}
 	"Tanking Classes"
 	{
 		"en"				"Tanking Classes\nClasses in this category primary role is tanking"
+		"chi"		"坦克职业\n此类别中的职业主要角色是坦克"
+
 	}
 	"Tank-Healing Subclasses"
 	{
 		"en"				"Tank(Healer)\nClasses in this category are tank-heal hybrids."
+		"chi"		"坦克（治疗）职业\n此类别中的职业是坦克-治疗混合型。"
+
 	}
 	"Tank-DPS Subclasses"
 	{
 		"en"				"Tank(DPS)\nThese are tanks that also pack a punch!"
+		"chi"		"坦克（DPS）职业\n这些是既能坦克又能输出的职业！"
+
 	}
 	"DPS Classes"
 	{
 		"en"				"DPS Classes\nThese Class' primary focus is beating things up!"
+		"chi"		"DPS职业\n这些职业的主要关注点是击打敌人！"
+
 	}
 	"DPS-Ranged Subclasses"
 	{
 		"en"				"DPS(Ranged)\nDPS Classes with ranged-combat bonuses."
+		"chi"		"DPS（远程）职业\n具有远程作战加成的DPS职业。"
+
 	}
 	"DPS-Melee Subclasses"
 	{
 		"en"				"DPS(Melee)\nDPS Classes with a focus on close-quarter combat."
+		"chi"		"DPS（近战）职业\n专注于近距离作战的DPS职业。"
+
 	}
 	"Healer Classes"
 	{
 		"en"				"Healing Classes\nClasses that primarily focus in health recovery."
+		"chi"		"治疗职业\n主要专注于健康恢复的职业。"
+
 	}
 	"Healer-DPS Subclasses"
 	{
 		"en"				"Healing(DPS)\nHealers that aren't COMPLETE push-overs in combat!"
+		"chi"		"治疗（DPS）职业\n这些治疗者在战斗中不会完全被压倒！"
+
 	}
 	"Healer-Tank Subclasses"
 	{
 		"en"				"Healing(Tank)\nThese healers have some tanking qualities."
+		"chi"		"治疗（坦克）职业\n这些治疗者具备一定的坦克特质。"
+
 	}
 	"Hybrid Classes"
 	{
 		"en"				"Hybrid Classes\nThey can do it all!\n... But not necessarily the best."
+		"chi"		"混合职业\n他们可以做所有的事！\n……但不一定是最强的。"
+
 	}
 	"Submenu Locked"
 	{
 		"#format"			"{1:s},{2:i}"
 		"en"				"{1} (Locked until Lv.{2})"
+		"chi"		"（锁定，直到Lv.{2}）"
+
 	}
 	"Submenu Available"
 	{
@@ -3168,687 +3328,954 @@
 	"warrior"
 	{
 		"en"				"Warrior"
+		"chi"		"战士"
 	}
 	"healer"
 	{
 		"en"				"Healer"
+		"chi"		"治疗师"
 	}
 	"death knight"
 	{
 		"en"				"Death Knight"
+		"chi"		"死亡骑士"
 	}
 	"death healer"
 	{
 		"en"				"Death Priest"
+		"chi"		"死亡祭司"
 	}
 	"death ward"
 	{
 		"en"				"Death Ward"
+		"chi"		"死亡神官"
 	}
 	"crusader"
 	{
 		"en"				"Crusader"
+		"chi"		"十字军"
+
 	}
 	"paladin"
 	{
 		"en"				"Paladin"
+		"chi"		"圣骑士"
+
 	}
 	"druid"
 	{
 		"en"				"Druid"
+		"chi"		"德鲁伊"
+
 	}
 	"shaman"
 	{
 		"en"				"Shaman"
+		"chi"		"萨满"
 	}
 	"assassin"
 	{
 		"en"				"Assassin"
+		"chi"		"刺客"
 	}
 	"crusader assassin"
 	{
 		"en"				"Arbiter"
+		"chi"		"裁决者"
+
 	}
 	"brawler"
 	{
 		"en"				"Brawler"
+		"chi"		"斗士"
+
 	}
 	"monk"
 	{
 		"en"				"Monk"
+		"chi"		"僧侣"
+
 	}
 	"blaster"
 	{
 		"en"				"Blaster"
+		"chi"		"火力炸弹"
+
 	}
 	"firebug"
 	{
 		"en"				"Firebug"
+		"chi"		"火焰虫"
+
 	}
 	"firebug blaster"
 	{
 		"en"				"Fireblaster"
+		"chi"		"火焰爆破者"
+
 	}
 	"firebug crusader"
 	{
 		"en"				"Fire Crusader"
+		"chi"		"火焰十字军"
+
 	}
 	"firebug death"
 	{
 		"en"				"Hellfire Knight"
+		"chi"		"地狱火骑士"
+
 	}
 	"explosive impact"
 	{
 		"en"				"Unstable Genetics\nSpecial Commons become unstable, exploding for AoE damage\nwhen you land the killing blow."
+		"chi"		"不稳定基因\n特殊普通敌人在你造成致命一击时变得不稳定，会爆炸造成范围伤害。"
+
 	}
 	"fire crater"
 	{
 		"en"				"Fireball Blast\nLanding the killing blow on special commons\ncreates a crater of fire on them."
+		"chi"		"火球爆炸\n对特殊普通敌人造成致命一击时，会在其位置上产生火焰坑。"
+
 	}
 	"healer aura"
 	{
 		"en"				"Healer's Aura\nYour health regen talents affect nearby teammates\nbased on your healing spell range."
+		"chi"		"治疗光环\n你的健康回复天赋会影响附近队友，效果基于你的治疗技能范围。"
+
 	}
 	"commando aura"
 	{
 		"en"				"Commando Aura\nHealth regen ticks regen ammo for nearby teammates."
+		"chi"		"指挥官光环\n健康回复的时间间隔会为附近队友回复弹药。"
+
 	}
 	"hemomancy"
 	{
 		"en"				"Hemomancy\nDealing damage replenishes your health, while\nreceiving damage heals nearby teammates."
+		"chi"		"血液魔法\n造成伤害会恢复你的健康，而受到伤害会治疗附近的队友。"
+
 	}
 	"totem spirit"
 	{
 		"en"				"Totem Spirit\nRegen talents are converted to AoE damage based on your score."
+		"chi"		"图腾精灵\n回复天赋会转换为基于你的分数的范围伤害。"
+
 	}
 	"blessed by the light"
 	{
 		"en"				"Blessed By The Light\nDraws zombies to them if enrage is not active."
+		"chi"		"光明祝福\n如果狂暴状态未激活，会吸引僵尸到你身边。"
+
 	}
 	"dark sacrifice"
 	{
 		"en"				"Dark Sacrifice\nWeakness[Wk] is always active."
+		"chi"		"黑暗牺牲\n虚弱[Wk]始终处于激活状态。"
+
 	}
 	"space force"
 	{
 		"en"				"Space Force Tech\nUtilizing cutting-edge awesome, your jetpack is more efficient!"
+		"chi"		"太空力量科技\n利用最前沿的技术，你的喷气背包更加高效！"
+
 	}
 	"elon mastery"
 	{
 		"en"				"Elon Mastery\nUnspecified 'upgrades' prevent your Jetpack from\nmalfunctioning when tanks are nearby."
+		"chi"		"埃隆大师\n未指定的‘升级’可以防止你的喷气背包在坦克附近发生故障。"
+
 	}
 	"zora mastery"
 	{
 		"en"				"Zora Mastery\nAs a Zora, you move swiftly when in water."
+		"chi"		"佐拉大师\n作为佐拉，你在水中移动更迅速。"
+
 	}
 	"coX class info"
 	{
 		"en"				"Constitution XP"
+		"chi"		"体质经验"
 	}
 	"agX class info"
 	{
 		"en"				"Agility XP"
+		"chi"		"敏捷经验"
 	}
 	"reX class info"
 	{
 		"en"				"Resilience XP"
+		"chi"		"韧性经验"
 	}
 	"teX class info"
 	{
 		"en"				"Technique XP"
+		"chi"		"技巧经验值"
+
 	}
 	"enX class info"
 	{
 		"en"				"Endurance XP"
+		"chi"		"耐力经验值"
+
 	}
 	"luX class info"
 	{
 		"en"				"Luck XP"
+		"chi"		"幸运经验值"
+
 	}
 	"saving class data"
 	{
 		"#format"			"{1:s},{2:s},{3:s}"
 		"en"				"{1}Saving Class Data for {2}{3}"
+		"chi"		"保存 {2}{3} 的职业数据"
+
 	}
 	"fprange class info"
 	{
 		"en"				"+Spell Range on First Upgrade"
+		"chi"		"首次升级时法术范围"
+
 	}
 	"eprange class info"
 	{
 		"en"				"+Spell Range on Each Upgrade"
+		"chi"		"每次升级时法术范围"
+
 	}
 	"h class info"
 	{
 		"en"				"Healing"
+		"chi"		"治疗"
+
 	}
 	"d class info"
 	{
 		"en"				"Outgoing Damage"
+		"chi"		"伤害"
 	}
 	"D class info"
 	{
 		"en"				"Incoming Damage"
+		"chi"		"承受伤害"
 	}
 	"tXP class info"
 	{
 		"en"				"Tank XP"
+		"chi"		"坦克经验值"
 	}
 	"hB class info"
 	{
 		"en"				"Bullets Heal Allies"
+		"chi"		"子弹治疗盟友"
+
 	}
 	"hM class info"
 	{
 		"en"				"Melee Weapons Heal Allies"
+		"chi"		"近战武器治疗盟友"
+
 	}
 	"hXP class info"
 	{
 		"en"				"Heal XP"
+		"chi"		"治疗经验"
+
 	}
 	"stam class info"
 	{
 		"en"				"Stamina Cost"
+		"chi"		"耐力消耗"
+
 	}
 	"amCD class info"
 	{
 		"en"				"Spell Cooldown"
+		"chi"		"法术冷却时间"
+
 	}
 	"wRNG class info"
 	{
 		"en"				"Weapon Range"
+		"chi"		"武器射程"
+
 	}
 	"mDMG class info"
 	{
 		"en"				"Melee Damage"
+		"chi"		"近战伤害"
+
 	}
 	"gunDMG class info"
 	{
 		"en"				"Gun Damage"
+		"chi"		"枪械伤害"
+
 	}
 	"gunRNG class info"
 	{
 		"en"				"Gun Range"
+		"chi"		"枪械射程"
+
 	}
 	"ICwDMG class info"
 	{
 		"en"				"In-Combat Weapon Damage"
+		"chi"		"战斗中武器伤害"
 	}
 	"OCwDMG class info"
 	{
 		"en"				"Out-of-Combat Weapon Damage"
+		"chi"		"非战斗中武器伤害"
 	}
 	"snprDMG class info"
 	{
 		"en"				"Sniper Damage"
+		"chi"		"狙击枪伤害"
 	}
 	"pstlDMG class info"
 	{
 		"en"				"Pistol Damage"
+		"chi"		"手枪伤害"
 	}
 	"riflDMG class info"
 	{
 		"en"				"Assault Rifle Damage"
+		"chi"				"突击步枪伤害"
 	}
 	"snprDMG class info"
 	{
 		"en"				"Sniper Damage"
+		"chi"		"狙击枪伤害"
 	}
 	"shtgDMG class info"
 	{
 		"en"				"Shotgun Damage"
+		"chi"		"霰弹枪伤害"
 	}
 	"smgDMG class info"
 	{
 		"en"				"SMG Damage"
+		"chi"				"冲锋枪伤害"
 	}
 	"atsgDMG class info"
 	{
 		"en"				"Auto-Shotgun Damage"
+		"chi"		"自动霰弹枪伤害"
 	}
 	"pusgDMG class info"
 	{
 		"en"				"Pump-Shotgun Damage"
+		"chi"		"泵式霰弹枪伤害"
 	}
 	"boltDMG class info"
 	{
 		"en"				"Bolt-Action Sniper Damage"
+		"chi"		"栓动狙击枪伤害"
+
 	}
 	"50caDMG class info"
 	{
 		"en"				".50cal Damage"
+		"chi"		".50口径伤害"
+
 	}
 	"eprng class info"
 	{
 		"en"				"Each Point Range"
+		"chi"		"每点射程"
+
 	}
 	"STK class info"
 	{
 		"en"				"Stalker\nIncreases all outgoing damage.\nThe more damage a mob has dealt\nto you, the less stalker will deal to it."
+		"chi"		"潜行者\n增加所有输出伤害。\n怪物对你造成的伤害越多，潜行者对其造成的伤害越少。"
+
 	}
 	"gunslinger"
 	{
 		"en"				"Gunslinger"
+		"chi"		"枪手"
+
 	}
 	"river zora"
 	{
 		"en"				"River Zora"
+		"chi"		"河豚"
+
 	}
 	"spacex employee"
 	{
 		"en"				"SpaceX Employee"
+		"chi"		"SpaceX员工"
+
 	}
 	"arsonist"
 	{
 		"en"				"Arsonist"
+		"chi"		"纵火犯"
+
 	}
 	"wtrDMG class info"
 	{
 		"en"				"Water Damage"
+		"chi"		"水系伤害"
+
 	}
 	"airDMG class info"
 	{
 		"en"				"Air Damage"
+		"chi"		"风系伤害"
+
 	}
 	"fireDMG class info"
 	{
 		"en"				"Fire Damage"
+		"chi"		"火系伤害"
+
 	}
 	"rng class info"
 	{
 		"en"				"Your Spell Range"
+		"chi"		"法术范围"
+
 	}
 	"amSTR class info"
 	{
 		"en"				"Spell Strength"
+		"chi"		"法术强度"
+
 	}
 	"ftCD class info"
 	{
 		"en"				"First Upgrade Cooldown"
+		"chi"		"初次升级冷却时间"
+
 	}
 	"etCD class info"
 	{
 		"en"				"Each Upgrade Cooldown"
+		"chi"		"每次升级冷却时间"
+
 	}
 	"aamRNG class info"
 	{
 		"en"				"All Spell Range"
+		"chi"		"所有法术范围"
+
 	}
 	"H class talent info"
 	{
 		"en"				"Health Talents"
+		"chi"		"生命天赋"
+
 	}
 	"h class talent info"
 	{
 		"en"				"Healing Talents"
+		"chi"		"治疗天赋"
+
 	}
 	"R class talent info"
 	{
 		"en"				"Reflect Talents"
+		"chi"		"反射天赋"
+
 	}
 	"d class talent info"
 	{
 		"en"				"Damage Talents"
+		"chi"		"伤害天赋"
+
 	}
 	"elven ranger"
 	{
 		"en"				"Elven Ranger"
+		"chi"		"精灵游侠"
+
 	}
 	"sharpshooter"
 	{
 		"en"				"Sniper"
+		"chi"		"狙击手"
+
 	}
 	"death sharpshooter"
 	{
 		"en"				"Dark Sniper"
+		"chi"		"黑暗狙击手"
+
 	}
 	"shaman brawler"
 	{
 		"en"				"battlemage"
+		"chi"		"战斗法师"
+
 	}
 	"healer shaman"
 	{
 		"en"				"Cleric"
+		"chi"		"牧师"
+
 	}
 	"hemomancer"
 	{
 		"en"				"Hemomancer"
+		"chi"		"血魔"
+
 	}
 	"death hemomancer"
 	{
 		"en"				"Blood Warrior"
+		"chi"		"血战士"
+
 	}
 	"death scout"
 	{
 		"en"				"Scout"
+		"chi"		"斥候"
+
 	}
 	"commando"
 	{
 		"en"				"Commando"
+		"chi"		"突击队员"
+
 	}
 	"shaman hemomancer"
 	{
 		"en"				"Bloodknight"
+		"chi"		"血骑士"
+
 	}
 	"healer hemomancer"
 	{
 		"en"				"Bloodpriest"
+		"chi"		"血祭司"
+
 	}
 	"death shaman"
 	{
 		"en"				"Deathbringer"
+		"chi"		"死亡使者"
+
 	}
 	"crusader shaman"
 	{
 		"en"				"Battlemage"
+		"chi"		"战斗法师"
+
 	}
 	"crusader death"
 	{
 		"en"				"Warblade"
+		"chi"		"战刃"
+
 	}
 	"death ranger"
 	{
 		"en"				"Dark Ranger"
+		"chi"		"黑暗游侠"
+
 	}
 	"rating increase"
 	{
 		"#format"			"{1:s},{2:s},{3:s},{4:s}"
 		"en"				"{1}+{2}{3} {4}damage score"
+		"chi"		"{1}+{2}{3} {4}伤害分数"
+
 	}
 	"rating increase for tanking"
 	{
 		"#format"			"{1:s},{2:s},{3:s},{4:s}"
 		"en"				"{1}+{2}{3} {4}tanking score"
+		"chi"		"{1}+{2}{3} {4}坦克分数"
+
 	}
 	"rating increase for buffing"
 	{
 		"#format"			"{1:s},{2:s},{3:s},{4:s}"
 		"en"				"{1}+{2}{3} {4}buffing score"
+		"chi"		"{1}+{2}{3} {4}增益分数"
+
 	}
 	"rating increase for healing"
 	{
 		"#format"			"{1:s},{2:s},{3:s},{4:s}"
 		"en"				"{1}+{2}{3} {4}healing score"
+		"chi"		"{1}+{2}{3} {4}治疗分数"
+
 	}
 	"living survivors experience bonus"
 	{
 		"#format"			"{1:s},{2:s},{3:s},{4:s},{5:s},{6:3.3f},{7:s},{8:s},{9:s}"
 		"en"				"{1}Your {2}Survival EXP Bonus {3}increases by {4}+{5}{6}{7}{8}"
+		"chi"		"{1}你的 {2}生存经验加成 {3}增加了 {4}+{5}{6}{7}{8}"
+
 	}
 	"team rating increase"
 	{
 		"#format"			"{1:s},{2:s},{3:s},{4:s},{5:s},{6:s},{7:s},{8:s},{9:s}"
 		"en"				"{1}+{2}{3} {4}score {5}( +{6}{7} {8}bonus{9})"
+		"chi"		"{1}+{2}{3} {4}分数 {5}( +{6}{7} {8}加成{9})"
+
 	}
 	"player killed special infected"
 	{
 		"#format"			"{1:s},{2:s},{3:s},{4:s},{5:s}"
 		"en"				"{1}{2} {3}killed {4}{5}"
+		"chi"		"{1}{2} {3}击杀了 {4}{5}"
+
 	}
 	"player damage to special"
 	{
 		"#format"			"{1:s},{2:s},{3:s},{4:s},{5:s},{6:s},{7:s},{8:s},{9:s}"
 		"en"				"{1}{2} {3}lands the killing blow on {4}{5} {6}for {7}{8} {9}damage"
+		"chi"		"{1}{2} {3}对 {4}{5} {6}造成了 {7}{8} {9}伤害"
+
 	}
 	"killed special infected"
 	{
 		"#format"			"{1:s},{2:s},{3:s}"
 		"en"				"{1}{2} {3}died"
+		"chi"		"{1}{2} {3}死亡"
 	}
 	"Enable Class"
 	{
 		"en"				"Enable Class"
+		"chi"		"启用职业"
+
 	}
 	"Disable Class"
 	{
 		"en"				"Disable Class"
+		"chi"		"禁用职业"
+
 	}
 	"strength slate"
 	{
 		"#format"			"{1:i},{2:i}"
 		"en"				"Current: {1} / {2}"
+		"chi"		"当前: {1} / {2}"
+
 	}
 	"luck slate"
 	{
 		"#format"			"{1:i},{2:i}"
 		"en"				"Luck: {1} / {2}"
+		"chi"		"幸运: {1} / {2}"
 	}
 	"agility slate"
 	{
 		"#format"			"{1:i},{2:i}"
 		"en"				"Agility: {1} / {2}"
+		"chi"		"敏捷: {1} / {2}"
 	}
 	"technique slate"
 	{
 		"#format"			"{1:i},{2:i}"
 		"en"				"Technique: {1} / {2}"
+		"chi"		"技巧: {1} / {2}"
 	}
 	"endurance slate"
 	{
 		"#format"			"{1:i},{2:i}"
 		"en"				"Endurance: {1} / {2}"
+		"chi"		"耐力: {1} / {2}"
+
 	}
 	"weapons"
 	{
 		"en"				"Weapons"
+		"chi"		"武器"
+
 	}
 	"health"
 	{
 		"en"				"Health Items"
+		"chi"		"生命物品"
 	}
 	"grenades"
 	{
 		"en"				"Grenades"
+		"chi"		"手雷"
 	}
 	"upgrades"
 	{
 		"en"				"Weapon Upgrades"
+		"chi"		"武器升级"
 	}
 	"free weapons"
 	{
 		"en"				"Weapons"
+		"chi"		"武器"
 	}
 	"fireaxe"
 	{
 		"en"				"Fireaxe"
+		"chi"		"火斧"
 	}
 	"shovel"
 	{
 		"en"				"Shovel"
+		"chi"		"铲子"
 	}
 	"pitchfork"
 	{
 		"en"				"pitchfork"
+		"chi"		"叉子"
+
+
 	}
 	"tonfa"
 	{
 		"en"				"Tonfa"
+		"chi"		"棍棒"
+
 	}
 	"cricketbat"
 	{
 		"en"				"Cricket Bat"
+		"chi"		"板球棒"
+
 	}
 	"melee weapons"
 	{
 		"en"				"Melee Weapons"
+		"chi"		"近战武器"
+
 	}
 	"rifles"
 	{
 		"en"				"Assault Rifles"
+		"chi"		"突击步枪"
+
 	}
 	"shotguns"
 	{
 		"en"				"Auto Shotguns"
+		"chi"		"自动霰弹枪"
 	}
 	"snipers"
 	{
 		"en"				"Sniper Rifles"
+		"chi"		"狙击枪"
 	}
 	"chainsaw"
 	{
 		"en"				"Chainsaw"
+		"chi"		"电锯"
 	}
 	"grenade launcher"
 	{
 		"en"				"Grenade Launcher"
+		"chi"		"榴弹发射器"
 	}
 	"ammo"
 	{
 		"en"				"Ammo Refill"
+		"chi"		"弹药补充"
 	}
 	"main menu"
 	{
 		"en"				"Return To Previous Menu"
+		"chi"		"返回上一级菜单"
 	}
 	"pump shotgun"
 	{
 		"en"				"Pump Shotgun"
+		"chi"		"泵式霰弹枪"
 	}
 	"uzi"
 	{
 		"en"				"Uzi"
+		"chi"		"UZI"
 	}
 	"tmp-5"
 	{
 		"en"				"TMP-5"
+		"chi"		"smg"
 	}
 	"mp-5"
 	{
 		"en"				"MP-5"
+		"chi"		"MP5"
 	}
 	"pistol"
 	{
 		"en"				"Glock"
+		"chi"		"Glock"
 	}
 	"dual pistol"
 	{
 		"en"				"Dual Pistols"
+		"chi"		"双持手枪"
 	}
 	"rise again"
 	{
 		"#format"			"{1:s},{2:s},{3:s}"
 		"en"				"{1}One of {2}our fallen {3}has risen!"
+		"chi"		"{1}我们的一位{2}阵亡者{3}复活了！"
+
 	}
 	"enter the fray"
 	{
 		"#format"			"{1:s},{2:s},{3:s}"
 		"en"				"{1}A new player {2}has entered the fray {3}Wish them luck!"
+		"chi"		"{1}一名新玩家{2}进入了战斗{3}祝他们好运！"
+
 	}
 	"magnum"
 	{
 		"en"				"Magnum"
+		"chi"		"玛格南"
 	}
 	"m4a1"
 	{
 		"en"				"M4A1"
+		"chi"		"M4A1"
 	}
 	"ak47"
 	{
 		"en"				"AK47"
+		"chi"		"AK47"
 	}
 	"desert rifle"
 	{
 		"en"				"Desert Rifle"
+		"chi"		"沙漠步枪"
 	}
 	"sg552"
 	{
 		"en"				"SG-552"
+		"chi"		"SG-552"
 	}
 	"m60"
 	{
 		"en"				"M-60"
+		"chi"		"M-60"
 	}
 	"autoshotgun"
 	{
 		"en"				"Auto Shotgun"
+		"chi"		"自动霰弹枪"
 	}
 	"spas"
 	{
 		"en"				"SPAS Shotgun"
+		"chi"		"SPAS霰弹枪"
 	}
 	"hunting rifle"
 	{
 		"en"				"Hunting Rifle"
+		"chi"		"猎枪"
 	}
 	"military rifle"
 	{
 		"en"				"Military Rifle"
+		"chi"		"军事步枪"
 	}
 	"scout"
 	{
 		"en"				"Scout"
+		"chi"		"鸟狙"
 	}
 	"awp"
 	{
 		"en"				"AW/P"
+		"chi"		"AWP"
 	}
 	"adrenaline"
 	{
 		"en"				"Adrenaline"
+		"chi"		"肾上腺素"
 	}
 	"pain pills"
 	{
 		"en"				"Pain Pills"
+		"chi"		"止痛药"
 	}
 	"medkit"
 	{
 		"en"				"Medkit"
+		"chi"		"医疗包"
 	}
 	"defibrillator"
 	{
 		"en"				"Defibrillator"
+		"chi"		"电击器"
 	}
 	"full heal"
 	{
 		"en"				"Instant Heal"
+		"chi"		"即时治疗"
+
 	}
 	"molotov"
 	{
 		"en"				"Molotov"
+		"chi"		"莫洛托夫"
 	}
 	"pipe bomb"
 	{
 		"en"				"Pipe Bomb"
+		"chi"		"土质手雷"
 	}
 	"vomitjar"
 	{
 		"en"				"Vomitjar"
+		"chi"		"胆汁罐"
 	}
 	"gascan"
 	{
 		"en"				"Gas can"
+		"chi"		"油罐"
 	}
 	"firework crate"
 	{
 		"en"				"Firework Crate"
+		"chi"		"烟花包"
 	}
 	"explosive"
 	{
 		"en"				"Explosive Ammo (Single)"
+		"chi"		"爆炸弹药（单个）"
+
 	}
 	"incendiary"
 	{
 		"en"				"Incendiary Ammo (Single)"
+		"chi"		"燃烧弹药（单个）"
+
 	}
 	"explosive pack"
 	{
 		"en"				"Explosive Pack"
+		"chi"		"爆炸包"
+
 	}
 	"incendiary pack"
 	{
 		"en"				"Incendiary Pack"
+		"chi"		"燃烧包"
+
 	}
 	"laser sight"
 	{
 		"en"				"Laser Sight"
+		"chi"		"激光瞄准器"
+
 	}
 	"director menu"
 	{
 		"en"				"Director Menu"
+		"chi"		"导演菜单"
 	}
 	"class menu"
 	{
 		"en"				"Change Class"
+		"chi"		"更改类型"
 	}
 	"hunter"
 	{
@@ -9039,196 +9466,270 @@
 	"featherweight info"
 	{
 		"en"				"Greatly-reduce your fall damage; fall from even greater\nheights than before!"
+		"chi"		"大幅减少你的摔落伤害；从更高的地方摔落也没关系！"
+
 	}
 	"meditation ab"
 	{
 		"en"				"Meditation"
+		"chi"		"冥想"
+
 	}
 	"meditation ability"
 	{
 		"en"				"(AB)Meditation"
+		"chi"		"(AB)冥想"
+
 	}
 	"meditation info"
 	{
 		"en"				"Increases your max stamina when not on cooldown."
+		"chi"		"当未在冷却中时，提高你的最大耐力。"
+
 	}
 	"refresh ab"
 	{
 		"en"				"Heal Self"
+		"chi"		"自我治疗"
+
 	}
 	"refresh ability"
 	{
 		"en"				"(AB)Heal Self"
+		"chi"		"(AB)自我治疗"
 	}
 	"refresh info"
 	{
 		"en"				"Instantly heal yourself for a percentage of your max health."
+		"chi"		"立即治疗自己，恢复最大健康值的一定百分比。"
+
 	}
 	"refresh aura ab"
 	{
 		"en"				"Heal Aura"
+		"chi"		"治疗光环"
 	}
 	"refresh aura"
 	{
 		"en"				"(AB)Heal Aura"
+		"chi"		"(AB)治疗光环"
+
 	}
 	"refresh aura info"
 	{
 		"en"				"Heal yourself and allies in range for a percentage\nof your weapon damage, instantly."
+		"chi"		"立即治疗你和范围内盟友的武器伤害百分比。"
+
 	}
 	"stance ab"
 	{
 		"en"				"Taunt"
+		"chi"		"嘲讽"
+
 	}
 	"stance ability"
 	{
 		"en"				"(AB)Taunt"
+		"chi"		"(AB)嘲讽"
+
 	}
 	"stance info"
 	{
 		"en"				"Makes infected AI target you."
+		"chi"		"使感染者 AI 攻击你。"
+
 	}
 	"Action Slot Range"
 	{
 		"#format"			"{1:s},{2:s},{3:i},{4:s}"
 		"en"				"{1}Available action slots are {2}!ability1 - !ability{3}\n{4}You can substitute / for ! to suppress."
+		"chi"		"{1}可用的动作槽是 {2}!ability1 - !ability{3}\n{4}你可以用 / 替代 ! 来抑制。"
+
 	}
 	"group member bonus"
 	{
 		"#format"			"{1:s},{2:3.1f},{3:s},{4:s},{5:s}"
 		"en"				"{1}+{2}{3}{4}XP {5}STEAMGROUP MEMBER Bonus"
+		"chi"		"{1}+{2}{3}{4}XP {5}STEAMGROUP 成员 奖励"
+
 	}
 	"group no survivor bots bonus"
 	{
 		"#format"			"{1:s},{2:3.1f},{3:s},{4:s},{5:s}"
 		"en"				"{1}+{2}{3}{4}XP {5}Bonus for having NO Survivor bots."
+		"chi"		"{1}+{2}{3}{4}XP {5}无幸存者机器人 奖励"
+
 	}
 	"group member benefit"
 	{
 		"#format"			"{1:s},{2:s},{3:3.1f},{4:s},{5:s},{6:s}"
 		"en"				"{1}Become a STEAMGROUP MEMBER to earn {2}{3}{4}{5}XP {6}bonus"
+		"chi"		"{1}成为 STEAMGROUP 成员以获得 {2}{3}{4}{5}XP {6}奖励"
+
 	}
 	"player uses spell"
 	{
 		"#format"			"{1:s},{2:s}"
 		"en"				"{1} {O}casts the spell {B}{2}"
+		"chi"		"{1} {O}施放了法术 {B}{2}"
+
 	}
 	"player uses ability"
 	{
 		"#format"			"{1:s},{2:s}"
 		"en"				"{1} {O}uses ability {B}{2}"
+		"chi"		"{1} {O}使用了技能 {B}{2}"
+
 	}
 	"handicap range"
 	{
 		"#format"			"{1:s},{2:s},{3:i},{4:s},{5:s},{6:i}"
 		"en"				"{1}Handicap Range: {2}{3} {4}- {5}{6}"
+		"chi"		"{1} handicap 范围：{2}{3} {4}- {5}{6}"
+
 	}
 	"player handicap locked"
 	{
 		"#format"			"{1:s}"
 		"en"				"{1}Handicap is locked. You can only change it if you have not entered combat during the round."
+		"chi"		"{1} handicap 被锁定。你只能在回合中没有进入战斗时更改它。"
+
 	}
 	"player handicap"
 	{
 		"#format"			"{1:s},{2:s},{3:s},{4:i}"
 		"en"				"{1}Handicap Set{2}: {3}{4}"
+		"chi"		"{1} handicap 设置{2}: {3}{4}"
+
 	}
 	"respawn queue"
 	{
 		"#format"			"{1:i}"
 		"en"				"Respawning in {1} second(s)"
+		"chi"		"复活中，剩余 {1} 秒"
+
 	}
 	"respawn queue paused"
 	{	
 		"#format"			"{1:i}"
 		"en"				"Respawn Queue paused at {1} second(s)\nSearching for a safe survivor..."
+		"chi"		"复活队列暂停在 {1} 秒\n正在寻找安全的幸存者..."
+
 	}
 	"health potion (lo)"
 	{
 		"en"				"minor Healing Potion"
+		"chi"		"次级治疗药水"
+
 	}
 	"stamina potion (lo)"
 	{
 		"en"				"minor Stamina Potion"
+		"chi"		"次级体力药水"
 	}
 	"adren potion (lo)"
 	{
 		"en"				"minor Adrenaline Potion"
+		"chi"		"次级肾上腺素药水"
 	}
 	"incendiary potion (lo)"
 	{
 		"en"				"minor Incendiary Potion"
+		"chi"		"次级燃烧药水"
 	}
 	"explosive potion (lo)"
 	{
 		"en"				"minor Explosive Potion"
+		"chi"		"次级爆炸药水"
 	}
 	"blue potion (lo)"
 	{
 		"en"				"minor Blue Potion"
+		"chi"		"次级蓝色药水"
 	}
 	"ammo potion (lo)"
 	{
 		"en"				"minor Ammo potion"
+		"chi"		"次级弹药药水"
 	}
 	"health potion (hi)"
 	{
 		"en"				"major Healing Potion"
+		"chi"		"主级治疗药水"
 	}
 	"stamina potion (hi)"
 	{
 		"en"				"major Stamina Potion"
+		"chi"		"主级体力药水"
 	}
 	"adren potion (hi)"
 	{
 		"en"				"major Adrenaline Potion"
+		"chi"		"主级肾上腺素药水"
 	}
 	"incendiary potion (hi)"
 	{
 		"en"				"major Incendiary Potion"
+		"chi"		"主级燃烧药水"
 	}
 	"explosive potion (hi)"
 	{
 		"en"				"major Explosive Potion"
+		"chi"		"主级爆炸药水"
 	}
 	"blue potion (hi)"
 	{
 		"en"				"major Blue Potion"
+		"chi"		"主级蓝色药水"
 	}
 	"item obtained by player"
 	{
 		"#format"			"{1:s},{2:s},{3:s},{4:s},{5:s}"
 		"en"				"{1}{2} {3}obtained a {4}{5}"
+		"chi"		"{1}{2} {3}获得了一个 {4}{5}"
+
 	}
 	"enrage period"
 	{
 		"#format"			"{1:s},{2:s},{3:s}"
 		"en"				"{1}!!! {2}ENRAGE NOW ACTIVE {3}!!!"
+		"chi"		"{1}!!! {2}愤怒现在激活 {3}!!!"
+
 	}
 	"enrage in..."
 	{
 		"#format"			"{1:s},{2:s},{3:s},{4:s}"
 		"en"				"{1}The enrage period starts in {2}{3}{4}..."
+		"chi"		"{1}愤怒期将在 {2}{3}{4}后开始..."
+
 	}
 	"time until things get bad"
 	{
 		"#format"			"{1:s},{2:s},{3:s},{4:s}"
 		"en"				"{1}The enrage period starts in {2}{3} {4}... Better get moving!"
+		"chi"		"{1}愤怒期将在 {2}{3} {4}后开始... 赶快行动！"
+
 	}
 	"Creating New Class"
 	{
 		"#format"			"{1:s},{2:s},{3:s},{4:s}"
 		"en"				"{1}Creating a shiny, NEW {2}{3} {4}for you!"
+		"chi"		"{1}正在为您创建一个全新的 {2}{3} {4}！"
+
 	}
 	"death penalty"
 	{
 		"#format"			"{1:s},{2:s},{3:s},{4:s},{5:s},{6:s}"
 		"en"				"{1}{6} has died! {2}They have lost {3}{4} {5}experience"
+		"chi"		"{1}{6} 已经死亡！ {2}他们失去了 {3}{4} {5}经验"
+
 	}
 	"Rushing Return To Team"
 	{
 		"#format"			"{1:s},{2:s},{3:s}"
 		"en"				"{1}!!! {2}STOP RUSHING AND REGROUP WITH YOUR TEAM {3}!!!"
+		"chi"		"{1}!!! {2}停止急于行动，和你的队伍重新集合 {3}!!!"
+
 	}
 }
 

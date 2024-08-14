@@ -1,0 +1,23 @@
+"Phrases"
+{
+	"Boomer Bile Feet"
+	{
+		"en"		"Bile Feet has granted you increased movement speed!"
+		"chi"		"胆汁之足使你的移动速度提高！"
+		"es"		"¡La bilis en los pies ha aumentado su velocidad de movimiento!"
+		"pt"		"A bile nos pés aumentaram sua velocidade de movimento!"
+	}
+	"Boomer Bile Swipe"
+	{
+		"en"		"The Boomer has coated you with stomach bile acid!"
+		"chi"		"Boomer 给你吐了酸液胆汁"
+		"es"		"¡El Boomer te cubrió con ÁCIDO biliar del estómago!"
+		"pt"		"O Boomer cobriu você com ÁCIDO biliar do estômago!"
+	}
+	"Boomer Flatulence Cloud"
+	{
+		"en"		"你正在被 “BOOMER屁”伤害！"
+		"es"		"Usted está sufriendo con la nube de PEDO del Boomer!"
+		"pt"		"Você está sofrendo com a nuvem de PEIDO do Boomer!"
+	}
+}

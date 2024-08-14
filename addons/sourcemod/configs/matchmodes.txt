@@ -106,5 +106,9 @@
 		{
 			"name"		"战役|Sky rpg v3.4.7.8"
 		}
+		"versus_isfullshit"
+		{
+			"name"		"对抗|救世主大战逆天特感争抢0721"
+		}
 	}
 }

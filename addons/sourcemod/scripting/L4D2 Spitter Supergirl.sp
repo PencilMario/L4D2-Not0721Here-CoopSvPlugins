@@ -282,30 +282,34 @@ public Action OnTakeDamage(int victim, int &attacker, int &inflictor, float &dam
         {
             GetClientWeapon(attacker, weapon, sizeof(weapon));
         }
+
         if (StrEqual(classname, "insect_swarm"))
         {
             if (isAcidicBile)
             {
                 SpitterAbility_AcidicBile(victim, attacker);
+                return Plugin_Handled;
             }
             if (isStickyGoo)
             {
                 SpitterAbility_StickyGoo(victim);
+                return Plugin_Handled;
             }
         }
+
         if (IsValidSpitter(attacker) && StrEqual(weapon, "weapon_spitter_claw"))
         {
             if (isAcidSwipe)
             {
                 SpitterAbility_AcidSwipe(victim, attacker);
+                return Plugin_Handled;
             }
         }
     }
-    
-    // Return Plugin_Handled to indicate that the damage has been handled by the plugin
-    return Plugin_Handled;
-}
 
+    // Return Plugin_Continue to let the normal damage process continue
+    return Plugin_Continue;
+}
 public Action Timer_AcidDelay(Handle timer, any victim)
 {
 	aciddelay[victim] = false;

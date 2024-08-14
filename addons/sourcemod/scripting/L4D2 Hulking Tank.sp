@@ -300,7 +300,7 @@ public Action OnTakeDamage(int victim, int  &attacker, int &inflictor, float &da
 			if ((damagetype == 8 || damagetype == 2056 || damagetype == 268435464))
 			{
 				SDKUnhook(victim, SDKHook_OnTakeDamage, OnTakeDamage);
-				PrintHintText(victim, "You're on fire, your Burning Rage has increased your speed!");
+				PrintHintText(victim, "你着火了，你的燃烧之怒增加了你的速度！");
 				SetEntDataFloat(victim, laggedMovementOffset, 1.0*GetConVarFloat(cvarBurningRageSpeed), true);
 				return Plugin_Handled;
 			}
@@ -586,7 +586,7 @@ public Action OnPlayerRunCmd(int client, int &buttons, int &impulse, float vel[3
 			
 			if (ReqHP > 0 && HP > ReqHP)
 			{
-				PrintHintText(client, "Your health must be below %i before you can use Titanic Bellow.", ReqHP);
+				PrintHintText(client, "你的生命值必须低于%i才能使用泰坦怒吼。", ReqHP);
 				return;
 			}
 			

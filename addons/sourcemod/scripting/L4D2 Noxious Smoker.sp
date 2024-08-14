@@ -939,7 +939,7 @@ public Action:Timer_MethaneLeakCloud(Handle:timer, Handle:dataPack)
 			
 			new damage = GetConVarInt(cvarMethaneLeakDamage);
 			DamageHook(victim, smoker, damage);
-			PrintHintText(victim, "Smoker sẽ thả ra một vùng khí độc hại hơn sau mỗi chu kỳ %f", cvarMethaneLeakCooldown);
+			PrintHintText(victim, "Smoker 会在每个 %f 周期后释放出更有毒的气体区域", cvarMethaneLeakCooldown);
 		}
 	}
 

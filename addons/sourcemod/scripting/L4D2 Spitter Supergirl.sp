@@ -447,7 +447,7 @@ void SpitterAbility_AcidSwipe(int victim, int attacker)
 	int AcidSwipePercent = (GetConVarInt(cvarAcidSwipeChance));
 	if (IsValidClient(victim) && GetClientTeam(victim) == 2 && AcidSwipeChance < AcidSwipePercent)
 	{
-		PrintHintText(victim, "The Spitter has coated you with corrosive acid!");
+		PrintHintText(victim, "喷吐者将你覆盖上了腐蚀性酸液！");
 		if (acidswipe[victim] <= 0)
 		{
 			acidswipe[victim] = (GetConVarInt(cvarAcidSwipeDuration));
@@ -527,7 +527,7 @@ void SpitterAbility_StickyGoo(int victim)
 		{
 			SetEntityGravity(victim, 5.0);
 		}
-		PrintHintText(victim, "Standing in the spit is slowing you down!");
+		PrintHintText(victim, "站在唾液中会让你变慢！");
 	}	
 	if (stickygoo[victim] > 0 && !aciddelay[victim])
 	{
@@ -543,7 +543,7 @@ public Action Timer_StickyGoo(Handle timer, any victim)
 		{
 			SetEntDataFloat(victim, laggedMovementOffset, 1.0, true); //sets the survivors speed back to normal
 			SetEntityGravity(victim, 1.0);
-			PrintHintText(victim, "The spit is wearing off!");
+			PrintHintText(victim, "酸液正在消退！");
 			if (cvarStickyGooTimer[victim] != null)
 			{
 				KillTimer(cvarStickyGooTimer[victim]);
@@ -563,7 +563,7 @@ void SpitterAbility_SuperGirl(int client)
 {
 	if (IsValidSpitter(client) && !isAcidicPoolDrop[client])
 	{
-		PrintHintText(client, "You are temporarily invulnerable!");
+		PrintHintText(client, "你暂时无敌了！");
 		cvarSupergirlTimer[client] = CreateTimer(GetConVarFloat(cvarSupergirlDuration), Timer_Supergirl, client);	
 		SetEntProp(client, Prop_Data, "m_takedamage", 0, 1);
 	}
@@ -574,7 +574,7 @@ public Action Timer_Supergirl(Handle timer, any client)
 	if (IsValidClient(client))
 	{
 		SetEntProp(client, Prop_Data, "m_takedamage", 2, 1);
-		PrintHintText(client, "You are no longer invulnerable!");
+		PrintHintText(client, "你不再无敌了！");
 	}
 	if (cvarSupergirlTimer[client] != null)
 	{

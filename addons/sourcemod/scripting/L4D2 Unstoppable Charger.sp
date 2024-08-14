@@ -359,7 +359,7 @@ public Action ChargerAbility_BrokenRibs(int victim, int attacker)
 		int BrokenRibsPercent = (GetConVarInt(cvarBrokenRibsChance));
 		if (BrokenRibsChance < BrokenRibsPercent)
 		{
-			PrintHintText(victim, "The Charger broke your ribs!");
+			PrintHintText(victim, "Charger 打断了你的肋骨！");
 			if (brokenribs[victim] <= 0)
 			{
 				brokenribs[victim] = (GetConVarInt(cvarBrokenRibsDuration));
@@ -498,7 +498,7 @@ public Action ChargerAbility_SnappedLeg(int victim)
 		if (SnappedLegChance < SnappedLegPercent)
 		{
 			isSlowed[victim] = true;
-			PrintHintText(victim, "The Charger's impact has broken your leg!");
+			PrintHintText(victim, "Charger的撞击打断了你的腿！");
 			SetEntDataFloat(victim, laggedMovementOffset, GetConVarFloat(cvarSnappedLegSpeed), true);
 			cvarSnappedLegTimer[victim] = CreateTimer(GetConVarFloat(cvarSnappedLegDuration), Timer_SnappedLeg, victim);
 		}
@@ -511,7 +511,7 @@ public Action Timer_SnappedLeg(Handle timer, any victim)
 	if (IsValidClient(victim) && GetClientTeam(victim) == 2)
 	{
 		SetEntDataFloat(victim, laggedMovementOffset, 1.0, true);
-		PrintHintText(victim, "Your leg is starting to feel better.");
+		PrintHintText(victim, "你的腿开始感觉好多了。");
 		isSlowed[victim] = false;
 	}
 	if (cvarSnappedLegTimer[victim] != null)

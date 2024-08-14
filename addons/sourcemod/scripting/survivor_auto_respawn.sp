@@ -292,7 +292,7 @@ public void OnPluginStart()
 		g_esWeapon[i].cFlags.AddChangeHook(vWeaponConVarChanged);
 	g_hRemoveDeathDrop.AddChangeHook(vWeaponConVarChanged);
 		
-	AutoExecConfig(true, "survivor_auto_respawn");
+	//AutoExecConfig(true, "survivor_auto_respawn");
 
 	HookEvent("round_end", Event_RoundEnd, EventHookMode_PostNoCopy);
 	HookEvent("map_transition", Event_RoundEnd, EventHookMode_PostNoCopy);

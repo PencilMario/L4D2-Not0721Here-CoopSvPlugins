@@ -466,8 +466,8 @@ public Action Damage_ShurikenClaw(int client, int victim)
 	HurtEntity(victim, client, damage);
 	if (isAnnounce) 
 	{
-		PrintHintText(client, "你的手里剑爪造成了%i点伤害。", damage);
-		PrintHintText(victim, "你被手里剑爪击中，造成了%i点伤害。", damage);
+		PrintHintText(client, "你的手里剑爪造成了%.0f点伤害。", damage);
+		PrintHintText(victim, "你被手里剑爪击中，造成了%.0f点伤害。", damage);
 	}
 	return Plugin_Continue;
 }

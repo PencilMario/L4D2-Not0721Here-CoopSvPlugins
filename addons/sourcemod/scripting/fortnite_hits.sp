@@ -2,6 +2,7 @@
 #include <sdktools>
 #include <sdkhooks>
 #include <clientprefs>
+#include <left4dhooks>
 #include <regex>
 #include <gamma_colors>
 
@@ -286,7 +287,9 @@ public void PlayerHurt_Event(Event event, const char[] name, bool dontBroadcast)
 	
 	if (!g_cvAllowForBots.BoolValue && IsFakeClient(attacker))
 		return;
+	int itype = L4D2_GetIntWeaponAttribute(sWeapon, L4D2IWA_WeaponType);
 	
+	bool ismelee = (itype == WEAPONTYPE_CLAW || itype == WEAPONTYPE_MELEE);
 	if (IsShotgun(sWeapon))
 	{
 		if (!g_bIsFired[attacker])
@@ -309,10 +312,10 @@ public void PlayerHurt_Event(Event event, const char[] name, bool dontBroadcast)
 		}
 		if (hitgroup == HITGROUP_HEAD)
 			g_bIsCrit[attacker][client] = true;
-		GetAbsOrigin(client, entity, g_fPlayerPosLate[client]);
+		iGetAbsOrigin(client, entity, g_fPlayerPosLate[client]);
 	}
 	else {
-		ShowPRTDamage(attacker, client, entity, damage, (hitgroup == HITGROUP_HEAD),false, (strncmp(sWeapon, "melee", 5, true) == 0));
+		ShowPRTDamage(attacker, client, entity, damage, (hitgroup == HITGROUP_HEAD),false, ismelee);
 	}
 }
 
@@ -362,7 +365,7 @@ stock void ShowPRTDamage(int attacker, int client, int entity, int damage, bool 
 	if (late)
 		pos = g_fPlayerPosLate[client];
 	else
-		GetAbsOrigin(client, entity, pos);
+		iGetAbsOrigin(client, entity, pos);
 	GetAngleVectors(ang, fwd, right, NULL_VECTOR);
 	
 	l = RoundToCeil(float(count) / 2.0);
@@ -455,7 +458,7 @@ stock bool IsValidClient(int client, bool botcheck = true)
 	return (1 <= client && client <= MaxClients && IsClientConnected(client) && IsClientInGame(client) && (botcheck ? !IsFakeClient(client) : true));
 }
 
-public void GetAbsOrigin(int client, int entity, float vec[3]) {
+public void iGetAbsOrigin(int client, int entity, float vec[3]) {
 	if (entity == -1) {
 		GetClientAbsOrigin(client, vec);
 	} else {

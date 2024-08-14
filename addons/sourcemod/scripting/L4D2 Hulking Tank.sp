@@ -113,7 +113,7 @@ public void OnPluginStart()
 	cvarSmoulderingEarthDamage = CreateConVar("l4d_htm_smoulderingearthdamage", "7", "Damage the exploding rock causes nearby Survivors. (Def 7)", 0, true, 0.0, false, _);
 	cvarSmoulderingEarthRange = CreateConVar("l4d_htm_smoulderingearthrange", "300.0", "Area around the exploding rock that will reach Survivors. (Def 300.0)", 0, true, 0.0, false, _);
 	cvarSmoulderingEarthPower = CreateConVar("l4d_htm_smoulderingearthpower", "200.0", "Amount of power behind the explosion. (Def 200.0)", 0, true, 0.0, false, _);
-	cvarSmoulderingEarthType = CreateConVar("l4d_htm_smoulderingearthtype", "2", "Type of rock thrown, 1 = Rock is always on fire, 2 = Rock only on fire if Tank is on fire.", 0, true, 1.0, true, 2.0);
+	cvarSmoulderingEarthType = CreateConVar("l4d_htm_smoulderingearthtype", "1", "Type of rock thrown, 1 = Rock is always on fire, 2 = Rock only on fire if Tank is on fire.", 0, true, 1.0, true, 2.0);
 
 	cvarTitanFist = CreateConVar("l4d_htm_titanfist", "1", "Enables the Titan Fist ability, Tank is able to send out shockwaves through the air with its fist. (Def 1)", 0, true, 0.0, false, _);
 	cvarTitanFistIncap = CreateConVar("l4d_htm_titanfistincap", "1", "Enables the Titan Fist Incap ability, if a Survivor is incapped by the Tank punch they will still be flung. (Def 1)", 0, true, 0.0, false, _);

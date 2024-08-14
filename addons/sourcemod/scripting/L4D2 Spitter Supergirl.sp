@@ -128,10 +128,10 @@ public void OnPluginStart()
 	cvarStickyGooDuration = CreateConVar("l4d_ssg_stickygooduration", "3", "For how long after exiting the Sticky Goo will a Survivor be slowed. (Def 3)");
 	cvarStickyGooSpeed = CreateConVar("l4d_ssg_stickygoospeed", "0.5", "Speed reduction to Survivor caused by the Sticky Goo. (Def 0.5)");
 
-	cvarSupergirl = CreateConVar("l4d_ssg_supergirl", "1", "Enables Super Girl ability: After launching a spit, the Spitter is coated in a protective layer that slowly drips off and reduces all damage until it is gone. (Def 1)");
+	cvarSupergirl = CreateConVar("l4d_ssg_supergirl", "0", "Enables Super Girl ability: After launching a spit, the Spitter is coated in a protective layer that slowly drips off and reduces all damage until it is gone. (Def 1)");
 	cvarSupergirlDuration = CreateConVar("l4d_ssg_supergirlduration", "4", "How long the Spitter is invulnerable. (Def 4)");
 
-	cvarSupergirlSpeed = CreateConVar("l4d_ssg_supergirlspeed", "1", "Enables Super Girl Speed ability: Works with the Supergirl ability, the spit also coats the Spitters feet increasing movement speed for a brief period after launching a spit. (Def 1)");
+	cvarSupergirlSpeed = CreateConVar("l4d_ssg_supergirlspeed", "0", "Enables Super Girl Speed ability: Works with the Supergirl ability, the spit also coats the Spitters feet increasing movement speed for a brief period after launching a spit. (Def 1)");
 	cvarSupergirlSpeedDuration = CreateConVar("l4d_ssg_supergirlspeedduration", "4", "How long the Spitter is invulnerable. (Def 4)");
 
 	HookEvent("spit_burst", Event_SpitBurst);

@@ -467,11 +467,15 @@ stock void Fling_TitanFist(int victim, float vector[3], int attacker, float inca
 	SDKCall(MySDKCall, victim, vector, 76, attacker, incaptime); //76 is the 'got bounced' animation in L4D2
 	Damage_TitanFist(attacker, victim);
 }
-
+void HurtEntity(int victim, int client, float damage)
+{
+	SDKHooks_TakeDamage(victim, client, client, damage, DMG_GENERIC);
+}
 public Action Damage_TitanFist(int attacker, int victim)
 {
 	int damage = GetConVarInt(cvarTitanFistDamage);
-	float victimPos[3];
+	HurtEntity(victim, attacker, float(damage));
+	/* float victimPos[3];
 	char StrDamage[16], StrDamageTarget[16];
 			
 	GetClientEyePosition(victim, victimPos);
@@ -495,10 +499,10 @@ public Action Damage_TitanFist(int attacker, int victim)
 	// Config, delete point_hurt
 	DispatchKeyValue(entPointHurt, "classname", "point_hurt");
 	DispatchKeyValue(victim, "targetname", "null");
-	RemoveEdict(entPointHurt);
+	RemoveEdict(entPointHurt); */
 	
-	PrintHintText(attacker, "Your Titan Claw inflicted %i damage.", damage);
-	PrintHintText(victim, "You were hit with Titan Claw, causing %i damage and sending you flying.", damage);
+	PrintHintText(attacker, "你的泰坦之爪造成了%i点伤害。", damage);
+	PrintHintText(victim, "你被泰坦之爪击中，造成了%i点伤害并被击飞。", damage);
 }
 
 public Action OnPlayerRunCmd(int client, int &buttons, int &impulse, float vel[3], float angles[3], int &weapon)
@@ -662,7 +666,7 @@ public Action OnPlayerRunCmd(int client, int &buttons, int &impulse, float vel[3
 			cvarHibernationTimer[client] = CreateTimer(GetConVarFloat(cvarHibernationDuration), Timer_Hibernation, client);
 			cvarResetDelayTimer[client] = CreateTimer(1.0, ResetDelay, client);
 			
-			PrintHintText(client, "You are Hibernating.");
+			PrintHintText(client, "你正在冬眠。");
 		}
 		
 		if (IsValidTank(client) && isHibernating[client] && !buttondelay[client])
@@ -717,7 +721,8 @@ public Action Damage_TitanicBellow(int client, int victim)
 {
 	int damage = 0;
 	damage = GetConVarInt(cvarTitanicBellowDamage);
-	float victimPos[3];
+	HurtEntity(victim, client, float(damage));
+/* 	float victimPos[3];
 	char StrDamage[16], StrDamageTarget[16];
 			
 	GetClientEyePosition(victim, victimPos);
@@ -741,7 +746,7 @@ public Action Damage_TitanicBellow(int client, int victim)
 	// Config, delete point_hurt
 	DispatchKeyValue(entPointHurt, "classname", "point_hurt");
 	DispatchKeyValue(victim, "targetname", "null");
-	RemoveEdict(entPointHurt);
+	RemoveEdict(entPointHurt); */
 }
 
 public void OnEntityCreated(int entity, const char[] classname)
@@ -870,7 +875,8 @@ stock void Fling_SmoulderingEarth(int victim, float vector[3], int attacker, flo
 public Action Damage_SmoulderingEarth(int attacker, int victim)
 {
 	int damage = GetConVarInt(cvarSmoulderingEarthDamage);
-	float victimPos[3];
+	HurtEntity(victim, attacker, float(damage));
+/* 	float victimPos[3];
 	char strDamage[16], strDamageTarget[16];
 			
 	GetClientEyePosition(victim, victimPos);
@@ -895,7 +901,7 @@ public Action Damage_SmoulderingEarth(int attacker, int victim)
 	DispatchKeyValue(entPointHurt, "classname", "point_hurt");
 	DispatchKeyValue(victim, "targetname", "null");
 	RemoveEdict(entPointHurt);
-}
+ */}
 
 // ----------------------------------------------------------------------------
 // ClientViews()

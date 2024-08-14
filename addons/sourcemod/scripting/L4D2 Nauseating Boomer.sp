@@ -738,10 +738,15 @@ public Action Timer_FlatulenceCloud(Handle timer, Handle dataPack)
 	}
 	return Plugin_Continue;
 }
+void HurtEntity(int victim, int client, float damage)
+{
+	SDKHooks_TakeDamage(victim, client, client, damage, DMG_GENERIC);
+}
 
 public Action DamageHook(int victim, int attacker, int damage)
 {
-	char strDamage[16];
+	HurtEntity(victim, attacker, float(damage));
+/* 	char strDamage[16];
 	char strDamageTarget[16];
 	float victimPos[3];
 	GetClientEyePosition(victim, victimPos);
@@ -758,7 +763,7 @@ public Action DamageHook(int victim, int attacker, int damage)
 	TeleportEntity(entPointHurt, victimPos, NULL_VECTOR, NULL_VECTOR);
 	AcceptEntityInput(entPointHurt, "Hurt", (attacker && attacker < MaxClients && IsClientInGame(attacker)) ? attacker : -1);
 	DispatchKeyValue(entPointHurt, "classname", "point_hurt");
-	DispatchKeyValue(victim, "targetname", "null");
+	DispatchKeyValue(victim, "targetname", "null"); */
 	return Plugin_Continue;
 }
 

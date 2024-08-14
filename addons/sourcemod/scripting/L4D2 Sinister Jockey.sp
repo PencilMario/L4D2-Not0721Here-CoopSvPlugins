@@ -134,7 +134,7 @@ public Action Event_PlayerSpawn(Event event, const char[] name, bool dontBrodcas
 	int client = GetClientOfUserId(GetEventInt(event, "userid"));
 	if (IsValidJockey(client))
 	{
-		PrintHintText(client, "Press and hold only the USE button to activate the Marionette ability.");
+		PrintHintText(client, "按住并仅按住USE按钮以激活傀儡能力。");
 		if (isGhostStalker)
 		{
 			int Opacity = GetConVarInt(cvarGhostStalkerVisibility);
@@ -153,7 +153,7 @@ public Action Timer_BacterialFeet(Handle timer, any client)
 {
 	if (IsValidClient(client))
 	{
-		PrintHintText(client, "Bacterial Feet has granted you increased movement speed!");
+		PrintHintText(client, "细菌之足使你获得了更快的移动速度！");
 		SetEntDataFloat(client, laggedMovementOffset, 1.0*GetConVarFloat(cvarBacterialFeetSpeed), true);
 	}
 	if(cvarBacterialFeetTimer[client] != null)
@@ -245,7 +245,13 @@ public Action Event_JockeyRideStart(Event event, const char[] name, bool dontBro
 			{
 				damage = maxdamage;
 			}
-			float victimPos[3];
+			HurtEntity(victim, client, float(damage));
+			if (isAnnounce) 
+			{
+				PrintHintText(client, "你从%i的高度落到一个生还者身上，造成了%i点伤害。", distance, damage);
+				PrintHintText(victim, "一个Jockey从%i的高度落到你身上，造成了%i点伤害。", distance, damage);
+			}
+/* 			float victimPos[3];
 			char strDamage[16];
 			char strDamageTarget[16];
 			GetClientEyePosition(victim, victimPos);
@@ -264,13 +270,9 @@ public Action Event_JockeyRideStart(Event event, const char[] name, bool dontBro
 				DispatchKeyValue(entPointHurt, "classname", "point_hurt");
 				DispatchKeyValue(victim, "targetname", "null");
 				AcceptEntityInput(entPointHurt, "kill");
-				if (isAnnounce) 
-				{
-					PrintHintText(client, "You dropped %i distance on a Survivor, causing %i damage.", distance, damage);
-					PrintHintText(victim, "A Jockey dropped %i distance on you, causing %i damage.", distance, damage);
-				}
+
 			}
-		}
+ */		}
 	}
 	return Plugin_Continue;
 }
@@ -289,11 +291,15 @@ public Action Event_JockeyRideEnd(Event event, const char[] name, bool dontBroad
 	}
 	return Plugin_Continue;
 }
-
+void HurtEntity(int victim, int client, float damage)
+{
+	SDKHooks_TakeDamage(victim, client, client, damage, DMG_GENERIC);
+}
 public Action Damage_HumanShield(int client, int victim)
 {
 	int damage = GetConVarInt(cvarHumanShieldDamage);
-	float victimPos[3];
+	HurtEntity(victim, client, float(damage));
+/* 	float victimPos[3];
 	char strDamage[16];
 	char strDamageTarget[16];		
 	GetClientEyePosition(victim, victimPos);
@@ -312,7 +318,7 @@ public Action Damage_HumanShield(int client, int victim)
 	DispatchKeyValue(entPointHurt, "classname", "point_hurt");
 	DispatchKeyValue(victim, "targetname", "null");
 	AcceptEntityInput(entPointHurt, "kill");
-	return Plugin_Continue;
+ */	return Plugin_Continue;
 }
 
 public Action OnPlayerRunCmd(int client, int &buttons, int &impulse, float vel[3], float angles[3], int &weapon)
@@ -417,7 +423,7 @@ void MarionetteStart(int client, int victim)
 	ShowParticle(victimPos, "electrical_arc_01_system", 1.0);	
 	char playername[64];
 	GetClientName(victim, playername, sizeof(playername));
-	PrintToChatAll("Player \x05%s \x01has been adjusted.", playername);
+	PrintToChatAll("玩家\x05%s \x01已被调整。", playername);
 }
 
 void MarionetteStop(int client, int victim)

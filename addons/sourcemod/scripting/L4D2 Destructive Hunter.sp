@@ -204,7 +204,7 @@ public Action OnTakeDamage(int victim, int &attacker, int &inflictor, float &dam
 				damage = damage * damagemod;
 			}
 			cvarShunpoTimer[victim] = CreateTimer(GetConVarFloat(cvarShunpoDuration), Timer_Shunpo, victim);
-			PrintHintText(victim, "You have activated Shunpo and are taking reduced damage.");
+			PrintHintText(victim, "你激活了瞬步，受到的伤害减半。");
 		}
 		if ((damagetype == 8 || damagetype == 2056 || damagetype == 268435464) && isKevlarSkin)
 		{
@@ -342,7 +342,8 @@ stock void Fling_LashingClaw(int victim, float vector[3], int attacker, float in
 public Action Damage_LashingClaw(int attacker, int victim)
 {
 	int damage = GetConVarInt(cvarLashingClawDamage);
-	float victimPos[3];
+	HurtEntity(victim, attacker, float(damage));
+/* 	float victimPos[3];
 	char strDamage[16];
 	char strDamageTarget[16];	
 	GetClientEyePosition(victim, victimPos);
@@ -361,10 +362,10 @@ public Action Damage_LashingClaw(int attacker, int victim)
 	DispatchKeyValue(entPointHurt, "classname", "point_hurt");
 	DispatchKeyValue(victim, "targetname", "null");
 	AcceptEntityInput(entPointHurt, "kill");
-	if (isAnnounce) 
+ */	if (isAnnounce) 
 	{
-		PrintHintText(attacker, "Your claw struck a survivor for %i damage.", damage);
-		PrintHintText(victim, "You were lashed by the Hunter's claw for %i damage.", damage);
+		PrintHintText(attacker, "你的爪子击中了一个生还者，造成了%i点伤害。", damage);
+		PrintHintText(victim, "你被Hunter的爪子鞭打，造成了%i点伤害。", damage);	
 	}
 	return Plugin_Continue;
 }
@@ -385,7 +386,8 @@ void Sledgehammer(int client, int victim)
 	{
 		damage = maxdamage;
 	}
-	float victimPos[3];
+	HurtEntity(victim, client, float(damage));
+/* 	float victimPos[3];
 	char strDamage[16];
 	char strDamageTarget[16];
 	GetClientEyePosition(victim, victimPos);
@@ -396,6 +398,7 @@ void Sledgehammer(int client, int victim)
 	{
 		return;
 	}
+	HurtEntity(victim, client, damage)
 	DispatchKeyValue(victim, "targetname", strDamageTarget);
 	DispatchKeyValue(entPointHurt, "DamageTarget", strDamageTarget);
 	DispatchKeyValue(entPointHurt, "Damage", strDamage);
@@ -406,10 +409,10 @@ void Sledgehammer(int client, int victim)
 	DispatchKeyValue(entPointHurt, "classname", "point_hurt");
 	DispatchKeyValue(victim, "targetname", "null");
 	AcceptEntityInput(entPointHurt, "kill");
-	if (isAnnounce) 
+ */	if (isAnnounce) 
 	{
-		PrintHintText(client, "You leaped %i distance onto a Survivor, causing %i damage.", distance, damage);
-		PrintHintText(victim, "A Jockey leapt %i distance on you, causing %i damage.", distance, damage);
+		PrintHintText(client, "你跃过了%i距离到达生还者身上，造成了%i点伤害。", distance, damage);
+		PrintHintText(victim, "一个Jockey跃过了%i距离到你身上，造成了%i点伤害。", distance, damage);	
 	}
 }
 
@@ -417,7 +420,7 @@ public Action Timer_Shunpo(Handle timer, any client)
 {
 	if (IsValidClient(client))
 	{
-		PrintHintText(client, "Your Shunpo has worn off, you will take full damage.");
+		PrintHintText(client, "你的瞬步效果已消失，你将受到全额伤害。");
 		cooldownShunpo[client] = GetEngineTime();
 	}
 	if (cvarShunpoTimer[client] != null)
@@ -459,34 +462,19 @@ public Action OnPlayerRunCmd(int client, int &buttons, int &impulse, float vel[3
 
 public Action Damage_ShurikenClaw(int client, int victim)
 {
-	int damage = GetConVarInt(cvarShurikenClawDamage);
-	float victimPos[3];
-	char strDamage[16];
-	char strDamageTarget[16];		
-	GetClientEyePosition(victim, victimPos);
-	IntToString(damage, strDamage, sizeof(strDamage));
-	Format(strDamageTarget, sizeof(strDamageTarget), "hurtme%d", victim);
-	int entPointHurt = CreateEntityByName("point_hurt");
-	if (!IsValidEntity(entPointHurt) || !IsValidEdict(entPointHurt))
-
-	DispatchKeyValue(victim, "targetname", strDamageTarget);
-	DispatchKeyValue(entPointHurt, "DamageTarget", strDamageTarget);
-	DispatchKeyValue(entPointHurt, "Damage", strDamage);
-	DispatchKeyValue(entPointHurt, "DamageType", "0");
-	DispatchSpawn(entPointHurt);
-	TeleportEntity(entPointHurt, victimPos, NULL_VECTOR, NULL_VECTOR);
-	AcceptEntityInput(entPointHurt, "Hurt", (client && client < MaxClients && IsClientInGame(client)) ? client : -1);
-	DispatchKeyValue(entPointHurt, "classname", "point_hurt");
-	DispatchKeyValue(victim, "targetname", "null");
-	AcceptEntityInput(entPointHurt, "kill");
+	float damage = GetConVarFloat(cvarShurikenClawDamage);
+	HurtEntity(victim, client, damage);
 	if (isAnnounce) 
 	{
-		PrintHintText(client, "Your Shuriken Claw inflicted %i damage.", damage);
-		PrintHintText(victim, "You were hit with Shuriken Claws, causing %i damage.", damage);
+		PrintHintText(client, "你的手里剑爪造成了%i点伤害。", damage);
+		PrintHintText(victim, "你被手里剑爪击中，造成了%i点伤害。", damage);
 	}
 	return Plugin_Continue;
 }
-
+void HurtEntity(int victim, int client, float damage)
+{
+	SDKHooks_TakeDamage(victim, client, client, damage, DMG_GENERIC);
+}
 void ShurikenClawIgnite(int victim, int attacker)
 {
 	int ShurikenClawIgniteChance = GetRandomInt(0, 99);
@@ -532,7 +520,8 @@ public Action Timer_ShurikenClawIgnite(Handle timer, any dataPack)
 public Action Damage_ShurikenClawIgnite(int victim, int attacker)
 {
 	int damage = GetConVarInt(cvarShurikenClawIgniteDamage);
-	float victimPos[3];
+	HurtEntity(victim, attacker, float(damage));
+/* 	float victimPos[3];
 	char strDamage[16];
 	char strDamageTarget[16];	
 	GetClientEyePosition(victim, victimPos);
@@ -550,7 +539,7 @@ public Action Damage_ShurikenClawIgnite(int victim, int attacker)
 	AcceptEntityInput(entPointHurt, "Hurt", (attacker && attacker < MaxClients && IsClientInGame(attacker)) ? attacker : -1);
 	DispatchKeyValue(entPointHurt, "classname", "point_hurt");
 	DispatchKeyValue(victim, "targetname", "null");
-	AcceptEntityInput(entPointHurt, "kill");
+	AcceptEntityInput(entPointHurt, "kill"); */
 	return Plugin_Continue;
 }
 

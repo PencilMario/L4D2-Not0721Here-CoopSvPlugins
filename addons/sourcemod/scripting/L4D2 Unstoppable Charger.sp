@@ -628,10 +628,14 @@ public Action ChargerAbility_VoidChamber(int attacker)
 	}
 	return Plugin_Continue;
 }
-
+void HurtEntity(int victim, int client, float damage)
+{
+	SDKHooks_TakeDamage(victim, client, client, damage, DMG_GENERIC);
+}
 public Action DamageHook(int victim, int attacker, int damage)
 {
-	float victimPos[3];
+	HurtEntity(victim, attacker, float(damage));
+/* 	float victimPos[3];
 	char strDamage[16];
 	char strDamageTarget[16];	
 	GetClientEyePosition(victim, victimPos);
@@ -649,7 +653,7 @@ public Action DamageHook(int victim, int attacker, int damage)
 	AcceptEntityInput(entPointHurt, "Hurt", (attacker && attacker < MaxClients && IsClientInGame(attacker)) ? attacker : -1);
 	DispatchKeyValue(entPointHurt, "classname", "point_hurt");
 	DispatchKeyValue(victim, "targetname", "null");
-	AcceptEntityInput(entPointHurt, "kill");
+	AcceptEntityInput(entPointHurt, "kill"); */
 	return Plugin_Continue;
 }
 

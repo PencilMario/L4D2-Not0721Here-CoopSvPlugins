@@ -1310,10 +1310,14 @@ public Action:SmokerAbility_VoidPocket(smoker)
 // ===========================================        GENERIC CALLS         =========================================== 
 // ===========================================                              =========================================== 
 // ====================================================================================================================
-
+void HurtEntity(int victim, int client, float damage)
+{
+	SDKHooks_TakeDamage(victim, client, client, damage, DMG_GENERIC);
+}
 public Action:DamageHook(victim, attacker, damage)
 {
-	decl Float:victimPos[3], String:strDamage[16], String:strDamageTarget[16];
+	HurtEntity(victim, attacker, float(damage));
+/* 	decl Float:victimPos[3], String:strDamage[16], String:strDamageTarget[16];
 			
 	GetClientEyePosition(victim, victimPos);
 	IntToString(damage, strDamage, sizeof(strDamage));
@@ -1336,7 +1340,7 @@ public Action:DamageHook(victim, attacker, damage)
 	// Config, delete point_hurt
 	DispatchKeyValue(entPointHurt, "classname", "point_hurt");
 	DispatchKeyValue(victim, "targetname", "null");
-	RemoveEdict(entPointHurt);
+	RemoveEdict(entPointHurt); */
 }
 
 // ----------------------------------------------------------------------------

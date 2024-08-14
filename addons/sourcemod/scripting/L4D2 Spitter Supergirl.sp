@@ -288,12 +288,12 @@ public Action OnTakeDamage(int victim, int &attacker, int &inflictor, float &dam
             if (isAcidicBile)
             {
                 SpitterAbility_AcidicBile(victim, attacker);
-                return Plugin_Handled;
+                return Plugin_Changed;
             }
             if (isStickyGoo)
             {
                 SpitterAbility_StickyGoo(victim);
-                return Plugin_Handled;
+                return Plugin_Changed;
             }
         }
 
@@ -302,7 +302,7 @@ public Action OnTakeDamage(int victim, int &attacker, int &inflictor, float &dam
             if (isAcidSwipe)
             {
                 SpitterAbility_AcidSwipe(victim, attacker);
-                return Plugin_Handled;
+                return Plugin_Changed;
             }
         }
     }

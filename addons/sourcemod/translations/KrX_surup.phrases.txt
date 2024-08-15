@@ -1,0 +1,617 @@
+// Translation file for KrX's Survivor Upgrades
+// Last updated for v1.1.5, 1:49 PM 9/1/2009
+"Phrases"
+{
+	// http://wiki.alliedmods.net/Translations_%28SourceMod_Scripting%29
+	// Getting colour codes to work in Translation files: http://forums.alliedmods.net/showpost.php?p=896532&postcount=5
+	// \x01 to \x06:      
+	// == Server Prints == //
+	"SERVER_LOADED_SUCCESSFULLY"
+	{
+		"en"		"Loaded Successfully!"
+	}
+	"SERVER_PLUGIN_ENABLED"
+	{
+		"#format"	"{1:s}"
+		"en"    	"have been ENABLED for {1}!"
+	}
+	"SERVER_PLUGIN_DISABLED"
+	{
+		"#format"	"{1:s}"
+		"en"		"have been DISABLED for {1}!"
+	}
+	"SERVER_ROUND_START"
+	{
+		"en"		"Round Started!"
+	}
+	"SERVER_ROUND_END"
+	{
+		"en"		"Round Ended!"
+	}
+	"SERVER_MISSION_LOST"
+	{
+		"en"		"Mission Lost!"
+	}
+	"SERVER_ROUND_START_LOST_NORESET"
+	{
+		"en"		"Round Started after Misson Lost. Upgrades remain."
+	}
+	"SERVER_ROUND_START_LOST_RESET"
+	{
+		"en"		"Round Started after Misson Lost. Upgrades reset."
+	}
+	"SERVER_ROUND_END_LOST"
+	{
+		"en"		"Round Ended because Mission Lost!"
+	}
+	"SERVER_FINALE_VEHICLE_LEAVING"
+	{
+		"en"		"Finale Vehicle is Leaving. Upgrades-giving disabled. All Upgrades removed."
+	}
+	"SERVER_BOT_REPLACED_PLAYER"
+	{
+		"#format"	"{1:d},{2:d}"
+		"en"		"Bot {1} Replaced Player {2}."
+	}
+	"SERVER_PLAYER_REPLACED_BOT"
+	{
+		"#format"	"{1:d},{2:d}"
+		"en"		"Player {1} Replaced Bot {2}."
+	}
+
+	// == Labels == //
+	"LABEL_AMMOTYPES"
+	{
+		"en"		"Ammunition Panel"
+	}
+	"LABEL_NORMALAMMO"
+	{
+		"en"		"Normal Ammo"
+	}
+	"LABEL_HOLLOWPOINT"
+	{
+		"en"		"Hollow Point Ammo"
+	}
+	"LABEL_INCENDIARY"
+	{
+		"en"		"Incendiary Ammo"
+	}
+	"LABEL_PERSISTENTMENU"
+	{
+		"en"		"Persistent Menu?"
+	}
+	"LABEL_AUTOSWITCH"
+	{
+		"en"		"AutoSwitch?"
+	}
+	"LABEL_SHOW_AMMOCOUNT"
+	{
+		"en"		"Show AmmoCount?"
+	}
+	"LABEL_YES"
+	{
+		"en"		"Yes"
+	}
+	"LABEL_NO"
+	{
+		"en"		"No"
+	}
+
+	// == Hints == //
+	"HINT_SAY_AMMOTYPE"
+	{
+		"en"		"Say /ammotype to change your Special Ammunition"
+	}
+	"HINT_SAY_LASER"
+	{
+		"en"		"Say /laser to toggle your Laser Sights"
+	}
+
+	// == All Chat Prints == //
+	"CHATALL_PLUGIN_ENABLED"
+	{
+		"en"		"is On!"
+	}
+	"CHATALL_PLUGIN_DISABLED"
+	{
+		"#format"	"{1:s}"
+		"en"		"is Off for {1}."
+	}
+	"CHATALL_SPECIALAMMO_FINISHED_HOLLOWPOINT"
+	{
+		"#format"	"{1:N}"
+		"en"		"{1} used up all of his Hollow Point Ammunition!"
+	}
+	"CHATALL_SPECIALAMMO_FINISHED_INCENDIARY"
+	{
+		"#format"	"{1:N}"
+		"en"		"{1} used up all of his Incendiary Ammunition!"
+	}
+	"CHATALL_RESET_DEATH"
+	{
+		"#format"	"{1:N}"
+		"en"		"{1} died and lost all his upgrades!"
+	}
+	"CHATALL_INFO_SAYUPGRADES"
+	{
+		"en"		"Say /upgrades for more info on your upgrades"
+	}
+	"CHATALL_INFO_FULLYUPGRADED"
+	{
+		"#format"	"{1:N}"
+		"en"		"{1} would have gotten an upgrade but already has them all."
+	}
+
+	"CHATALL_HEAL_SELF"
+	{
+		"#format"	"{1:N},{2:d},"
+		"en"		"{1} got {2} upgrade(s) for healing Himself!"
+	}
+	"CHATALL_HEAL_PLAYER"
+	{
+		"#format"	"{1:N},{2:d},{3:N}"
+		"en"		"{1} got {2} upgrade(s) for healing {3}!"
+	}
+	"CHATALL_INCOMING_TANK"
+	{
+		"en"		"Survivors been upgraded for the incoming Tank"
+	}
+	"CHATALL_KILLED_TANK"
+	{
+		"en"		"Survivors been upgraded for killing the tank"
+	}
+	"CHATALL_TANK_NOPRIMARY"
+	{
+		"en"		"No primary attacker on the tank, so nobody gets the bonus."
+	}
+	"CHATALL_PRIMARY"
+	{
+		"#format"	"{1:N}"
+		"en"		"The primary attacker, {1} also gets:"
+	}
+	"CHATALL_KILLED_WITCH"
+	{
+		"en"	"The Survivors are upgraded for killing the witch."
+	}
+	"CHATALL_WITCH_NOPRIMARY"
+	{
+		"en"		"No primary attacker on the witch, so nobody gets the bonus."
+	}
+	"CHATALL_WITCH_CR0WNED"
+	{
+		"#format"	"{1:N}"
+		"en"		"{1} also gets the following for cr0wning the witch:"
+	}
+	"CHATALL_KILLS_RANDOM"
+	{
+		"#format"	"{1:N},{2:d},{3:d}"
+		"en"		"{1} won {2} upgrade(s) for killing {3} infected!"
+	}
+	"CHATALL_KILLS_ADDAMMO"
+	{
+		"#format"	"{1:N},{2:d},{3:d}"
+		"en"		"{1} got {2} more Special Ammunition for killing {3} infected!"
+	}
+	"CHATALL_KILLS_INCENDIARY"
+	{
+		"#format"	"{1:N},{2:d}"
+		"en"		"{1} won Incendiary Ammo for killing {2} infected!"
+	}
+	"CHATALL_KILLS_HOLLOWPOINT"
+	{
+		"#format"	"{1:N},{2:d}"
+		"en"		"{1} won Hollow Point Ammo for killing {2} infected!"
+	}
+	"CHATALL_REACH_SAFEROOM"
+	{
+		"#format"	"{1:d}"
+		"en"		"The Survivors have been given {1} upgrades for reaching the saferoom!"
+	}
+
+	"CHATALL_EXPIRE_RAINCOAT"
+	{
+		"en"		"Boomer vomit was stopped by a (now ruined) Raincoat!"
+	}
+	"CHATALL_EXPIRE_CHALK"
+	{
+		"en"		"Climbing Chalk was used to climb back up from a ledge!"
+	}
+	"CHATALL_EXPIRE_WIND"
+	{
+		"en"		"A survivor got their Second Wind and stood back up!"
+	}
+	"CHATALL_EXPIRE_KNIFE"
+	{
+		"en"		"A Knife was used to escape!"
+	}
+
+	// == Chat Client Prints == //
+	"CHAT_INFO_FULLYUPGRADED"
+	{
+		"en"		"You would have gotten an upgrade but already you already have them all."
+	}
+	"CHAT_INFO_DISABLED"
+	{
+		"#format"	"{1:s}"
+		"en"		"Survivor Upgrades Have been disabled for {1}."
+	}
+	"CHAT_INFO_LASERON"
+	{
+		"en"		"Laser turned On!"
+	}
+	"CHAT_INFO_LASEROFF"
+	{
+		"en"		"Laser turned Off!"
+	}
+	"CHAT_HEAL_SELF"
+	{
+		"#format"	"{1:d}"
+		"en"		"You got {1} upgrade(s) for healing Yourself!"
+	}
+	"CHAT_HEAL_PLAYER"
+	{
+		"#format"	"{1:d},{2:N}"
+		"en"		"You got {1} upgrade(s) for healing {2}!"
+	}
+	"CHAT_SPECIALAMMO_FINISHED_HOLLOWPOINT"
+	{
+		"en"		"You have used up all of your Hollow Point Ammunition!"
+	}
+	"CHAT_SPECIALAMMO_FINISHED_INCENDIARY"
+	{
+		"en"		"You have used up all of your Incendiary Ammunition!"
+	}
+	"CHAT_SPECIALAMMO_SWITCHED_NORMAL"
+	{
+		"en"		"Switching back to Normal Ammunition"
+	}
+	"CHAT_SPECIALAMMO_SWITCHED_HOLLOWPOINT"
+	{
+		"en"		"Switching to Hollow Point Ammunition"
+	}
+	"CHAT_SPECIALAMMO_SWITCHED_INCENDIARY"
+	{
+		"en"		"Switching to Incendiary Ammunition"
+	}
+	"CHAT_SPECIALAMMO_NOT_ENOUGH_HOLLOWPOINT"
+	{
+		"en"		"Sorry, you do not have enough HollowPoint ammunition"
+	}
+	"CHAT_SPECIALAMMO_NOT_ENOUGH_INCENDIARY"
+	{
+		"en"		"Sorry, you do not have enough Incendiary ammunition"
+	}
+	"CHAT_SPECIALAMMO_AUTOSWITCH_OFF"
+	{
+		"en"		"SpecialAmmo will no longer auto-switch when you receive an ammotype"
+	}
+	"CHAT_SPECIALAMMO_AUTOSWITCH_ON"
+	{
+		"en"		"SpecialAmmo will now auto-switch when you receive an ammotype"
+	}
+	"CHAT_RESET_DEATH"
+	{
+		"en"		"You died and lost all your upgrades!"
+	}
+	"CHAT_PRIMARY"
+	{
+		"en"		"As the primary attacker, You also get:"
+	}
+	"CHAT_WITCH_CR0WNED"
+	{
+		"en"		"For cr0wning the witch, you get:"
+	}
+	"CHAT_KILLS_RANDOM"
+	{
+		"#format"	"{1:d},{2:d}"
+		"en"		"You won {1} upgrade(s) for killing {2} infected!"
+	}
+	"CHAT_KILLS_ADDAMMO"
+	{
+		"#format"	"{1:d},{2:d}"
+		"en"		"You got {1} more Special Ammunition for killing {2} infected!"
+	}
+	"CHAT_KILLS_INCENDIARY"
+	{
+		"#format"	"{1:d}"
+		"en"		"You won Incendiary Ammo for killing {1} infected!"
+	}
+	"CHAT_KILLS_HOLLOWPOINT"
+	{
+		"#format"	"{1:d}"
+		"en"		"You won Hollow Point Ammo for killing {1} infected!"
+	}
+
+	// == Console Admin Prints == //
+	"CONSOLE_LIST_ALL_UPGRADES"
+	{
+		"en"		"Listing all available upgrades:"
+	}
+	"CONSOLE_LIST_UPGRADES"
+	{
+		"#format"	"{1:N}"
+		"en"		"Client {1} has:"
+	}
+	"CONSOLE_LISTED_TOTAL_UPGRADES"
+	{
+		"#format"	"{1:d}"
+		"en"		"Listed {1} total available upgrades"
+	}
+
+	// == Client Command Prints == //
+	"CHAT_LIST_UPGRADES"
+	{
+		"#format"	"{1:N},{2:t}"
+		"en"		"{1} has {2}."
+	}
+	"CHAT_GOT_UPGRADE"
+	{
+		"#format"	"{1:N},{2:t}"
+		"en"		"{1} got {2}."
+	}
+	"CHAT_YOU_GOT_UPGRADE"
+	{
+		"#format"	"{1:t}"
+		"en"		"You got {1}."
+	}
+
+	// == Announcement == //
+	"ANNOUNCE_SERVER_RUNNING"
+	{
+		"#format"	"{1:s}"
+		"en"		"This server is running KrX's Survivor Upgrades plugin v{1}"
+	}
+	"ANNOUNCE_SERVER_NOTRUNNING"
+	{
+		"#format"	"{1:s}"
+		"en"		"Survivor Upgrades have been DISABLED for {1}"
+	}
+		
+
+	// == /upghelp commands == //
+	"UPGHELP_HEADER_ENABLED"
+	{
+		"#format"	"{1:s}"
+		"en"		"KrX's Survivor Upgrades plugin v{1} Help"
+	}
+	"UPGHELP_HEADER_DISABLED"
+	{
+		"#format"	"{1:s}"
+		"en"		"KrX's Survivor Upgrades have been DISABLED for {1}"
+	}
+	"UPGHELP_1_SAY"
+	{
+		"en"		"Say:"
+	}
+	"UPGHELP_1_LASERTOGGLE"
+	{
+		"en"		"/laser to toggle your laser sight"
+	}
+	"UPGHELP_1_UPGRADES"
+	{
+		"en"		"/upgrades to check out your upgrades"
+	}
+	"UPGHELP_1_AMMOTYPE"
+	{
+		"en"		"/ammotype to track and choose your AmmoType"
+	}
+	"UPGHELP_1_UPGHELP"
+	{
+		"en"		"/upghelp to see this info"
+	}
+	"UPGHELP_1_UPGHELP2"
+	{
+		"en"		"/upghelp 2 to see at what times you get upgrades"
+	}
+	"UPGHELP_1_UPGHELP3"
+	{
+		"en"		"/upghelp 3 to see upgrade settings"
+	}
+	"UPGHELP_2_UPGRADESPER"
+	{
+		"en"		"Upgrades per:"
+	}
+	"UPGHELP_2_MISSIONSTART"
+	{
+		"#format"	"{1:d}"
+		"en"		"Mission Start:{1}"
+	}
+	"UPGHELP_2_KILLS"
+	{
+		"#format"	"{1:d},{2:d}"
+		"en"		"Per {1} Infected Killed: {2}"
+	}
+	"UPGHELP_2_TANK"
+	{
+		"#format"	"{1:d},{2:d},{3:d}"
+		"en"		"Tank Spawned:{1}, Tank Killed:{2}, Primary Tank Killer:{3}"
+	}
+	"UPGHELP_2_WITCH"
+	{
+		"#format"	"{1:d},{2:d},{3:d}"
+		"en"		"Witch Killed:{1}, Witch Killer:{2}, Witch Cr0wner:{3}"
+	}
+	"UPGHELP_2_HEAL"
+	{
+		"#format"	"{1:d},{2:d},{3:d}"
+		"en"		"Minimum Heal Amount:{1}, Heal Others:{2}, Heal Self:{3}"
+	}
+	"UPGHELP_3_SETTINGS"
+	{
+		"en"		"Upgrades Settings:"
+	}
+	"UPGHELP_3_SPECIALAMMO"
+	{
+		"#format"	"{1:d},{2:d}"
+		"en"		"SpecialAmmo given per SpecialAmmotype: {1}, Shotguns take {2} bullets per shot"
+	}
+	"UPGHELP_3_MEGAKILLS_AWARD1"
+	{
+		"en"		"Kills:Minigun&Blasts are counted, giving SpecialAmmo only."
+	}
+	"UPGHELP_3_MEGAKILLS_AWARD2"
+	{
+		"#format"	"{1:d}"
+		"en"		"Kills:Minigun&Blasts are counted, giving SpecialAmmo, & {1} Random Upgrades"
+	}
+	"UPGHELP_3_MEGAKILLS_AWARD0"
+	{
+		"#format"	"{1:d}"
+		"en"		"Kills:Minigun&Blasts are counted, giving {1} Random Upgrades"
+	}
+	"UPGHELP_3_NOMEGAKILLS_AWARD1"
+	{
+		"en"		"Kills:Minigun&Blasts aren't counted, giving SpecialAmmo only."
+	}
+	"UPGHELP_3_NOMEGAKILLS_AWARD2"
+	{
+		"#format"	"{1:d}"
+		"en"		"Kills:Minigun&Blasts aren't counted, giving SpecialAmmo, & {1} Random Upgrades"
+	}
+	"UPGHELP_3_NOMEGAKILLS_AWARD0"
+	{
+		"#format"	"{1:d}"
+		"en"		"Kills:Minigun&Blasts aren't counted, giving {1} Random Upgrades"
+	}
+	"UPGHELP_3_RELOADER"
+	{
+		"#format"	"{1:.2f},{2:.2f}"
+		"en"		"Reloader: Speed:{1}s, Shotgun Speed:{2}s"
+	}
+	"UPGHELP_3_INCENDIARY"
+	{
+		"#format"	"{1:d},{2:d}"
+		"en"		"Incendiary Ammo: Ignites Tanks:{1}, Special Infected:{2}"
+	}
+
+
+	// == Upgrade Information == //
+	"UPGRADE_0_SHORT"
+	{
+		"en"		"Kevlar Body Armor (Reduced Damage)"
+	}
+	"UPGRADE_0_LONG"
+	{
+		"en"		"This body armor absorbs some damage from the infected"
+	}
+	"UPGRADE_1_SHORT"
+	{
+		"en"		"Raincoat (Ignore Boomer Vomit) [Single Use]"
+	}
+	"UPGRADE_1_LONG"
+	{
+		"en"		"This raincoat stops boomer vomit from hitting you, however it is ruined in the process and only good for one use."
+	}
+	"UPGRADE_2_SHORT"
+	{
+		"en"		"Climbing Chalk (Self Ledge Save) [Single Use]"
+	}
+	"UPGRADE_2_LONG"
+	{
+		"en"		"This chalk allows you to get a good enough grip to pull yourself up from a ledge without help, however there's only enough to do it once."
+	}
+	"UPGRADE_3_SHORT"
+	{
+		"en"		"Second Wind (Self Revive) [Single Use]"
+	}
+	"UPGRADE_3_LONG"
+	{
+		"en"		"This allows you to attempt to stand up by yourself, once, after being incapacitated.  Damage taken while getting up may cause the attempt to fail."
+	}
+	"UPGRADE_4_SHORT"
+	{
+		"en"		"Goggles (See through Boomer Vomit)"
+	}
+	"UPGRADE_4_LONG"
+	{
+		"en"		"This allows you to still see clearly after being vomited on.  Does not prevent infected from swarming!"
+	}
+	"UPGRADE_5_SHORT"
+	{
+		"en"		"Hot Meal (Health Bonus)"
+	}
+	"UPGRADE_5_LONG"
+	{
+		"en"		"Don't you feel better after a good hot meal?  Raises your health to 150."
+	}
+	"UPGRADE_6_SHORT"
+	{
+		"en"		"Laser Sight (Bright Red Beam)"
+	}
+	"UPGRADE_6_LONG"
+	{
+		"en"		"The laser helps you aim more accurately at your targets."
+	}
+	"UPGRADE_7_SHORT"
+	{
+		"en"		"Combat Sling (Reduced Recoil)"
+	}
+	"UPGRADE_7_LONG"
+	{
+		"en"		"This reduces the effects of recoil when firing your weapons."
+	}
+	"UPGRADE_8_SHORT"
+	{
+		"en"		"Large Clip (Increase ammo clip capacity)"
+	}
+	"UPGRADE_8_LONG"
+	{
+		"en"		"This provides an increase in the number of shots you can take before having to reload."
+	}
+	"UPGRADE_9_SHORT"
+	{
+		"en"		"Hollow Point Ammo (Increased bullet damage)"
+	}
+	"UPGRADE_9_LONG"
+	{
+		"en"		"This ammo allows you to deal more damage to the infected you shoot at.  Common infected die in an explosion of blood."
+	}
+	"UPGRADE_10_SHORT"
+	{
+		"en"		"Knife (Escape Hunter or Smoker restraint) [Single Use]"
+	}
+	"UPGRADE_10_LONG"
+	{
+		"en"		"This knife allows you to escape from a hunter or smoker that has trapped you, however it is ruined in the process."
+	}
+	"UPGRADE_11_SHORT"
+	{
+		"en"		"Smelling Salts (Fast Revive of other players)"
+	}
+	"UPGRADE_11_LONG"
+	{
+		"en"		"These smelling salts allow you to revive another player faster than normal."
+	}
+	"UPGRADE_12_SHORT"
+	{
+		"en"		"Ointment (Increased Run Speed when injured)"
+	}
+	"UPGRADE_12_LONG"
+	{
+		"en"		"This ointment reduces the pain in your wounds, allowing you to run faster while you are injured."
+	}
+	"UPGRADE_13_SHORT"
+	{
+		"en"		"Reloader (Fast Reload)"
+	}
+	"UPGRADE_13_LONG"
+	{
+		"en"		"This reloader allows you to reload your weapons much faster than normal."
+	}
+	"UPGRADE_14_SHORT"
+	{
+		"en"		"Incendiary Ammo (Bullets cause fire)"
+	}
+	"UPGRADE_14_LONG"
+	{
+		"en"		"This ammo allows you to set on fire any infected you shoot with it."
+	}
+	"UPGRADE_15_SHORT"
+	{
+		"en"		"Adrenaline (Increased movement speed)"
+	}
+	"UPGRADE_15_LONG"
+	{
+		"en"		"This upgrade increases Adrenaline production in your blood to increase oxygen transported to muscles, thus increasing movement speed."
+	}
+}

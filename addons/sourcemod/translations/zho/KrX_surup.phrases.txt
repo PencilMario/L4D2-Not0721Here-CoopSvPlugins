@@ -1,0 +1,618 @@
+﻿// Translation file for KrX's Survivor Upgrades
+// Traditional Chinese Translations by gupo
+// Last updated for v1.1.6 by gupo, 9:35 AM 9/7/2009
+"Phrases"
+{
+	// http://wiki.alliedmods.net/Translations_%28SourceMod_Scripting%29
+	// Getting colour codes to work in Translation files: http://forums.alliedmods.net/showpost.php?p=896532&postcount=5
+	// \x01 to \x06:      
+	// == Server Prints == //
+	"SERVER_LOADED_SUCCESSFULLY"
+	{
+		"en"		"成功載入!"
+	}
+	"SERVER_PLUGIN_ENABLED"
+	{
+		"#format"	"{1:s}"
+		"en"    	"已經載入為 {1}!"
+	}
+	"SERVER_PLUGIN_DISABLED"
+	{
+		"#format"	"{1:s}"
+		"en"		"已經卸載為 {1}!"
+	}
+	"SERVER_ROUND_START"
+	{
+		"en"		"重新載入插件!"
+	}
+	"SERVER_ROUND_END"
+	{
+		"en"		"插件全部卸除!"
+	}
+	"SERVER_MISSION_LOST"
+	{
+		"en"		"倖存者被擊潰!"
+	}
+	"SERVER_ROUND_START_LOST_NORESET"
+	{
+		"en"		"倖存者被擊潰後.結算剩餘技能升級."
+	}
+	"SERVER_ROUND_START_LOST_RESET"
+	{
+		"en"		"倖存者被擊潰後.重置所有技能."
+	}
+	"SERVER_ROUND_END_LOST"
+	{
+		"en"		"倖存者被擊潰重新開始!"
+	}
+	"SERVER_FINALE_VEHICLE_LEAVING"
+	{
+		"en"		"結局救援載具將離開.升級插件關閉.全部技能移除."
+	}
+	"SERVER_BOT_REPLACED_PLAYER"
+	{
+		"#format"	"{1:d},{2:d}"
+		"en"		"電腦控制 {1} 替換 玩家控制 {2}."
+	}
+	"SERVER_PLAYER_REPLACED_BOT"
+	{
+		"#format"	"{1:d},{2:d}"
+		"en"		"玩家控制 {1} 替換 電腦控制 {2}."
+	}
+
+	// == Labels == //
+	"LABEL_AMMOTYPES"
+	{
+		"en"		"彈藥小組"
+	}
+	"LABEL_NORMALAMMO"
+	{
+		"en"		"正常的彈藥"
+	}
+	"LABEL_HOLLOWPOINT"
+	{
+		"en"		"達姆彈彈藥"
+	}
+	"LABEL_INCENDIARY"
+	{
+		"en"		"燃燒彈彈藥"
+	}
+	"LABEL_PERSISTENTMENU"
+	{
+		"en"		"永久的選單?"
+	}
+	"LABEL_AUTOSWITCH"
+	{
+		"en"		"自動開關?"
+	}
+	"LABEL_SHOW_AMMOCOUNT"
+	{
+		"en"		"顯示彈藥數?"
+	}
+	"LABEL_YES"
+	{
+		"en"		"是"
+	}
+	"LABEL_NO"
+	{
+		"en"		"否"
+	}
+
+        // == Hints == //
+	"HINT_SAY_AMMOTYPE"
+	{
+		"en"		"說 /ammotype 改變你的特別的彈藥"
+	}
+	"HINT_SAY_LASER"
+	{
+		"en"		"說 /laser 呼叫鐳射準心"
+	}
+
+	// == All Chat Prints == //
+	"CHATALL_PLUGIN_ENABLED"
+	{
+		"en"		"已啟用!"
+	}
+	"CHATALL_PLUGIN_DISABLED"
+	{
+		"#format"	"{1:s}"
+		"en"		"已關閉為 {1}."
+	}
+	"CHATALL_SPECIALAMMO_FINISHED_HOLLOWPOINT"
+	{
+		"#format"	"{1:N}"
+		"en"		"{1} 用完手上所有達姆彈彈藥!"
+	}
+	"CHATALL_SPECIALAMMO_FINISHED_INCENDIARY"
+	{
+		"#format"	"{1:N}"
+		"en"		"{1} 用完手上所有燃燒彈彈藥!"
+	}
+	"CHATALL_RESET_DEATH"
+	{
+		"#format"	"{1:N}"
+		"en"		"{1} 倖存者死亡並且解除所有已學技能!"
+	}
+	"CHATALL_INFO_SAYUPGRADES"
+	{
+		"en"		"說 /upgrades 瞭解更多倖存者技能相關訊息"
+	}
+	"CHATALL_INFO_FULLYUPGRADED"
+	{
+		"#format"	"{1:N}"
+		"en"		"{1} 再度升級，但是技能已學滿."
+	}
+
+	"CHATALL_HEAL_SELF"
+	{
+		"#format"	"{1:N},{2:d},"
+		"en"		"{1} 取得 {2} 為自己治療血補到全滿!"
+	}
+	"CHATALL_HEAL_PLAYER"
+	{
+		"#format"	"{1:N},{2:d},{3:N}"
+		"en"		"{1} 取得 {2} 為隊友治療血補到全滿 {3}!"
+	}
+	"CHATALL_INCOMING_TANK"
+	{
+		"en"		"Tank 接近倖存者中，隨機習得1項特技"
+	}
+	"CHATALL_KILLED_TANK"
+	{
+		"en"		"倖存者若殺死Tank將獲得技能!"
+	}
+	"CHATALL_TANK_NOPRIMARY"
+	{
+		"en"		"沒主要攻擊Tank殺手，因此無人獲得技能."
+	}
+	"CHATALL_PRIMARY"
+	{
+		"#format"	"{1:N}"
+		"en"		"主要攻擊者, {1} 額外習得:"
+	}
+	"CHATALL_KILLED_WITCH"
+	{
+		"en"	"那些倖存者需殺死Witch獲得特技."
+	}
+	"CHATALL_WITCH_NOPRIMARY"
+	{
+		"en"		"沒有主要攻擊Witch殺手，因此無人獲得技能."
+	}
+	"CHATALL_WITCH_CR0WNED"
+	{
+		"#format"	"{1:N}"
+		"en"		"{1}惹火發狂的Witch額外習得:"
+	}
+	"CHATALL_KILLS_RANDOM"
+	{
+		"#format"	"{1:N},{2:d},{3:d}"
+		"en"		"{1} 贏 {2} 殺死學到技能 {3}受到感染!"
+	}
+	"CHATALL_KILLS_ADDAMMO"
+	{
+		"#format"	"{1:N},{2:d},{3:d}"
+		"en"		"{1} 取得 {2} 殺死得到特殊彈藥 {3}受到感染!"
+	}
+	"CHATALL_KILLS_INCENDIARY"
+	{
+		"#format"	"{1:N},{2:d}"
+		"en"		"{1} 殺死贏得燃燒彈彈藥 {2}受到感染!"
+	}
+	"CHATALL_KILLS_HOLLOWPOINT"
+	{
+		"#format"	"{1:N},{2:d}"
+		"en"		"{1}殺死贏得達姆彈彈藥 {2}受到感染!"
+	}
+	"CHATALL_REACH_SAFEROOM"
+	{
+		"#format"	"{1:d}"
+		"en"		"倖存者們已取得新技能但必需到達安全室裡升級﹗"
+	}
+
+	"CHATALL_EXPIRE_RAINCOAT"
+	{
+		"en"		"神出鬼沒的Boomer嘔吐物噴到你了!(雨衣毀滅)!"
+	}
+	"CHATALL_EXPIRE_CHALK"
+	{
+		"en"		"攀登繩應用於懸掛在牆壁上時自己爬上來!"
+	}
+	"CHATALL_EXPIRE_WIND"
+	{
+		"en"		"一名倖存者受重創倒地急需立即救援!"
+	}
+	"CHATALL_EXPIRE_KNIFE"
+	{
+		"en"		"瑞士刀用來遠離死神!"
+	}
+
+	// == Chat Client Prints == //
+	"CHAT_INFO_FULLYUPGRADED"
+	{
+		"en"		"你再度升級，但你的特技已全滿"
+	}
+	"CHAT_INFO_DISABLED"
+	{
+		"#format"	"{1:s}"
+		"en"		"倖存者升級已卸載為 {1}."
+	}
+	"CHAT_INFO_LASERON"
+	{
+		"en"		"鐳射準心啟動!"
+	}
+	"CHAT_INFO_LASEROFF"
+	{
+		"en"		"鐳射準心關閉!"
+	}
+	"CHAT_HEAL_SELF"
+	{
+		"#format"	"{1:d}"
+		"en"		"你取得 {1} 自我治癒滿血能力!"
+	}
+	"CHAT_HEAL_PLAYER"
+	{
+		"#format"	"{1:d},{2:N}"
+		"en"		"你取得 {1} 為隊友治癒滿血能力{2}!"
+	}
+	"CHAT_SPECIALAMMO_FINISHED_HOLLOWPOINT"
+	{
+		"en"		"你已經用完所有達姆彈彈藥!"
+	}
+	"CHAT_SPECIALAMMO_FINISHED_INCENDIARY"
+	{
+		"en"		"你已經用完所有燃燒彈彈藥!"
+	}
+	"CHAT_SPECIALAMMO_SWITCHED_NORMAL"
+	{
+		"en"		"選擇為正常的彈藥"
+	}
+	"CHAT_SPECIALAMMO_SWITCHED_HOLLOWPOINT"
+	{
+		"en"		"選擇為逹姆彈彈藥"
+	}
+	"CHAT_SPECIALAMMO_SWITCHED_INCENDIARY"
+	{
+		"en"		"選擇為燃燒彈彈藥"
+	}
+	"CHAT_SPECIALAMMO_NOT_ENOUGH_HOLLOWPOINT"
+	{
+		"en"		"抱歉，你沒有足夠的達姆彈彈藥"
+	}
+	"CHAT_SPECIALAMMO_NOT_ENOUGH_INCENDIARY"
+	{
+		"en"		"抱歉，你沒有足夠的燃燒彈彈藥"
+	}
+	"CHAT_SPECIALAMMO_AUTOSWITCH_OFF"
+	{
+		"en"		"特殊彈藥將不再自動選擇當你收到ammotype時"
+	}
+	"CHAT_SPECIALAMMO_AUTOSWITCH_ON"
+	{
+		"en"		"特殊彈藥現在將自動選擇當你收到ammotype時"
+	}
+	"CHAT_RESET_DEATH"
+	{
+		"en"		"你被殺死並喪失所有技能!"
+	}
+	"CHAT_PRIMARY"
+	{
+		"en"		"作為主要攻擊者，你也獲得:"
+	}
+	"CHAT_WITCH_CR0WNED"
+	{
+		"en"		"惹火發狂的女巫，你獲得:"
+	}
+	"CHAT_KILLS_RANDOM"
+	{
+		"#format"	"{1:d},{2:d}"
+		"en"		"你贏 {1} 殺死獲得升級 {2}受到感染!"
+	}
+	"CHAT_KILLS_ADDAMMO"
+	{
+		"#format"	"{1:d},{2:d}"
+		"en"		"你拿到 {1} 殺死取得特殊彈藥 {2}受到感染!"
+	}
+	"CHAT_KILLS_INCENDIARY"
+	{
+		"#format"	"{1:d}"
+		"en"		"你殺死贏得燃燒彈 {1} 受到感染!"
+	}
+	"CHAT_KILLS_HOLLOWPOINT"
+	{
+		"#format"	"{1:d}"
+		"en"		"你殺死贏得達姆彈{1} 受到感染!"
+	}
+
+	// == Console Admin Prints == //
+	"CONSOLE_LIST_ALL_UPGRADES"
+	{
+		"en"		"列舉全部可得到的升級:"
+	}
+	"CONSOLE_LIST_UPGRADES"
+	{
+		"#format"	"{1:N}"
+		"en"		"客戶端 {1} 有:"
+	}
+	"CONSOLE_LISTED_TOTAL_UPGRADES"
+	{
+		"#format"	"{1:d}"
+		"en"		"列舉 {1} 全部可獲得的技能"
+	}
+
+	// == Client Command Prints == //
+	"CHAT_LIST_UPGRADES"
+	{
+		"#format"	"{1:N},{2:t}"
+		"en"		"{1}有 {2}."
+	}
+	"CHAT_GOT_UPGRADE"
+	{
+		"#format"	"{1:N},{2:t}"
+		"en"		"{1} 拿到 {2}."
+	}
+	"CHAT_YOU_GOT_UPGRADE"
+	{
+		"#format"	"{1:t}"
+		"en"		"你拿到 {1}."
+	}
+
+	// == Announcement == //
+	"ANNOUNCE_SERVER_RUNNING"
+	{
+		"#format"	"{1:s}"
+		"en"		"這台伺服器正啟動KrX's倖存者升級插件 v{1}"
+	}
+	"ANNOUNCE_SERVER_NOTRUNNING"
+	{
+		"#format"	"{1:s}"
+		"en"		"倖存者升級插件已卸載為 {1}"
+	}
+		
+
+	// == /upghelp commands == //
+	"UPGHELP_HEADER_ENABLED"
+	{
+		"#format"	"{1:s}"
+		"en"		"KrX's倖存者升級插件v{1} 求救"
+	}
+	"UPGHELP_HEADER_DISABLED"
+	{
+		"#format"	"{1:s}"
+		"en"		"KrX's倖存者升級插件已卸載為 {1}"
+	}
+	"UPGHELP_1_SAY"
+	{
+		"en"		"說:"
+	}
+	"UPGHELP_1_LASERTOGGLE"
+	{
+		"en"		"/laser 呼叫鐳射準心"
+	}
+	"UPGHELP_1_UPGRADES"
+	{
+		"en"		"/upgrades 檢查你的升級"
+	}
+	"UPGHELP_1_AMMOTYPE"
+	{
+		"en"		"/ammotype 檢查和選擇你的彈藥組選單"
+	}
+	"UPGHELP_1_UPGHELP"
+	{
+		"en"		"/upghelp如何使用升級系統"
+	}
+	"UPGHELP_1_UPGHELP2"
+	{
+		"en"		"/upghelp 2看見目前你拿到的技能"
+	}
+	"UPGHELP_1_UPGHELP3"
+	{
+		"en"		"/upghelp 3看見升級任務"
+	}
+	"UPGHELP_2_UPGRADESPER"
+	{
+		"en"		"升級 給:"
+	}
+	"UPGHELP_2_MISSIONSTART"
+	{
+		"#format"	"{1:d}"
+		"en"		"任務啟動:{1}"
+	}
+	"UPGHELP_2_KILLS"
+	{
+		"#format"	"{1:d},{2:d}"
+		"en"		"給{1}殺死感染: {2}"
+	}
+	"UPGHELP_2_TANK"
+	{
+		"#format"	"{1:d},{2:d},{3:d}"
+		"en"		"Tank 大量生產:{1}, 殺死Tank:{2}, 主要Tank殺手:{3}"
+	}
+	"UPGHELP_2_WITCH"
+	{
+		"#format"	"{1:d},{2:d},{3:d}"
+		"en"		"殺死Witch:{1}, 主要Witch殺手:{2}, Witch抓狂:{3}"
+	}
+	"UPGHELP_2_HEAL"
+	{
+		"#format"	"{1:d},{2:d},{3:d}"
+		"en"		"強化醫療:{1}, 治癒隊友:{2}, 治癒自我:{3}"
+	}
+	"UPGHELP_3_SETTINGS"
+	{
+		"en"		"升級設定:"
+	}
+	"UPGHELP_3_SPECIALAMMO"
+	{
+		"#format"	"{1:d},{2:d}"
+		"en"		"特殊彈藥給予，特殊彈藥選單: {1}, 佩帶獵槍 {2} 子彈每發"
+	}
+	"UPGHELP_3_MEGAKILLS_AWARD1"
+	{
+		"en"		"殺死:袖珍型手槍&暴炸被算,只給特別的彈藥."
+	}
+	"UPGHELP_3_MEGAKILLS_AWARD2"
+	{
+		"#format"	"{1:d}"
+		"en"		"殺死:袖珍型手槍&暴炸被算,給特別的彈藥, &{1} 隨機升級"
+	}
+	"UPGHELP_3_MEGAKILLS_AWARD0"
+	{
+		"#format"	"{1:d}"
+		"en"		"殺死:袖珍型手槍&暴炸被算,給 {1} 隨機升級"
+	}
+	"UPGHELP_3_NOMEGAKILLS_AWARD1"
+	{
+		"en"		"殺死:袖珍型手槍&暴炸不被算,只給特別的彈藥."
+	}
+	"UPGHELP_3_NOMEGAKILLS_AWARD2"
+	{
+		"#format"	"{1:d}"
+		"en"		"殺死:袖珍型手槍&暴炸不被算,給特別的彈藥, & {1} 隨機升級"
+	}
+	"UPGHELP_3_NOMEGAKILLS_AWARD0"
+	{
+		"#format"	"{1:d}"
+		"en"		"殺死:袖珍型手槍&暴炸不被算,給 {1} 隨機升級"
+	}
+	"UPGHELP_3_RELOADER"
+	{
+		"#format"	"{1:.2f},{2:.2f}"
+		"en"		"補子彈：速度:{1}s, 獵鎗 速度:{2}s"
+	}
+	"UPGHELP_3_INCENDIARY"
+	{
+		"#format"	"{1:d},{2:d}"
+		"en"		"燃燒彈彈藥︰擊中Tank:{1}, 特別有效:{2}"
+	}
+
+
+	// == Upgrade Information == //
+	"UPGRADE_0_SHORT"
+	{
+		"en"		"凱夫拉防彈衣(減少HP損傷)"
+	}
+	"UPGRADE_0_LONG"
+	{
+		"en"		"這防彈衣從感染中吸收一些損害"
+	}
+	"UPGRADE_1_SHORT"
+	{
+		"en"		"雨衣(無視Boomer嘔吐物)[限使用一次]"
+	}
+	"UPGRADE_1_LONG"
+	{
+		"en"		"這雨衣能阻擋嘔吐物擊中你，同時擊中瞬間雨衣也喪失其功能."
+	}
+	"UPGRADE_2_SHORT"
+	{
+		"en"		"攀登繩索(懸掛高處時可自救)[限使用一次]"
+	}
+	"UPGRADE_2_LONG"
+	{
+		"en"		"這攀登繩索可讓你免於從高處掉落身亡，使用後便消失."
+	}
+	"UPGRADE_3_SHORT"
+	{
+		"en"		"龍捲風(倒地自救)[限使用一次]"
+	}
+	"UPGRADE_3_LONG"
+	{
+		"en"		"因受到重創而倒地不起時，可借用自然界力量扶你爬起來.使用後便消失."
+	}
+	"UPGRADE_4_SHORT"
+	{
+		"en"		"護目鏡(被Boomer嘔吐物擊中時仍可保持良好視線)"
+	}
+	"UPGRADE_4_LONG"
+	{
+		"en"		"被嘔吐物擊中仍然可以看見目標，但不能阻止聞風而至的感染者襲擊!"
+	}
+	"UPGRADE_5_SHORT"
+	{
+		"en"		"咖哩飯(體力上限上昇)"
+	}
+	"UPGRADE_5_LONG"
+	{
+		"en"		"來一頓香噴噴的南洋印度咖哩飯如何?吃完後可以身心舒暢提升體能達150HP."
+	}
+	"UPGRADE_6_SHORT"
+	{
+		"en"		"鐳射瞄準器(鐳射準心)"
+	}
+	"UPGRADE_6_LONG"
+	{
+		"en"		"鐳射瞄準器可提昇精準的擊中準確率."
+	}
+	"UPGRADE_7_SHORT"
+	{
+		"en"		"作戰掛帶(減少鎗的反作用力)"
+	}
+	"UPGRADE_7_LONG"
+	{
+		"en"		"減少射擊時產生的後作力."
+	}
+	"UPGRADE_8_SHORT"
+	{
+		"en"		"大彈匣(增加彈藥數量)"
+	}
+	"UPGRADE_8_LONG"
+	{
+		"en"		"提高上膛後彈藥數總量，可以不用常常補彈."
+	}
+	"UPGRADE_9_SHORT"
+	{
+		"en"		"達姆彈(附予子彈高爆炸力)"
+	}
+	"UPGRADE_9_LONG"
+	{
+		"en"		"被擊中的感染者身體將炸開一個洞並化作一灘血."
+	}
+	"UPGRADE_10_SHORT"
+	{
+		"en"		"瑞士刀(逃離Hunter或Smoker魔爪)[限使用一次]"
+	}
+	"UPGRADE_10_LONG"
+	{
+		"en"		"這鋒利的瑞士刀可幫你被Hunter撲倒時刺殺他或Smoker捉到你時切斷舌頭."
+	}
+	"UPGRADE_11_SHORT"
+	{
+		"en"		"嗅鹽(快速拯救其他玩家爬起)"
+	}
+	"UPGRADE_11_LONG"
+	{
+		"en"		"這嗅鹽的臭味可助你隊友立即跳起來"
+	}
+	"UPGRADE_12_SHORT"
+	{
+		"en"		"曼秀雷敦(受重創時行動力不減)"
+	}
+	"UPGRADE_12_LONG"
+	{
+		"en"		"這藥膏降低傷口的疼痛使其行動力不減，提升行動速度即使是你受到重創也是一樣"
+	}
+	"UPGRADE_13_SHORT"
+	{
+		"en"		"補彈手套(快速補彈)"
+	}
+	"UPGRADE_13_LONG"
+	{
+		"en"		"補彈速度遠遠超乎你的想像."
+	}
+	"UPGRADE_14_SHORT"
+	{
+		"en"		"燃燒彈(附予子彈擁有火焰屬性)"
+	}
+	"UPGRADE_14_LONG"
+	{
+		"en"		"被擊中的感染者因此而全身著火."
+	}
+	"UPGRADE_15_SHORT"
+	{
+		"en"		"腎上腺素(增加的運動速度)"
+	}
+	"UPGRADE_15_LONG"
+	{
+		"en"		"運送到肌肉的氧氣增加了也因此增加運動速度使你的血液裡腎上腺素大量產生。"
+	}
+}

@@ -1,0 +1,571 @@
+﻿// Translation file for KrX's Survivor Upgrades
+// German Translations by 0cube
+// Last updated for v1.1.5, 00:50 9/02/2009
+"Phrases"
+{
+	// http://wiki.alliedmods.net/Translations_%28SourceMod_Scripting%29
+	// Getting colour codes to work in Translation files: http://forums.alliedmods.net/showpost.php?p=896532&postcount=5
+	// \x01 to \x06:      
+	// == Server Prints == //
+	"SERVER_LOADED_SUCCESSFULLY"
+	{
+		"de"		"Erfolgreich geladen!"
+	}
+	"SERVER_PLUGIN_ENABLED"
+	{
+		"de"    	"wurde für {1} aktiviert!"
+	}
+	"SERVER_PLUGIN_DISABLED"
+	{
+		"de"		"wurde für {1} deaktiviert!"
+	}
+	"SERVER_ROUND_START"
+	{
+		"de"		"Runde wurde gestartet!"
+	}
+	"SERVER_ROUND_END"
+	{
+		"de"		"Runde ist zu Ende!"
+	}
+	"SERVER_MISSION_LOST"
+	{
+		"de"		"Mission Verloren!"
+	}
+	"SERVER_ROUND_START_LOST_NORESET"
+	{
+		"de"		"Runde nach verlorener Mission erneut gestartet, Upgrades bleiben erhalten."
+	}
+	"SERVER_ROUND_START_LOST_RESET"
+	{
+		"de"		"Runde nach verlorener Mission erneut gestartet, Upgrades verloren."
+	}
+	"SERVER_ROUND_END_LOST"
+	{
+		"de"		"Runde beendet, da das Ziel nicht erfüllt wurde!"
+	}
+	"SERVER_FINALE_VEHICLE_LEAVING"
+	{
+		"de"		"Rettungsfahrzeug erreicht. Upgrades können nicht mehr erhalten werden. Alle Upgrades entfernt."
+	}
+	"SERVER_BOT_REPLACED_PLAYER"
+	{
+		"de"		"Bot {1} hat den Platz vom Spieler {2} eingenommen."
+	}
+	"SERVER_PLAYER_REPLACED_BOT"
+	{
+		"de"		"Spieler {1} hat den Platz vom Bot {2} eingenommen."
+	}
+
+	// == Labels == //
+	"LABEL_AMMOTYPES"
+	{
+		"de"		"Munition"
+	}
+	"LABEL_NORMALAMMO"
+	{
+		"de"		"Normale Munition"
+	}
+	"LABEL_HOLLOWPOINT"
+	{
+		"de"		"Hohlspitzgeschosse"
+	}
+	"LABEL_INCENDIARY"
+	{
+		"de"		"Feuermunition"
+	}
+	"LABEL_PERSISTENTMENU"
+	{
+		"de"		"Permanentes Menü?"
+	}
+	"LABEL_AUTOSWITCH"
+	{
+		"de"		"Automatisch wechseln?"
+	}
+	"LABEL_SHOW_AMMOCOUNT"
+	{
+		"de"		"Munitionszähler Anzeigen?"
+	}
+	"LABEL_YES"
+	{
+		"de"		"Ja"
+	}
+	"LABEL_NO"
+	{
+		"de"		"Nein"
+	}
+
+	// == Hints == //
+	"HINT_SAY_AMMOTYPE"
+	{
+		"de"		"Schreibe /ammotype im chat, um deinen Munitionstyp zu ändern"
+	}
+	"HINT_SAY_LASER"
+	{
+		"de"		"Schreibe /laser um die Laseransicht umzuschalten"
+	}
+
+	// == All Chat Prints == //
+	"CHATALL_PLUGIN_ENABLED"
+	{
+		"de"		"Ist An!"
+	}
+	"CHATALL_PLUGIN_DISABLED"
+	{
+		"de"		"Ist Aus für {1}."
+	}
+	"CHATALL_SPECIALAMMO_FINISHED_HOLLOWPOINT"
+	{
+		"de"		"{1} hat all seine Hohlspitzgeschosse verbraucht!"
+	}
+	"CHATALL_SPECIALAMMO_FINISHED_INCENDIARY"
+	{
+		"en"		"{1} hat all seine Feuermunition verbraucht!"
+	}
+	"CHATALL_RESET_DEATH"
+	{
+		"de"		"{1} starb und hat alle seine upgrades verloren!"
+	}
+	"CHATALL_INFO_SAYUPGRADES"
+	{
+		"de"		"Schreibe /upgrades um mehr Informationen zu den Upgrades zu bekommen"
+	}
+	"CHATALL_INFO_FULLYUPGRADED"
+	{
+		"de"		"{1} hätte ein Upgrade bekommen, aber hat sie bereits alle."
+	}
+	"CHATALL_HEAL_SELF"
+	{
+		"de"		"{1} bekam {2} Upgrade(s), da er  sich selbst geheilt hat!"
+	}
+	"CHATALL_HEAL_PLAYER"
+	{
+		"de"		"{1} bekam {2} upgrade(s), da er {3} geheilt hat!"
+	}
+	"CHATALL_INCOMING_TANK"
+	{
+		"de"		"Die Überlebenden bekamen Upgrades, da ein Tank kommt"
+	}
+	"CHATALL_KILLED_TANK"
+	{
+		"de"		"Die Überlebenden bekamen Upgrades, da ein Tank getötet wurde"
+	}
+	"CHATALL_TANK_NOPRIMARY"
+	{
+		"de"		"Kein primärer Angreifer auf den Tank, deshalb bekommt niemand den Bonus."
+	}
+	"CHATALL_PRIMARY"
+	{
+		"de"		"Der primäre Angreifer, {1} bekommt auch:"
+	}
+	"CHATALL_KILLED_WITCH"
+	{
+		"de"	"Die Überlebenden bekamen Upgrades, da eine Witch getötet wurde."
+	}
+	"CHATALL_WITCH_NOPRIMARY"
+	{
+		"de"		"Da es keinen Primären angreifer auf die Witch gab, bekommt niemand den Bonus."
+	}
+	"CHATALL_WITCH_CR0WNED"
+	{
+		"de"		"{1} bekommt folgendes Upgrade, da  er die Witch mit einem Kopfschuss getötet hat:"
+	}
+	"CHATALL_KILLS_RANDOM"
+	{
+		"de"		"{1} gewann {2} Upgrade(s), da er  {3} Infizierte getötet hat!"
+	}
+	"CHATALL_KILLS_ADDAMMO"
+	{
+		"de"		"{1} bekommt {2} mehr Spezial Munition, da er {3} Infizierte getötet hat!"
+	}
+	"CHATALL_KILLS_INCENDIARY"
+	{
+		"de"		"{1} gewann Feuermunition da er {2} Infizierte getötet hat!"
+	}
+	"CHATALL_KILLS_HOLLOWPOINT"
+	{
+		"de"		"{1} gewann Hohlspitzgeschosse da er {2} Infizierte getötet hat!"
+	}
+	"CHATALL_REACH_SAFEROOM"
+	{
+		"de"		"Den Überlebenden wurden {1} Upgrades gegeben, da sie den Schutzraum erreicht haben!"
+	}
+
+	"CHATALL_EXPIRE_RAINCOAT"
+	{
+		"de"		"Boomer Kotze wurde von dem (jetzt ruinierten) Regenmantel abgefangen!"
+	}
+	"CHATALL_EXPIRE_CHALK"
+	{
+		"de"		"Magnesium Pulver wurde verwendet, um der Klippe zu entkommen!"
+	}
+	"CHATALL_EXPIRE_WIND"
+	{
+		"de"		"Ein Überlebender verwendete Zweiten Wind und stand wieder auf!"
+	}
+	"CHATALL_EXPIRE_KNIFE"
+	{
+		"de"		"Ein Messer wurde verwendet, um zu entkommen!"
+	}
+
+	// == Chat Client Prints == //
+	"CHAT_INFO_FULLYUPGRADED"
+	{
+		"de"		"Du Hättest ein Upgrade bekommen, wenn du nicht schon alle hättest."
+	}
+	"CHAT_INFO_DISABLED"
+	{
+		"de"		"Die Upgrades der Überlebenden wurden für {1} deaktiviert."
+	}
+	"CHAT_INFO_LASERON"
+	{
+		"de"		"Laser eingeschaltet!"
+	}
+	"CHAT_INFO_LASEROFF"
+	{
+		"de"		"Laser ausgeschaltet!"
+	}
+	"CHAT_HEAL_SELF"
+	{
+		"de"		"Du hast {1} Upgrade(s) bekommen, da dudich geheilt hast!"
+	}
+	"CHAT_HEAL_PLAYER"
+	{
+		"de"		"Du hast {1} Upgrade(s) für das heilen von {2} bekommen!"
+	}
+	"CHAT_SPECIALAMMO_FINISHED_HOLLOWPOINT"
+	{
+		"de"		"Du hast deine gesamte Hohlspitzmunition verbraucht!"
+	}
+	"CHAT_SPECIALAMMO_FINISHED_INCENDIARY"
+	{
+		"de"		"Du hast deine gesamte Feuermunition verbraucht!"
+	}
+	"CHAT_SPECIALAMMO_SWITCHED_NORMAL"
+	{
+		"de"		"Munitionstyp in Normale Geschosse geändert"
+	}
+	"CHAT_SPECIALAMMO_SWITCHED_HOLLOWPOINT"
+	{
+		"de"		"Munitionstyp in Hohlspitzgeschosse geändert"
+	}
+	"CHAT_SPECIALAMMO_SWITCHED_INCENDIARY"
+	{
+		"de"		"Munitionstyp in Feuermunition geändert"
+	}
+	"CHAT_SPECIALAMMO_NOT_ENOUGH_HOLLOWPOINT"
+	{
+		"de"		"Du hast leider nicht genug Hohlspitzgeschosse"
+	}
+	"CHAT_SPECIALAMMO_NOT_ENOUGH_INCENDIARY"
+	{
+		"de"		"Du hast leider nicht genug Feuermunition"
+	}
+	"CHAT_SPECIALAMMO_AUTOSWITCH_OFF"
+	{
+		"en"		"Munition wird nicht mehr automatisch geändert, wenn du einen neuen Munitionstyp erhältst"
+	}
+	"CHAT_SPECIALAMMO_AUTOSWITCH_ON"
+	{
+		"en"		"Munition wir nun automatisch geändert, wenn du einen Neuen Munitionstyp erhältst"
+	}
+	"CHAT_RESET_DEATH"
+	{
+		"de"		"Du bist gestorben und hast all deine Upgrades verloren!"
+	}
+	"CHAT_PRIMARY"
+	{
+		"de"		"Als primärer Angreifer bekommst du auch:"
+	}
+	"CHAT_WITCH_CR0WNED"
+	{
+		"de"		"Da du die Witch mit einem Kopfschuss getötet hast, bekommst du:"
+	}
+	"CHAT_KILLS_RANDOM"
+	{
+		"de"		"Du hast {1} Upgrade(s) bekommen, da du {2} Infizierte getötet hast!"
+	}
+	"CHAT_KILLS_ADDAMMO"
+	{
+		"de"		"Du hast {1} mehr Spezial Munition bekommen, da du {2} Infizierte getötet hast!"
+	}
+	"CHAT_KILLS_INCENDIARY"
+	{
+		"de"		"Du hast Feuermunition gewonnen, da du {1} Infizierte getötet hast!"
+	}
+	"CHAT_KILLS_HOLLOWPOINT"
+	{
+		"de"		"Du hast Hohlspitzgeschosse gewonnen, da du {1} Infizierte getötet hast!"
+	}
+
+	// == Console Admin Prints == //
+	"CONSOLE_LIST_ALL_UPGRADES"
+	{
+		"de"		"Liste aller verfügbaren Upgrades:"
+	}
+	"CONSOLE_LIST_UPGRADES"
+	{
+		"de"		"Spieler {1} hat:"
+	}
+	"CONSOLE_LISTED_TOTAL_UPGRADES"
+	{
+		"de"		"Es wurden {1} Upgrades gelistet"
+	}
+
+	// == Client Command Prints == //
+	"CHAT_LIST_UPGRADES"
+	{
+		"de"		"{1} hat {2}."
+	}
+	"CHAT_GOT_UPGRADE"
+	{
+		"de"		"{1} bekam {2}."
+	}
+	"CHAT_YOU_GOT_UPGRADE"
+	{
+		"de"		"Du hast {1} bekommen."
+	}
+
+	// == Announcement == //
+	"ANNOUNCE_SERVER_RUNNING"
+	{
+		"de"		"Auf diesem Server lauft das KrX's Survivor Upgrades Plugin v{1}"
+	}
+	"ANNOUNCE_SERVER_NOTRUNNING"
+	{
+		"de"		"Die Upgrades wurden für {1} deaktiviert"
+	}
+		
+
+	// == /upghelp commands == //
+	"UPGHELP_HEADER_ENABLED"
+	{
+		"de"		"KrX's Survivor Upgrades plugin v{1} Hilfe"
+	}
+	"UPGHELP_HEADER_DISABLED"
+	{
+		"de"		"KrX's Survivor Upgrades wurden für {1} deaktiviert"
+	}
+	"UPGHELP_1_SAY"
+	{
+		"de"		"Schreibe:"
+	}
+	"UPGHELP_1_LASERTOGGLE"
+	{
+		"de"		"/laser um den Laser umzuschalten"
+	}
+	"UPGHELP_1_UPGRADES"
+	{
+		"de"		"/upgrades um deine Upgrades einzusehen"
+	}
+	"UPGHELP_1_AMMOTYPE"
+	{
+		"de"		"/ammotype um deinen Munitionstyp auszuwählen"
+	}
+	"UPGHELP_1_UPGHELP"
+	{
+		"de"		"/upghelp um diese Information zu sehen"
+	}
+	"UPGHELP_1_UPGHELP2"
+	{
+		"de"		"/upghelp 2 um zu sehen, wann du Upgrades bekommst"
+	}
+	"UPGHELP_1_UPGHELP3"
+	{
+		"de"		"/upghelp 3 um Upgrade Einstellungen zu sehen"
+	}
+	"UPGHELP_2_UPGRADESPER"
+	{
+		"de"		"Upgrades pro:"
+	}
+	"UPGHELP_2_MISSIONSTART"
+	{
+		"de"		"start einer Mission:{1}"
+	}
+	"UPGHELP_2_KILLS"
+	{
+		"de"		"Für jedes mal, wenn du {1} Infizierte getötet hast: {2}"
+	}
+	"UPGHELP_2_TANK"
+	{
+		"de"		"gespawnten Tank:{1}, pro getöteten Tank:{2}, als primärer Angreifer auf den Tank:{3}"
+	}
+	"UPGHELP_2_WITCH"
+	{
+		"de"		"getöteter Witch:{1}, Töter einer Witch:{2}, Witch mit Kopfschuss getötet:{3}"
+	}
+	"UPGHELP_2_HEAL"
+	{
+		"de"		"minimaler Heilungsanzahl:{1}, andere heilen:{2}, selbst heilen:{3}"
+	}
+	"UPGHELP_3_SETTINGS"
+	{
+		"de"		"Upgrade Einstellungen:"
+	}
+	"UPGHELP_3_SPECIALAMMO"
+	{
+		"de"		"Anzahl der Spezial Munition pro gegebenen Munitionstyp: {1}, Schrotflinten haben {2} Kugeln pro Schuss"
+	}
+	"UPGHELP_3_MEGAKILLS_AWARD1"
+	{
+		"de"		"Abschüsse:Minigun&Blasts werden gewertet, um dir Spezial Munition geben."
+	}
+	"UPGHELP_3_MEGAKILLS_AWARD2"
+	{
+		"de"		"Abschüsse:Minigun&Blasts werden gewertet, um dir Spezial Munition, & {1} zufalls Upgrade(s) geben."
+	}
+	"UPGHELP_3_MEGAKILLS_AWARD0"
+	{
+		"de"		"Abschüsse:Minigun&Blasts werden gewertet, um dir {1} zufalls Upgrade(s) geben."
+	}
+	"UPGHELP_3_NOMEGAKILLS_AWARD1"
+	{
+		"de"		"Abschüsse:Minigun&Blasts werden nicht gewertet, um  Spezial Munition zu erhalten."
+	}
+	"UPGHELP_3_NOMEGAKILLS_AWARD2"
+	{
+		"de"		"Abschüsse:Minigun&Blasts werden nicht gewertet, um Spezial Munition, & {1} zufalls Upgrade(s) zu erhalten."
+	}
+	"UPGHELP_3_NOMEGAKILLS_AWARD0"
+	{
+		"de"		"Abschüsse:Minigun&Blasts werden nicht gewertet, um {1} zufalls Upgrade(s) zu erhalten."
+	}
+	"UPGHELP_3_RELOADER"
+	{
+		"de"		"Nachlader: Geschwindigkeit:{1}s, Schrotflinten Geschwindigkeit:{2}s"
+	}
+	"UPGHELP_3_INCENDIARY"
+	{
+		"de"		"Feuermunition: Entflammt Tanks:{1}, Spezielle Infizierte:{2}"
+	}
+
+
+	// == Upgrade Information == //
+	"UPGRADE_0_SHORT"
+	{
+		"de"		"Kevlar (Schutzweste) (geringerer erhaltener Schaden)"
+	}
+	"UPGRADE_0_LONG"
+	{
+		"de"		"Schutzwesten absorbieren einen Teil des von Infizierten zugefügten Schadens"
+	}
+	"UPGRADE_1_SHORT"
+	{
+		"de"		"Regenmantel (Schützt vor Boomer Kotze) [Nur einmal verwendbar]"
+	}
+	"UPGRADE_1_LONG"
+	{
+		"de"		"Ein Regenmantel schützt dich vor dem Erbrochenen eines Boomers, allerdings wird er sobald er vollgekotzt wird, kaputt und somit nur einmal verwendbar"
+	}
+	"UPGRADE_2_SHORT"
+	{
+		"de"		"Magnesium Pulver (selbst vor dem Absturz retten) [Nur einmal verwendbar]"
+	}
+	"UPGRADE_2_LONG"
+	{
+		"de"		"Magnesium Pulver gibt dir, einen guten Halt, damit du dich selbst von einer Klippe retten kannst. Es ist aber nur genügend für eine Verwendung da."
+	}
+	"UPGRADE_3_SHORT"
+	{
+		"de"		"Zweiter Wind (Selbst Hochhelfen) [Nur einmal verwendbar]"
+	}
+	"UPGRADE_3_LONG"
+	{
+		"de"		"Zweiter Wind erlaubt dir einmal aufzustehen, wenn du niedergeschlagen wurdest. Verletzungen während des Prozesses führen zu einem Fehlschlag"
+	}
+	"UPGRADE_4_SHORT"
+	{
+		"de"		"Schutzbrille (Durch Boomer erbrochenes sehen)"
+	}
+	"UPGRADE_4_LONG"
+	{
+		"de"		"Diese Schutzbrille erlaubt dir durch Boomer erbrochenes zu sehen. Die Infizierten werden dadurch aber nicht aufgehalten!"
+	}
+	"UPGRADE_5_SHORT"
+	{
+		"de"		"Heiße Mahlzeit (Gesundheitsbonus)"
+	}
+	"UPGRADE_5_LONG"
+	{
+		"de"		"Fühlst du dich nach einer warmen Mahlzeit nicht besser? Erhöht deine Lebenspunkte auf 150."
+	}
+	"UPGRADE_6_SHORT"
+	{
+		"de"		"Laser Visier (Heller, roter Strahl)"
+	}
+	"UPGRADE_6_LONG"
+	{
+		"de"		"Der Laser hilft dir, besser zu zielen."
+	}
+	"UPGRADE_7_SHORT"
+	{
+		"de"		"Kampfriemen (verringerter Rückstoß)"
+	}
+	"UPGRADE_7_LONG"
+	{
+		"de"		"Der Kampfriemen (auch Kampfschlinge genannt), reduziert den Rückstoß deiner Waffen."
+	}
+	"UPGRADE_8_SHORT"
+	{
+		"de"		"Vergrößertes Magazin (Mehr Munition/Magazin)"
+	}
+	"UPGRADE_8_LONG"
+	{
+		"de"		"Dieses speziell Vergrößerte Magazin, erlaubt dir mehr Kugeln abzufeuern, bevor du Nachladen musst."
+	}
+	"UPGRADE_9_SHORT"
+	{
+		"de"		"Hohlspitzgeschosse (höherer schaden/Kugel)"
+	}
+	"UPGRADE_9_LONG"
+	{
+		"de"		"Dieser Munitionstyp erlaubt dir, deinen Gegnern mehr Schaden zuzufügen, als die normalen Kugeln deiner Waffe. Infizierte sterben in einer Blutwolke."
+	}
+	"UPGRADE_10_SHORT"
+	{
+		"de"		"Messer (Entkomme einen Hunter oder Smoker) [Nur einmal verwendbar]"
+	}
+	"UPGRADE_10_LONG"
+	{
+		"de"		"Ein Messer erlaubt dir vor einem Hunter oder Smoker zu entkommen, allerdings wird es bei dem Prozess kaputt."
+	}
+	"UPGRADE_11_SHORT"
+	{
+		"de"		"Riechsalz (Schnelles hochhelfen von Verbündeten)"
+	}
+	"UPGRADE_11_LONG"
+	{
+		"de"		"Dieses Riechsalz erlaubt dir, deinen Freunden schneller hoch zu kommen."
+	}
+	"UPGRADE_12_SHORT"
+	{
+		"de"		"Wundsalbe (Bei Verletzungen erhöht sich Bewegungsgeschwindigkeit)"
+	}
+	"UPGRADE_12_LONG"
+	{
+		"de"		"Diese Salbe reduziert den Schmerz deiner Wunden und erlaubt dir schneller zu laufen, wenn du verletzt bist."
+	}
+	"UPGRADE_13_SHORT"
+	{
+		"de"		"Nachlader (Schnelles Nachladen)"
+	}
+	"UPGRADE_13_LONG"
+	{
+		"de"		"Dieses Upgrade erlaubt dir deine Waffen schneller Nachzuladen, als Normal."
+	}
+	"UPGRADE_14_SHORT"
+	{
+		"de"		"Feuermunition (Kugeln verursachen Feuer)"
+	}
+	"UPGRADE_14_LONG"
+	{
+		"de"		"Dieser Munitionstyp erlaubt dir, deine Gegner in Flammen aufgehen zu lassen, wenn du sie triffst."
+	}
+	"UPGRADE_15_SHORT"
+	{
+		"de"		"Adrenalin (Ehröht Bewegungsgeschwindigkeit)"
+	}
+	"UPGRADE_15_LONG"
+	{
+		"de"		"Dieses Upgrade erhöht die Ausschüttung von Adrenalin in deinem Körper. Dadurch wird Sauerstoff schneller zu den Muskeln transportiert und du bewegst dich schneller"
+	}
+}

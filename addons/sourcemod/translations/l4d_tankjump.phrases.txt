@@ -1,9 +1,0 @@
-"Phrases"
-{
-	"knocked_down"
-	{
-		"en"			"Jumper tank knocked down player"
-		"chi"			"跳跃坦克击倒了玩家"
-		"ru"			"Танк-прыгун сбил с ног игрока"
-	}
-}

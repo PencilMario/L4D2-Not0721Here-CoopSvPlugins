@@ -1288,27 +1288,27 @@ public Action TankSpawnHPTimer( Handle hTimer, any UserID )
 					char TankName[MAX_TARGET_LENGTH];
 					switch(index)
 					{
-						case 0: { TankName = "Tank"; }
-						case 1: { TankName = "Spawn Tank"; }
-						case 2: { TankName = "Smasher Tank"; }
-						case 3: { TankName = "Warp Tank"; }
-						case 4: { TankName = "Meteor Tank"; }
-						case 5: { TankName = "Spitter Tank"; }
-						case 6: { TankName = "Heal Tank"; }
-						case 7: { TankName = "Fire Tank"; }
-						case 8: { TankName = "Ice Tank"; }
-						case 9: { TankName = "Jockey Tank"; }
-						case 10: { TankName = "Ghost Tank"; }
-						case 11: { TankName = "Shock Tank"; }
-						case 12: { TankName = "Witch Tank"; }
-						case 13: { TankName = "Shield Tank"; }
-						case 14: { TankName = "Cobalt Tank"; }
-						case 15: { TankName = "Jumper Tank"; }
-						case 16: { TankName = "Gravity Tank"; }
-					}
+						case 0: {TankName = "坦克"; }
+						case 1: {TankName = "生成坦克"; }
+						case 2: {TankName = "粉碎坦克";}
+						case 3: {TankName = "跃迁坦克";}
+						case 4: {TankName = "流星坦克";}
+						case 5: {TankName = "喷吐坦克";}
+						case 6: {TankName = "治疗坦克";}
+						case 7: {TankName = "火焰坦克";}
+						case 8: {TankName = "冰霜坦克";}
+						case 9: {TankName = "骑乘坦克";}
+						case 10: {TankName = "幽灵坦克";}
+						case 11: {TankName = "电击坦克";}
+						case 12: {TankName = "女巫坦克";}
+						case 13: {TankName = "护盾坦克";}
+						case 14: {TankName = "钴蓝坦克";}
+						case 15: {TankName = "跳跃坦克";}
+						case 16: {TankName = "重力坦克";}
+					}					
 					int health = GetEntProp(client, Prop_Send, "m_iHealth") + iTankExtraHealth[index];
 					float speed = flTankSpeed[index];
-					CPrintToChatAll("{olive}[SUPER TANKS]{blue}%s{olive}Spawned\n{blue} Type {orange}: {olive}%d,{blue} Speed {orange}: {olive}%1.f,{blue} Health {orange}: {olive}%i", TankName, index, speed, health);
+					CPrintToChatAll("{olive}[超级坦克]{blue}%s{olive}\n{blue} 类型 {orange}: {olive}%d,{blue} 速度 {orange}: {olive}%.1f", TankName, index, speed);
 				}
 			}
 		}

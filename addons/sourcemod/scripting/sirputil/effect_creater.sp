@@ -6,49 +6,60 @@
 
 
 #include <sdktools>
+#include <sourcemod>
+
+public void EC_PrecacheEffects(){
+	PrecacheParticle(Particle_st_elmos_fire);
+	PrecacheParticle(Particle_electrical_arc_01_system);	
+	PrecacheParticle(Particle_gas_explosion_pump); 
+}
+
+int PrecacheParticle(const char[] sEffectName)
+{
+	static int table = INVALID_STRING_TABLE;
+	if( table == INVALID_STRING_TABLE )
+	{
+		table = FindStringTable("ParticleEffectNames");
+	}
+
+	int index = FindStringIndex(table, sEffectName);
+	if( index == INVALID_STRING_INDEX )
+	{
+		bool save = LockStringTables(false);
+		AddToStringTable(table, sEffectName);
+		LockStringTables(save);
+		index = FindStringIndex(table, sEffectName);
+	}
+
+	return index;
+}
 
 /**
  * 生成一个原地扩散式闪电
  * 
  * @param pos 闪电位置
  */
-public void EC_PointElectronic(int pos[3]){
-	char tname1[10];
-	char tname2[10]; 
-		 
-	for(int i=0; i<1; i++)
-	{
-		new ent = CreateEntityByName("info_particle_target"); 
-		DispatchSpawn(ent);  
-		TeleportEntity(ent, pos, NULL_VECTOR, NULL_VECTOR); 
-		
-		Format(tname1, sizeof(tname1), "target%d", client);
-		Format(tname2, sizeof(tname1), "target%d", ent);
-		DispatchKeyValue(client, "targetname", tname1);
-		DispatchKeyValue(ent, "targetname", tname2);
-		
-		new particle = CreateEntityByName("info_particle_system");
-	 
-		DispatchKeyValue(particle, "effect_name",  Particle_st_elmos_fire ); //st_elmos_fire fire_jet_01_flame
-		DispatchKeyValue(particle, "cpoint1", tname2);
-		DispatchKeyValue(particle, "parentname", tname1);
-		DispatchSpawn(particle);
-		ActivateEntity(particle); 
-			
-		SetVariantString(tname1);
-		AcceptEntityInput(particle, "SetParent",particle, particle, 0);   
-		SetVariantString("muzzle_flash"); 
-		AcceptEntityInput(particle, "SetParentAttachment");
-		new Float:v[3];
-		SetVector(v, 0.0,  0.0,  0.0);  
-		TeleportEntity(particle, v, NULL_VECTOR, NULL_VECTOR); 
-		AcceptEntityInput(particle, "start");  
-		CreateTimer(1.0, DeleteParticles, particle);
-		CreateTimer(0.5, DeleteParticletargets, ent);
-		
-		ShowParticle(endpos, NULL_VECTOR, Particle_electrical_arc_01_system, 3.0);
-    }
+public void EC_PointElectronic(float pos[3]){
+	ShowParticle(pos, NULL_VECTOR, Particle_electrical_arc_01_system, 3.0);
+}
 
+public ShowParticle(Float:pos[3], Float:ang[3],String:particlename[], Float:time)
+{
+	new particle = CreateEntityByName("info_particle_system");
+	if (IsValidEdict(particle))
+	{
+		
+		DispatchKeyValue(particle, "effect_name", particlename); 
+		DispatchSpawn(particle);
+		ActivateEntity(particle);
+		
+		
+		TeleportEntity(particle, pos, ang, NULL_VECTOR);
+		AcceptEntityInput(particle, "start");		
+		CreateTimer(time, DeleteParticles, particle, TIMER_FLAG_NO_MAPCHANGE);
+		return particle;
+	}  
+	return 0;
 }
 
 /**
@@ -103,4 +114,36 @@ public void EC_Fire50Bullet(float pos[3], float endpos[3])
 	AcceptEntityInput(particle, "start");
 	CreateTimer(0.01, DeleteParticletargets, EntIndexToEntRef(target), TIMER_FLAG_NO_MAPCHANGE);
 	CreateTimer(0.01, DeleteParticles, EntIndexToEntRef(particle), TIMER_FLAG_NO_MAPCHANGE);
+}
+
+public Action:DeleteParticles(Handle:timer, any:particle)
+{
+	 if (IsValidEntity(particle))
+	 {
+		 decl String:classname[64];
+		 GetEdictClassname(particle, classname, sizeof(classname));
+		 if (StrEqual(classname, "info_particle_system", false))
+			{
+				AcceptEntityInput(particle, "stop");
+				AcceptEntityInput(particle, "kill");
+				RemoveEdict(particle);
+				 
+			}
+	 }
+}
+
+public Action:DeleteParticletargets(Handle:timer, any:target)
+{
+	 if (IsValidEntity(target))
+	 {
+		 decl String:classname[64];
+		 GetEdictClassname(target, classname, sizeof(classname));
+		 if (StrEqual(classname, "info_particle_target", false))
+			{
+				AcceptEntityInput(target, "stop");
+				AcceptEntityInput(target, "kill");
+				RemoveEdict(target);
+				 
+			}
+	 }
 }

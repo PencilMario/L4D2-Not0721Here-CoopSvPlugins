@@ -12,7 +12,7 @@
 		"da"			"Du er blevet udlukket fra denne server, check {1} for mere info"
 		"no"			"Du har blitt stengt ute fra denne serveren, sjekk {1} for mer info."
 		"hu"			"Bannolva vagy erről a szerverről, látogass el {1} honlapra a további információkért."
-		"chi"			"你已被此服务器封禁,详情请参阅: {1}."
+		"chi"			"你已被封禁,详情请参阅: {1}."
 	}
 	"DB Connect Fail"
 	{

@@ -885,7 +885,7 @@ void vTeleportToSurvivor(int client, bool bRandom = true, int targetplayer = -1)
 			}
 		}
 		delete aClients;
-	}else if(!IsClientInGame(targetplayer) || GetClientTeam(targetplayer) != 2 || !IsPlayerAlive(targetplayer) || client == targetplayer){
+	}else if(!IsClientInGame(targetplayer) || GetClientTeam(targetplayer) != 2 || !IsPlayerAlive(targetplayer) || !IsHangingFromLedge(targetplayer) || client == targetplayer){
 		vTeleportToSurvivor(client);
 		return;
 	}else{

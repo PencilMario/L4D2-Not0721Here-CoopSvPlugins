@@ -93,7 +93,6 @@ native bool ExtraMenu_Delete(int menu_id);
 * @param	add_min			Minimum value when using increment/decrement (for use with"MENU_SELECT_ADD" type) (float values are supported)
 * @param	add_max			Maximum value when using increment/decrement (for use with"MENU_SELECT_ADD" type) (float values are supported)
 * @param 	cvar			Cvar name to set when selecting an option
-* @param	cvarlen			cvar name length
 *
 * @return	返回该项的index
 */

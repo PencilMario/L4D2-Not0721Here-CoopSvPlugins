@@ -55,6 +55,8 @@ enum EXTRA_MENU_TYPE
 	MENU_SELECT_ONOFF,		// Entry that will turn on/off when selected
 	MENU_SELECT_LIST,		// Scroll through a list of entries
 	MENU_SELECT_ADD,		// Entry that will increment and decrement a value
+	MENU_SELECT_CVARADD,		// Entry that will increment and decrement a cvar value
+	MENU_SELECT_CVARONOFF  		// Entry that will turn on/off when selected
 }
 
 
@@ -90,10 +92,12 @@ native bool ExtraMenu_Delete(int menu_id);
 * @param	add_value		Value to increment/decrement by when selecting (for use with"MENU_SELECT_ADD" type) (float values are supported)
 * @param	add_min			Minimum value when using increment/decrement (for use with"MENU_SELECT_ADD" type) (float values are supported)
 * @param	add_max			Maximum value when using increment/decrement (for use with"MENU_SELECT_ADD" type) (float values are supported)
+* @param 	cvar			Cvar name to set when selecting an option
+* @param	cvarlen			cvar name length
 *
-* @return	True on success, false otherwise (possibly if menu is not available).
+* @return	返回该项的index
 */
-native bool ExtraMenu_AddEntry(int menu_id, char[] entry, EXTRA_MENU_TYPE type, bool close = false, int default_value = 0, any add_value = 0, any add_min = -999999, any add_max = 999999);
+native int ExtraMenu_AddEntry(int menu_id, char[] entry, EXTRA_MENU_TYPE type, bool close = false, int default_value = 0, any add_value = 0, any add_min = -999999, any add_max = 999999, char[] cvar, int cvarlen);
 
 /**
 * @brief Adds a set of options to scroll through, for use with the"MENU_SELECT_LIST" type.
@@ -154,8 +158,6 @@ forward void ExtraMenu_OnSelect(int client, int menu_id, int option, int value);
 * @noreturn
 */
 
-ArrayList extraMenuEntryIndex;
-int extraMenuCount;
 methodmap ExtraMenu
 {
 	/**
@@ -163,17 +165,15 @@ methodmap ExtraMenu
 	*
 	* @param back 为第一页的菜单提供"上一页"选项，用于返回另一个菜单
 	* @param translation 用于"ExtraMenu_AddEntry"条目的翻译文件路径，无翻译则为""
-	* @param buttons_nums 菜单移动类型。False = W/A/S/D（阻止玩家移动）。True = 1/2/3/4 （不组织玩家移动）	
+	* @param buttons_nums 菜单移动类型。False = W/A/S/D（阻止玩家移动）。True = 1/2/3/4 （不组织玩家移动）
+	* 
+	* @note 这个methodmap只是对native的包装，你仍然需要对ExtraMenu_OnSelect进行处理	
 	*
 	* @noreturn
 	*/
 	public ExtraMenu(bool back = false, char[] translation ="", bool button_usenum = false)
 	{
-		if (extraMenuEntryIndex == INVALID_HANDLE) extraMenuEntryIndex = new ArrayList();
 		int menu_id = ExtraMenu_Create(back, translation, button_usenum);
-		if (extraMenuEntryIndex.Length <= menu_id) extraMenuEntryIndex.Resize(menu_id+1);
-		extraMenuEntryIndex.Set(menu_id, 0);
-		extraMenuCount++;
 		return view_as<ExtraMenu>(menu_id);
 	}
 	/**
@@ -186,12 +186,13 @@ methodmap ExtraMenu
 	* @param	add_value		选择时递增/递减的值（与"MENU_SELECT_ADD"类型一起使用）（支持浮点数值）
 	* @param	add_min			使用递增/递减时的最小值（与"MENU_SELECT_ADD"类型一起使用）（支持浮点数值）
 	* @param	add_max			使用递增/递减时的最大值（与"MENU_SELECT_ADD"类型一起使用）（支持浮点数值）
+	* @param	cvar			设置cvar
 	*
-	* @return	成功时为 true，否则为 false（可能在菜单不可用时）。
+	* @return	返回该项的index
 	*/
-	public bool __AddIntry(char[] entry, EXTRA_MENU_TYPE type, bool close = false, int default_value = 0, any add_value = 0, any add_min = -999999, any add_max = 999999)
+	public int __AddIntry(char[] entry, EXTRA_MENU_TYPE type, bool close = false, int default_value = 0, any add_value = 0, any add_min = -999999, any add_max = 999999, char[] cvar = "", int convarlen = 0)
 	{
-		return ExtraMenu_AddEntry(this._index, entry, type, close, default_value, add_value, add_min, add_max);
+		return ExtraMenu_AddEntry(this._index, entry, type, close, default_value, add_value, add_min, add_max, cvar, convarlen);
 	}
 
 	/**
@@ -200,7 +201,7 @@ methodmap ExtraMenu
 	 * @param text 	所显示的文字
 	 * @return		成功时为 true，否则为 false（可能在菜单不可用时）。
 	 */
-	public bool AddEntry(char[] text){
+	public int AddEntry(char[] text){
 		return this.__AddIntry(text, MENU_ENTRY);
 	}
 	/**
@@ -210,8 +211,7 @@ methodmap ExtraMenu
 	 * @return		失败为 -1（可能在菜单不可用时）
 	 */
 	public int AddEntryText(char[] text){
-		if (!this.AddEntry(text)) return -1;
-		return this._entryIndex;
+		return this.AddEntry(text);
 	}
 
 	/**
@@ -222,8 +222,7 @@ methodmap ExtraMenu
 	 * @return		成功时为该可选项的index，否则为 -1（可能在菜单不可用时）。
 	 */
 	public int AddEntryOnly(char[] text, bool close = false){
-		if (!this.__AddIntry(text, MENU_SELECT_ONLY, close)) return -1;
-		return this._entryIndex++;
+		return this.__AddIntry(text, MENU_SELECT_ONLY, close)
 	}
 
 	/**
@@ -235,8 +234,7 @@ methodmap ExtraMenu
 	 * @return		成功时为该可选项的index，否则为 -1（可能在菜单不可用时）。
 	 */
 	public int AddEntrySwitch(char[] text, bool close = false, int default_value = 0){
-		if (!this.__AddIntry(text, MENU_SELECT_ONOFF, close, default_value)) return -1;
-		return this._entryIndex++;
+		return this.__AddIntry(text, MENU_SELECT_ONOFF, close, default_value);
 	}
 
 	/**
@@ -251,8 +249,7 @@ methodmap ExtraMenu
 	 * @return		成功时为该可选项的index，否则为 -1（可能在菜单不可用时）。
 	 */
 	public int AddEntryAdd(char[] text, bool close = false, int default_value = 0, int add_value = 0, int add_min = -999999, int add_max = 999999){
-		if (!this.__AddIntry(text, MENU_SELECT_ADD, close, default_value, add_value, add_min, add_max)) return -1;
-		return this._entryIndex++;
+		return this.__AddIntry(text, MENU_SELECT_ADD, close, default_value, add_value, add_min, add_max);
 	}
 
 	/**
@@ -264,13 +261,42 @@ methodmap ExtraMenu
 	 * @return		成功时为该可选项的index，否则为 -1（可能在菜单不可用时）。
 	 */
 	public int AddEntrySelect(char[] text, char[] select, bool close = false){
-		if (!this.__AddIntry(text, MENU_SELECT_LIST,close)) return -1;
+		int res = this.__AddIntry(text, MENU_SELECT_LIST,close);
 		this._AddOptions(select);
-		return this._entryIndex++;
+		return res;
 	}
 
 	/**
-	 * @brief 将下一个"ExtraMenu_AddEntry"数据添加到新页面，并创建"下一页"和"上一页"选项。
+	 * 添加一行可选文字，增减对应cvar的值
+	 * 
+	 * @param text 	所显示的文字, '_OPT_' 将被替换为当前的value
+	 * @param cvar 	cvar名称
+	 * @param close 在选择选项后关闭菜单。
+	 * @param add_value 	每次调整的变化量
+	 * @param add_min 		最小值
+	 * @param add_max 		最大值
+	 * 
+	 * @return		成功时为该可选项的index，否则为 -1（可能在菜单不可用时）。
+	 */
+	public int AddEntryCvarAdd(char[] text, char[] cvar, int cvarlen, bool close = false, int add_value = 0, int add_min = -999999, int add_max = 999999){
+		return this.__AddIntry(text, MENU_SELECT_CVARADD, close, GetConVarInt(FindConVar(cvar)), add_value, add_min, add_max, cvar, cvarlen);
+	}
+
+	/**
+	 * 添加一行可选文字，控制对应cvar的值（开关）
+	 * 
+	 * @param text 	所显示的文字, '_OPT_' 将被替换为当前的value
+	 * @param cvar 	cvar名称
+	 * @param close 在选择选项后关闭菜单。
+	 * 
+	 * @return		成功时为该可选项的index，否则为 -1（可能在菜单不可用时）。
+	 */
+	public int AddEntryCvarSwitch(char[] text, char[] cvar, int cvarlen, bool close = false){
+		return this.__AddIntry(text, MENU_SELECT_CVARONOFF, close, GetConVarInt(FindConVar(cvar)), 0, -999999, 999999, cvar, cvarlen);
+	}
+
+	/**
+	 * @brief 将下一个"ExtraMenu_AddEntry"数据添加到新页，并创建"下一页"和"上一页"选项。
 	 * 
 	 * @noreturn
 	 */
@@ -289,11 +315,6 @@ methodmap ExtraMenu
 	 */
 	public bool Close()
 	{
-		this._entryIndex = 0;
-		if (--extraMenuCount <= 0) {
-			CloseHandle(extraMenuEntryIndex);
-			extraMenuEntryIndex = INVALID_HANDLE;
-		}
 		return ExtraMenu_Delete(this._index);
 	}
 
@@ -307,11 +328,6 @@ methodmap ExtraMenu
 	public bool Show(int client, int int_time = MENU_TIME_FOREVER)
 	{
 		return ExtraMenu_Display(client, view_as<int>(this), int_time);
-	}
-
-	property int _entryIndex{
-		public get(){ return extraMenuEntryIndex.Get(this._index);}
-		public set(int value){extraMenuEntryIndex.Set(this._index, value);}
 	}
 
 	property int _index{

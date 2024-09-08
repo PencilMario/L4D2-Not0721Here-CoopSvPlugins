@@ -97,7 +97,7 @@ native bool ExtraMenu_Delete(int menu_id);
 *
 * @return	返回该项的index
 */
-native int ExtraMenu_AddEntry(int menu_id, char[] entry, EXTRA_MENU_TYPE type, bool close = false, int default_value = 0, any add_value = 0, any add_min = -999999, any add_max = 999999, char[] cvar, int cvarlen);
+native int ExtraMenu_AddEntry(int menu_id, char[] entry, EXTRA_MENU_TYPE type, bool close = false, int default_value = 0, any add_value = 0, any add_min = -999999, any add_max = 999999, char[] cvar);
 
 /**
 * @brief Adds a set of options to scroll through, for use with the"MENU_SELECT_LIST" type.
@@ -190,9 +190,9 @@ methodmap ExtraMenu
 	*
 	* @return	返回该项的index
 	*/
-	public int __AddIntry(char[] entry, EXTRA_MENU_TYPE type, bool close = false, int default_value = 0, any add_value = 0, any add_min = -999999, any add_max = 999999, char[] cvar = "", int convarlen = 0)
+	public int __AddIntry(char[] entry, EXTRA_MENU_TYPE type, bool close = false, int default_value = 0, any add_value = 0, any add_min = -999999, any add_max = 999999, char[] cvar = "")
 	{
-		return ExtraMenu_AddEntry(this._index, entry, type, close, default_value, add_value, add_min, add_max, cvar, convarlen);
+		return ExtraMenu_AddEntry(this._index, entry, type, close, default_value, add_value, add_min, add_max, cvar);
 	}
 
 	/**
@@ -278,8 +278,8 @@ methodmap ExtraMenu
 	 * 
 	 * @return		成功时为该可选项的index，否则为 -1（可能在菜单不可用时）。
 	 */
-	public int AddEntryCvarAdd(char[] text, char[] cvar, int cvarlen, bool close = false, int add_value = 0, int add_min = -999999, int add_max = 999999){
-		return this.__AddIntry(text, MENU_SELECT_CVARADD, close, GetConVarInt(FindConVar(cvar)), add_value, add_min, add_max, cvar, cvarlen);
+	public int AddEntryCvarAdd(char[] text, char[] cvar, bool close = false, int add_value = 0, int add_min = -999999, int add_max = 999999){
+		return this.__AddIntry(text, MENU_SELECT_CVARADD, close, GetConVarInt(FindConVar(cvar)), add_value, add_min, add_max, cvar);
 	}
 
 	/**
@@ -291,8 +291,8 @@ methodmap ExtraMenu
 	 * 
 	 * @return		成功时为该可选项的index，否则为 -1（可能在菜单不可用时）。
 	 */
-	public int AddEntryCvarSwitch(char[] text, char[] cvar, int cvarlen, bool close = false){
-		return this.__AddIntry(text, MENU_SELECT_CVARONOFF, close, GetConVarInt(FindConVar(cvar)), 0, -999999, 999999, cvar, cvarlen);
+	public int AddEntryCvarSwitch(char[] text, char[] cvar, bool close = false){
+		return this.__AddIntry(text, MENU_SELECT_CVARONOFF, close, GetConVarInt(FindConVar(cvar)), 0, -999999, 999999, cvar);
 	}
 
 	/**

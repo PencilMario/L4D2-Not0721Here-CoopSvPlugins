@@ -46,8 +46,12 @@ public void OnPluginStart()
 	HookConVarChange(SS_Time, reload_script);
 	HookConVarChange(g_cAutoMode, reload_script);
 	HookConVarChange(SS_DPSLimit, reload_script);
+	HookConVarChange(SS_EnableFastRespawn, reload_script);
+	HookConVarChange(SS_EnableRelax, reload_script);
+
 	HookConVarChange(SS_EnableRelax, OnRelaxChanged);
 	HookConVarChange(g_cEnableM4Fix, OnM4FixChanged)
+	
 }
 
 public void OnMapInit()

@@ -178,20 +178,15 @@ public void ExtraMenu_OnSelect(int client, int menu_id, int option, int value){
     else if (option == g_nbUpdate) {
         ServerCommand("sm_cvar nb_update_frequency %.4f", float(value) / 1000.0);
     }
-    else if (option == g_Snum) {
-        ServerCommand("sm_SetAiSpawns %i", value);
-    }
-    else if (option == g_Stime) {
-        ServerCommand("sm_SetAiTime %i", value);
-    }
-    else if (option == g_SDPSlim) {
-        ServerCommand("sm_cvar SS_DPSSiLimit %i", value);
-    }
     else if (option == g_MultiAmmo) {
         ServerCommand("sm_setammomulti %i", value);
     }
     else if (option == g_MultiMed) {
         ServerCommand("sm_mmn %i; sm_mmy %i", value, value);
+    }
+    else if(option == g_RelaxFast)
+    {
+        ServerCommand("sm_cvar SS_FastRespawn %i", value);
     }
     else if (option == g_TP) {
         ServerCommand("sm_warptoper %.2f", float(value) / 100.0);
@@ -214,7 +209,7 @@ public void ExtraMenu_OnSelect(int client, int menu_id, int option, int value){
         }
     }
     else if (option == g_killback) {
-        ServerCommand("sm_cvar sound_enable %i;l4d_infectedhp %i;", value, value);
+        ServerCommand("sm_cvar sound_enable %i;sm_cvar l4d_infectedhp %i;", value, value);
     }    
 }
 

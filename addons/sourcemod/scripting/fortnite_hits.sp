@@ -31,7 +31,6 @@ float g_fPlayerPosLate[MAXPLAYERS + 1][3];
 AdminFlag g_afPermission = INVALID_ADMIN_ID;
 
 ConVar g_cvAllowForBots, 
-g_cvReconnectPlayer, 
 g_cvCommands, 
 g_cvMeleeDistance,
 g_cvDistance, 
@@ -55,7 +54,6 @@ enum HitGroup
 public void OnPluginStart()
 {
 	g_cvAllowForBots = CreateConVar("fortnite_hits_allowforbots", "1", "Allow bots to create hit particles (NOTE: Only will be visible when spectating a bot)", FCVAR_NONE, true, 0.0, true, 1.0);
-	g_cvReconnectPlayer = CreateConVar("fortnite_hits_enableplayerreconnect", "0", "Enable this to force new players to reconnect to server, so they will see particle effects without need of waiting next map", FCVAR_NONE, true, 0.0, true, 1.0);
 	g_cvCommands = CreateConVar("fortnite_hits_commandnames", "sm_fortnitehits;sm_hits;sm_damage;sm_fortnite;", "Set custom names here for toggle damage display command, don't add to many commands as it may overflow buffer. (NOTE: Write command names with \"sm_\" prefix, and don't use ! or any other symbol except A-Z and 0-9 and underline symbol \"_\", also server needs to be restarted to see changes!)", FCVAR_NONE);
 	g_cvDistance = CreateConVar("fortnite_hits_distance", "50.0", "Distance between victim player and damage numbers (NOTE: Make that value lower to prevent numbers show up through the walls)", FCVAR_NONE, true, 0.0);
 	g_cvMeleeDistance = CreateConVar("fortnite_hits_distance_melee", "20.0", "Distance between victim player and damage numbers with melee (NOTE: Make that value lower to prevent numbers show up through the walls)", FCVAR_NONE, true, 0.0);
@@ -68,7 +66,6 @@ public void OnPluginStart()
 	RegConsoleCommands();
 	g_hCookie = RegClientCookie("fortnite_hits_state", "Is showing damage disabled/enabled for a specific client", CookieAccess_Protected);
 	
-	HookEvent("player_connect_full", ConnectedFull_Hook);
 	HookEvent("player_hurt", PlayerHurt_Event);
 	HookEvent("infected_hurt", PlayerHurt_Event);
 	
@@ -253,16 +250,6 @@ public void OnClientPostAdminCheck(int client)
 		SetAccess(client);
 }
 
-public void ConnectedFull_Hook(Event event, const char[] name, bool dontBroadcast)
-{
-	int client = GetClientOfUserId(event.GetInt("userid"));
-	
-	if (IsFakeClient(client))
-		return;
-	
-	if (g_bIsFirstTime[client] && g_cvReconnectPlayer.BoolValue)
-		ReconnectClient(client);
-}
 
 public void PlayerHurt_Event(Event event, const char[] name, bool dontBroadcast)
 {

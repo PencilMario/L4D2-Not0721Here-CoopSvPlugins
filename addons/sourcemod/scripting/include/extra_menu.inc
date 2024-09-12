@@ -43,6 +43,8 @@ public void __pl_extramenu_SetNTVOptional()
 	MarkNativeAsOptional("ExtraMenu_AddEntry");
 	MarkNativeAsOptional("ExtraMenu_NewPage");
 	MarkNativeAsOptional("ExtraMenu_Display");
+	MarkNativeAsOptional("ExtraMenu_GetMenuItemIdbyIndex");
+	MarkNativeAsOptional("ExtraMenu_SetEntryText");
 }
 #endif
 
@@ -93,10 +95,23 @@ native bool ExtraMenu_Delete(int menu_id);
 * @param	add_min			Minimum value when using increment/decrement (for use with"MENU_SELECT_ADD" type) (float values are supported)
 * @param	add_max			Maximum value when using increment/decrement (for use with"MENU_SELECT_ADD" type) (float values are supported)
 * @param 	cvar			Cvar name to set when selecting an option
+* @param	return_index	If true, returns the index of the added entry.
 *
 * @return	返回该项的index
 */
-native int ExtraMenu_AddEntry(int menu_id, char[] entry, EXTRA_MENU_TYPE type, bool close = false, int default_value = 0, any add_value = 0, any add_min = -999999, any add_max = 999999, char[] cvar);
+native int ExtraMenu_AddEntry(int menu_id, char[] entry, EXTRA_MENU_TYPE type, bool close = false, int default_value = 0, any add_value = 0, any add_min = -999999, any add_max = 999999, char[] cvar, bool return_index);
+
+/**
+ * @brief Returns the menu item id of the specified index.
+ * 
+ * @param menu_id
+ * @param index
+ *
+ * @return 复制的字节数
+ */
+native int ExtraMenu_SetEntryText(int menu_id, int index, char[] entry);
+
+native int ExtraMenu_GetMenuItemIdbyIndex(int menu_id, int index);
 
 /**
 * @brief Adds a set of options to scroll through, for use with the"MENU_SELECT_LIST" type.
@@ -186,22 +201,23 @@ methodmap ExtraMenu
 	* @param	add_min			使用递增/递减时的最小值（与"MENU_SELECT_ADD"类型一起使用）（支持浮点数值）
 	* @param	add_max			使用递增/递减时的最大值（与"MENU_SELECT_ADD"类型一起使用）（支持浮点数值）
 	* @param	cvar			设置cvar
+	* @param 	return_index		返回该项的index
 	*
 	* @return	返回该项的index
 	*/
-	public int __AddIntry(char[] entry, EXTRA_MENU_TYPE type, bool close = false, int default_value = 0, any add_value = 0, any add_min = -999999, any add_max = 999999, char[] cvar = "")
+	public int __AddIntry(char[] entry, EXTRA_MENU_TYPE type, bool close = false, int default_value = 0, any add_value = 0, any add_min = -999999, any add_max = 999999, char[] cvar = "", bool return_index = false)
 	{
-		return ExtraMenu_AddEntry(this._index, entry, type, close, default_value, add_value, add_min, add_max, cvar);
+		return ExtraMenu_AddEntry(this._index, entry, type, close, default_value, add_value, add_min, add_max, cvar, return_index);
 	}
 
 	/**
 	 * 添加一行不可选文字
 	 * 
 	 * @param text 	所显示的文字
-	 * @return		成功时为 true，否则为 false（可能在菜单不可用时）。
+	 * @return		该项的index（非menuid）
 	 */
 	public int AddEntry(char[] text){
-		return this.__AddIntry(text, MENU_ENTRY);
+		return this.__AddIntry(text, MENU_ENTRY, false, 0, 0, 0, 0, "", true);
 	}
 	/**
 	 * 添加一行不可选文字，同AddEntry

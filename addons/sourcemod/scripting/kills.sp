@@ -63,7 +63,7 @@ public void OnPluginStart()
 	// HookEvents
 	HookEvent("player_death", siDeathHandler);
 	HookEvent("infected_death", ciDeathHandler);
-	HookEvent("player_hurt", playerHurtHandler, EventHookMode_Pre);
+	HookEvent("player_hurt", playerHurtHandler);
 	/* HookEvent("infected_hurt", ciHurtHandler); */
 	HookEvent("round_start", roundStartHandler);
 	HookEvent("round_end", roundEndHandler);
@@ -145,7 +145,6 @@ public void ciDeathHandler(Event event, const char[] name, bool dontBroadcast)
 public void playerHurtHandler(Event event, const char[] name, bool dontBroadcast)
 {
 	int victim = GetClientOfUserId(event.GetInt("userid")), attacker = GetClientOfUserId(event.GetInt("attacker")), damage = event.GetInt("dmg_health");
-	if (damage > GetClientHealth(victim)) damage = GetClientHealth(victim);
 	if (IsValidSurvivor(attacker) && IsValidSurvivor(victim))
 	{
 		playerInfos[attacker].ffCount += damage;

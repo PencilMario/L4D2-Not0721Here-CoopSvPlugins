@@ -67,13 +67,9 @@
     }
     "13"
     {
-        "chat"      "{green}姊妹药抗群：493349527 每天组织内战，提升技术\nSteam组搜索[Chikko Zonemod]加入"
-    }
-    "14"
-    {
         "chat"      "{green}本服务器提供专门的三方图服务器，内有200+张三方图\n使用!servers进入带有三方图标识的服务器\n{green}地图文件加群159923320获取"
     }
-    "15"
+    "14"
     {
         "chat"      "{green}也可以使用脚本 https://github.com/PencilMario/L4D2-Not0721Here-CoopSvPlugins/blob/main/Docs/clientgetmap.ps1 自动下载所有三方图\n预估占用80g，请注意腾出空间"
     }

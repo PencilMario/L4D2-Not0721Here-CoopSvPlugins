@@ -29,4 +29,5 @@ SetRates() {
 		SetConVarInt(FindConVar("fps_max"), fps_override.IntValue, false, false);
 		SetConVarInt(FindConVar("sv_gravity"), 750, true, false);
 	}
+	SetConVarFloat(FindConVar("net_maxcleartime"), 0.0001, true, false);
 }

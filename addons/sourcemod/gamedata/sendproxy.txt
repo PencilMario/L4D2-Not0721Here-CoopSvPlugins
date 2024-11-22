@@ -10,16 +10,44 @@
 
 		"Signatures"
 		{
+			/**
+             * Signature for CGameClient::ShouldSendMessages
+             * 
+             * How to find in Windows:
+             * - search for "%s overflowed reliable buffer\n"
+             * - there will be two matches, it's usually the first one
+             * - find a reference to the function at the top
+             * - pick the only "CALL FUN_XXXX" that is in the list
+             * 
+             */
 			"CGameClient::ShouldSendMessages"
 			{
 				"library"			"engine"
 				"linux"				"@_ZN11CGameClient18ShouldSendMessagesEv"
 			}
+
+			/**
+             * Signature for CGameServer::SendClientMessages
+             * 
+             * How to find in Windows:
+             *  - search for "SendClientMessages"
+             *  - there's 2 matches, it's usually the first one
+             *  - to make sure you're in the right method there will be a string called "sv_main.cpp" above "(%s)%s","Networking","SendClientMessages"
+             * 
+             */
 			"CGameServer::SendClientMessages"
 			{
 				"library"			"engine"
 				"linux"				"@_ZN11CGameServer18SendClientMessagesEb"
 			}
+
+			/**
+             * Signature for SV_ComputeClientPacks
+             * 
+             * How to find in Windows:
+             *  - Simply search for "SV_ComputeClientPack", or "sv_packedentities.cpp"
+             * 
+             */
 			"SV_ComputeClientPacks"
 			{
 				"library"			"engine"
@@ -29,6 +57,7 @@
 	}
 	"tf"
 	{
+		// !!! PROBABLY OUTDATED
 		"Signatures"
 		{
 			"CGameClient::ShouldSendMessages"
@@ -50,8 +79,10 @@
 	}
 	"csgo"
 	{
+		// !!! PROBABLY OUTDATED
 		"Signatures"
 		{
+			
 			"CGameClient::ShouldSendMessages"
 			{
 				"library"			"engine"
@@ -72,4 +103,27 @@
 			}
 		}
 	}
+	"left4dead2"
+    {
+        "Signatures"
+        {
+            "CGameClient::ShouldSendMessages"
+            {
+                "library"    "engine"
+                "windows"    "\x55\x8B\xEC\x51\x56\x8B\xF1\x80\xBE\x2A\x2A\x2A\x2A\x00\x74\x2A\x83\x3D\x2A\x2A\x2A\x2A\x00"
+            }
+
+            "CGameServer::SendClientMessages"
+            {
+                "library"    "engine"
+                "windows"    "\x55\x8B\xEC\x81\xEC\xB4\x00\x00\x00\xA1\x2A\x2A\x2A\x2A\x53"
+            }
+            
+            "SV_ComputeClientPacks"
+            {
+                "library"    "engine"
+                "windows"    "\x55\x8B\xEC\x83\xEC\x44\xA1\x2A\x2A\x2A\x2A\x53"
+            }
+        }
+    }
 }

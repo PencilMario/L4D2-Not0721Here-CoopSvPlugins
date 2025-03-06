@@ -79,46 +79,19 @@ function update_diff()
 	}
 	else
 	{
-		try {
-			delete DirectorOptions.LookTempo;
-		} catch (e) {
-			// Handle error if needed
+		try 
+		{
+			delete DirectorOptions.LookTempo
+			delete DirectorOptions.IntensityRelaxThreshold 
+    		delete DirectorOptions.RelaxMaxFlowTravel 
+    		delete DirectorOptions.RelaxMaxInterval 
+    		delete DirectorOptions.RelaxMinInterval 
+			delete DirectorOptions.SustainPeakMinTim
+			delete DirectorOptions.SustainPeakMaxTime 
 		}
-
-		try {
-			delete DirectorOptions.IntensityRelaxThreshold;
-		} catch (e) {
-			// Handle error if needed
-		}
-
-		try {
-			delete DirectorOptions.RelaxMaxFlowTravel;
-		} catch (e) {
-			// Handle error if needed
-		}
-
-		try {
-			delete DirectorOptions.RelaxMaxInterval;
-		} catch (e) {
-			// Handle error if needed
-		}
-
-		try {
-			delete DirectorOptions.RelaxMinInterval;
-		} catch (e) {
-			// Handle error if needed
-		}
-
-		try {
-			delete DirectorOptions.SustainPeakMinTime;
-		} catch (e) {
-			// Handle error if needed
-		}
-
-		try {
-			delete DirectorOptions.SustainPeakMaxTime;
-		} catch (e) {
-			// Handle error if needed
+		catch (e)
+		{	
+			
 		}
 		Convars.SetValue("director_special_battlefield_respawn_interval",10)
 		Convars.SetValue("director_special_initial_spawn_delay_max", 60)

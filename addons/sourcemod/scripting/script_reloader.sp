@@ -15,13 +15,13 @@ public void OnPluginStart()
 
 public Action Cmd_Reload(int client, int args)
 {
-	//ConVar gamemode = FindConVar("mp_gamemode");
-	//char modestr[64];
-	//gamemode.GetString(modestr, 64);  //  convars.inc
+	ConVar gamemode = FindConVar("mp_gamemode");
+	char modestr[64];
+	gamemode.GetString(modestr, 64);  //  convars.inc
 	char file[64];
-	Format(file, 64, "%s.nut", "director_base_addon");
+	Format(file, 64, "%s.nut", modestr);
 	CheatCommand("script_reload_code", file);
-	PrintToServer("Script %s Reloaded", file);
+	PrintToServer("Script %s.nut Reloaded", modestr);
 	return Plugin_Handled;
 }
 

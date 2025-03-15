@@ -209,110 +209,29 @@ ShowHealthGauge(client, maxBAR, maxHP, nowHP, String:clName[]){
 
 	decl String:showBAR[length];
 	showBAR[0] = '\0';
-	char resultbar[256];
-	FormatProgress(
-		resultbar,
-		sizeof(resultbar),
-		clName,
-		nowHP,
-		maxHP,
-		percent,
-		"HP",
-		maxBAR
-	);
+	for(i=0; i<percent&&i<maxBAR; i++){
+		StrCat(showBAR, length, sCharHealth);
+	}
+	for(; i<maxBAR; i++){
+		StrCat(showBAR, length, sCharDamage);
+	}
 
 	if(nShowType){
 		if(!nShowNum){
-			PrintHintText(client, resultbar);
+			PrintHintText(client, "HP: |-%s-|  %s", showBAR, clName);
 		}
 		else{
-			PrintHintText(client, resultbar);
+			PrintHintText(client, "HP: |-%s-|  [%d / %d]  %s", showBAR, nowHP, maxHP, clName);
 		}
 	}
 	else{
 		if(!nShowNum){
-			PrintCenterText(client, resultbar);
+			PrintCenterText(client, "HP: |-%s-|  %s", showBAR, clName);
 		}
 		else{
-			PrintCenterText(client, resultbar);
+			PrintCenterText(client, "HP: |-%s-|  [%d / %d]  %s", showBAR, nowHP, maxHP, clName);
 		}
 	}
-}
-void FormatProgress(
-	char[] buffer,        // [输出] 结果缓冲区
-    int maxlength, 
-    const char[] STR1, 
-    int num1 = -1, 
-    int num2 = -1, 
-    int percent = -1, 
-    const char[] STR2 = "", 
-    int width = 10
-)
-{
-    char progressBar[64];
-    progressBar[0] = '\0';
-    
-    int calculatedPercent;
-    bool showPercentage;
-
-    // 智能百分比计算
-    if (num1 != -1 && num2 != -1 && num2 != 0) {
-        calculatedPercent = (num1 * 100) / num2;
-        showPercentage = true;
-    } else {
-        calculatedPercent = percent != -1 ? percent : 0;
-        showPercentage = (num1 == -1) && (percent != -1);
-    }
-
-    // 手动实现clamp逻辑
-    calculatedPercent = calculatedPercent < 0 ? 0 : calculatedPercent > 100 ? 100 : calculatedPercent;
-
-    // 生成进度条
-    char icons[][] = {"▁", "▂", "▃", "▄", "▅", "▆", "▇", "█"};
-    
-    float segmentSize = 100.0 / float(width);
-    for (int i = 0; i < width; i++) {
-        float segStart = i * segmentSize;
-        float segEnd = (i + 1) * segmentSize;
-        
-        if (calculatedPercent >= segEnd) {
-            StrCat(progressBar, sizeof(progressBar), icons[7]);
-        } else if (calculatedPercent <= segStart) {
-            StrCat(progressBar, sizeof(progressBar), icons[0]);
-        } else {
-            float ratio = (calculatedPercent - segStart) / segmentSize;
-            int idx = RoundToFloor(ratio * 7.0);
-            // 手动实现索引限制
-            idx = idx < 0 ? 0 : idx > 7 ? 7 : idx;
-            StrCat(progressBar, sizeof(progressBar), icons[idx]);
-        }
-    }
-
-    // 构建基础显示
-    if (showPercentage) {
-        Format(buffer, maxlength, "%s |%s| %d%%", STR1, progressBar, calculatedPercent);
-    } else {
-        Format(buffer, maxlength, "%s |%s|", STR1, progressBar);
-    }
-
-    // 数值部分逻辑
-    if (num1 != -1) {
-        char numSection[64];
-        if (num2 != -1 && num2 != 0) { // 添加num2不为0的检查
-            FormatEx(numSection, sizeof(numSection), " %d/%d%s%s", 
-                num1, num2, 
-                STR2[0] != '\0' ? " " : "", 
-                STR2);
-        } else {
-            FormatEx(numSection, sizeof(numSection), " %d%s%s", 
-                num1, 
-                STR2[0] != '\0' ? " " : "", 
-                STR2);
-        }
-        StrCat(buffer, maxlength, numSection);
-    }
-
-    return;
 }
 
 public Action:OnRoundStart(Handle:event, const String:name[], bool:dontBroadcast)

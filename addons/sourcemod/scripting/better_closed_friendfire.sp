@@ -47,25 +47,23 @@ public Action OnTakeDamage(int victim, int &attacker, int &inflictor, float &dam
             return Plugin_Continue;
         }
 
-        if (g_fClientLastDoFFTime[attacker] < GetEngineTime() + 10.0 ) {
-            g_fClientFFPercent[attacker] -= (GetEngineTime() + 10 - g_fClientLastDoFFTime[attacker]) * 0.01 * 4;
+        if (g_fClientLastDoFFTime[attacker] + 10.0 < GetEngineTime() ) {
+            g_fClientFFPercent[attacker] -= (GetEngineTime() - g_fClientLastDoFFTime[attacker] + 10.0) * 0.005;
         }
 
-        if (g_fClientFFPercent[attacker] > 1.0) {
-            g_fClientFFPercent[attacker] = 1.0;
-            return Plugin_Continue;
-        }
+
         if (g_fClientFFPercent[attacker] < 0.0) g_fClientFFPercent[attacker] = 0.0;
 
         float health = float(GetClientHealth(victim)) + L4D_GetTempHealth(victim);
         float dmgtime = GetEngineTime();
         
         float targetMaxDamagePercent;
-        g_fClientFFPercent[attacker] += damage / health;
+        g_fClientFFPercent[attacker] = g_fClientFFPercent[attacker] + damage / (health > 100.0 ? health : 100.0) * (((damagetype & DMG_SLASH) || (damagetype & DMG_CLUB)) ? 1.0 : 5.0);
         g_fClientLastDoFFTime[attacker] = dmgtime;
-
-        PrintToConsole(attacker, "原ff %f | 当前百分比 %.2f",damage ,g_fClientFFPercent[attacker]);
-        
+        if (g_fClientFFPercent[attacker] > 1.0) {
+            g_fClientFFPercent[attacker] = 1.0;
+            return Plugin_Continue;
+        }
         // 高伤害武器
         if (damage / health > 0.5){
             targetMaxDamagePercent = (g_fClientFFPercent[attacker] < 0.6) ? 0.6 : g_fClientFFPercent[attacker];
@@ -75,7 +73,7 @@ public Action OnTakeDamage(int victim, int &attacker, int &inflictor, float &dam
             targetMaxDamagePercent = g_fClientFFPercent[attacker];
             damage *= targetMaxDamagePercent;
         }
-        return Plugin_Handled;
+        return Plugin_Changed;
     }
     return Plugin_Continue;
 }

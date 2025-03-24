@@ -21,7 +21,7 @@ public Plugin myinfo =
 
 public void OnPluginStart()
 {
-    g_cvarClientFFDistance = CreateConVar("sm_client_ff_distance", "210.0", "距离小于多少时该插件处理友伤", FCVAR_NOTIFY);
+    g_cvarClientFFDistance = CreateConVar("sm_client_ff_distance", "250.0", "距离小于多少时该插件处理友伤", FCVAR_NOTIFY);
     HookEvent("player_spawn", Event_PlayerSpawn);
 }
 
@@ -47,8 +47,9 @@ public Action OnTakeDamage(int victim, int &attacker, int &inflictor, float &dam
             return Plugin_Continue;
         }
 
-        if (g_fClientLastDoFFTime[attacker] + 10.0 < GetEngineTime() ) {
-            g_fClientFFPercent[attacker] -= (GetEngineTime() - g_fClientLastDoFFTime[attacker] + 10.0) * 0.005;
+        if (g_fClientLastDoFFTime[attacker] + 7.0 < GetEngineTime() ) {
+            g_fClientFFPercent[attacker] -= (GetEngineTime() - g_fClientLastDoFFTime[attacker] + 7.0) * 0.02;
+            PrintToConsole(attacker, "友伤百分比已经降低到%f | -%f", g_fClientFFPercent[attacker], (GetEngineTime() - g_fClientLastDoFFTime[attacker] + 10.0) * 0.005);
         }
 
 
@@ -58,12 +59,13 @@ public Action OnTakeDamage(int victim, int &attacker, int &inflictor, float &dam
         float dmgtime = GetEngineTime();
         
         float targetMaxDamagePercent;
-        g_fClientFFPercent[attacker] = g_fClientFFPercent[attacker] + damage / (health > 100.0 ? health : 100.0) * (((damagetype & DMG_SLASH) || (damagetype & DMG_CLUB)) ? 1.0 : 5.0);
+        g_fClientFFPercent[attacker] = g_fClientFFPercent[attacker] + damage / (health > 100.0 ? health : 100.0) * (((damagetype & DMG_SLASH) || (damagetype & DMG_CLUB)) ? 3 : 1.0);
         g_fClientLastDoFFTime[attacker] = dmgtime;
         if (g_fClientFFPercent[attacker] > 1.0) {
             g_fClientFFPercent[attacker] = 1.0;
             return Plugin_Continue;
         }
+        PrintToConsole(attacker, "当前友伤百分比 %f", g_fClientFFPercent[attacker]);
         // 高伤害武器
         if (damage / health > 0.5){
             targetMaxDamagePercent = (g_fClientFFPercent[attacker] < 0.6) ? 0.6 : g_fClientFFPercent[attacker];

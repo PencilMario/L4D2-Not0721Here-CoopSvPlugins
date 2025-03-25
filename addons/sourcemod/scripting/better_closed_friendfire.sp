@@ -58,21 +58,19 @@ public Action OnTakeDamage(int victim, int &attacker, int &inflictor, float &dam
         float health = float(GetClientHealth(victim)) + L4D_GetTempHealth(victim);
         float dmgtime = GetEngineTime();
         
-        float targetMaxDamagePercent;
-        g_fClientFFPercent[attacker] = g_fClientFFPercent[attacker] + damage / (health > 100.0 ? health : 100.0) * (((damagetype & DMG_SLASH) || (damagetype & DMG_CLUB)) ? 3 : 1.0);
+        float targetMaxDamagePercent = g_fClientFFPercent[attacker];
+        g_fClientFFPercent[attacker] = g_fClientFFPercent[attacker] + damage / (health > 100.0 ? health : 100.0) * (((damagetype & DMG_SLASH) || (damagetype & DMG_CLUB)) ? 3.0 : 1.0);
         g_fClientLastDoFFTime[attacker] = dmgtime;
         if (g_fClientFFPercent[attacker] > 1.0) {
             g_fClientFFPercent[attacker] = 1.0;
-            return Plugin_Continue;
         }
         PrintToConsole(attacker, "当前友伤百分比 %f", g_fClientFFPercent[attacker]);
         // 高伤害武器
         if (damage / health > 0.5){
-            targetMaxDamagePercent = (g_fClientFFPercent[attacker] < 0.6) ? 0.6 : g_fClientFFPercent[attacker];
+            targetMaxDamagePercent = (targetMaxDamagePercent < 0.6) ? 0.6 : targetMaxDamagePercent;
             damage = damage > health ? health * targetMaxDamagePercent : damage * targetMaxDamagePercent;
         }
         else {
-            targetMaxDamagePercent = g_fClientFFPercent[attacker];
             damage *= targetMaxDamagePercent;
         }
         return Plugin_Changed;

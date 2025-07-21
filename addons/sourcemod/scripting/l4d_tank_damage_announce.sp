@@ -301,7 +301,7 @@ PrintTankDamage()
 		damage = g_iDamage[client];
 		damage_total += damage;
 	}
-	g_fMaxTankHealth=damage_total;
+	g_fMaxTankHealth=float(damage_total);
 	damage_total=0;
 	for (client = 1; client <= MaxClients; client++)
 	{

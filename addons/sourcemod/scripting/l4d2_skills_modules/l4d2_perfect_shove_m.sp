@@ -1,4 +1,4 @@
-#pragma newdecls required
+//#pragma newdecls required
 #pragma semicolon 1
 
 #include <sourcemod>
@@ -101,35 +101,32 @@ bool IsHaveSkill( int client )
 	return Skills_ClientHaveByID(client, g_iID);
 }
 
-static void Entity_PushForce(
-    int iEntity, 
-    float fForce, 
-    const float fAngles[3], 
-    float fMax = 0.0, 
-    bool bAdd = false
-)
+static Entity_PushForce(iEntity, Float:fForce, Float:fAngles[3], Float:fMax=0.0, bool:bAdd=false)
 {
-    float fVelocity[3];
-    
-    // 使用角度向量直接计算方向
-    GetAngleVectors(fAngles, fVelocity, NULL_VECTOR, NULL_VECTOR);
-    NormalizeVector(fVelocity, fVelocity);
-    ScaleVector(fVelocity, fForce);
-    
-    // 叠加现有速度
-    if (bAdd) {
-        float fMainVelocity[3];
-        GetEntPropVector(iEntity, Prop_Data, "m_vecAbsVelocity", fMainVelocity);
-        AddVectors(fMainVelocity, fVelocity, fVelocity);
-    }
-    
-    // 分量限速
-    if (fMax > 0.0) {
-        fVelocity[0] = fVelocity[0] > fMax ? fMax : fVelocity[0];
-        fVelocity[1] = fVelocity[1] > fMax ? fMax : fVelocity[1];
-        fVelocity[2] = fVelocity[2] > fMax ? fMax : fVelocity[2];
-    }
-    
-    // 应用速度
-    TeleportEntity(iEntity, .velocity = fVelocity);
+	static Float:fVelocity[3];
+	
+	fVelocity[0] = fForce * Cosine(DegToRad(fAngles[1])) * Cosine(DegToRad(fAngles[0]));
+	fVelocity[1] = fForce * Sine(DegToRad(fAngles[1])) * Cosine(DegToRad(fAngles[0]));
+	fVelocity[2] = fForce * Sine(DegToRad(fAngles[0]));
+	
+	GetAngleVectors(fAngles, fVelocity, NULL_VECTOR, NULL_VECTOR);
+	NormalizeVector(fVelocity, fVelocity);
+	ScaleVector(fVelocity, fForce);
+	
+	if(bAdd) {
+		static Float:fMainVelocity[3];
+		GetEntPropVector(iEntity, Prop_Data, "m_vecAbsVelocity", fMainVelocity);
+		
+		fVelocity[0] += fMainVelocity[0];
+		fVelocity[1] += fMainVelocity[1];
+		fVelocity[2] += fMainVelocity[2];
+	}
+	
+	if(fMax > 0.0) {
+		fVelocity[0] = ((fVelocity[0] > fMax) ? fMax : fVelocity[0]);
+		fVelocity[1] = ((fVelocity[1] > fMax) ? fMax : fVelocity[1]);
+		fVelocity[2] = ((fVelocity[2] > fMax) ? fMax : fVelocity[2]);
+	}
+	
+	TeleportEntity(iEntity, NULL_VECTOR, NULL_VECTOR, fVelocity);
 }

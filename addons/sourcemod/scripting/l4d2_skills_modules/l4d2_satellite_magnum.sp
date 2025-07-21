@@ -628,11 +628,31 @@ public void Skills_OnStateChangedPrivate(int client, int id, SkillState state)
 		if (weapon == -1 || !ClassMatchesComplex(weapon, "weapon_pistol_magnum"))
 			GivePlayerItem(client, "weapon_pistol_magnum");
 
-		Skills_PrintToChat(client, "使用!satellite_change切换技能");
+		Skills_PrintToChat(client, "使用!satellite_change或者手持马格南同时按下左右键切换技能");
 	}
 }
 
 bool IsHaveSkill( int client )
 {
 	return Skills_ClientHaveByID(client, g_iID);
+}
+
+public Action OnPlayerRunCmd(int client, int &buttons, int &impulse, float vel[3], float angles[3], int &weapon)
+{
+	if( buttons & IN_ATTACK )
+	{
+		if( buttons & IN_ATTACK2 )
+		{
+			int weapon = GetPlayerWeaponSlot(client, 1);
+			bool isMagnum = ClassMatchesComplex(weapon, "weapon_pistol_magnum");
+
+			// 当拥有马格南时 打开菜单
+			if (IsHaveSkill(client) && isMagnum)
+			{
+				sm_satellite_change(client, 0);
+				return Plugin_Handled;
+			}
+		}
+	}
+	
 }

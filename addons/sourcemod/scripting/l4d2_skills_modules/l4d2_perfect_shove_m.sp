@@ -63,7 +63,7 @@ public void player_shoved( Event event, const char[] name, bool noReplicate )
 	float angle[3];
 	GetClientEyeAngles(attacker, angle);
 	GetClientEyeAngles(client, angle);
-	angle[0] = (angle[0] < -20.0 ? angle[0] : -20.0);
+	angle[0] = -20.0;
 	Entity_PushForce(attacker, 400.0, angle, 0.0, false);
 	if (GetClientTeam(client) == L4DTeam_Survivor)
 	{

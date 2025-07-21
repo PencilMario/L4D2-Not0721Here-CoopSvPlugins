@@ -205,7 +205,7 @@ public Event_TankSpawn(Handle:event, const String:name[], bool:dontBroadcast)
 	CreateTimer(0.5, Timer_GetTankMaxHealth);
 }
 public Action Timer_GetTankMaxHealth(Handle:timer, any:client){
-	g_fMaxTankHealth = GetClientHealth(client);//float(GetEntProp(client, Prop_Send, "m_iMaxHealth"));
+	g_fMaxTankHealth = float(GetClientHealth(client));//float(GetEntProp(client, Prop_Send, "m_iMaxHealth"));
 	g_iLastTankHealth = GetClientHealth(client);
 	return Plugin_Stop;
 }

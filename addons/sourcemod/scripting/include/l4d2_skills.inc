@@ -910,7 +910,7 @@ stock UpgradeImpl Skills_DefaultUpgradeImpl(BaseSkill skill, BaseSkillExport exp
 {
 	if (sizeof(exp.upgrade_costs) < skill.level)
 	{
-		ERROR("sizeof(exp.upgrade_costs) < skill.level) <-- Expand max levels in source or decrease max level in config");
+		ERROR("sizeof(exp.upgrade_costs) < skill.level <-- Expand max levels in source or decrease max level in config");
 		return UI_NULL;
 	}
 

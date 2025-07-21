@@ -62,8 +62,6 @@ public void player_shoved( Event event, const char[] name, bool noReplicate )
 	
 	int class = GetEntProp(client, Prop_Send, "m_zombieClass");
 
-	if ( class == 4 || class == 2 )
-		return;
 	
 	SDKHooks_TakeDamage(client, attacker, attacker, gExport.damage_for_specials);
 }
@@ -76,7 +74,7 @@ public void entity_shoved( Event event, const char[] name, bool noReplicate )
 	if ( !attacker || attacker > MaxClients || !IsHaveSkill(attacker) )
 		return;
 	
-	if ( entity > MaxClients && ClassMatchesComplex(entity, "infected") )
+	if ( entity > MaxClients && ClassMatchesComplex(entity, "infected") || ClassMatchesComplex(entity, "witch"))
 		SDKHooks_TakeDamage(entity, attacker, attacker, gExport.damage_for_infected);
 }
 

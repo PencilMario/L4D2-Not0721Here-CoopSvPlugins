@@ -62,10 +62,9 @@ public void player_shoved( Event event, const char[] name, bool noReplicate )
 	//L4D_StaggerPlayer(client, attacker, NULL_VECTOR);
 	float angle[3];
 	GetClientEyeAngles(attacker, angle);
-	new Handle:hPack = CreateDataPack();
-	WritePackCell(hPack, client);
-	WritePackCell(hPack, attacker);
-	RequestFrame(extframe, hPack);
+	GetClientEyeAngles(client, angle);
+	angle[0] = (angle[0] < -20.0 ? angle[0] : -20.0);
+	Entity_PushForce(attacker, 400.0, angle, 0.0, false);
 	if (GetClientTeam(client) == L4DTeam_Survivor)
 	{
 		SDKHooks_TakeDamage(client, attacker, attacker, gExport.damage_for_specials * 0.05, 0, -1, NULL_VECTOR, NULL_VECTOR, false);
@@ -74,16 +73,6 @@ public void player_shoved( Event event, const char[] name, bool noReplicate )
 	if (GetClientTeam(client) != 3 )
 		return;
 	SDKHooks_TakeDamage(client, attacker, attacker, gExport.damage_for_specials);
-}
-void extframe(Handle hPack){
-	ResetPack(hPack);
-	int attacker = ReadPackCell(hPack);
-	int client = ReadPackCell(hPack);
-	float angle[3];
-	GetClientEyeAngles(client, angle);
-	angle[0] -= (angle[0] > -30.0) ? 30.0 : 0.0; // Set pitch to 0 to avoid upward force
-	Entity_PushForce(attacker, 400.0, angle, 0.0, false);
-	CloseHandle(hPack);
 }
 public void entity_shoved( Event event, const char[] name, bool noReplicate )
 {

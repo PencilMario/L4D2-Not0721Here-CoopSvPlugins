@@ -554,6 +554,39 @@ Action tmrRespawnSurvivor(Handle timer, int client)
 	g_esPlayer[client].hTimer = null;
 	return Plugin_Stop;	
 }
+public Action Timer_HangingProtect(Handle timer, int client){
+	if (IsClientInGame(client) && GetClientTeam(client) == L4D2Team_Survivor){
+		if (IsHangingFromLedge(client)){
+			//fakecommand give health
+			CheatCommand(client, "give health");
+		}
+	}
+	return Plugin_Continue;
+}
+
+void CheatCommand(int client, const char[] sCommand)
+{
+	if(client == 0 || !IsClientInGame(client))
+		return;
+
+	char sCmd[32];
+	if(SplitString(sCommand, " ", sCmd, sizeof(sCmd)) == -1)
+		strcopy(sCmd, sizeof(sCmd), sCommand);
+
+	if(strcmp(sCmd, "give") == 0)
+	{
+		if(strcmp(sCommand[5], "health") == 0)
+			SetEntPropFloat(client, Prop_Send, "m_healthBuffer", 0.0); //防止有虚血时give health会超过100血
+	}
+
+	int bits = GetUserFlagBits(client);
+	SetUserFlagBits(client, ADMFLAG_ROOT);
+	int flags = GetCommandFlags(sCmd);
+	SetCommandFlags(sCmd, flags & ~FCVAR_CHEAT);
+	FakeClientCommand(client, sCommand);
+	SetCommandFlags(sCmd, flags);
+	SetUserFlagBits(client, bits);
+}
 
 void vRespawnSurvivor(int client)
 {
@@ -562,6 +595,7 @@ void vRespawnSurvivor(int client)
 	vGiveWeapon(client);
 	vTeleportToSurvivor(client, true, viewing);
 	SendRespawnedEvent(IsClientInGame(viewing) ? viewing : client, client);
+	CreateTimer(5.0, Timer_HangingProtect, client, TIMER_FLAG_NO_MAPCHANGE);
 	//vRemoveSurvivorDeathModel(client);
 	g_esPlayer[client].iRespawned += 1;
 

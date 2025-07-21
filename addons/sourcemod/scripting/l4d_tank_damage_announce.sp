@@ -296,6 +296,13 @@ PrintTankDamage()
 	new survivor_index = -1;
 	new survivor_clients[g_iSurvivorLimit]; // Array to store survivor client indexes in, for the display iteration
 	decl percent_damage, damage;
+	for (client = 1; client <= MaxClients; client++){
+		if (!IsClientInGame(client) || GetClientTeam(client) != TEAM_SURVIVOR || g_iDamage[client] == 0) continue;
+		damage = g_iDamage[client];
+		damage_total += damage;
+	}
+	g_fMaxTankHealth=damage_total;
+	damage_total=0;
 	for (client = 1; client <= MaxClients; client++)
 	{
 		if (!IsClientInGame(client) || GetClientTeam(client) != TEAM_SURVIVOR || g_iDamage[client] == 0) continue;

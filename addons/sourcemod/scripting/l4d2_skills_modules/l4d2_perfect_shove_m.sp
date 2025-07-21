@@ -4,7 +4,7 @@
 #include <sourcemod>
 #include <sdktools>
 #include <sdkhooks>
-
+#include <left4dhooks>
 #include <l4d2_skills>
 
 #define SKILL_NAME "牢大肘击"
@@ -57,11 +57,12 @@ public void player_shoved( Event event, const char[] name, bool noReplicate )
 	if ( !attacker || attacker > MaxClients || !IsHaveSkill(attacker) || !IsClientInGame(attacker) )
 		return;
 
-	if ( !client || client > MaxClients || !IsClientInGame(client) || GetClientTeam(client) != 3 )
+	if ( !client || client > MaxClients || !IsClientInGame(client))
 		return;
+	L4D_StaggerPlayer(client, attacker, NULL_VECTOR);
 	
-	int class = GetEntProp(client, Prop_Send, "m_zombieClass");
-
+	if (GetClientTeam(client) != 3 )
+		return;
 	
 	SDKHooks_TakeDamage(client, attacker, attacker, gExport.damage_for_specials);
 }

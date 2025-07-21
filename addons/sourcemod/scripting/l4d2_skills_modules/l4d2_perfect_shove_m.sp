@@ -80,8 +80,9 @@ void extframe(Handle hPack){
 	int attacker = ReadPackCell(hPack);
 	int client = ReadPackCell(hPack);
 	float angle[3];
-	GetClientEyeAngles(attacker, angle);
-	Entity_PushForce(client, 400.0, angle, 0.0, false);
+	GetClientEyeAngles(client, angle);
+	angle[0] -= (angle[0] > -30.0) ? 30.0 : 0.0; // Set pitch to 0 to avoid upward force
+	Entity_PushForce(attacker, 400.0, angle, 0.0, false);
 	CloseHandle(hPack);
 }
 public void entity_shoved( Event event, const char[] name, bool noReplicate )

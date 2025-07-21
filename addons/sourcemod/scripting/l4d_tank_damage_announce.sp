@@ -69,7 +69,7 @@ public OnPluginStart()
 	g_hCvarTankHealth = FindConVar("z_tank_health");
 	
 	HookConVarChange(g_hCvarEnabled, Cvar_Enabled);
-	//HookConVarChange(g_hCvarTankHealth, Cvar_TankHealth);
+	HookConVarChange(g_hCvarTankHealth, Cvar_TankHealth);
 	g_bEnabled = GetConVarBool(g_hCvarEnabled);
 	CalculateTankHealth();
 	
@@ -205,7 +205,7 @@ public Event_TankSpawn(Handle:event, const String:name[], bool:dontBroadcast)
 	CreateTimer(0.5, Timer_GetTankMaxHealth);
 }
 public Action Timer_GetTankMaxHealth(Handle:timer, any:client){
-	g_fMaxTankHealth = float(GetClientHealth(client));//float(GetEntProp(client, Prop_Send, "m_iMaxHealth"));
+	g_fMaxTankHealth = float(GetEntProp(client, Prop_Send, "m_iMaxHealth"));
 	g_iLastTankHealth = GetClientHealth(client);
 	return Plugin_Stop;
 }
@@ -296,13 +296,6 @@ PrintTankDamage()
 	new survivor_index = -1;
 	new survivor_clients[g_iSurvivorLimit]; // Array to store survivor client indexes in, for the display iteration
 	decl percent_damage, damage;
-	for (client = 1; client <= MaxClients; client++){
-		if (!IsClientInGame(client) || GetClientTeam(client) != TEAM_SURVIVOR || g_iDamage[client] == 0) continue;
-		damage = g_iDamage[client];
-		damage_total += damage;
-	}
-	g_fMaxTankHealth=float(damage_total);
-	damage_total=0;
 	for (client = 1; client <= MaxClients; client++)
 	{
 		if (!IsClientInGame(client) || GetClientTeam(client) != TEAM_SURVIVOR || g_iDamage[client] == 0) continue;
@@ -400,7 +393,7 @@ FindTankClient()
 
 int GetDamageAsPercent(int damage)
 {
-	return RoundToNearest((float(damage) / g_fMaxTankHealth) * 100.0);
+	return RoundToNearest((damage / g_fMaxTankHealth) * 100.0);
 }
 
 //comparing the type of int with the float, how different is it

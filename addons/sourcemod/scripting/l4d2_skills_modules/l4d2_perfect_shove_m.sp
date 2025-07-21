@@ -59,11 +59,17 @@ public void player_shoved( Event event, const char[] name, bool noReplicate )
 
 	if ( !client || client > MaxClients || !IsClientInGame(client))
 		return;
-	L4D_StaggerPlayer(client, attacker, NULL_VECTOR);
-	
+	//L4D_StaggerPlayer(client, attacker, NULL_VECTOR);
+	float angle[3];
+	GetClientEyeAngles(attacker, angle);
+	Entity_PushForce(client, 400.0, angle, 0.0, false);
+	if (GetClientTeam(client) == L4DTeam_Survivor)
+	{
+		SDKHooks_TakeDamage(client, attacker, attacker, gExport.damage_for_specials * 0.05);
+		return;
+	}
 	if (GetClientTeam(client) != 3 )
 		return;
-	
 	SDKHooks_TakeDamage(client, attacker, attacker, gExport.damage_for_specials);
 }
 
@@ -85,7 +91,7 @@ public void Skills_OnGetSettings( KeyValues kv )
 	
 	EXPORT_SKILL_COST(gExport.base, 8000.0);
 	EXPORT_FLOAT_DEFAULT("damage_for_specials", gExport.damage_for_specials, 600.0);
-	EXPORT_FLOAT_DEFAULT("damage_for_infected", gExport.damage_for_infected, 100.0);
+	EXPORT_FLOAT_DEFAULT("damage_for_infected", gExport.damage_for_infected, 600.0);
 
 	EXPORT_FINISH();
 }
@@ -93,4 +99,37 @@ public void Skills_OnGetSettings( KeyValues kv )
 bool IsHaveSkill( int client )
 {
 	return Skills_ClientHaveByID(client, g_iID);
+}
+
+static void Entity_PushForce(
+    int iEntity, 
+    float fForce, 
+    const float fAngles[3], 
+    float fMax = 0.0, 
+    bool bAdd = false
+)
+{
+    float fVelocity[3];
+    
+    // 使用角度向量直接计算方向
+    GetAngleVectors(fAngles, fVelocity, NULL_VECTOR, NULL_VECTOR);
+    NormalizeVector(fVelocity, fVelocity);
+    ScaleVector(fVelocity, fForce);
+    
+    // 叠加现有速度
+    if (bAdd) {
+        float fMainVelocity[3];
+        GetEntPropVector(iEntity, Prop_Data, "m_vecAbsVelocity", fMainVelocity);
+        AddVectors(fMainVelocity, fVelocity, fVelocity);
+    }
+    
+    // 分量限速
+    if (fMax > 0.0) {
+        fVelocity[0] = fVelocity[0] > fMax ? fMax : fVelocity[0];
+        fVelocity[1] = fVelocity[1] > fMax ? fMax : fVelocity[1];
+        fVelocity[2] = fVelocity[2] > fMax ? fMax : fVelocity[2];
+    }
+    
+    // 应用速度
+    TeleportEntity(iEntity, .velocity = fVelocity);
 }

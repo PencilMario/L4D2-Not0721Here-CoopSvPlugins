@@ -69,7 +69,7 @@ public OnPluginStart()
 	g_hCvarTankHealth = FindConVar("z_tank_health");
 	
 	HookConVarChange(g_hCvarEnabled, Cvar_Enabled);
-	HookConVarChange(g_hCvarTankHealth, Cvar_TankHealth);
+	//HookConVarChange(g_hCvarTankHealth, Cvar_TankHealth);
 	g_bEnabled = GetConVarBool(g_hCvarEnabled);
 	CalculateTankHealth();
 	

@@ -400,7 +400,7 @@ FindTankClient()
 
 int GetDamageAsPercent(int damage)
 {
-	return RoundToNearest((damage / g_fMaxTankHealth) * 100.0);
+	return RoundToNearest((float(damage) / g_fMaxTankHealth) * 100.0);
 }
 
 //comparing the type of int with the float, how different is it

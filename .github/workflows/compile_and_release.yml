@@ -1,0 +1,253 @@
+name: Compile Plugins and Release
+
+on:
+  push:
+    branches:
+      - master
+    paths:
+      - 'addons/sourcemod/scripting/**/*.sp'
+      - 'addons/sourcemod/scripting/**/*.inc'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build-and-release:
+    name: Compile plugins and create release
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set environment variables
+        run: |
+          echo "SCRIPTS_PATH=$GITHUB_WORKSPACE/addons/sourcemod/scripting" >> $GITHUB_ENV
+          echo "PLUGINS_PATH=$GITHUB_WORKSPACE/addons/sourcemod/plugins" >> $GITHUB_ENV
+
+      - name: Setup SourcePawn Compiler 1.12
+        uses: rumblefrog/setup-sp@master
+        with:
+          version: "1.12"
+
+      - name: Create compile output directory
+        run: mkdir -p "${{ env.SCRIPTS_PATH }}/compiled"
+
+      - name: Compile all plugins
+        run: |
+          errors=0
+          compiled_count=0
+          skipped_count=0
+
+          # Find all .sp files in scripting directory (including subdirectories)
+          find . -name "*.sp" -type f | while read -r file; do
+            # Skip archive, dev_plugins, and other non-compilable directories
+            if [[ "$file" == *"/archive/"* ]] || [[ "$file" == *"/dev_plugins/"* ]] || [[ "$file" == *"/testsuite/"* ]]; then
+              echo "Skipping archived/test file: $file"
+              continue
+            fi
+
+            # Get the basename without extension
+            filename=$(basename "$file" .sp)
+            output_file="compiled/${filename}.smx"
+
+            # Check if compiled file already exists
+            if [ -f "$output_file" ]; then
+              echo "Already compiled: $file (skipping)"
+              skipped_count=$((skipped_count + 1))
+              continue
+            fi
+
+            echo "Compiling $file -> $output_file"
+            if spcomp -E -w234 -w217 -O2 -v2 -i "${{ env.SCRIPTS_PATH }}/include" "$file" -o "$output_file"; then
+              compiled_count=$((compiled_count + 1))
+            else
+              echo "::warning file=$file::Failed to compile plugin: $file"
+              errors=$((errors + 1))
+            fi
+          done
+
+          echo ""
+          echo "Compilation Summary:"
+          echo "Successfully compiled: $compiled_count plugins"
+          echo "Skipped (already compiled): $skipped_count plugins"
+          echo "Failed to compile: $errors plugin(s)"
+        working-directory: ${{ env.SCRIPTS_PATH }}/
+
+      - name: Copy compiled plugins to plugins directory
+        run: |
+          echo "Copying compiled .smx files to plugins directory..."
+
+          found_count=0
+          not_found_count=0
+
+          # Copy main directory plugins
+          for file in "${{ env.SCRIPTS_PATH }}/compiled"/*.smx; do
+            if [ -f "$file" ]; then
+              filename=$(basename "$file")
+              found=false
+
+              # Try to find the corresponding .smx file in plugins directory
+              # First check main plugins directory
+              if [ -f "${{ env.PLUGINS_PATH }}/$filename" ]; then
+                echo "Updating ${{ env.PLUGINS_PATH }}/$filename"
+                cp "$file" "${{ env.PLUGINS_PATH }}/$filename"
+                found=true
+                found_count=$((found_count + 1))
+              else
+                # Check subdirectories (fixes, optional, disabled, fun, anticheat, server_specified)
+                for subdir in fixes optional disabled fun anticheat server_specified; do
+                  if [ -f "${{ env.PLUGINS_PATH }}/$subdir/$filename" ]; then
+                    echo "Updating ${{ env.PLUGINS_PATH }}/$subdir/$filename"
+                    cp "$file" "${{ env.PLUGINS_PATH }}/$subdir/$filename"
+                    found=true
+                    found_count=$((found_count + 1))
+                    break
+                  fi
+                done
+              fi
+
+              # If no matching file found, log warning notification and skip
+              if [ "$found" = false ]; then
+                echo "::notice title=Plugin Not Found::No matching plugin file found for $filename - skipping"
+                not_found_count=$((not_found_count + 1))
+              fi
+            fi
+          done
+
+          echo ""
+          echo "Plugin copy completed."
+          echo "Successfully updated: $found_count plugins"
+          echo "Skipped (not found): $not_found_count plugins"
+
+      - name: Check for changes
+        id: check_changes
+        run: |
+          if git diff --quiet addons/sourcemod/plugins/; then
+            echo "changes=false" >> $GITHUB_OUTPUT
+            echo "No changes detected in compiled plugins."
+          else
+            echo "changes=true" >> $GITHUB_OUTPUT
+            echo "Changes detected in compiled plugins."
+          fi
+
+      - name: Prepare release package
+        if: steps.check_changes.outputs.changes == 'true'
+        run: |
+          # Create manifest file in project root
+          {
+            echo "# L4D2 Competitive Rework - Compiled Release"
+            echo ""
+            echo "**Package Date:** $(date -u '+%Y-%m-%d %H:%M:%S UTC')"
+            echo ""
+            echo "## Contents"
+            echo "Complete project with recompiled plugins."
+            echo ""
+            echo "Updated plugins location:"
+            echo "- \`addons/sourcemod/plugins/\` - Main and optional plugins"
+            echo "- \`addons/sourcemod/plugins/fixes/\` - Bug fix plugins"
+            echo "- \`addons/sourcemod/plugins/optional/\` - Optional plugins"
+            echo "- \`addons/sourcemod/plugins/disabled/\` - Disabled plugins"
+            echo "- \`addons/sourcemod/plugins/fun/\` - Fun plugins"
+            echo ""
+            echo "## Installation"
+            echo "Extract the contents of this zip file to your game directory."
+            echo ""
+            echo "**Build Information**"
+            echo "- Compiled: $(date -u '+%Y-%m-%dT%H:%M:%SZ')"
+            echo "- Compiler: spcomp 1.12"
+            echo "- Commit: ${{ github.sha }}"
+          } > "$GITHUB_WORKSPACE/RELEASE_INFO.txt"
+
+          cat "$GITHUB_WORKSPACE/RELEASE_INFO.txt"
+
+      - name: Remove l4dtoolz addon
+        if: steps.check_changes.outputs.changes == 'true'
+        run: |
+          rm -rf "$GITHUB_WORKSPACE/addons/l4dtoolz"
+          echo "Removed addons/l4dtoolz folder"
+
+      - name: Create project zip package
+        if: steps.check_changes.outputs.changes == 'true'
+        run: |
+          cd "$GITHUB_WORKSPACE/.."
+          zip -r L4D2-Competitive-Rework-compiled.zip L4D2-Competitive-Rework -q -x "L4D2-Competitive-Rework/.git/*" "L4D2-Competitive-Rework/.github/*" "L4D2-Competitive-Rework/.gitignore" "L4D2-Competitive-Rework/.gitattributes"
+          ls -lh L4D2-Competitive-Rework-compiled.zip
+          mv L4D2-Competitive-Rework-compiled.zip "$GITHUB_WORKSPACE/"
+          echo "Project zip package created successfully"
+
+      - name: Generate release notes
+        if: steps.check_changes.outputs.changes == 'true'
+        id: release_notes
+        run: |
+          release_date=$(date '+%Y-%m-%d')
+          release_tag="v$(date '+%Y%m%d-%H%M%S')"
+          echo "release_date=$release_date" >> $GITHUB_OUTPUT
+          echo "release_tag=$release_tag" >> $GITHUB_OUTPUT
+
+          # Generate release notes with compilation summary
+          {
+            echo "# Plugin Compilation Release"
+            echo ""
+            echo "**Release Date:** $release_date"
+            echo ""
+            echo "## Summary"
+            echo "Complete L4D2 Competitive Rework project with recompiled plugins from the latest source code."
+            echo ""
+            echo "### Build Information"
+            echo "- SourceMod Version: 1.12"
+            echo "- Compiler: spcomp with optimization level 2"
+            echo "- Build Date: $(date -u '+%Y-%m-%dT%H:%M:%SZ')"
+            echo "- Commit: ${{ github.sha }}"
+            echo ""
+            echo "### Installation"
+            echo "1. Download \`L4D2-Competitive-Rework-compiled.zip\`"
+            echo "2. Extract to your game server directory"
+            echo "3. The entire project structure will be placed with updated compiled plugins"
+            echo ""
+            echo "<details>"
+            echo "<summary><strong>Supported Game Configurations</strong></summary>"
+            echo ""
+
+            # Extract configuration names from cfg/cfgogl directories
+            for config_dir in cfg/cfgogl/*/; do
+              config_name=$(basename "$config_dir")
+              confogl_file="$config_dir/confogl.cfg"
+
+              if [ -f "$confogl_file" ]; then
+                # Extract the l4d_ready_cfg_name value
+                cfg_display=$(grep -oP 'l4d_ready_cfg_name\s+"\K[^"]+' "$confogl_file" | head -1)
+
+                if [ -n "$cfg_display" ]; then
+                  echo "- $cfg_display"
+                fi
+              fi
+            done | sort
+
+            echo ""
+            echo "</details>"
+          } > release_notes.md
+
+          cat release_notes.md
+        env:
+          TZ: UTC
+
+      - name: Create Release
+        if: steps.check_changes.outputs.changes == 'true'
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: ${{ steps.release_notes.outputs.release_tag }}
+          name: Plugin Compilation Release ${{ steps.release_notes.outputs.release_date }}
+          body_path: release_notes.md
+          draft: false
+          prerelease: false
+          files: L4D2-Competitive-Rework-compiled.zip
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Skip release (no changes)
+        if: steps.check_changes.outputs.changes == 'false'
+        run: |
+          echo "No plugin changes detected. Release skipped."

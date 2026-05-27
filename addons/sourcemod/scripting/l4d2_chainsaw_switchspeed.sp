@@ -4,8 +4,10 @@
 #include <sourcemod>
 #include <sdktools>
 #include <sdkhooks>
+#include <dhooks>
 
 #define PLUGIN_VERSION "1.0"
+#define MAX_ENTITY_LIMIT 2049
 
 public Plugin myinfo =
 {
@@ -19,11 +21,7 @@ public Plugin myinfo =
 /*
  * ============================================================================
  * Information:
- * windows signature is not confirmed since i don't have windows server at all.
- * listening server can't use sm1.12 since a unknown problem.
- * 
- * now plugin start
- * 
+ * Adjusts chainsaw deploy duration and playback rate together.
  * ============================================================================
  */
 
@@ -33,9 +31,12 @@ ConVar
 	cvar_chainsaw_switchspeed;
 
 float
-	g_chainsaw_switchspeed;
+	g_chainsaw_switchspeed,
+	g_chainsaw_playback_rate[MAX_ENTITY_LIMIT];
 
-Handle g_SDKCall_ChainsawStopAttack;
+Handle
+	g_hDeployModifier,
+	g_hDeploy;
 
 
 public void OnPluginStart()
@@ -56,54 +57,43 @@ void CvarHook(ConVar convar, const char[] oldValue, const char[] newValue)
 	g_chainsaw_switchspeed = cvar_chainsaw_switchspeed.FloatValue;
 }
 
-
-public void OnClientPutInServer(int client)
+public void OnEntityCreated(int entity, const char[] classname)
 {
-	if( IsFakeClient(client) )
+	if (entity <= 0 || entity >= MAX_ENTITY_LIMIT)
 		return;
-	
-	SDKHook(client, SDKHook_WeaponSwitchPost, SDKCallback_SwitchChainsaw);
+
+	if (strcmp(classname, "weapon_chainsaw") != 0)
+		return;
+
+	DHookEntity(g_hDeployModifier, true, entity);
+	DHookEntity(g_hDeploy, true, entity);
 }
 
-void SDKCallback_SwitchChainsaw(int client, int weapon)
+public MRESReturn OnDeployModifier(int weapon, Handle hReturn)
 {
-	if( !IsClientInGame(client) || IsFakeClient(client) || GetClientTeam(client) != 2 )
-		return;
-	
-	char weapon_name[64];
-	GetEntityClassname(weapon, weapon_name, sizeof(weapon_name));
-	if( strcmp(weapon_name, "weapon_chainsaw") != 0 )
-		return;
-	
-	SDKHook(client, SDKHook_PostThink, SDKCallback_SetPrimaryAttack);
+	float durationMultiplier = ClampFloatAboveZero(g_chainsaw_switchspeed);
+	float currentModifier = DHookGetReturn(hReturn);
+	float playbackRate = 1.0 / durationMultiplier;
+
+	if (weapon > 0 && weapon < MAX_ENTITY_LIMIT) {
+		g_chainsaw_playback_rate[weapon] = playbackRate;
+	}
+
+	DHookSetReturn(hReturn, ClampFloatAboveZero(currentModifier * durationMultiplier));
+	return MRES_Override;
 }
 
-void SDKCallback_SetPrimaryAttack(int client)
+public MRESReturn OnDeploy(int weapon)
 {
-	int weapon = GetEntPropEnt(client, Prop_Send, "m_hActiveWeapon");
-	// PrintToChat(client, "hooking chainsaw switching in m_flCycle %f", GetEntPropFloat(weapon, Prop_Send, "m_flCycle"));
+	if (weapon <= 0 || weapon >= MAX_ENTITY_LIMIT)
+		return MRES_Ignored;
 
-	char weapon_name[64];
-	GetEntityClassname(weapon, weapon_name, sizeof(weapon_name));
-	if( strcmp(weapon_name, "weapon_chainsaw") != 0 )
-	{
-		SDKUnhook(client, SDKHook_PostThink, SDKCallback_SetPrimaryAttack);
-		// PrintToChat(client, "stop hook chainsaw switching in not equal weapon");
-		return;
+	if (g_chainsaw_playback_rate[weapon] <= 0.0) {
+		g_chainsaw_playback_rate[weapon] = 1.0;
 	}
-		
-	if( GetEntPropFloat(weapon, Prop_Send, "m_flCycle") >= g_chainsaw_switchspeed )
-	{
-		SDKCall(g_SDKCall_ChainsawStopAttack, weapon);
-		// PrintToChat(client, "stop hook chainsaw switching in equaling the m_flCycle %f", GetEntPropFloat(weapon, Prop_Send, "m_flCycle"));
-		SetEntPropFloat(weapon ,Prop_Send, "m_flPlaybackRate", 1.0);
-		SetEntPropFloat(weapon ,Prop_Send, "m_flCycle", 1.0);
 
-		int viewmodel = GetEntPropEnt(client, Prop_Send, "m_hViewModel");
-		// PrintToChat(client, "m_nLayerSequence  %d", GetEntProp(viewmodel, Prop_Send, "m_nLayerSequence"));
-		SetEntProp(viewmodel, Prop_Send, "m_nLayerSequence", 3);
-		SDKUnhook(client, SDKHook_PostThink, SDKCallback_SetPrimaryAttack);
-	}
+	SetEntPropFloat(weapon, Prop_Send, "m_flPlaybackRate", g_chainsaw_playback_rate[weapon]);
+	return MRES_Ignored;
 }
 
 void LoadGameData()
@@ -116,12 +106,23 @@ void LoadGameData()
 	GameData hGameData = new GameData(GAME_DATA);
 	if(hGameData == null) 
 		SetFailState("Failed to load \"%s.txt\" gamedata.", GAME_DATA);
-	
-	StartPrepSDKCall(SDKCall_Entity);
-	PrepSDKCall_SetFromConf(hGameData, SDKConf_Signature, "CChainsaw::StopAttack");
-	// PrepSDKCall_SetSignature(SDKLibrary_Server, "@_ZN9CChainsaw10StopAttackEv", 0);
-	if( !(g_SDKCall_ChainsawStopAttack = EndPrepSDKCall()) )
-		SetFailState("failed to load signature");
+
+	int offset = GameConfGetOffset(hGameData, "CTerrorWeapon::GetDeployDurationModifier");
+	if (offset == -1)
+		SetFailState("Unable to get offset for 'CTerrorWeapon::GetDeployDurationModifier'");
+
+	g_hDeployModifier = DHookCreate(offset, HookType_Entity, ReturnType_Float, ThisPointer_CBaseEntity, OnDeployModifier);
+
+	offset = GameConfGetOffset(hGameData, "CTerrorWeapon::Deploy");
+	if (offset == -1)
+		SetFailState("Unable to get offset for 'CTerrorWeapon::Deploy'");
+
+	g_hDeploy = DHookCreate(offset, HookType_Entity, ReturnType_Unknown, ThisPointer_CBaseEntity, OnDeploy);
 	
 	delete hGameData;
+}
+
+float ClampFloatAboveZero(float value)
+{
+	return value <= 0.0 ? 0.00001 : value;
 }

@@ -2,13 +2,17 @@
 {
 	"left4dead2"
 	{
-		"Signatures"
+		"Offsets"
 		{
-			"CChainsaw::StopAttack"
+			"CTerrorWeapon::GetDeployDurationModifier"
 			{
-				"library"	"server"
-                "windows"   "\x55\x8B\xEC\x51\x56\x8B\xF1\x83\xBE\x00\x18\x00\x00\x00"
-				"linux"		"@_ZN9CChainsaw10StopAttackEv"
+				"windows"	"359"
+				"linux"		"360"
+			}
+			"CTerrorWeapon::Deploy"
+			{
+				"windows"	"264"
+				"linux"		"265"
 			}
 		}
 	}

@@ -15,7 +15,6 @@ for dir in "${directories[@]}"; do
 
         find "$dir/addons/sourcemod/" \
             ! -path "$dir/addons/sourcemod/logs/*" \
-            ! -path "$dir/addons/sourcemod/configs/sourcebans/*" \
             ! -path "$dir/addons/sourcemod/configs/databases.cfg" \
             ! -path "$dir/addons/sourcemod/data/buffer.txt" \
             ! -path "$dir/addons/sourcemod/data/maps_list_missions.txt" \

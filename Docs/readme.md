@@ -49,15 +49,6 @@
             sm plugins load all4dead2.smx
             // 服务器网络cvar自动设置
             sm plugins load setrates.smx
-            //sourcebans++
-            sm plugins load sbpp_main.smx
-            sm plugins load sbpp_checker.smx
-            sm plugins load sbpp_admcfg.smx
-            sm plugins load sbpp_comms.smx
-            sm plugins load sbpp_report.smx
-            sm plugins load sbpp_sleuth.smx
-            // LAC反作弊
-            sm plugins load lilac.smx
             // 广告
             sm plugins load advertisements.smx
             // 连接提示

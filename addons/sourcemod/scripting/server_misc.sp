@@ -50,7 +50,7 @@ public Action Cmd_SetAmmo(int args)
     g_cSinperRifleAmmo.IntValue = RoundToNearest(float(AMMO_SNIPERRIFLE_MAX) * multi);
     g_cM60Ammo.IntValue = RoundToNearest(float(AMMO_M60_MAX) * multi);
     g_cGrenadeAmmo.IntValue = RoundToNearest(float(AMMO_GRENADELAUNCHER_MAX) * multi);
-    g_cChainsawAmmo.IntValue = RoundToNearest(float(AMMO_CHAINSAW_MAX) * multi);
-    ServerCommand("sm_weapon weapon_chainsaw clipsize %i", RoundToNearest(float(AMMO_CHAINSAW_MAX) * multi))
+    //g_cChainsawAmmo.IntValue = RoundToNearest(float(AMMO_CHAINSAW_MAX) * multi);
+    //ServerCommand("sm_weapon weapon_chainsaw clipsize %i", RoundToNearest(float(AMMO_CHAINSAW_MAX) * multi))
     return Plugin_Handled;
 }

@@ -36,6 +36,24 @@ void HookClient(int client) {
     SDKHook(client, SDKHook_OnTakeDamage, OnTakeDamage);
 }
 
+float GetFFPercentGrowthMultiplier(int inflictor, int damagetype, int weapon) {
+    if ((damagetype & DMG_SLASH) || (damagetype & DMG_CLUB) || IsChainsawEntity(weapon) || IsChainsawEntity(inflictor)) {
+        return 3.0;
+    }
+
+    return 1.0;
+}
+
+bool IsChainsawEntity(int entity) {
+    if (entity <= MaxClients || !IsValidEntity(entity)) {
+        return false;
+    }
+
+    char classname[64];
+    GetEntityClassname(entity, classname, sizeof(classname));
+    return StrEqual(classname, "weapon_chainsaw");
+}
+
 public Action OnTakeDamage(int victim, int &attacker, int &inflictor, float &damage, int &damagetype, int &weapon, float damageForce[3], float damagePosition[3]) {
     if (IsClientInGame(victim) && IsClientInGame(attacker)){
         if (GetClientTeam(victim) != GetClientTeam(attacker)) return Plugin_Continue;
@@ -59,7 +77,7 @@ public Action OnTakeDamage(int victim, int &attacker, int &inflictor, float &dam
         float dmgtime = GetEngineTime();
         
         float targetMaxDamagePercent = g_fClientFFPercent[attacker];
-        g_fClientFFPercent[attacker] = g_fClientFFPercent[attacker] + damage / (health > 100.0 ? health : 100.0) * (((damagetype & DMG_SLASH) || (damagetype & DMG_CLUB)) ? 3.0 : 1.0);
+        g_fClientFFPercent[attacker] = g_fClientFFPercent[attacker] + damage / (health > 100.0 ? health : 100.0) * GetFFPercentGrowthMultiplier(inflictor, damagetype, weapon);
         g_fClientLastDoFFTime[attacker] = dmgtime;
         if (g_fClientFFPercent[attacker] > 1.0) {
             g_fClientFFPercent[attacker] = 1.0;

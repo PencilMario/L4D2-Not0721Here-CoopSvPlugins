@@ -32,7 +32,8 @@ ConVar
 
 float
 	g_chainsaw_switchspeed,
-	g_chainsaw_playback_rate[MAX_ENTITY_LIMIT];
+	g_chainsaw_playback_rate[MAX_ENTITY_LIMIT],
+	g_chainsaw_restore_time[MAX_ENTITY_LIMIT];
 
 Handle
 	g_hDeployModifier,
@@ -92,8 +93,55 @@ public MRESReturn OnDeploy(int weapon)
 		g_chainsaw_playback_rate[weapon] = 1.0;
 	}
 
-	SetEntPropFloat(weapon, Prop_Send, "m_flPlaybackRate", g_chainsaw_playback_rate[weapon]);
+	float playbackRate = g_chainsaw_playback_rate[weapon];
+	float gameTime = GetGameTime();
+	float restoreTime = ScaleNextAttackTime(weapon, Prop_Send, "m_flNextPrimaryAttack", gameTime, playbackRate);
+
+	int client = GetEntPropEnt(weapon, Prop_Send, "m_hOwnerEntity");
+	if (client > 0 && client <= MaxClients) {
+		float nextAttack = ScaleNextAttackTime(client, Prop_Send, "m_flNextAttack", gameTime, playbackRate);
+		if (nextAttack > restoreTime) {
+			restoreTime = nextAttack;
+		}
+	}
+
+	SetEntPropFloat(weapon, Prop_Send, "m_flPlaybackRate", playbackRate);
+
+	g_chainsaw_restore_time[weapon] = restoreTime;
+	if (restoreTime > gameTime) {
+		CreateTimer(restoreTime - gameTime, Timer_RestorePlaybackRate, EntIndexToEntRef(weapon), TIMER_FLAG_NO_MAPCHANGE);
+	}
+
 	return MRES_Ignored;
+}
+
+public Action Timer_RestorePlaybackRate(Handle timer, int weaponRef)
+{
+	int weapon = EntRefToEntIndex(weaponRef);
+	if (weapon == INVALID_ENT_REFERENCE || weapon <= 0 || weapon >= MAX_ENTITY_LIMIT)
+		return Plugin_Stop;
+
+	if (g_chainsaw_restore_time[weapon] > GetGameTime() + 0.01)
+		return Plugin_Stop;
+
+	SetEntPropFloat(weapon, Prop_Send, "m_flPlaybackRate", 1.0);
+	g_chainsaw_playback_rate[weapon] = 0.0;
+	g_chainsaw_restore_time[weapon] = 0.0;
+	return Plugin_Stop;
+}
+
+float ScaleNextAttackTime(int entity, PropType propType, const char[] propName, float gameTime, float playbackRate)
+{
+	if (playbackRate <= 1.0)
+		return GetEntPropFloat(entity, propType, propName);
+
+	float nextAttack = GetEntPropFloat(entity, propType, propName);
+	if (nextAttack <= gameTime)
+		return nextAttack;
+
+	nextAttack = gameTime + ((nextAttack - gameTime) / playbackRate);
+	SetEntPropFloat(entity, propType, propName, nextAttack);
+	return nextAttack;
 }
 
 void LoadGameData()

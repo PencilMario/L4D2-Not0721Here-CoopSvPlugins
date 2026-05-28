@@ -3,7 +3,7 @@
 echo "==================自定义配置执行=================="
 
 directories=("/home/steam/Steam/steamapps/common/l4d2coop/left4dead2")
-data_dir="$HOME/l4d2_custom_config"
+data_dir="${CUSTOM_DATA_DIR:-$HOME/l4d2_coop_custom_config_data}"
 
 echo "数据文件夹: $data_dir"
 

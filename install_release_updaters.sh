@@ -5,16 +5,11 @@ repo_owner="${REPO_OWNER:-PencilMario}"
 gitrep="${GIT_REPO:-L4D2-Not0721Here-CoopSvPlugins}"
 branch="${BRANCH:-master}"
 install_dir="${INSTALL_DIR:-$HOME}"
-custom_data_dir="${CUSTOM_DATA_DIR:-$HOME/l4d2_custom_config}"
+custom_data_dir="${CUSTOM_DATA_DIR:-$HOME/l4d2_coop_custom_config_data}"
 
-scripts=(
-    "update_from_release.sh"
-    "update_full_from_release.sh"
-)
-
-optional_scripts=(
-    "custom_config.sh"
-)
+normal_updater_target="${NORMAL_UPDATER_TARGET:-l4d2_coop_update_from_release.sh}"
+full_updater_target="${FULL_UPDATER_TARGET:-l4d2_coop_update_full_from_release.sh}"
+custom_config_target="${CUSTOM_CONFIG_TARGET:-l4d2_coop_custom_config.sh}"
 
 echo "==================初始化 Release 更新脚本=================="
 echo "Repo: $repo_owner/$gitrep"
@@ -41,10 +36,11 @@ download_file() {
     fi
 }
 
-install_required_script() {
+install_script() {
     local filename="$1"
+    local target_filename="$2"
     local source_path="$script_dir/$filename"
-    local target_path="$install_dir/$filename"
+    local target_path="$install_dir/$target_filename"
 
     if [ -f "$source_path" ]; then
         cp -f "$source_path" "$target_path"
@@ -59,8 +55,9 @@ install_required_script() {
 
 install_optional_script_if_missing() {
     local filename="$1"
+    local target_filename="$2"
     local source_path="$script_dir/$filename"
-    local target_path="$install_dir/$filename"
+    local target_path="$install_dir/$target_filename"
 
     if [ -f "$target_path" ]; then
         echo "Skipped existing optional script: $target_path"
@@ -83,21 +80,17 @@ install_optional_script_if_missing() {
     fi
 }
 
-for script in "${scripts[@]}"; do
-    install_required_script "$script"
-done
-
-for script in "${optional_scripts[@]}"; do
-    install_optional_script_if_missing "$script"
-done
+install_script "update_from_release.sh" "$normal_updater_target"
+install_script "update_full_from_release.sh" "$full_updater_target"
+install_optional_script_if_missing "custom_config.sh" "$custom_config_target"
 
 mkdir -p "$custom_data_dir/addons" "$custom_data_dir/cfg" "$custom_data_dir/scripts" "$custom_data_dir/sound" "$custom_data_dir/models" "$custom_data_dir/logs"
 
 echo ""
 echo "==================初始化完成=================="
 echo "可运行:"
-echo "  bash $install_dir/update_from_release.sh"
-echo "  bash $install_dir/update_full_from_release.sh"
+echo "  bash $install_dir/$normal_updater_target"
+echo "  bash $install_dir/$full_updater_target"
 echo ""
 echo "自定义配置目录: $custom_data_dir"
-echo "把需要保留/覆盖的私有文件放进该目录，custom_config.sh 会在更新后复制到游戏目录。"
+echo "把需要保留/覆盖的私有文件放进该目录，$custom_config_target 会在更新后复制到游戏目录。"

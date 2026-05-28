@@ -7,6 +7,9 @@ gitrep=L4D2-Not0721Here-CoopSvPlugins
 repo_owner="PencilMario"
 release_dir="/tmp/l4d2_coop_release"
 script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+custom_config_name="${CUSTOM_CONFIG_SCRIPT:-l4d2_coop_custom_config.sh}"
+CUSTOM_DATA_DIR="${CUSTOM_DATA_DIR:-$script_dir/l4d2_coop_custom_config_data}"
+export CUSTOM_DATA_DIR
 
 echo "Downloading latest release..."
 cd /tmp || exit 1
@@ -80,14 +83,14 @@ for dir in "${directories[@]}"; do
         cp -r "$project_path/cfg/"* "$dir/cfg/"
         chmod 777 "$dir/"
 
-        if [ -f "$HOME/custom_config.sh" ]; then
-            bash "$HOME/custom_config.sh"
-        elif [ -f "$script_dir/custom_config.sh" ]; then
-            bash "$script_dir/custom_config.sh"
+        if [ -f "$script_dir/$custom_config_name" ]; then
+            bash "$script_dir/$custom_config_name"
+        elif [ -f "$HOME/$custom_config_name" ]; then
+            bash "$HOME/$custom_config_name"
         elif [ -f "$project_path/custom_config.sh" ]; then
             bash "$project_path/custom_config.sh"
         else
-            echo "Warning: custom_config.sh does not exist"
+            echo "Warning: $custom_config_name does not exist"
         fi
 
         echo "Updated | $dir"

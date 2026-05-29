@@ -7,16 +7,17 @@
 #define PLUGIN_VERSION "1.0.0"
 #define MAX_ENTITY_LIMIT 2049
 #define REFUEL_INTERVAL 1.0
-#define DEFAULT_CHAINSAW_FUEL 20
 
 ConVar g_hEnable;
 ConVar g_hRefuelTime;
-ConVar g_hChainsawAmmoMax;
 
 bool g_bEnable;
 float g_fRefuelTime;
 Handle g_hRefuelTimer = null;
 float g_fFuelRemainder[MAX_ENTITY_LIMIT];
+int g_iMaxFuel[MAX_ENTITY_LIMIT];
+
+static const int CHAINSAW_MAX_FUEL_PROBE = 9999;
 
 public Plugin myinfo =
 {
@@ -47,8 +48,6 @@ public void OnPluginStart()
 		true,
 		1.0
 	);
-	g_hChainsawAmmoMax = FindConVar("ammo_chainsaw_max");
-
 	g_hEnable.AddChangeHook(CvarHook);
 	g_hRefuelTime.AddChangeHook(CvarHook);
 
@@ -72,6 +71,7 @@ public void OnEntityDestroyed(int entity)
 {
 	if (entity > 0 && entity < MAX_ENTITY_LIMIT) {
 		g_fFuelRemainder[entity] = 0.0;
+		g_iMaxFuel[entity] = 0;
 	}
 }
 
@@ -88,21 +88,15 @@ public Action Timer_RefuelChainsaws(Handle timer)
 		return Plugin_Stop;
 	}
 
-	int iMaxFuel = GetChainsawMaxFuel();
-	if (iMaxFuel <= 0) {
-		return Plugin_Continue;
-	}
-
-	float fFuelPerTick = float(iMaxFuel) * REFUEL_INTERVAL / g_fRefuelTime;
 	int entity = -1;
 	while ((entity = FindEntityByClassname(entity, "weapon_chainsaw")) != -1) {
-		RefuelChainsaw(entity, iMaxFuel, fFuelPerTick);
+		RefuelChainsaw(entity);
 	}
 
 	return Plugin_Continue;
 }
 
-void RefuelChainsaw(int entity, int iMaxFuel, float fFuelPerTick)
+void RefuelChainsaw(int entity)
 {
 	if (entity <= 0 || entity >= MAX_ENTITY_LIMIT || !IsValidEntity(entity)) {
 		return;
@@ -113,6 +107,11 @@ void RefuelChainsaw(int entity, int iMaxFuel, float fFuelPerTick)
 		iFuel = 0;
 	}
 
+	int iMaxFuel = GetChainsawMaxFuel(entity, iFuel);
+	if (iMaxFuel <= 0) {
+		return;
+	}
+
 	if (iFuel >= iMaxFuel) {
 		g_fFuelRemainder[entity] = 0.0;
 		if (iFuel > iMaxFuel) {
@@ -121,6 +120,7 @@ void RefuelChainsaw(int entity, int iMaxFuel, float fFuelPerTick)
 		return;
 	}
 
+	float fFuelPerTick = float(iMaxFuel) * REFUEL_INTERVAL / g_fRefuelTime;
 	g_fFuelRemainder[entity] += fFuelPerTick;
 	int iAddFuel = RoundToFloor(g_fFuelRemainder[entity]);
 	if (iAddFuel <= 0) {
@@ -179,17 +179,19 @@ void ClearFuelRemainders()
 {
 	for (int i = 0; i < MAX_ENTITY_LIMIT; i++) {
 		g_fFuelRemainder[i] = 0.0;
+		g_iMaxFuel[i] = 0;
 	}
 }
 
-int GetChainsawMaxFuel()
+int GetChainsawMaxFuel(int entity, int iCurrentFuel)
 {
-	if (g_hChainsawAmmoMax != null) {
-		int iMaxFuel = g_hChainsawAmmoMax.IntValue;
-		if (iMaxFuel > 0) {
-			return iMaxFuel;
-		}
+	if (g_iMaxFuel[entity] > 0) {
+		return g_iMaxFuel[entity];
 	}
 
-	return DEFAULT_CHAINSAW_FUEL;
+	SetEntProp(entity, Prop_Send, "m_iClip1", CHAINSAW_MAX_FUEL_PROBE);
+	g_iMaxFuel[entity] = GetEntProp(entity, Prop_Send, "m_iClip1");
+	SetEntProp(entity, Prop_Send, "m_iClip1", iCurrentFuel);
+
+	return g_iMaxFuel[entity];
 }

@@ -10,6 +10,7 @@
 #define KEY_GETNEXTESCAPESTEP "TerrorNavArea::GetNextEscapeStep"
 #define KEY_m_vecCenter "CNavArea::m_vecCenter"
 #define NULL_NAV_AREA view_as<TerrorNavArea>(0)
+#define CHECKPOINT_FLOW_TOLERANCE 2000.0
 
 Handle g_hSDKCall_GetNextEscapeStep;
 int g_iOffs_m_vecCenter = -1;
@@ -193,32 +194,19 @@ bool BuildRoute()
 {
     ClearRoute();
 
-    int startDoor = L4D_GetCheckpointFirst();
-    int endDoor = L4D_GetCheckpointLast();
-
-    if (!IsValidEntity(startDoor) || !IsValidEntity(endDoor))
+    Address startNav;
+    Address endNav;
+    bool usingCheckpointNav = FindCheckpointNavEndpoints(startNav, endNav);
+    if (!usingCheckpointNav && !FindDoorNavEndpoints(startNav, endNav))
     {
-        PrintToServer("[NavLine] Failed to find both checkpoint doors. start=%d end=%d", startDoor, endDoor);
-        return false;
-    }
-
-    float startPos[3], endPos[3];
-    GetEntPropVector(startDoor, Prop_Send, "m_vecOrigin", startPos);
-    GetEntPropVector(endDoor, Prop_Send, "m_vecOrigin", endPos);
-
-    Address startNav = FindNearestDoorNavArea(startPos);
-    Address endNav = FindNearestDoorNavArea(endPos);
-
-    if (startNav == Address_Null || endNav == Address_Null)
-    {
-        PrintToServer("[NavLine] Failed to find door NavAreas. start=%x end=%x", startNav, endNav);
+        PrintToServer("[NavLine] Failed to find route endpoints from checkpoint nav areas or checkpoint doors.");
         return false;
     }
 
     bool ignoreBlockers = g_cvIgnoreBlockers.BoolValue;
     if (!L4D2_NavAreaBuildPath(startNav, endNav, 0.0, 2, ignoreBlockers))
     {
-        PrintToServer("[NavLine] L4D2_NavAreaBuildPath failed between saferoom door NavAreas.");
+        PrintToServer("[NavLine] L4D2_NavAreaBuildPath failed between %s NavAreas.", usingCheckpointNav ? "checkpoint" : "saferoom door");
         return false;
     }
 
@@ -232,7 +220,94 @@ bool BuildRoute()
     g_fRouteLength = CalculateRouteLength();
     g_bRouteReady = true;
 
-    PrintToServer("[NavLine] Built start-door to end-door NAV route. points=%d segments=%d length=%.1f", g_hRoutePoints.Length, g_iRouteSegments, g_fRouteLength);
+    PrintToServer("[NavLine] Built %s NAV route. points=%d segments=%d length=%.1f", usingCheckpointNav ? "checkpoint-area" : "start-door to end-door", g_hRoutePoints.Length, g_iRouteSegments, g_fRouteLength);
+    return true;
+}
+
+bool FindCheckpointNavEndpoints(Address &startNav, Address &endNav)
+{
+    startNav = Address_Null;
+    endNav = Address_Null;
+
+    ArrayList areas = new ArrayList();
+    L4D_GetAllNavAreas(areas);
+
+    float minFlow = 0.0;
+    float maxFlow = 0.0;
+    int checkpointCount;
+
+    for (int i = 0; i < areas.Length; i++)
+    {
+        Address area = view_as<Address>(areas.Get(i));
+        if (area == Address_Null)
+            continue;
+
+        int attributes = L4D_GetNavArea_SpawnAttributes(area);
+        if ((attributes & NAV_SPAWN_CHECKPOINT) == 0 || (attributes & NAV_SPAWN_FINALE) != 0)
+            continue;
+
+        float flow = L4D2Direct_GetTerrorNavAreaFlow(area);
+        if (checkpointCount == 0 || flow < minFlow)
+        {
+            minFlow = flow;
+            startNav = area;
+        }
+
+        if (checkpointCount == 0 || flow > maxFlow)
+        {
+            maxFlow = flow;
+            endNav = area;
+        }
+
+        checkpointCount++;
+    }
+
+    delete areas;
+
+    if (checkpointCount < 2 || startNav == Address_Null || endNav == Address_Null || startNav == endNav)
+    {
+        PrintToServer("[NavLine] Checkpoint nav endpoint search failed. count=%d start=%x end=%x", checkpointCount, startNav, endNav);
+        return false;
+    }
+
+    float maxMapFlow = L4D2Direct_GetMapMaxFlowDistance();
+    if (maxMapFlow > 0.0 && (minFlow > CHECKPOINT_FLOW_TOLERANCE || maxFlow < maxMapFlow - CHECKPOINT_FLOW_TOLERANCE))
+    {
+        PrintToServer("[NavLine] Checkpoint nav endpoints are not near map flow ends. count=%d min=%.1f max=%.1f map=%.1f", checkpointCount, minFlow, maxFlow, maxMapFlow);
+        return false;
+    }
+
+    PrintToServer("[NavLine] Found checkpoint nav endpoints. count=%d start=%x flow=%.1f end=%x flow=%.1f", checkpointCount, startNav, minFlow, endNav, maxFlow);
+    return true;
+}
+
+bool FindDoorNavEndpoints(Address &startNav, Address &endNav)
+{
+    startNav = Address_Null;
+    endNav = Address_Null;
+
+    int startDoor = L4D_GetCheckpointFirst();
+    int endDoor = L4D_GetCheckpointLast();
+
+    if (!IsValidEntity(startDoor) || !IsValidEntity(endDoor))
+    {
+        PrintToServer("[NavLine] Failed to find both checkpoint doors. start=%d end=%d", startDoor, endDoor);
+        return false;
+    }
+
+    float startPos[3], endPos[3];
+    GetEntPropVector(startDoor, Prop_Send, "m_vecOrigin", startPos);
+    GetEntPropVector(endDoor, Prop_Send, "m_vecOrigin", endPos);
+
+    startNav = FindNearestDoorNavArea(startPos);
+    endNav = FindNearestDoorNavArea(endPos);
+
+    if (startNav == Address_Null || endNav == Address_Null)
+    {
+        PrintToServer("[NavLine] Failed to find door NavAreas. start=%x end=%x", startNav, endNav);
+        return false;
+    }
+
     return true;
 }
 

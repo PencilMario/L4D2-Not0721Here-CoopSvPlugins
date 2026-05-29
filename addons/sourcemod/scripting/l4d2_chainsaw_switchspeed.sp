@@ -37,7 +37,8 @@ float
 
 Handle
 	g_hDeployModifier,
-	g_hDeploy;
+	g_hDeploy,
+	g_SDKCall_ChainsawStopAttack;
 
 
 public void OnPluginStart()
@@ -58,6 +59,20 @@ void CvarHook(ConVar convar, const char[] oldValue, const char[] newValue)
 	g_chainsaw_switchspeed = cvar_chainsaw_switchspeed.FloatValue;
 }
 
+public void OnClientPutInServer(int client)
+{
+	if (IsFakeClient(client))
+		return;
+
+	SDKHook(client, SDKHook_WeaponSwitchPost, SDKCallback_SwitchChainsaw);
+}
+
+public void OnClientDisconnect(int client)
+{
+	SDKUnhook(client, SDKHook_WeaponSwitchPost, SDKCallback_SwitchChainsaw);
+	SDKUnhook(client, SDKHook_PostThink, SDKCallback_StopSwitchAnimation);
+}
+
 public void OnEntityCreated(int entity, const char[] classname)
 {
 	if (entity <= 0 || entity >= MAX_ENTITY_LIMIT)
@@ -68,6 +83,45 @@ public void OnEntityCreated(int entity, const char[] classname)
 
 	DHookEntity(g_hDeployModifier, true, entity);
 	DHookEntity(g_hDeploy, true, entity);
+}
+
+void SDKCallback_SwitchChainsaw(int client, int weapon)
+{
+	if (!IsClientInGame(client) || IsFakeClient(client) || GetClientTeam(client) != 2)
+		return;
+
+	if (!IsChainsaw(weapon))
+		return;
+
+	SDKHook(client, SDKHook_PostThink, SDKCallback_StopSwitchAnimation);
+}
+
+void SDKCallback_StopSwitchAnimation(int client)
+{
+	int weapon = GetEntPropEnt(client, Prop_Send, "m_hActiveWeapon");
+	if (!IsChainsaw(weapon)) {
+		SDKUnhook(client, SDKHook_PostThink, SDKCallback_StopSwitchAnimation);
+		return;
+	}
+
+	if (GetEntPropFloat(weapon, Prop_Send, "m_flCycle") < g_chainsaw_switchspeed)
+		return;
+
+	SDKCall(g_SDKCall_ChainsawStopAttack, weapon);
+	SetEntPropFloat(weapon, Prop_Send, "m_flPlaybackRate", 1.0);
+	SetEntPropFloat(weapon, Prop_Send, "m_flCycle", 1.0);
+
+	int viewmodel = GetEntPropEnt(client, Prop_Send, "m_hViewModel");
+	if (viewmodel > MaxClients && IsValidEntity(viewmodel)) {
+		SetEntProp(viewmodel, Prop_Send, "m_nLayerSequence", 3);
+	}
+
+	if (weapon > 0 && weapon < MAX_ENTITY_LIMIT) {
+		g_chainsaw_playback_rate[weapon] = 0.0;
+		g_chainsaw_restore_time[weapon] = 0.0;
+	}
+
+	SDKUnhook(client, SDKHook_PostThink, SDKCallback_StopSwitchAnimation);
 }
 
 public MRESReturn OnDeployModifier(int weapon, Handle hReturn)
@@ -166,6 +220,11 @@ void LoadGameData()
 		SetFailState("Unable to get offset for 'CTerrorWeapon::Deploy'");
 
 	g_hDeploy = DHookCreate(offset, HookType_Entity, ReturnType_Unknown, ThisPointer_CBaseEntity, OnDeploy);
+
+	StartPrepSDKCall(SDKCall_Entity);
+	PrepSDKCall_SetFromConf(hGameData, SDKConf_Signature, "CChainsaw::StopAttack");
+	if (!(g_SDKCall_ChainsawStopAttack = EndPrepSDKCall()))
+		SetFailState("failed to load signature");
 	
 	delete hGameData;
 }
@@ -173,4 +232,14 @@ void LoadGameData()
 float ClampFloatAboveZero(float value)
 {
 	return value <= 0.0 ? 0.00001 : value;
+}
+
+bool IsChainsaw(int weapon)
+{
+	if (weapon <= MaxClients || !IsValidEntity(weapon))
+		return false;
+
+	char weaponName[64];
+	GetEntityClassname(weapon, weaponName, sizeof(weaponName));
+	return strcmp(weaponName, "weapon_chainsaw") == 0;
 }

@@ -62,12 +62,13 @@ int g_iRouteSegments;
 bool g_bRouteReady;
 bool g_bRouteVisible;
 float g_fRouteLength;
+char g_sLastBuildFailure[192];
 
 public void OnPluginStart()
 {
     LoadRouteSDK();
 
-    g_cvEnabled = CreateConVar("l4d2_navline_enabled", "1", "Enable NAV line demo.", FCVAR_NOTIFY, true, 0.0, true, 1.0);
+    g_cvEnabled = CreateConVar("l4d2_navline_enabled", "0", "Enable automatic NAV line rendering.", FCVAR_NOTIFY, true, 0.0, true, 1.0);
     g_cvSearchDist = CreateConVar("l4d2_navline_search_dist", "1000.0", "Max distance to search for a NavArea near each saferoom door.", FCVAR_NOTIFY, true, 64.0);
     g_cvIgnoreBlockers = CreateConVar("l4d2_navline_ignore_blockers", "1", "Ignore NAV blockers while validating route.", FCVAR_NOTIFY, true, 0.0, true, 1.0);
     g_cvDrawInterval = CreateConVar("l4d2_navline_draw_interval", "0.5", "How often to redraw temp beam route.", FCVAR_NOTIFY, true, 0.1, true, 5.0);
@@ -76,9 +77,8 @@ public void OnPluginStart()
     g_cvMaxAreas = CreateConVar("l4d2_navline_max_areas", "2048", "Safety cap for escape-step traversal.", FCVAR_NOTIFY, true, 16.0, true, 8192.0);
     g_cvRenderRange = CreateConVar("l4d2_navline_render_range", "1250.0", "Only render route segments near a player within this distance.", FCVAR_NOTIFY, true, 1.0);
 
-    RegAdminCmd("sm_navline", Command_ToggleRoute, ADMFLAG_ROOT, "Toggle the cached demo NAV line display.");
-    RegAdminCmd("sm_navline_clear", Command_ClearRoute, ADMFLAG_ROOT, "Clear the demo NAV line.");
     RegAdminCmd("sm_navline_length", Command_RouteLength, ADMFLAG_ROOT, "Print the cached demo NAV line length.");
+    g_cvEnabled.AddChangeHook(CvarHook_Enabled);
 
     g_hRoutePoints = new ArrayList(3);
 }
@@ -121,40 +121,23 @@ public void OnMapEnd()
     ClearRoute();
 }
 
-public Action Command_ToggleRoute(int client, int args)
+void CvarHook_Enabled(ConVar convar, const char[] oldValue, const char[] newValue)
 {
-    if (!EnsureRouteBuilt())
+    if (g_cvEnabled.BoolValue)
     {
-        ReplyToCommand(client, "[NavLine] Failed to build route. Check server console for details.");
-        return Plugin_Handled;
-    }
-
-    if (g_bRouteVisible)
-    {
-        StopDrawingRoute();
-        ReplyToCommand(client, "[NavLine] Route display off. Length: %.1f units (%d segments).", g_fRouteLength, g_iRouteSegments);
+        EnsureRouteRendering();
     }
     else
     {
-        StartDrawingRoute();
-        ReplyToCommand(client, "[NavLine] Route display on. Length: %.1f units (%d segments).", g_fRouteLength, g_iRouteSegments);
+        ClearRoute();
     }
-
-    return Plugin_Handled;
-}
-
-public Action Command_ClearRoute(int client, int args)
-{
-    ClearRoute();
-    ReplyToCommand(client, "[NavLine] Route cleared.");
-    return Plugin_Handled;
 }
 
 public Action Command_RouteLength(int client, int args)
 {
     if (!EnsureRouteBuilt())
     {
-        ReplyToCommand(client, "[NavLine] Failed to build route. Check server console for details.");
+        ReplyRouteBuildFailure(client);
         return Plugin_Handled;
     }
 
@@ -165,7 +148,7 @@ public Action Command_RouteLength(int client, int args)
 public Action Timer_DelayedBuildRoute(Handle timer)
 {
     if (g_cvEnabled.BoolValue)
-        BuildRoute();
+        EnsureRouteRendering();
 
     return Plugin_Stop;
 }
@@ -190,29 +173,67 @@ bool EnsureRouteBuilt()
     return BuildRoute();
 }
 
+bool EnsureRouteRendering()
+{
+    if (!EnsureRouteBuilt())
+        return false;
+
+    StartDrawingRoute();
+    return true;
+}
+
+void ReplyRouteBuildFailure(int client)
+{
+    if (g_sLastBuildFailure[0] == '\0')
+    {
+        ReplyToCommand(client, "[NavLine] Failed to build route: unknown error.");
+        return;
+    }
+
+    ReplyToCommand(client, "[NavLine] Failed to build route: %s", g_sLastBuildFailure);
+}
+
+void SetRouteBuildFailure(const char[] format, any ...)
+{
+    VFormat(g_sLastBuildFailure, sizeof(g_sLastBuildFailure), format, 2);
+    PrintToServer("[NavLine] %s", g_sLastBuildFailure);
+}
+
+void SetRouteBuildFailureIfEmpty(const char[] format, any ...)
+{
+    if (g_sLastBuildFailure[0] != '\0')
+        return;
+
+    VFormat(g_sLastBuildFailure, sizeof(g_sLastBuildFailure), format, 2);
+    PrintToServer("[NavLine] %s", g_sLastBuildFailure);
+}
+
 bool BuildRoute()
 {
     ClearRoute();
+    g_sLastBuildFailure[0] = '\0';
 
     Address startNav;
     Address endNav;
-    bool usingCheckpointNav = FindCheckpointNavEndpoints(startNav, endNav);
-    if (!usingCheckpointNav && !FindDoorNavEndpoints(startNav, endNav))
+    char endpointSource[32];
+    if (!FindRouteEndpoints(startNav, endNav, endpointSource, sizeof(endpointSource)))
     {
-        PrintToServer("[NavLine] Failed to find route endpoints from checkpoint nav areas or checkpoint doors.");
+        if (g_sLastBuildFailure[0] == '\0')
+            SetRouteBuildFailure("failed to find route endpoints from checkpoint nav areas, flow nav areas, or checkpoint doors.");
+
         return false;
     }
 
     bool ignoreBlockers = g_cvIgnoreBlockers.BoolValue;
     if (!L4D2_NavAreaBuildPath(startNav, endNav, 0.0, 2, ignoreBlockers))
     {
-        PrintToServer("[NavLine] L4D2_NavAreaBuildPath failed between %s NavAreas.", usingCheckpointNav ? "checkpoint" : "saferoom door");
+        SetRouteBuildFailure("L4D2_NavAreaBuildPath failed between %s NavAreas.", endpointSource);
         return false;
     }
 
     if (!CollectEscapeRoutePoints(view_as<TerrorNavArea>(startNav), view_as<TerrorNavArea>(endNav)))
     {
-        PrintToServer("[NavLine] Path exists, but escape-step traversal did not produce enough points.");
+        SetRouteBuildFailure("path exists, but escape-step traversal did not produce enough points.");
         return false;
     }
 
@@ -220,8 +241,34 @@ bool BuildRoute()
     g_fRouteLength = CalculateRouteLength();
     g_bRouteReady = true;
 
-    PrintToServer("[NavLine] Built %s NAV route. points=%d segments=%d length=%.1f", usingCheckpointNav ? "checkpoint-area" : "start-door to end-door", g_hRoutePoints.Length, g_iRouteSegments, g_fRouteLength);
+    PrintToServer("[NavLine] Built %s NAV route. points=%d segments=%d length=%.1f", endpointSource, g_hRoutePoints.Length, g_iRouteSegments, g_fRouteLength);
     return true;
+}
+
+bool FindRouteEndpoints(Address &startNav, Address &endNav, char[] endpointSource, int endpointSourceLen)
+{
+    if (FindCheckpointNavEndpoints(startNav, endNav))
+    {
+        g_sLastBuildFailure[0] = '\0';
+        strcopy(endpointSource, endpointSourceLen, "checkpoint-area");
+        return true;
+    }
+
+    if (FindFlowNavEndpoints(startNav, endNav))
+    {
+        g_sLastBuildFailure[0] = '\0';
+        strcopy(endpointSource, endpointSourceLen, "flow-extreme");
+        return true;
+    }
+
+    if (FindDoorNavEndpoints(startNav, endNav))
+    {
+        g_sLastBuildFailure[0] = '\0';
+        strcopy(endpointSource, endpointSourceLen, "saferoom door");
+        return true;
+    }
+
+    return false;
 }
 
 bool FindCheckpointNavEndpoints(Address &startNav, Address &endNav)
@@ -266,18 +313,67 @@ bool FindCheckpointNavEndpoints(Address &startNav, Address &endNav)
 
     if (checkpointCount < 2 || startNav == Address_Null || endNav == Address_Null || startNav == endNav)
     {
-        PrintToServer("[NavLine] Checkpoint nav endpoint search failed. count=%d start=%x end=%x", checkpointCount, startNav, endNav);
+        SetRouteBuildFailure("checkpoint nav endpoint search failed. count=%d start=%x end=%x", checkpointCount, startNav, endNav);
         return false;
     }
 
     float maxMapFlow = L4D2Direct_GetMapMaxFlowDistance();
     if (maxMapFlow > 0.0 && (minFlow > CHECKPOINT_FLOW_TOLERANCE || maxFlow < maxMapFlow - CHECKPOINT_FLOW_TOLERANCE))
     {
-        PrintToServer("[NavLine] Checkpoint nav endpoints are not near map flow ends. count=%d min=%.1f max=%.1f map=%.1f", checkpointCount, minFlow, maxFlow, maxMapFlow);
+        SetRouteBuildFailure("checkpoint nav endpoints are not near map flow ends. count=%d min=%.1f max=%.1f map=%.1f", checkpointCount, minFlow, maxFlow, maxMapFlow);
         return false;
     }
 
     PrintToServer("[NavLine] Found checkpoint nav endpoints. count=%d start=%x flow=%.1f end=%x flow=%.1f", checkpointCount, startNav, minFlow, endNav, maxFlow);
+    return true;
+}
+
+bool FindFlowNavEndpoints(Address &startNav, Address &endNav)
+{
+    startNav = Address_Null;
+    endNav = Address_Null;
+
+    ArrayList areas = new ArrayList();
+    L4D_GetAllNavAreas(areas);
+
+    float minFlow = 0.0;
+    float maxFlow = 0.0;
+    int flowAreaCount;
+
+    for (int i = 0; i < areas.Length; i++)
+    {
+        Address area = view_as<Address>(areas.Get(i));
+        if (area == Address_Null)
+            continue;
+
+        float flow = L4D2Direct_GetTerrorNavAreaFlow(area);
+        if (flow < 0.0)
+            continue;
+
+        if (flowAreaCount == 0 || flow < minFlow)
+        {
+            minFlow = flow;
+            startNav = area;
+        }
+
+        if (flowAreaCount == 0 || flow > maxFlow)
+        {
+            maxFlow = flow;
+            endNav = area;
+        }
+
+        flowAreaCount++;
+    }
+
+    delete areas;
+
+    if (flowAreaCount < 2 || startNav == Address_Null || endNav == Address_Null || startNav == endNav)
+    {
+        SetRouteBuildFailure("flow nav endpoint search failed. count=%d start=%x end=%x", flowAreaCount, startNav, endNav);
+        return false;
+    }
+
+    PrintToServer("[NavLine] Found flow nav endpoints. count=%d start=%x flow=%.1f end=%x flow=%.1f", flowAreaCount, startNav, minFlow, endNav, maxFlow);
     return true;
 }
 
@@ -291,7 +387,7 @@ bool FindDoorNavEndpoints(Address &startNav, Address &endNav)
 
     if (!IsValidEntity(startDoor) || !IsValidEntity(endDoor))
     {
-        PrintToServer("[NavLine] Failed to find both checkpoint doors. start=%d end=%d", startDoor, endDoor);
+        SetRouteBuildFailureIfEmpty("failed to find both checkpoint doors. start=%d end=%d", startDoor, endDoor);
         return false;
     }
 
@@ -304,7 +400,7 @@ bool FindDoorNavEndpoints(Address &startNav, Address &endNav)
 
     if (startNav == Address_Null || endNav == Address_Null)
     {
-        PrintToServer("[NavLine] Failed to find door NavAreas. start=%x end=%x", startNav, endNav);
+        SetRouteBuildFailureIfEmpty("failed to find door NavAreas. start=%x end=%x", startNav, endNav);
         return false;
     }
 

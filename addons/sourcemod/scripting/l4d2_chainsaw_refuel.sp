@@ -51,8 +51,42 @@ public void OnPluginStart()
 	g_hEnable.AddChangeHook(CvarHook);
 	g_hRefuelTime.AddChangeHook(CvarHook);
 
+	RegAdminCmd("sm_chainsaw_fuel_debug", Command_ChainsawFuelDebug, ADMFLAG_ROOT, "Print current weapon clip/fuel debug info.");
+
 	RefreshCvars();
 	UpdateRefuelTimer();
+}
+
+public Action Command_ChainsawFuelDebug(int client, int args)
+{
+	if (client <= 0 || !IsClientInGame(client)) {
+		ReplyToCommand(client, "[ChainsawRefuel] This command can only be used in game.");
+		return Plugin_Handled;
+	}
+
+	int weapon = GetEntPropEnt(client, Prop_Send, "m_hActiveWeapon");
+	if (weapon <= 0 || !IsValidEntity(weapon)) {
+		ReplyToCommand(client, "[ChainsawRefuel] No valid active weapon.");
+		return Plugin_Handled;
+	}
+
+	char classname[64];
+	GetEntityClassname(weapon, classname, sizeof(classname));
+
+	int clip = GetEntProp(weapon, Prop_Send, "m_iClip1");
+	if (!StrEqual(classname, "weapon_chainsaw", false)) {
+		ReplyToCommand(client, "[ChainsawRefuel] Active weapon: %s entity=%d clip1=%d (not chainsaw).", classname, weapon, clip);
+		return Plugin_Handled;
+	}
+
+	int currentFuel = clip;
+	if (currentFuel < 0) {
+		currentFuel = 0;
+	}
+
+	int maxFuel = GetChainsawMaxFuel(weapon, currentFuel);
+	ReplyToCommand(client, "[ChainsawRefuel] Active chainsaw entity=%d fuel=%d max=%d raw_clip1=%d.", weapon, currentFuel, maxFuel, clip);
+	return Plugin_Handled;
 }
 
 public void OnConfigsExecuted()

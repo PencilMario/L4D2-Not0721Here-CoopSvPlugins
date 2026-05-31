@@ -59,20 +59,6 @@ void CvarHook(ConVar convar, const char[] oldValue, const char[] newValue)
 	g_chainsaw_switchspeed = cvar_chainsaw_switchspeed.FloatValue;
 }
 
-public void OnClientPutInServer(int client)
-{
-	if (IsFakeClient(client))
-		return;
-
-	SDKHook(client, SDKHook_WeaponSwitchPost, SDKCallback_SwitchChainsaw);
-}
-
-public void OnClientDisconnect(int client)
-{
-	SDKUnhook(client, SDKHook_WeaponSwitchPost, SDKCallback_SwitchChainsaw);
-	SDKUnhook(client, SDKHook_PostThink, SDKCallback_StopSwitchAnimation);
-}
-
 public void OnEntityCreated(int entity, const char[] classname)
 {
 	if (entity <= 0 || entity >= MAX_ENTITY_LIMIT)
@@ -85,43 +71,30 @@ public void OnEntityCreated(int entity, const char[] classname)
 	DHookEntity(g_hDeploy, true, entity);
 }
 
-void SDKCallback_SwitchChainsaw(int client, int weapon)
+public Action Timer_StopSwitchAnimation(Handle timer, int weaponRef)
 {
-	if (!IsClientInGame(client) || IsFakeClient(client) || GetClientTeam(client) != 2)
-		return;
+	int weapon = EntRefToEntIndex(weaponRef);
+	if (weapon == INVALID_ENT_REFERENCE || weapon <= 0 || weapon >= MAX_ENTITY_LIMIT)
+		return Plugin_Stop;
 
-	if (!IsChainsaw(weapon))
-		return;
-
-	SDKHook(client, SDKHook_PostThink, SDKCallback_StopSwitchAnimation);
-}
-
-void SDKCallback_StopSwitchAnimation(int client)
-{
-	int weapon = GetEntPropEnt(client, Prop_Send, "m_hActiveWeapon");
-	if (!IsChainsaw(weapon)) {
-		SDKUnhook(client, SDKHook_PostThink, SDKCallback_StopSwitchAnimation);
-		return;
-	}
-
-	if (GetEntPropFloat(weapon, Prop_Send, "m_flCycle") < g_chainsaw_switchspeed)
-		return;
+	if (g_chainsaw_restore_time[weapon] > GetGameTime() + 0.01)
+		return Plugin_Stop;
 
 	SDKCall(g_SDKCall_ChainsawStopAttack, weapon);
 	SetEntPropFloat(weapon, Prop_Send, "m_flPlaybackRate", 1.0);
 	SetEntPropFloat(weapon, Prop_Send, "m_flCycle", 1.0);
 
-	int viewmodel = GetEntPropEnt(client, Prop_Send, "m_hViewModel");
-	if (viewmodel > MaxClients && IsValidEntity(viewmodel)) {
-		SetEntProp(viewmodel, Prop_Send, "m_nLayerSequence", 3);
+	int client = GetEntPropEnt(weapon, Prop_Send, "m_hOwnerEntity");
+	if (client > 0 && client <= MaxClients && IsClientInGame(client) && GetEntPropEnt(client, Prop_Send, "m_hActiveWeapon") == weapon) {
+		int viewmodel = GetEntPropEnt(client, Prop_Send, "m_hViewModel");
+		if (viewmodel > MaxClients && IsValidEntity(viewmodel)) {
+			SetEntProp(viewmodel, Prop_Send, "m_nLayerSequence", 3);
+		}
 	}
 
-	if (weapon > 0 && weapon < MAX_ENTITY_LIMIT) {
-		g_chainsaw_playback_rate[weapon] = 0.0;
-		g_chainsaw_restore_time[weapon] = 0.0;
-	}
-
-	SDKUnhook(client, SDKHook_PostThink, SDKCallback_StopSwitchAnimation);
+	g_chainsaw_playback_rate[weapon] = 0.0;
+	g_chainsaw_restore_time[weapon] = 0.0;
+	return Plugin_Stop;
 }
 
 public MRESReturn OnDeployModifier(int weapon, Handle hReturn)
@@ -163,25 +136,12 @@ public MRESReturn OnDeploy(int weapon)
 
 	g_chainsaw_restore_time[weapon] = restoreTime;
 	if (restoreTime > gameTime) {
-		CreateTimer(restoreTime - gameTime, Timer_RestorePlaybackRate, EntIndexToEntRef(weapon), TIMER_FLAG_NO_MAPCHANGE);
+		CreateTimer(restoreTime - gameTime, Timer_StopSwitchAnimation, EntIndexToEntRef(weapon), TIMER_FLAG_NO_MAPCHANGE);
+	} else {
+		CreateTimer(0.0, Timer_StopSwitchAnimation, EntIndexToEntRef(weapon), TIMER_FLAG_NO_MAPCHANGE);
 	}
 
 	return MRES_Ignored;
-}
-
-public Action Timer_RestorePlaybackRate(Handle timer, int weaponRef)
-{
-	int weapon = EntRefToEntIndex(weaponRef);
-	if (weapon == INVALID_ENT_REFERENCE || weapon <= 0 || weapon >= MAX_ENTITY_LIMIT)
-		return Plugin_Stop;
-
-	if (g_chainsaw_restore_time[weapon] > GetGameTime() + 0.01)
-		return Plugin_Stop;
-
-	SetEntPropFloat(weapon, Prop_Send, "m_flPlaybackRate", 1.0);
-	g_chainsaw_playback_rate[weapon] = 0.0;
-	g_chainsaw_restore_time[weapon] = 0.0;
-	return Plugin_Stop;
 }
 
 float ScaleNextAttackTime(int entity, PropType propType, const char[] propName, float gameTime, float playbackRate)

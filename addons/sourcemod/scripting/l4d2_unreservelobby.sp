@@ -3,12 +3,14 @@
 #define PLUGIN_NAME				"[L4D2] Remove Lobby Reservation"
 #define PLUGIN_AUTHOR			"Downtown1, Anime4000, sorallll, lakwsh"
 #define PLUGIN_DESCRIPTION		"Removes lobby reservation when server is full"
-#define PLUGIN_VERSION			"2.1.2"
+#define PLUGIN_VERSION			"2.1.3"
 #define PLUGIN_URL				"http://forums.alliedmods.net/showthread.php?t=87759"
 
-ConVar g_cvUnreserve, g_cvGameMode, g_cvCookie, g_cvLobbyOnly, g_cvMaxPlayers;
+ConVar g_cvUnreserve, g_cvGameMode, g_cvCookie, g_cvLobbyOnly, g_cvMaxPlayers, g_cvEmptyTimeout;
 bool g_bUnreserve;
 bool g_bShouldStopReserve;
+int g_iEmptyTimeout;
+Handle g_hEmptyUnreserveTimer;
 
 
 public Plugin myinfo = {
@@ -23,8 +25,11 @@ public void OnPluginStart() {
 	CreateConVar("l4d_unreserve_version", PLUGIN_VERSION, "Version of the Lobby Unreserve plugin.", FCVAR_NOTIFY|FCVAR_DONTRECORD);
 	g_cvUnreserve = CreateConVar("l4d_unreserve_full", "1", "Automatically unreserve server after a full lobby joins", FCVAR_SPONLY|FCVAR_NOTIFY);
 	g_cvUnreserve.AddChangeHook(CvarChanged);
+	g_cvEmptyTimeout = CreateConVar("l4d_unreserve_empty_timeout", "300", "Automatically unreserve server when a lobby cookie is set but no human players join after this many seconds. 0 disables this check.", FCVAR_SPONLY|FCVAR_NOTIFY, true, 0.0);
+	g_cvEmptyTimeout.AddChangeHook(CvarChanged);
 	g_cvGameMode = FindConVar("mp_gamemode");
 	g_cvCookie = FindConVar("sv_lobby_cookie");
+	g_cvCookie.AddChangeHook(CvarChanged_Cookie);
 	g_cvLobbyOnly = FindConVar("sv_allow_lobby_connect_only");
 	g_cvMaxPlayers = FindConVar("sv_maxplayers");
 
@@ -34,36 +39,50 @@ public void OnPluginStart() {
 }
 
 Action cmdUnreserve(int client, int args) {
-	ServerCommand("sv_cookie 0");
-	g_bShouldStopReserve = true;
+	RemoveLobbyReservation(true);
 	ReplyToCommand(client, "[UL] Lobby reservation has been removed.");
 	return Plugin_Handled;
 }
 
 public void OnConfigsExecuted() {
 	GetCvars();
+	CheckEmptyUnreserveTimer();
 }
 
 void CvarChanged(ConVar convar, const char[] oldValue, const char[] newValue) {
 	GetCvars();
+	delete g_hEmptyUnreserveTimer;
+	CheckEmptyUnreserveTimer();
+}
+
+void CvarChanged_Cookie(ConVar convar, const char[] oldValue, const char[] newValue) {
+	delete g_hEmptyUnreserveTimer;
+	CheckEmptyUnreserveTimer();
 }
 
 void GetCvars() {
 	g_bUnreserve = g_cvUnreserve.BoolValue;
+	g_iEmptyTimeout = g_cvEmptyTimeout.IntValue;
+}
+
+public void OnMapEnd() {
+	delete g_hEmptyUnreserveTimer;
 }
 
 public void OnClientAuthorized(int client, const char[] auth) {
-	if (g_bShouldStopReserve) return;
-	if (!g_bUnreserve || g_cvMaxPlayers.IntValue == -1)
+	if (IsFakeClient(client))
 		return;
 
-	if (IsFakeClient(client))
+	delete g_hEmptyUnreserveTimer;
+
+	if (g_bShouldStopReserve) return;
+	if (!g_bUnreserve || g_cvMaxPlayers.IntValue == -1)
 		return;
 
 	if (!IsServerLobbyFull(-1))
 		return;
 
-	ServerCommand("sv_cookie 0");
+	RemoveLobbyReservation(false);
 }
 
 //OnClientDisconnect will fired when changing map, issued by gH0sTy at http://docs.sourcemod.net/api/index.php?fastload=show&id=390&
@@ -97,6 +116,59 @@ void Event_PlayerDisconnect(Event event, const char[] name, bool dontBroadcast) 
 	ServerCommand("sv_cookie %s", sCookie);
 }
 
+public Action Timer_UnreserveEmptyLobby(Handle timer) {
+	g_hEmptyUnreserveTimer = null;
+
+	if (g_bShouldStopReserve || g_iEmptyTimeout <= 0)
+		return Plugin_Stop;
+
+	if (!IsLobbyCookieSet())
+		return Plugin_Stop;
+
+	if (GetConnectedPlayer(-1) > 0)
+		return Plugin_Stop;
+
+	RemoveLobbyReservation(true);
+	return Plugin_Stop;
+}
+
+void CheckEmptyUnreserveTimer() {
+	if (!ShouldStartEmptyUnreserveTimer())
+	{
+		delete g_hEmptyUnreserveTimer;
+		return;
+	}
+
+	if (g_hEmptyUnreserveTimer == null)
+		g_hEmptyUnreserveTimer = CreateTimer(float(g_iEmptyTimeout), Timer_UnreserveEmptyLobby, _, TIMER_FLAG_NO_MAPCHANGE);
+}
+
+bool ShouldStartEmptyUnreserveTimer() {
+	if (g_bShouldStopReserve || g_iEmptyTimeout <= 0)
+		return false;
+
+	if (g_cvMaxPlayers.IntValue == -1)
+		return false;
+
+	if (GetConnectedPlayer(-1) > 0)
+		return false;
+
+	return IsLobbyCookieSet();
+}
+
+bool IsLobbyCookieSet() {
+	char sCookie[20];
+	g_cvCookie.GetString(sCookie, sizeof(sCookie));
+	return sCookie[0] != '\0' && !StrEqual(sCookie, "0");
+}
+
+void RemoveLobbyReservation(bool stopReserve) {
+	ServerCommand("sv_cookie 0");
+	delete g_hEmptyUnreserveTimer;
+
+	if (stopReserve)
+		g_bShouldStopReserve = true;
+}
 
 bool IsServerLobbyFull(int client)
 {

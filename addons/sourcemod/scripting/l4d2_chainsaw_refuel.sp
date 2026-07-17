@@ -7,6 +7,7 @@
 #define PLUGIN_VERSION "1.0.0"
 #define MAX_ENTITY_LIMIT 2049
 #define REFUEL_INTERVAL 1.0
+#define CHAINSAW_MAX_FUEL 30
 
 ConVar g_hEnable;
 ConVar g_hRefuelTime;
@@ -15,9 +16,6 @@ bool g_bEnable;
 float g_fRefuelTime;
 Handle g_hRefuelTimer = null;
 float g_fFuelRemainder[MAX_ENTITY_LIMIT];
-int g_iMaxFuel[MAX_ENTITY_LIMIT];
-
-static const int CHAINSAW_MAX_FUEL_PROBE = 9999;
 
 public Plugin myinfo =
 {
@@ -105,7 +103,6 @@ public void OnEntityDestroyed(int entity)
 {
 	if (entity > 0 && entity < MAX_ENTITY_LIMIT) {
 		g_fFuelRemainder[entity] = 0.0;
-		g_iMaxFuel[entity] = 0;
 	}
 }
 
@@ -213,19 +210,10 @@ void ClearFuelRemainders()
 {
 	for (int i = 0; i < MAX_ENTITY_LIMIT; i++) {
 		g_fFuelRemainder[i] = 0.0;
-		g_iMaxFuel[i] = 0;
 	}
 }
 
 int GetChainsawMaxFuel(int entity, int iCurrentFuel)
 {
-	if (g_iMaxFuel[entity] > 0) {
-		return g_iMaxFuel[entity];
-	}
-
-	SetEntProp(entity, Prop_Send, "m_iClip1", CHAINSAW_MAX_FUEL_PROBE);
-	g_iMaxFuel[entity] = GetEntProp(entity, Prop_Send, "m_iClip1");
-	SetEntProp(entity, Prop_Send, "m_iClip1", iCurrentFuel);
-
-	return g_iMaxFuel[entity];
+	return CHAINSAW_MAX_FUEL;
 }

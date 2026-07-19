@@ -141,7 +141,7 @@ public Action Timer_ResetSpecialsCountdownTime(Handle Timer)
 		if (!IsClientInGame(i)) continue;
 		if (!IsFakeClient(i)) continue;
 		if (!IsInfected(i)) continue;
-		if (L4D2_GetPlayerZombieClass(i) == L4D2Infected_Spitter) continue;
+		//if (L4D2_GetPlayerZombieClass(i) == L4D2Infected_Spitter) continue;
 		if (!IsPlayerAlive(i)) KickClient(i);
 	}
 	return Plugin_Continue;

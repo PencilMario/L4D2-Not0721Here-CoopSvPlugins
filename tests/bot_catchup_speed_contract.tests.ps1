@@ -19,6 +19,17 @@ $required = @(
     'GetEntityClassname',
     '"infected"',
     'AcceptEntityInput(entity, "Kill")'
+    'FindNearestLivingHuman'
+    'GetVectorDistance'
+    'CalculateCatchupState'
+    '/ 1000.0'
+    '> 10000.0'
+    'ShouldGatherBotsInEndCheckpoint'
+    'L4D_IsInLastCheckpoint'
+    'IsClientIncapped'
+    'IsClientHanging'
+    'TeleportEntity'
+    'L4D_WarpToValidPositionIfStuck'
 )
 foreach ($needle in $required) {
     if (-not $source.Contains($needle)) { throw "missing contract token: $needle" }

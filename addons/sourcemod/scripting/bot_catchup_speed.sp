@@ -17,8 +17,8 @@ public Plugin myinfo =
 {
     name = "[L4D2] Survivor Bot Catch-up Speed",
     author = "Not0721Here",
-    description = "Speeds up survivor Bots that fall behind every living human",
-    version = "2.0.0",
+    description = "Helps survivor Bots catch the nearest living human",
+    version = "2.1.0",
     url = ""
 };
 
@@ -41,8 +41,12 @@ public void OnClientDisconnect(int client)
 public Action Timer_CheckAllBots(Handle timer)
 {
     float mapFlow = L4D2Direct_GetMapMaxFlowDistance();
-    float lastHumanFlow = 0.0;
-    bool hasLivingHuman = FindLastLivingHumanFlow(lastHumanFlow);
+
+    if (ShouldGatherBotsInEndCheckpoint())
+    {
+        GatherBotsInEndCheckpoint();
+        return Plugin_Continue;
+    }
 
     for (int client = 1; client <= MaxClients; client++)
     {
@@ -52,53 +56,135 @@ public Action Timer_CheckAllBots(Handle timer)
             continue;
         }
 
-        float lagPercent = 0.0;
-        if (hasLivingHuman && mapFlow > 0.0)
+        int nearestHuman;
+        float distance;
+        if (!FindNearestLivingHuman(client, nearestHuman, distance))
         {
-            float botFlow = L4D2Direct_GetFlowDistance(client);
-            if (botFlow >= 0.0 && botFlow < lastHumanFlow)
-            {
-                lagPercent = (lastHumanFlow - botFlow) / mapFlow * 100.0;
-            }
+            SetEntPropFloat(client, Prop_Send, "m_flLaggedMovementValue", 1.0);
+            UpdateCatchupAdrenaline(client, false);
+            continue;
         }
 
-        float speed = 1.0 + float(RoundToFloor(lagPercent)) * 0.1;
-        if (lagPercent > 0.0 && !Player_IsVisible_To_AnyPlayer(client, true))
+        float catchupSteps;
+        bool enableAdrenaline;
+        CalculateCatchupState(client, nearestHuman, distance, mapFlow, catchupSteps, enableAdrenaline);
+
+        float speed = 1.0 + catchupSteps * 0.1;
+        if (catchupSteps > 0.0 && !Player_IsVisible_To_AnyPlayer(client, true))
         {
             speed *= 1.25;
         }
         SetEntPropFloat(client, Prop_Send, "m_flLaggedMovementValue", speed);
 
-        UpdateCatchupAdrenaline(client, lagPercent > ADRENALINE_THRESHOLD);
+        UpdateCatchupAdrenaline(client, enableAdrenaline);
     }
 
     return Plugin_Continue;
 }
 
-bool FindLastLivingHumanFlow(float &lastHumanFlow)
+bool FindNearestLivingHuman(int client, int &nearestHuman, float &nearestDistance)
 {
+    float clientPos[3], humanPos[3];
+    GetClientAbsOrigin(client, clientPos);
+
     bool found = false;
-    for (int client = 1; client <= MaxClients; client++)
+    for (int human = 1; human <= MaxClients; human++)
     {
-        if (!IsClientInGame(client) || IsFakeClient(client) ||
-            GetClientTeam(client) != TEAM_SURVIVOR || !IsPlayerAlive(client))
+        if (!IsClientInGame(human) || IsFakeClient(human) ||
+            GetClientTeam(human) != TEAM_SURVIVOR || !IsPlayerAlive(human))
         {
             continue;
         }
 
-        float flow = L4D2Direct_GetFlowDistance(client);
-        if (flow < 0.0)
+        GetClientAbsOrigin(human, humanPos);
+        float distance = GetVectorDistance(clientPos, humanPos);
+        if (!found || distance < nearestDistance)
         {
-            continue;
-        }
-
-        if (!found || flow < lastHumanFlow)
-        {
-            lastHumanFlow = flow;
+            nearestHuman = human;
+            nearestDistance = distance;
             found = true;
         }
     }
     return found;
+}
+
+void CalculateCatchupState(int bot, int human, float distance, float mapFlow,
+    float &catchupSteps, bool &enableAdrenaline)
+{
+    float botFlow = L4D2Direct_GetFlowDistance(bot);
+    float humanFlow = L4D2Direct_GetFlowDistance(human);
+
+    if (mapFlow > 0.0 && botFlow >= 0.0 && humanFlow >= 0.0)
+    {
+        float lagPercent = (humanFlow - botFlow) / mapFlow * 100.0;
+        if (lagPercent < 0.0)
+        {
+            lagPercent = 0.0;
+        }
+        catchupSteps = float(RoundToFloor(lagPercent));
+        enableAdrenaline = lagPercent > ADRENALINE_THRESHOLD;
+        return;
+    }
+
+    catchupSteps = float(RoundToFloor(distance / 1000.0));
+    enableAdrenaline = distance > 10000.0;
+}
+
+bool ShouldGatherBotsInEndCheckpoint()
+{
+    bool foundLivingHuman = false;
+
+    for (int client = 1; client <= MaxClients; client++)
+    {
+        if (!IsClientInGame(client) || GetClientTeam(client) != TEAM_SURVIVOR ||
+            !IsPlayerAlive(client))
+        {
+            continue;
+        }
+
+        if (IsClientIncapped(client) || IsClientHanging(client))
+        {
+            return false;
+        }
+
+        if (!IsFakeClient(client))
+        {
+            foundLivingHuman = true;
+            if (!L4D_IsInLastCheckpoint(client))
+            {
+                return false;
+            }
+        }
+    }
+
+    return foundLivingHuman;
+}
+
+void GatherBotsInEndCheckpoint()
+{
+    for (int bot = 1; bot <= MaxClients; bot++)
+    {
+        if (!IsClientInGame(bot) || !IsFakeClient(bot) ||
+            GetClientTeam(bot) != TEAM_SURVIVOR || !IsPlayerAlive(bot) ||
+            L4D_IsInLastCheckpoint(bot))
+        {
+            continue;
+        }
+
+        int nearestHuman;
+        float distance;
+        if (!FindNearestLivingHuman(bot, nearestHuman, distance))
+        {
+            continue;
+        }
+
+        float destination[3];
+        GetClientAbsOrigin(nearestHuman, destination);
+        TeleportEntity(bot, destination, NULL_VECTOR, NULL_VECTOR);
+        L4D_WarpToValidPositionIfStuck(bot);
+        SetEntPropFloat(bot, Prop_Send, "m_flLaggedMovementValue", 1.0);
+        UpdateCatchupAdrenaline(bot, false);
+    }
 }
 
 void UpdateCatchupAdrenaline(int client, bool enabled)

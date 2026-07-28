@@ -427,6 +427,7 @@ static float g_fSurvivorBot_NextScavengeItemScanTime[MAXPLAYERS+1];
 static float g_fSurvivorBot_VomitBlindedTime[MAXPLAYERS+1];
 
 static float g_fSurvivorBot_NextMoveCommandTime[MAXPLAYERS+1];
+static bool g_bSurvivorBot_TankRetreatActive[MAXPLAYERS+1];
 
 static float g_fSurvivorBot_BlockWeaponSwitchTime[MAXPLAYERS+1];
 static float g_fSurvivorBot_BlockWeaponReloadTime[MAXPLAYERS+1];
@@ -1454,6 +1455,7 @@ void ResetClientPluginVariables(int iClient)
 	g_iSurvivorBot_DefibTarget[iClient] = -1;
 	g_iSurvivorBot_Grenade_ThrowTarget[iClient] = -1;
 	g_iSurvivorBot_MovePos_Priority[iClient] = 0;
+	g_bSurvivorBot_TankRetreatActive[iClient] = false;
 	
 	g_sSurvivorBot_MovePos_Name[iClient][0] = 0;
 	g_fSurvivorBot_MovePos_Tolerance[iClient] = -1.0;
@@ -1842,6 +1844,11 @@ void SurvivorBotThink(int iClient, int &iButtons, int iWpnSlots[6])
 	g_iSurvivorBot_DefibTarget[iClient] = -1;
 	g_bSurvivorBot_PreventFire[iClient] = false;
 
+	if (g_bSurvivorBot_TankRetreatActive[iClient] && (L4D_IsPlayerIncapacitated(iClient) || L4D_IsPlayerHangingFromLedge(iClient)))
+	{
+		StopTankRetreat(iClient);
+	}
+
 	int iCurWeapon = L4D_GetPlayerCurrentWeapon(iClient);
 
 	static int iTeamLeader, iGameDifficulty, iDefibTarget, iTeamCount, iAlivePlayers, iTankRock, iTankTarget, iWitchHarasser, iTankProp;
@@ -2203,7 +2210,8 @@ void SurvivorBotThink(int iClient, int &iButtons, int iWpnSlots[6])
 		}
 	}
 
-	if (IsValidClient(iTankTarget))
+	bool bTankRetreat = false;
+	if (IsValidClient(iTankTarget) && IsPlayerAlive(iTankTarget))
 	{
 		int iVictim = g_iInfectedBot_CurrentVictim[iTankTarget];
 		float fTankDist = GetClientDistance(iClient, iTankTarget, true);
@@ -2222,9 +2230,11 @@ void SurvivorBotThink(int iClient, int &iButtons, int iWpnSlots[6])
 			{
 				ClearMoveToPosition(iClient, "TakeCover");	
 			}
-			if (fTankDist <= 147456.0 || fTankDist <= 589824.0 && bTankVisible)
+			if (!L4D_IsPlayerIncapacitated(iClient) && (fTankDist <= 147456.0 || fTankDist <= 589824.0 && bTankVisible))
 			{
+				bTankRetreat = true;
 				L4D2_CommandABot(iClient, iTankTarget, BOT_CMD_RETREAT);
+				g_bSurvivorBot_TankRetreatActive[iClient] = true;
 			}
 		}
 
@@ -2239,6 +2249,10 @@ void SurvivorBotThink(int iClient, int &iButtons, int iWpnSlots[6])
 				PressAttackButton(iClient, iButtons); // shoot tank rock
 			}
 		}
+	}
+	if (g_bSurvivorBot_TankRetreatActive[iClient] && !bTankRetreat)
+	{
+		StopTankRetreat(iClient);
 	}
 
 	int iWitchTarget = g_iSurvivorBot_WitchTarget[iClient];
@@ -3050,6 +3064,20 @@ bool TakeCoverFromEntity(int iClient, int iEntity, float fSearchDist = 384.0)
 	if (IsValidClient(iEntity))GetClientEyePosition(iEntity, fEntityPos);
 	else GetEntityCenteroid(iEntity, fEntityPos);
 	return (TakeCoverFromPosition(iClient, fEntityPos, fSearchDist));
+}
+
+void StopTankRetreat(int iClient)
+{
+	g_bSurvivorBot_TankRetreatActive[iClient] = false;
+	L4D2_CommandABot(iClient, 0, BOT_CMD_RESET);
+
+	// RESET also cancels a MOVE command that RETREAT may have overridden.
+	// Restore the plugin-owned move immediately when one is still active.
+	if (IsValidVector(g_fSurvivorBot_MovePos_Position[iClient]) && GetGameTime() <= g_fSurvivorBot_MovePos_Duration[iClient])
+	{
+		L4D2_CommandABot(iClient, 0, BOT_CMD_MOVE, g_fSurvivorBot_MovePos_Position[iClient]);
+		g_fSurvivorBot_NextMoveCommandTime[iClient] = GetGameTime() + BOT_CMD_MOVE_INTERVAL;
+	}
 }
 
 void ClearMoveToPosition(int iClient, const char[] sCheckName = "")

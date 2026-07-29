@@ -1,2 +1,3 @@
 .vscode/settings.json
 addons/sourcemod/configs/databases.cfg
+.worktrees/

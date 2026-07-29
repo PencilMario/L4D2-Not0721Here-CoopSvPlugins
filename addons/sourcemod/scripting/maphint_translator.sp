@@ -31,7 +31,7 @@ public void OnPluginStart()
 	HookEntityOutput("point_prop_use_target", "OnUseFinished", Output_UseFinished);
 	HookEntityOutput("point_prop_use_target", "OnUseCancelled", Output_UseCancelled);
 	HookEntityOutput("func_button_timed", "OnTimeUp", Output_UseFinished);
-	HookEntityOutput("func_button_timed", "OnUnPressed", Output_UseCancelled);
+	HookEntityOutput("func_button_timed", "OnUnpressed", Output_UseCancelled);
 }
 
 public void OnClientDisconnect(int client)
@@ -214,8 +214,8 @@ void LogEntityText(int entity, const char[] source)
 
 	LogTextProperty(entity, classname, source, "m_iszUseText");
 	LogTextProperty(entity, classname, source, "m_iszProgressBarText");
-	LogTextProperty(entity, classname, source, "m_iszUseString");
-	LogTextProperty(entity, classname, source, "m_iszUseSubString");
+	LogTextProperty(entity, classname, source, "m_sUseString");
+	LogTextProperty(entity, classname, source, "m_sUseSubString");
 }
 
 void LogTextProperty(int entity, const char[] classname, const char[] source, const char[] property)
@@ -263,8 +263,8 @@ void GetEntityUseText(int entity, char[] text, int maxlength)
 	{
 		"m_iszUseText",
 		"m_iszProgressBarText",
-		"m_iszUseString",
-		"m_iszUseSubString"
+		"m_sUseString",
+		"m_sUseSubString"
 	};
 
 	text[0] = '\0';

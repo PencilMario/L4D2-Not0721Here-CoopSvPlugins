@@ -26,7 +26,7 @@ Keys with and without the `cm_` prefix are handled where applicable so coop,
 realism, mutation, and community modes can query either form.
 
 Ordinary Director ConVars used by the old Relax branch are cached at plugin
-startup and written directly when `SS_Relax` changes. The plugin does not use
+startup and written directly when `si_spawn_relax_enabled` changes. The plugin does not use
 `FindConVar` inside hot forwards.
 
 ## Data flow
@@ -42,20 +42,20 @@ startup and written directly when `SS_Relax` changes. The plugin does not use
 
 ## Preserved behavior
 
-- `sss_1P` controls the maximum and base SI limits.
-- `SS_Time` controls special respawn and slot countdown values.
-- `SS_DPSSiLimit` bounds the combined configured Boomer and Spitter allowance.
+- `si_spawn_max_specials` controls the maximum and base SI limits.
+- `si_spawn_respawn_interval` controls special respawn and slot countdown values.
+- `si_spawn_dps_special_limit` bounds the combined configured Boomer and Spitter allowance.
 - Allocation retains the order Hunter, Jockey, Smoker, Charger, Spitter,
   Boomer and grants every class at least one allowance when the global limit is
   below six, while the global limit still controls actual concurrency.
-- `SS_Relax = 0` overrides tempo values and shortens initial, battlefield, and
-  offer intervals. `SS_Relax = 1` leaves script tempo keys to the active mode and
+- `si_spawn_relax_enabled = 0` overrides tempo values and shortens initial, battlefield, and
+  offer intervals. `si_spawn_relax_enabled = 1` leaves script tempo keys to the active mode and
   restores the ordinary ConVars to the old VScript values.
-- `SS_FastRespawn` retains its existing direct timer manipulation and optional
+- `si_spawn_fast_respawn_mode` retains its existing direct timer manipulation and optional
   cleanup of dead infected Bots.
 - Automatic player-count scaling and `sv_setmax` validation remain intact.
 
-For the invalid/edge case `SS_DPSSiLimit <= 0`, Boomer and Spitter limits are
+For the invalid/edge case `si_spawn_dps_special_limit <= 0`, Boomer and Spitter limits are
 zero. This intentionally fixes the old post-allocation check that could still
 grant them slots.
 
@@ -91,12 +91,12 @@ no `sm_reloadscript` dependency, and inspect the diff for unrelated changes.
 
 Runtime verification should cover coop, realism, and mutation4:
 
-1. Change `sss_1P` and confirm the maximum concurrent SI changes.
-2. Change `SS_Time` and observe subsequent slot cooldowns.
+1. Change `si_spawn_max_specials` and confirm the maximum concurrent SI changes.
+2. Change `si_spawn_respawn_interval` and observe subsequent slot cooldowns.
 3. Check all six class limits and the Boomer/Spitter combined cap.
 4. Toggle Relax and observe both normal pauses and continuous pressure.
 5. Join and leave with automatic mode enabled and verify recalculation.
-6. Exercise `SS_FastRespawn` values 0, 1, and 2.
+6. Exercise `si_spawn_fast_respawn_mode` values 0, 1, and 2.
 
 ## Design inputs
 

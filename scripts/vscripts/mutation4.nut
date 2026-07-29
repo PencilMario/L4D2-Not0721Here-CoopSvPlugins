@@ -39,10 +39,10 @@ MapData <-{
 
 function update_diff()
 {
-    local timer = (Convars.GetFloat("SS_Time")).tointeger()
-    local Si1p = (Convars.GetFloat("sss_1P")).tointeger()
-	local relax = (Convars.GetFloat("SS_Relax")).tointeger()
-	local dpslim = (Convars.GetFloat("SS_DPSSiLimit")).tointeger()
+    local timer = (Convars.GetFloat("si_spawn_respawn_interval")).tointeger()
+    local Si1p = (Convars.GetFloat("si_spawn_max_specials")).tointeger()
+	local relax = (Convars.GetFloat("si_spawn_relax_enabled")).tointeger()
+	local dpslim = (Convars.GetFloat("si_spawn_dps_special_limit")).tointeger()
 
 	local SpecialLimits = [0,0,0,0,0,0];
 	local index = 0;

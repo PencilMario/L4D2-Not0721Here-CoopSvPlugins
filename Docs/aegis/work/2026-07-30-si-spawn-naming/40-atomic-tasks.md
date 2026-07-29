@@ -1,14 +1,14 @@
 # Atomic tasks
 
-- [ ] Legacy-name baseline recorded
-- [ ] Canonical plugin identifiers renamed
-- [ ] Public ConVars and commands renamed
-- [ ] SourcePawn consumers migrated
-- [ ] VScript and configuration consumers migrated
-- [ ] Obsolete reload suffixes removed
-- [ ] Active documentation updated
-- [ ] Four affected plugins compile
-- [ ] Legacy runtime names have zero matches
-- [ ] New public names are present
-- [ ] Diff inspection passes
-- [ ] Evidence recorded
+- [x] Legacy-name baseline recorded
+- [x] Canonical plugin identifiers renamed
+- [x] Public ConVars and commands renamed
+- [x] SourcePawn consumers migrated
+- [x] VScript and configuration consumers migrated
+- [x] Obsolete reload suffixes removed
+- [x] Active documentation updated
+- [x] Three production plugins compile; test plugin baseline failure recorded
+- [x] Legacy runtime names have zero matches
+- [x] New public names are present
+- [x] Diff inspection passes
+- [x] Evidence recorded

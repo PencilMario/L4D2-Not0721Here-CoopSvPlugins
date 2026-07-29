@@ -23,7 +23,7 @@
     }
     "2"
     {
-        "chat"		"[{green}!{default}] 当前刷特速率：{lightgreen}{sss_1P}特/{SS_Time}秒{default}，DPS特感限制{lightgreen}{SS_DPSSiLimit}只"
+        "chat"		"[{green}!{default}] 当前刷特速率：{lightgreen}{si_spawn_max_specials}特/{si_spawn_respawn_interval}秒{default}，DPS特感限制{lightgreen}{si_spawn_dps_special_limit}只"
     }
     "3"
     {
@@ -47,7 +47,7 @@
     }
     "8"
     {
-        "chat"		"[{green}!{default}] 当前刷特速率：{lightgreen}{sss_1P}特/{SS_Time}秒{default}，DPS特感限制{lightgreen}{SS_DPSSiLimit}只"
+        "chat"		"[{green}!{default}] 当前刷特速率：{lightgreen}{si_spawn_max_specials}特/{si_spawn_respawn_interval}秒{default}，DPS特感限制{lightgreen}{si_spawn_dps_special_limit}只"
     }
     "9"
     {

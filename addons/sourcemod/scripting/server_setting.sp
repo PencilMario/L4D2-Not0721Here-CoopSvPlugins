@@ -95,10 +95,10 @@ public void OnLibraryAdded(const char[] name)
         g_byPassSteam = g_Extramenu.AddEntryCvarSwitch("3. 跳过steam验证 _OPT_", "sv_steam_bypass", false);
         g_Extramenu.AddEntry                         ("  ");
         g_Extramenu.AddEntry                         ("B. 多特控制");
-        g_Auto = g_Extramenu.AddEntryCvarSwitch      ("1. 自动调节刷特: _OPT_", "sm_ss_automode");
-        g_Snum = g_Extramenu.AddEntryCvarAdd         ("2. 特感刷新数量: 最高同屏_OPT_只", "sss_1P", false, 1, 0, 28);
-        g_Stime = g_Extramenu.AddEntryCvarAdd        ("3. 特感刷新时间: 每个Slot_OPT_s", "SS_Time", false, 5, 0, 80);
-        g_SDPSlim = g_Extramenu.AddEntryCvarAdd      ("4. DPS特感最大数: _OPT_只", "SS_DPSSiLimit", false, 1, 0, 28);
+        g_Auto = g_Extramenu.AddEntryCvarSwitch      ("1. 自动调节刷特: _OPT_", "si_spawn_auto_scale_enabled");
+        g_Snum = g_Extramenu.AddEntryCvarAdd         ("2. 特感刷新数量: 最高同屏_OPT_只", "si_spawn_max_specials", false, 1, 0, 28);
+        g_Stime = g_Extramenu.AddEntryCvarAdd        ("3. 特感刷新时间: 每个Slot_OPT_s", "si_spawn_respawn_interval", false, 5, 0, 80);
+        g_SDPSlim = g_Extramenu.AddEntryCvarAdd      ("4. DPS特感最大数: _OPT_只", "si_spawn_dps_special_limit", false, 1, 0, 28);
         g_STP = g_Extramenu.AddEntryCvarSwitch        ("5. 不可见特感自动传送 _OPT_", "teleport_enable", false);
         g_Extramenu.NewPage();
         g_Extramenu.AddEntry                         ("<服务器控制菜单 Page2>");
@@ -106,9 +106,9 @@ public void OnLibraryAdded(const char[] name)
         g_Extramenu.AddEntry                         ("  ");
     
         g_Extramenu.AddEntry                         ("C. 多特Relax阶段控制");
-        g_Relax = g_Extramenu.AddEntryCvarSwitch     ("1. Relax阶段 _OPT_", "SS_Relax",false);
+        g_Relax = g_Extramenu.AddEntryCvarSwitch     ("1. Relax阶段 _OPT_", "si_spawn_relax_enabled",false);
         g_RelaxFast = g_Extramenu.AddEntrySelect     ("2. 快速补特： _OPT_", "关闭|特感类CD锁定1s|特感类CD锁定1s*踢出死亡特感");
-        g_Fixm4 = g_Extramenu.AddEntryCvarSwitch     ("3. 绝境不停刷修复 _OPT_", "sm_ss_fixm4spawn",false);
+        g_Fixm4 = g_Extramenu.AddEntryCvarSwitch     ("3. 绝境不停刷修复 _OPT_", "si_spawn_mutation4_fix_enabled",false);
             
         g_Extramenu.AddEntry                         ("  ");
         g_Extramenu.AddEntry                         ("D. 舒适设置");
@@ -186,7 +186,7 @@ public void ExtraMenu_OnSelect(int client, int menu_id, int option, int value){
     }
     else if(option == g_RelaxFast)
     {
-        ServerCommand("sm_cvar SS_FastRespawn %i", value);
+        ServerCommand("sm_cvar si_spawn_fast_respawn_mode %i", value);
     }
     else if (option == g_TP) {
         ServerCommand("sm_warptoper %.2f", float(value) / 100.0);

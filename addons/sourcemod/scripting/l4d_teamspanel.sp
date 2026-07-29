@@ -117,7 +117,7 @@ public OnPluginStart()
     cc_plpInfectedSelect = CreateConVar ("l4d_plp_select_team_infected", "0", "If l4d_plp_select_team = 1 \nShould the Infected selection be functional?");
     cc_plpShowBots = CreateConVar ("l4d_plp_show_bots", "1", "Should bots be listed in Panel?");
 
-    g_cMaxSpecials = FindConVar("sss_1P");
+    g_cMaxSpecials = FindConVar("si_spawn_max_specials");
     //Execute the config file
     //AutoExecConfig(true, "l4d_teamspanel");
 

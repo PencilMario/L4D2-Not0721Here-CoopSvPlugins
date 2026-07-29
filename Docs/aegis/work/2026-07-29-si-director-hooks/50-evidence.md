@@ -22,12 +22,12 @@
 
 On a server with Left4DHooks loaded, test coop, realism, and mutation4:
 
-1. Set `sss_1P` to 3 and 6 and observe the concurrent SI ceiling.
-2. Change `SS_Time` and observe subsequent SI slot cooldowns.
-3. Test `SS_DPSSiLimit` at 0, 1, and a value above the SI ceiling.
-4. Toggle `SS_Relax` and observe normal pauses versus continuous pressure.
-5. Join and leave with `sm_ss_automode 1` and verify count/time scaling.
-6. Exercise `SS_FastRespawn` values 0, 1, and 2.
+1. Set `si_spawn_max_specials` to 3 and 6 and observe the concurrent SI ceiling.
+2. Change `si_spawn_respawn_interval` and observe subsequent SI slot cooldowns.
+3. Test `si_spawn_dps_special_limit` at 0, 1, and a value above the SI ceiling.
+4. Toggle `si_spawn_relax_enabled` and observe normal pauses versus continuous pressure.
+5. Join and leave with `si_spawn_auto_scale_enabled 1` and verify count/time scaling.
+6. Exercise `si_spawn_fast_respawn_mode` values 0, 1, and 2.
 
 Local evidence proves compilation and static ownership migration; it does not
 prove live Director key-query behavior for every game mode.

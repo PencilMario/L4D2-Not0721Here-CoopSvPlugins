@@ -11,6 +11,12 @@ ConVar SS_EnableRelax, SS_EnableFastRespawn;
 ConVar SS_DPSLimit;
 ConVar g_cAutoMode, g_cAutoTime, g_cAutoPerPTimeDe, g_cAutoSiLim, g_cAutoSiPIn;
 ConVar g_cEnableM4Fix;
+ConVar g_cBattlefieldRespawn, g_cInitialDelayMax, g_cInitialDelayMaxExtra;
+ConVar g_cInitialDelayMin, g_cFinaleOfferLength, g_cOriginalOfferLength;
+
+int g_iMaxSpecials;
+int g_iClassLimit[7];
+float g_fSpecialRespawnInterval;
 
 Handle g_TResetSpecialsTimer;
 public Plugin myinfo =
@@ -38,19 +44,26 @@ public void OnPluginStart()
 	g_cAutoSiLim = CreateConVar("sm_ss_autosilim", "3", "在4名玩家时，基础特感数量");
 	g_cAutoSiPIn = CreateConVar("sm_ss_autoperinsi", "1", "每多一名生还，增加几只特感");
 	g_cEnableM4Fix = CreateConVar("sm_ss_fixm4spawn", "0", "是否启用绝境修复");
+
+	g_cBattlefieldRespawn = FindConVar("director_special_battlefield_respawn_interval");
+	g_cInitialDelayMax = FindConVar("director_special_initial_spawn_delay_max");
+	g_cInitialDelayMaxExtra = FindConVar("director_special_initial_spawn_delay_max_extra");
+	g_cInitialDelayMin = FindConVar("director_special_initial_spawn_delay_min");
+	g_cFinaleOfferLength = FindConVar("director_special_finale_offer_length");
+	g_cOriginalOfferLength = FindConVar("director_special_original_offer_length");
 	
 
 	HookEvent("round_start", RoundStart_Event);
 
-	HookConVarChange(SS_1_SiNum, reload_script);
-	HookConVarChange(SS_Time, reload_script);
-	HookConVarChange(g_cAutoMode, reload_script);
-	HookConVarChange(SS_DPSLimit, reload_script);
-	HookConVarChange(SS_EnableFastRespawn, reload_script);
-	HookConVarChange(SS_EnableRelax, reload_script);
+	HookConVarChange(SS_1_SiNum, OnSpawnSettingChanged);
+	HookConVarChange(SS_Time, OnSpawnSettingChanged);
+	HookConVarChange(g_cAutoMode, OnSpawnSettingChanged);
+	HookConVarChange(SS_DPSLimit, OnSpawnSettingChanged);
 
 	HookConVarChange(SS_EnableRelax, OnRelaxChanged);
 	HookConVarChange(g_cEnableM4Fix, OnM4FixChanged)
+
+	RefreshDirectorSettings();
 	
 }
 
@@ -60,7 +73,7 @@ public void OnMapInit()
 }
 public Action RoundStart_Event(Event event, const String:name[], bool:dontBroadcast){
 	if (g_cAutoMode.IntValue == 1) AutoSetSi();
-	CheatCommand("sm_reloadscript", "");
+	else RefreshDirectorSettings();
 	if (SS_EnableRelax.IntValue == 1){
 		if (g_TResetSpecialsTimer != INVALID_HANDLE){
 			KillTimer(g_TResetSpecialsTimer);
@@ -71,9 +84,9 @@ public Action RoundStart_Event(Event event, const String:name[], bool:dontBroadc
 	}
 	return Plugin_Continue;
 }
-public reload_script(Handle:convar, const String:oldValue[], const String:newValue[]){
-	if (g_cAutoMode.IntValue == 1) AutoSetSi();
-	CheatCommand("sm_reloadscript", "");
+public OnSpawnSettingChanged(Handle:convar, const String:oldValue[], const String:newValue[]){
+	if (convar == g_cAutoMode && g_cAutoMode.IntValue == 1) AutoSetSi();
+	else RefreshDirectorSettings();
 }
 public void OnClientPutInServer(int client)
 {
@@ -114,6 +127,7 @@ public OnRelaxChanged(Handle:convar, const String:oldValue[], const String:newVa
 	}else{
 		g_TResetSpecialsTimer = CreateTimer(1.0, Timer_ResetSpecialsCountdownTime, _, TIMER_REPEAT);
 	}
+	ApplyRelaxConVars();
 }
 
 public Action Timer_RestartMap(Handle Timer){
@@ -155,13 +169,11 @@ void AutoSetSi()
 		SS_1_SiNum.IntValue = g_cAutoSiLim.IntValue;
 		SS_Time.IntValue = g_cAutoTime.IntValue;
 		isLegalSetting();
-		CheatCommand("sm_reloadscript", "");
 		return;
 	}
 	SS_1_SiNum.IntValue = g_cAutoSiLim.IntValue + g_cAutoSiPIn.IntValue * (players - 4);
 	SS_Time.IntValue = g_cAutoTime.IntValue - g_cAutoPerPTimeDe.IntValue * (players - 4);
 	isLegalSetting();
-	CheatCommand("sm_reloadscript", "");
 	return;
 }
 
@@ -169,9 +181,123 @@ void isLegalSetting()
 {
 	ConVar sv_setmax = FindConVar("sv_setmax");
 	int players = GetConnectedPlayer(0);
-	if (players + SS_1_SiNum.IntValue > sv_setmax.IntValue) SS_1_SiNum.IntValue = sv_setmax.IntValue - players;
+	if (sv_setmax != null && players + SS_1_SiNum.IntValue > sv_setmax.IntValue) SS_1_SiNum.IntValue = sv_setmax.IntValue - players;
+	if (SS_1_SiNum.IntValue < 0) SS_1_SiNum.IntValue = 0;
 	if (SS_Time.IntValue < 0) SS_Time.IntValue = 0;
 	return;
+}
+
+void RefreshDirectorSettings()
+{
+	isLegalSetting();
+	g_iMaxSpecials = SS_1_SiNum.IntValue;
+	g_fSpecialRespawnInterval = SS_Time.FloatValue;
+	CalculateClassLimits(g_iMaxSpecials, SS_DPSLimit.IntValue);
+	ApplyRelaxConVars();
+}
+
+void CalculateClassLimits(int maxSpecials, int dpsLimit)
+{
+	for (int zombieClass = 1; zombieClass <= 6; zombieClass++)
+		g_iClassLimit[zombieClass] = 0;
+
+	int allocationOrder[6] = {3, 5, 1, 6, 4, 2}; // Hunter, Jockey, Smoker, Charger, Spitter, Boomer
+	int allocationCount = maxSpecials < 6 ? 6 : maxSpecials;
+	int index;
+
+	for (int i = 0; i < allocationCount; i++)
+	{
+		if (dpsLimit <= 0 && index > 3) index = 0;
+
+		int zombieClass = allocationOrder[index];
+		g_iClassLimit[zombieClass]++;
+		index++;
+
+		int dpsCount = g_iClassLimit[4] + g_iClassLimit[2];
+		if (dpsCount >= dpsLimit && index > 3) index = 0;
+		else if (index > 5) index = 0;
+	}
+}
+
+void ApplyRelaxConVars()
+{
+	bool relax = SS_EnableRelax.BoolValue;
+	SetOptionalConVar(g_cBattlefieldRespawn, relax ? 10.0 : 2.0);
+	SetOptionalConVar(g_cInitialDelayMax, relax ? 60.0 : 1.0);
+	SetOptionalConVar(g_cInitialDelayMaxExtra, relax ? 180.0 : 2.0);
+	SetOptionalConVar(g_cInitialDelayMin, relax ? 30.0 : 0.0);
+	SetOptionalConVar(g_cFinaleOfferLength, relax ? 10.0 : 1.0);
+	SetOptionalConVar(g_cOriginalOfferLength, relax ? 30.0 : 1.0);
+}
+
+void SetOptionalConVar(ConVar convar, float value)
+{
+	if (convar != null) convar.FloatValue = value;
+}
+
+public Action L4D_OnGetScriptValueInt(const char[] key, int &retVal)
+{
+	if (StrEqual(key, "MaxSpecials") || StrEqual(key, "cm_MaxSpecials") ||
+		StrEqual(key, "BaseSpecialLimit") || StrEqual(key, "cm_BaseSpecialLimit") ||
+		StrEqual(key, "DominatorLimit") || StrEqual(key, "cm_DominatorLimit"))
+	{
+		retVal = g_iMaxSpecials;
+		return Plugin_Handled;
+	}
+
+	int zombieClass;
+	if (StrEqual(key, "SmokerLimit") || StrEqual(key, "cm_SmokerLimit")) zombieClass = 1;
+	else if (StrEqual(key, "BoomerLimit") || StrEqual(key, "cm_BoomerLimit")) zombieClass = 2;
+	else if (StrEqual(key, "HunterLimit") || StrEqual(key, "cm_HunterLimit")) zombieClass = 3;
+	else if (StrEqual(key, "SpitterLimit") || StrEqual(key, "cm_SpitterLimit")) zombieClass = 4;
+	else if (StrEqual(key, "JockeyLimit") || StrEqual(key, "cm_JockeyLimit")) zombieClass = 5;
+	else if (StrEqual(key, "ChargerLimit") || StrEqual(key, "cm_ChargerLimit")) zombieClass = 6;
+
+	if (zombieClass > 0)
+	{
+		retVal = g_iClassLimit[zombieClass];
+		return Plugin_Handled;
+	}
+
+	if (!SS_EnableRelax.BoolValue)
+	{
+		if (StrEqual(key, "LookTempo"))
+		{
+			retVal = 1;
+			return Plugin_Handled;
+		}
+		if (StrEqual(key, "LockTempo"))
+		{
+			retVal = 0;
+			return Plugin_Handled;
+		}
+	}
+
+	return Plugin_Continue;
+}
+
+public Action L4D_OnGetScriptValueFloat(const char[] key, float &retVal)
+{
+	if (StrEqual(key, "SpecialRespawnInterval") ||
+		StrEqual(key, "GetSpecialSlotCountdownTime") ||
+		StrEqual(key, "cm_SpecialRespawnInterval") ||
+		StrEqual(key, "cm_SpecialSlotCountdownTime"))
+	{
+		retVal = g_fSpecialRespawnInterval;
+		return Plugin_Handled;
+	}
+
+	if (SS_EnableRelax.BoolValue) return Plugin_Continue;
+
+	if (StrEqual(key, "IntensityRelaxThreshold")) retVal = 1.01;
+	else if (StrEqual(key, "RelaxMaxFlowTravel")) retVal = 0.0;
+	else if (StrEqual(key, "RelaxMaxInterval")) retVal = 0.5;
+	else if (StrEqual(key, "RelaxMinInterval")) retVal = 0.0;
+	else if (StrEqual(key, "SustainPeakMinTime")) retVal = 0.0;
+	else if (StrEqual(key, "SustainPeakMaxTime")) retVal = 0.1;
+	else return Plugin_Continue;
+
+	return Plugin_Handled;
 }
 
 public int SILimit(int num){
@@ -205,7 +331,6 @@ public Action Cmd_SetAiTime(int client, int args)
 	GetClientName(client, name, sizeof(name));
 	CPrintToChatAll("{green}[{lightgreen}!{green}] {olive}%s{default}修改了特感刷新配置", name);
 	CPrintToChatAll("{green}[{lightgreen}!{green}] {default}刷新配置：最高同屏{olive}%d{default} ，单类至少{olive}%d{default}只，单SlotCD{olive}%ds{default}，DPS特感限制{olive}%d{default}只，Relax阶段：{olive}%d{default}",	SS_1_SiNum.IntValue, SILimit(SS_1_SiNum.IntValue), SS_Time.IntValue, SS_DPSLimit.IntValue, SS_EnableRelax.IntValue);
-	CheatCommand("sm_reloadscript", "");
 	return Plugin_Continue;
 }
 public Action Cmd_SetDpsLim(int client, int args)
@@ -224,7 +349,6 @@ public Action Cmd_SetDpsLim(int client, int args)
 	GetClientName(client, name, sizeof(name));
 	CPrintToChatAll("{green}[{lightgreen}!{green}] {olive}%s{default}修改了特感刷新配置", name);
 	CPrintToChatAll("{green}[{lightgreen}!{green}] {default}刷新配置：最高同屏{olive}%d{default} ，单类至少{olive}%d{default}只，单SlotCD{olive}%ds{default}，DPS特感限制{olive}%d{default}只，Relax阶段：{olive}%d{default}",	SS_1_SiNum.IntValue, SILimit(SS_1_SiNum.IntValue), SS_Time.IntValue, SS_DPSLimit.IntValue, SS_EnableRelax.IntValue);
-	CheatCommand("sm_reloadscript", "");
 	return Plugin_Continue;
 }
 public Action Cmd_SetAiSpawns(int client, int args)
@@ -243,21 +367,5 @@ public Action Cmd_SetAiSpawns(int client, int args)
 	GetClientName(client, name, sizeof(name));
 	CPrintToChatAll("{green}[{lightgreen}!{green}] {olive}%s{default}修改了特感刷新配置", name);
 	CPrintToChatAll("{green}[{lightgreen}!{green}] {default}刷新配置：最高同屏{olive}%d{default} ，单类至少{olive}%d{default}只，单SlotCD{olive}%ds{default}，DPS特感限制{olive}%d{default}只，Relax阶段：{olive}%d{default}",	SS_1_SiNum.IntValue, SILimit(SS_1_SiNum.IntValue), SS_Time.IntValue, SS_DPSLimit.IntValue, SS_EnableRelax.IntValue);
-	CheatCommand("sm_reloadscript", "");
 	return Plugin_Continue;
-}
-
-public void CheatCommand(char[] strCommand, char[] strParam1)
-{
-	for (int client = 1; client <= MaxClients; ++client)
-	{
-		if (IsClientInGame(client))
-		{
-			int flags = GetCommandFlags(strCommand);
-			SetCommandFlags(strCommand, flags & ~FCVAR_CHEAT);
-			FakeClientCommand(client, "%s %s", strCommand, strParam1);
-			SetCommandFlags(strCommand, flags);
-			return;
-		}
-	}
 }

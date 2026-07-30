@@ -3,17 +3,24 @@
 // ====[ INCLUDES ]============================================================
 #include <sourcemod>
 #include <multicolors>
+#if !defined REQUIRE_PLUGIN
+#define REQUIRE_PLUGIN
+#define CUSTOMVOTES_DEFINED_REQUIRE_PLUGIN
+#endif
+#include <nativevotes>
+#if defined CUSTOMVOTES_DEFINED_REQUIRE_PLUGIN
+#undef REQUIRE_PLUGIN
+#undef CUSTOMVOTES_DEFINED_REQUIRE_PLUGIN
+#endif
 
 // ====[ DEFINES ]=============================================================
 #define PLUGIN_NAME "Custom Votes"
-#define PLUGIN_VERSION "1.9"
+#define PLUGIN_VERSION "2.0"
 #define MAX_VOTE_TYPES 32
 #define MAX_VOTE_MAPS 128
 #define MAX_VOTE_OPTIONS 128
 
 // ====[ HANDLES ]=============================================================
-new Handle:g_hArrayVotePlayerSteamID[MAXPLAYERS + 1][MAX_VOTE_TYPES];
-new Handle:g_hArrayVotePlayerIP[MAXPLAYERS + 1][MAX_VOTE_TYPES];
 new Handle:g_hArrayVoteOptionName[MAX_VOTE_TYPES];
 new Handle:g_hArrayVoteOptionResult[MAX_VOTE_TYPES];
 new Handle:g_hArrayVoteMapList[MAX_VOTE_TYPES];
@@ -22,10 +29,13 @@ new Handle:g_hArrayRecentMaps;
 // ====[ VARIABLES ]===========================================================
 new g_iMapTime;
 new g_iVoteCount;
-new g_iCurrentVoteIndex;
-new g_iCurrentVoteTarget;
-new g_iCurrentVoteMap;
-new g_iCurrentVoteOption;
+new g_iActiveVoteIndex = -1;
+new g_iActiveVoteInitiatorUserId;
+new g_iActiveVoteSubject = -1;
+new g_iActiveVoteEligibleClients;
+new g_iActiveVoteYesVotes;
+new g_iActiveVoteTargetUserId;
+NativeVote g_hActiveNativeVote = null;
 new g_iVoteType[MAX_VOTE_TYPES];
 new g_iVoteDelay[MAX_VOTE_TYPES];
 new g_iVoteCooldown[MAX_VOTE_TYPES];
@@ -38,15 +48,9 @@ new g_iVoteMapRecent[MAX_VOTE_TYPES];
 new g_iVoteCurrent[MAXPLAYERS + 1];
 new g_iVoteRemaining[MAXPLAYERS + 1][MAX_VOTE_TYPES];
 new g_iVoteLast[MAXPLAYERS + 1][MAX_VOTE_TYPES];
-new bool:g_bVoteCallVote[MAX_VOTE_TYPES];
 new bool:g_bVotePlayersBots[MAX_VOTE_TYPES];
 new bool:g_bVotePlayersTeam[MAX_VOTE_TYPES];
 new bool:g_bVoteMapCurrent[MAX_VOTE_TYPES];
-new bool:g_bVoteMultiple[MAX_VOTE_TYPES];
-new bool:g_bVoteForTarget[MAXPLAYERS + 1][MAX_VOTE_TYPES][MAXPLAYERS + 1];
-new bool:g_bVoteForMap[MAXPLAYERS + 1][MAX_VOTE_TYPES][MAX_VOTE_MAPS];
-new bool:g_bVoteForOption[MAXPLAYERS + 1][MAX_VOTE_TYPES][MAX_VOTE_OPTIONS];
-new bool:g_bVoteForSimple[MAXPLAYERS + 1][MAX_VOTE_TYPES];
 new Float:g_flVoteRatio[MAX_VOTE_TYPES];
 new String:g_strVoteName[MAX_VOTE_TYPES][MAX_NAME_LENGTH];
 new String:g_strVoteConVar[MAX_VOTE_TYPES][MAX_NAME_LENGTH];
@@ -57,10 +61,10 @@ new String:g_strVoteStartNotify[MAX_VOTE_TYPES][255];
 new String:g_strVoteCallNotify[MAX_VOTE_TYPES][255];
 new String:g_strVotePassNotify[MAX_VOTE_TYPES][255];
 new String:g_strVoteFailNotify[MAX_VOTE_TYPES][255];
-new String:g_strVoteTargetIndex[255];
-new String:g_strVoteTargetId[255];
-new String:g_strVoteTargetAuth[255];
-new String:g_strVoteTargetName[255];
+new String:g_strActiveVoteTargetIndex[16];
+new String:g_strActiveVoteTargetId[16];
+new String:g_strActiveVoteTargetAuth[32];
+new String:g_strActiveVoteTargetName[MAX_NAME_LENGTH];
 new String:g_strConfigFile[PLATFORM_MAX_PATH];
 enum
 {
@@ -103,6 +107,7 @@ public OnPluginStart()
 
 public OnMapStart()
 {
+	ResetActiveVote();
 	g_iMapTime = 0;
 
 	decl String:strMap[MAX_NAME_LENGTH];
@@ -124,147 +129,21 @@ public OnClientConnected(iTarget)
 {
 	g_iVoteCurrent[iTarget] = -1;
 	for(new iVote = 0; iVote < g_iVoteCount; iVote++)
-	{
 		g_iVoteRemaining[iTarget][iVote] = g_iVoteMaxCalls[iVote];
-		for(new iVoter = 1; iVoter <= MaxClients; iVoter++)
-		{
-			g_bVoteForTarget[iVoter][iVote][iTarget] = false;
-			g_bVoteForTarget[iTarget][iVote][iVoter] = false;
-		}
-
-		for(new iMap = 0; iMap < MAX_VOTE_MAPS; iMap++)
-			g_bVoteForMap[iTarget][iVote][iMap] = false;
-
-		for(new iOption = 0; iOption < MAX_VOTE_OPTIONS; iOption++)
-			g_bVoteForOption[iTarget][iVote][iOption] = false;
-
-		g_bVoteForSimple[iTarget][iVote] = false;
-
-		if(g_hArrayVotePlayerSteamID[iTarget][iVote] != INVALID_HANDLE)
-			ClearArray(g_hArrayVotePlayerSteamID[iTarget][iVote]);
-
-		if(g_hArrayVotePlayerIP[iTarget][iVote] != INVALID_HANDLE)
-			ClearArray(g_hArrayVotePlayerIP[iTarget][iVote]);
-	}
-
-	decl String:strClientIP[MAX_NAME_LENGTH];
-	if(!GetClientIP(iTarget, strClientIP, sizeof(strClientIP)))
-		return;
-
-	decl String:strSavedIP[MAX_NAME_LENGTH];
-	for(new iVoter = 1; iVoter <= MaxClients; iVoter++) if(IsClientInGame(iVoter))
-	{
-		for(new iVote = 0; iVote < g_iVoteCount; iVote++)
-		{
-			if(g_bVoteForTarget[iVoter][iVote][iTarget])
-				break;
-
-			if(g_hArrayVotePlayerIP[iVoter][iVote] == INVALID_HANDLE)
-				continue;
-
-			for(new iIP = 0; iIP < GetArraySize(g_hArrayVotePlayerIP[iVoter][iVote]); iIP++)
-			{
-				GetArrayString(g_hArrayVotePlayerIP[iVoter][iVote], iIP, strSavedIP, sizeof(strSavedIP));
-				if(StrEqual(strSavedIP, strClientIP))
-				{
-					g_bVoteForTarget[iVoter][iVote][iTarget] = true;
-					break;
-				}
-			}
-		}
-	}
-
-	for(new iVote = 0; iVote < g_iVoteCount; iVote++)
-		CheckVotesForTarget(iVote, iTarget);
-}
-
-public OnClientAuthorized(iTarget, const String:strTargetSteamId[])
-{
-	decl String:strClientAuth[MAX_NAME_LENGTH];
-	for(new iVoter = 1; iVoter <= MaxClients; iVoter++) if(IsClientInGame(iVoter))
-	{
-		for(new iVote = 0; iVote < g_iVoteCount; iVote++)
-		{
-			if(g_bVoteForTarget[iVoter][iVote][iTarget])
-				break;
-
-			if(g_hArrayVotePlayerSteamID[iVoter][iVote] == INVALID_HANDLE)
-				continue;
-
-			for(new iSteamId = 1; iSteamId < GetArraySize(g_hArrayVotePlayerSteamID[iVoter][iVote]); iSteamId++)
-			{
-				GetArrayString(g_hArrayVotePlayerSteamID[iVoter][iVote], iSteamId, strClientAuth, sizeof(strClientAuth));
-				if(StrEqual(strTargetSteamId, strClientAuth))
-				{
-					g_bVoteForTarget[iVoter][iVote][iTarget] = true;
-					break;
-				}
-			}
-		}
-	}
-
-	for(new iVote = 0; iVote < g_iVoteCount; iVote++)
-		CheckVotesForTarget(iVote, iTarget);
 }
 
 public OnClientDisconnect(iTarget)
 {
 	g_iVoteCurrent[iTarget] = -1;
 	for(new iVote = 0; iVote < g_iVoteCount; iVote++)
-	{
 		g_iVoteRemaining[iTarget][iVote] = g_iVoteMaxCalls[iVote];
-		for(new iVoter = 1; iVoter <= MaxClients; iVoter++)
-		{
-			g_bVoteForTarget[iVoter][iVote][iTarget] = false;
-			g_bVoteForTarget[iTarget][iVote][iVoter] = false;
-		}
-
-		for(new iMap = 0; iMap < MAX_VOTE_MAPS; iMap++)
-			g_bVoteForMap[iTarget][iVote][iMap] = false;
-
-		for(new iOption = 0; iOption < MAX_VOTE_OPTIONS; iOption++)
-			g_bVoteForOption[iTarget][iVote][iOption] = false;
-
-		g_bVoteForSimple[iTarget][iVote] = false;
-
-		if(g_hArrayVotePlayerSteamID[iTarget][iVote] != INVALID_HANDLE)
-			ClearArray(g_hArrayVotePlayerSteamID[iTarget][iVote]);
-
-		if(g_hArrayVotePlayerIP[iTarget][iVote] != INVALID_HANDLE)
-			ClearArray(g_hArrayVotePlayerIP[iTarget][iVote]);
-	}
-
-	for(new iVote = 0; iVote < MAX_VOTE_TYPES; iVote++)
-	{
-		switch(g_iVoteType[iVote])
-		{
-			case VoteType_Players:
-			{
-				for(new iVoter = 1; iVoter <= MaxClients; iVoter++) if(IsClientInGame(iVoter))
-					CheckVotesForTarget(iVote, iVoter);
-			}
-			case VoteType_Map:
-			{
-				for(new iMap = 0; iMap < MAX_VOTE_MAPS; iMap++)
-					CheckVotesForMap(iVote, iMap);
-			}
-			case VoteType_List:
-			{
-				for(new iOption = 0; iOption < MAX_VOTE_OPTIONS; iOption++)
-					CheckVotesForOption(iVote, iOption);
-			}
-			case VoteType_Simple:
-			{
-				for(new iSimple = 0; iSimple < MAX_VOTE_TYPES; iSimple++)
-					CheckVotesForSimple(iVote);
-			}
-		}
-	}
 }
 
 // ====[ COMMANDS ]============================================================
 public Action:Command_Reload(iClient, iArgs)
 {
+	if(g_hActiveNativeVote != null && NativeVotes_IsVoteInProgress())
+		NativeVotes_Cancel();
 	Config_Load();
 	return Plugin_Handled;
 }
@@ -274,7 +153,7 @@ public Action:Command_ChooseVote(iClient, iArgs)
 	if(!IsValidClient(iClient))
 		return Plugin_Continue;
 
-	if(IsVoteInProgress())
+	if(IsAnyVoteInProgress())
 	{
 		CReplyToCommand(iClient, "[SM] %t", "Vote in Progress");
 		CPrintToChat(iClient, "[SM] %t", "Vote in Progress");
@@ -375,9 +254,6 @@ public Menu_ChooseVote(iVoter)
 				ReplaceString(strName, sizeof(strName), "{On|Off}", "On", true);
 				ReplaceString(strName, sizeof(strName), "{on|off}", "on", true);
 			}
-
-			if(!g_bVoteCallVote[iVote])
-				Format(strName, sizeof(strName), "%s [%i/%i]", strName, GetVotesForSimple(iVote), GetRequiredVotes(iVote));
 		}
 		
 		AddMenuItem(hMenu, strIndex, strName, iFlags);
@@ -414,7 +290,7 @@ public MenuHandler_Vote(Handle:hMenu, MenuAction:iAction, iVoter, iParam2)
 
 public Menu_PlayersVote(iVote, iVoter)
 {
-	if(IsVoteInProgress())
+	if(IsAnyVoteInProgress())
 	{
 		CPrintToChat(iVoter, "[SM] %t", "Vote in Progress");
 		return;
@@ -481,15 +357,8 @@ public Menu_PlayersVote(iVote, iVoter)
 
 		IntToString(GetClientUserId(iTarget), strUserId, sizeof(strUserId));
 
-		if(g_bVoteCallVote[iVote])
-			GetClientName(iTarget, strName, sizeof(strName));
-		else
-			Format(strName, sizeof(strName), "%N [%i/%i]", iTarget, GetVotesForTarget(iVote, iTarget), GetRequiredVotes(iVote));
-
-		if(GetVotesForTarget(iVote, iTarget) > 0)
-			InsertMenuItem(hMenu, 0, strUserId, strName, iFlags);
-		else
-			AddMenuItem(hMenu, strUserId, strName, iFlags);
+		GetClientName(iTarget, strName, sizeof(strName));
+		AddMenuItem(hMenu, strUserId, strName, iFlags);
 		iCount++;
 	}
 
@@ -525,7 +394,7 @@ public MenuHandler_PlayersVote(Handle:hMenu, MenuAction:iAction, iVoter, iParam2
 		if(iVote == -1)
 			return;
 
-		if(IsVoteInProgress())
+	if(IsAnyVoteInProgress())
 		{
 			CPrintToChat(iVoter, "[SM] %t", "Vote in Progress");
 			return;
@@ -539,223 +408,17 @@ public MenuHandler_PlayersVote(Handle:hMenu, MenuAction:iAction, iVoter, iParam2
 			return;
 		}
 
-		if(g_iVoteMaxCalls[iVote] > 0 && !CheckCommandAccess(iVoter, "customvotes_maxvotes", ADMFLAG_GENERIC))
-		{
-			g_iVoteRemaining[iVoter][iVote]--;
-			CPrintToChat(iVoter, "%t", "Votes Remaining", g_iVoteRemaining[iVoter][iVote]);
-		}
-
-		g_iVoteLast[iVoter][iVote] = GetTime();
-		if(g_bVoteCallVote[iVote])
-		{
-			Vote_Players(iVote, iVoter, iTarget);
-			return;
-		}
-
-		g_bVoteForTarget[iVoter][iVote][iTarget] = true;
-		if(!g_bVoteMultiple[iVote])
-		{
-			for(new iClient = 0; iClient <= MaxClients; iClient++)
-			{
-				if(iClient != iTarget)
-					g_bVoteForTarget[iVoter][iVote][iClient] = false;
-			}
-		}
-
-		if(g_strVoteCallNotify[iVote][0])
-		{
-			decl String:strNotification[255];
-			strcopy(strNotification, sizeof(strNotification), g_strVoteCallNotify[iVote]);
-
-			FormatVoteString(iVote, iTarget, strNotification, sizeof(strNotification));
-			FormatVoterString(iVote, iVoter, strNotification, sizeof(strNotification));
-			FormatTargetString(iVote, iTarget, strNotification, sizeof(strNotification));
-
-			ReplaceString(strNotification, sizeof(strNotification), "{Yes|No}", "Yes", true);
-			ReplaceString(strNotification, sizeof(strNotification), "{yes|no}", "yes", true);
-
-			CPrintToChatAll("%s", strNotification);
-		}
-
-		if(!IsFakeClient(iTarget) && IsClientAuthorized(iTarget))
-		{
-			decl String:strAuth[MAX_NAME_LENGTH];
-			GetClientAuthId(iVoter, AuthId_Steam2, strAuth, sizeof(strAuth));
-			PushArrayString(g_hArrayVotePlayerSteamID[iVoter][iVote], strAuth);
-		}
-
-		decl String:strIP[MAX_NAME_LENGTH];
-		if(GetClientIP(iTarget, strIP, sizeof(strIP)))
-			PushArrayString(g_hArrayVotePlayerIP[iVoter][iVote], strIP);
-
-		CheckVotesForTarget(iVote, iTarget);
-		Menu_ChooseVote(iVoter);
+		Vote_Players(iVote, iVoter, iTarget);
 	}
 }
 
 public Vote_Players(iVote, iVoter, iTarget)
 {
-	if(IsVoteInProgress())
-	{
-		CPrintToChat(iVoter, "[SM] %t", "Vote in Progress");
-		return;
-	}
-
-	new iPlayers[MAXPLAYERS + 1];
-	new iTotal;
-
-	for(new i = 1; i <= MaxClients; i++)
-	{
-		g_bVoteForTarget[i][iVote][iTarget] = false;
-		if(IsClientInGame(i) && !IsFakeClient(i) && i != iTarget)
-		{
-			if(g_bVotePlayersTeam[iVote])
-			{
-				if(GetClientTeam(i) == GetClientTeam(iVoter))
-					iPlayers[iTotal++] = i;
-			}
-			else
-				iPlayers[iTotal++] = i;
-		}
-	}
-
-	if(g_iVoteMinimum[iVote] > iTotal || iTotal <= 0)
-	{
-		CPrintToChat(iVoter, "%t", "Not Enough Valid Clients");
-		return;
-	}
-
-	if(g_strVoteStartNotify[iVote][0])
-	{
-		decl String:strNotification[255];
-		strcopy(strNotification, sizeof(strNotification), g_strVoteStartNotify[iVote]);
-
-		FormatVoteString(iVote, iTarget, strNotification, sizeof(strNotification));
-		FormatVoterString(iVote, iVoter, strNotification, sizeof(strNotification));
-		FormatTargetString(iVote, iTarget, strNotification, sizeof(strNotification));
-
-		if(g_strVoteConVar[iVote][0] && GetConVarBool(FindConVar(g_strVoteConVar[iVote])))
-		{
-			ReplaceString(strNotification, sizeof(strNotification), "{On|Off}", "Off", true);
-			ReplaceString(strNotification, sizeof(strNotification), "{on|off}", "off", true);
-		}
-		else
-		{
-			ReplaceString(strNotification, sizeof(strNotification), "{On|Off}", "On", true);
-			ReplaceString(strNotification, sizeof(strNotification), "{on|off}", "on", true);
-		}
-
-		ReplaceString(strNotification, sizeof(strNotification), "{Yes|No}", "Yes", true);
-		ReplaceString(strNotification, sizeof(strNotification), "{yes|no}", "yes", true);
-
-		CPrintToChatAll("%s", strNotification);
-	}
-
-	new Handle:hMenu = CreateMenu(VoteHandler_Players);
-
-	decl String:strTarget[MAX_NAME_LENGTH];
-	decl String:strBuffer[MAX_NAME_LENGTH + 12];
-
-	GetClientName(iTarget, strTarget, sizeof(strTarget));
-	Format(strBuffer, sizeof(strBuffer), "%s (%s)", g_strVoteName[iVote], strTarget);
-
-	SetMenuTitle(hMenu, "%s", strBuffer);
-	SetMenuExitButton(hMenu, false);
-
-	/*AddMenuItem(hMenu, "", " ", ITEMDRAW_NOTEXT);
-	AddMenuItem(hMenu, "", " ", ITEMDRAW_NOTEXT);
-	AddMenuItem(hMenu, "", " ", ITEMDRAW_NOTEXT);*/
-
-	AddMenuItem(hMenu, "Yes", "Yes");
-	AddMenuItem(hMenu, "No", "No");
-
-	g_iCurrentVoteIndex = iVote;
-	g_iCurrentVoteTarget = iTarget;
-
-	IntToString(iTarget, g_strVoteTargetIndex, sizeof(g_strVoteTargetIndex));
-	IntToString(GetClientUserId(iTarget), g_strVoteTargetId, sizeof(g_strVoteTargetId));
-	GetClientAuthId(iTarget, AuthId_Steam2, g_strVoteTargetAuth, sizeof(g_strVoteTargetAuth));
-	strcopy(g_strVoteTargetName, sizeof(g_strVoteTargetName), strTarget);
-
-	VoteMenu(hMenu, iPlayers, iTotal, 30);
+	StartNativeVote(iVote, iVoter, iTarget);
 }
-
-public VoteHandler_Players(Handle:hMenu, MenuAction:iAction, iVoter, iParam2)
-{
-	if(iAction == MenuAction_End)
-	{
-		CloseHandle(hMenu);
-		return;
-	}
-
-	if(iAction == MenuAction_Select)
-	{
-		decl String:strInfo[16];
-		GetMenuItem(hMenu, iParam2, strInfo, sizeof(strInfo));
-
-		if(StrEqual(strInfo, "Yes"))
-		{
-			g_bVoteForTarget[iVoter][g_iCurrentVoteIndex][g_iCurrentVoteTarget] = true;
-			if(g_strVoteCallNotify[g_iCurrentVoteIndex][0])
-			{
-				decl String:strNotification[255];
-				strcopy(strNotification, sizeof(strNotification), g_strVoteCallNotify[g_iCurrentVoteIndex]);
-
-				FormatVoteString(g_iCurrentVoteIndex, g_iCurrentVoteTarget, strNotification, sizeof(strNotification));
-				FormatVoterString(g_iCurrentVoteIndex, iVoter, strNotification, sizeof(strNotification));
-				FormatTargetString(g_iCurrentVoteIndex, g_iCurrentVoteTarget, strNotification, sizeof(strNotification));
-
-				ReplaceString(strNotification, sizeof(strNotification), "{Yes|No}", "Yes", true);
-				ReplaceString(strNotification, sizeof(strNotification), "{yes|no}", "yes", true);
-
-				CPrintToChatAll("%s", strNotification);
-			}
-		}
-		else if(StrEqual(strInfo, "No"))
-		{
-			g_bVoteForTarget[iVoter][g_iCurrentVoteIndex][g_iCurrentVoteTarget] = false;
-			if(g_strVoteCallNotify[g_iCurrentVoteIndex][0])
-			{
-				decl String:strNotification[255];
-				strcopy(strNotification, sizeof(strNotification), g_strVoteCallNotify[g_iCurrentVoteIndex]);
-
-				FormatVoteString(g_iCurrentVoteIndex, g_iCurrentVoteTarget, strNotification, sizeof(strNotification));
-				FormatVoterString(g_iCurrentVoteIndex, iVoter, strNotification, sizeof(strNotification));
-				FormatTargetString(g_iCurrentVoteIndex, g_iCurrentVoteTarget, strNotification, sizeof(strNotification));
-
-				ReplaceString(strNotification, sizeof(strNotification), "{Yes|No}", "No", true);
-				ReplaceString(strNotification, sizeof(strNotification), "{yes|no}", "no", true);
-
-				CPrintToChatAll("%s", strNotification);
-			}
-		}
-	}
-	else if(iAction == MenuAction_VoteEnd)
-	{
-		if(!CheckVotesForTarget(g_iCurrentVoteIndex, g_iCurrentVoteTarget) && g_strVoteFailNotify[g_iCurrentVoteIndex][0])
-		{
-			decl String:strNotification[255];
-			strcopy(strNotification, sizeof(strNotification), g_strVoteFailNotify[g_iCurrentVoteIndex]);
-
-			FormatVoteString(g_iCurrentVoteIndex, g_iCurrentVoteTarget, strNotification, sizeof(strNotification));
-			FormatTargetString(g_iCurrentVoteIndex, g_iCurrentVoteTarget, strNotification, sizeof(strNotification));
-
-			CPrintToChatAll("%s", strNotification);
-		}
-
-		g_iCurrentVoteTarget = -1;
-		g_iCurrentVoteIndex = -1;
-
-		strcopy(g_strVoteTargetIndex, sizeof(g_strVoteTargetIndex), "");
-		strcopy(g_strVoteTargetId, sizeof(g_strVoteTargetId), "");
-		strcopy(g_strVoteTargetAuth, sizeof(g_strVoteTargetAuth), "");
-		strcopy(g_strVoteTargetName, sizeof(g_strVoteTargetName), "");
-	}
-}
-
 public Menu_MapVote(iVote, iVoter)
 {
-	if(IsVoteInProgress())
+	if(IsAnyVoteInProgress())
 	{
 		CPrintToChat(iVoter, "[SM] %t", "Vote in Progress");
 		return;
@@ -836,15 +499,8 @@ public Menu_MapVote(iVote, iVoter)
 			}
 		}
 
-		if(g_bVoteCallVote[iVote])
-			Format(strBuffer, sizeof(strBuffer), "%s", strMap);
-		else
-			Format(strBuffer, sizeof(strBuffer), "%s [%i/%i]", strMap, GetVotesForMap(iVote, iMap), GetRequiredVotes(iVote));
-
-		if(GetVotesForMap(iVote, iMap) > 0)
-			InsertMenuItem(hMenu, 0, strMap, strBuffer, iFlags);
-		else
-			AddMenuItem(hMenu, strMap, strBuffer, iFlags);
+		Format(strBuffer, sizeof(strBuffer), "%s", strMap);
+		AddMenuItem(hMenu, strMap, strBuffer, iFlags);
 	}
 
 	DisplayMenu(hMenu, iVoter, 30);
@@ -873,16 +529,10 @@ public MenuHandler_MapVote(Handle:hMenu, MenuAction:iAction, iVoter, iParam2)
 		if(iVote == -1)
 			return;
 
-		if(IsVoteInProgress())
+		if(IsAnyVoteInProgress())
 		{
 			CPrintToChat(iVoter, "[SM] %t", "Vote in Progress");
 			return;
-		}
-
-		if(g_iVoteMaxCalls[iVote] > 0 && !CheckCommandAccess(iVoter, "customvotes_maxvotes", ADMFLAG_GENERIC))
-		{
-			g_iVoteRemaining[iVoter][iVote]--;
-			CPrintToChat(iVoter, "%t", "Votes Remaining", g_iVoteRemaining[iVoter][iVote]);
 		}
 
 		new iMap = -1;
@@ -903,192 +553,17 @@ public MenuHandler_MapVote(Handle:hMenu, MenuAction:iAction, iVoter, iParam2)
 			return;
 		}
 
-		g_iVoteLast[iVoter][iVote] = GetTime();
-		if(g_bVoteCallVote[iVote])
-		{
-			Vote_Map(iVote, iVoter, iMap);
-			return;
-		}
-
-		if(g_bVoteForMap[iVoter][iVote][iMap])
-		{
-			CPrintToChat(iVoter, "%t", "Already Voted");
-			Menu_ChooseVote(iVoter);
-			return;
-		}
-
-		g_bVoteForMap[iVoter][iVote][iMap] = true;
-		if(!g_bVoteMultiple[iVote])
-		{
-			for(new iSavedMap = 0; iSavedMap < GetArraySize(g_hArrayVoteMapList[iVote]); iSavedMap++)
-			{
-				if(iSavedMap != iMap)
-					g_bVoteForMap[iVoter][iVote][iSavedMap] = false;
-			}
-		}
-
-		if(g_strVoteCallNotify[iVote][0])
-		{
-			decl String:strNotification[255];
-			strcopy(strNotification, sizeof(strNotification), g_strVoteCallNotify[iVote]);
-
-			FormatVoteString(iVote, iMap, strNotification, sizeof(strNotification));
-			FormatVoterString(iVote, iVoter, strNotification, sizeof(strNotification));
-			FormatMapString(iVote, iMap, strNotification, sizeof(strNotification));
-
-			ReplaceString(strNotification, sizeof(strNotification), "{Yes|No}", "Yes", true);
-			ReplaceString(strNotification, sizeof(strNotification), "{yes|no}", "yes", true);
-
-			CPrintToChatAll("%s", strNotification);
-		}
-
-		CheckVotesForMap(iVote, iMap);
-		Menu_ChooseVote(iVoter);
+		Vote_Map(iVote, iVoter, iMap);
 	}
 }
 
 public Vote_Map(iVote, iVoter, iMap)
 {
-	if(IsVoteInProgress())
-	{
-		CPrintToChat(iVoter, "[SM] %t", "Vote in Progress");
-		return;
-	}
-
-	new iPlayers[MAXPLAYERS + 1];
-	new iTotal;
-
-	for(new i = 1; i <= MaxClients; i++)
-	{
-		g_bVoteForMap[i][iVote][iMap] = false;
-		if(IsClientInGame(i) && !IsFakeClient(i))
-			iPlayers[iTotal++] = i;
-	}
-
-	if(g_iVoteMinimum[iVote] > iTotal || iTotal <= 0)
-	{
-		CPrintToChat(iVoter, "%t", "Not Enough Valid Clients");
-		return;
-	}
-
-	if(g_strVoteStartNotify[iVote][0])
-	{
-		decl String:strNotification[255];
-		strcopy(strNotification, sizeof(strNotification), g_strVoteStartNotify[iVote]);
-
-		FormatVoteString(iVote, iMap, strNotification, sizeof(strNotification));
-		FormatVoterString(iVote, iVoter, strNotification, sizeof(strNotification));
-		FormatMapString(iVote, iMap, strNotification, sizeof(strNotification));
-
-		if(g_strVoteConVar[iVote][0] && GetConVarBool(FindConVar(g_strVoteConVar[iVote])))
-		{
-			ReplaceString(strNotification, sizeof(strNotification), "{On|Off}", "Off", true);
-			ReplaceString(strNotification, sizeof(strNotification), "{on|off}", "off", true);
-		}
-		else
-		{
-			ReplaceString(strNotification, sizeof(strNotification), "{On|Off}", "On", true);
-			ReplaceString(strNotification, sizeof(strNotification), "{on|off}", "on", true);
-		}
-
-		ReplaceString(strNotification, sizeof(strNotification), "{Yes|No}", "Yes", true);
-		ReplaceString(strNotification, sizeof(strNotification), "{yes|no}", "yes", true);
-
-		CPrintToChatAll("%s", strNotification);
-	}
-
-	new Handle:hMenu = CreateMenu(VoteHandler_Map);
-
-	decl String:strMap[MAX_NAME_LENGTH];
-	decl String:strBuffer[MAX_NAME_LENGTH + 12];
-
-	GetArrayString(g_hArrayVoteMapList[iVote], iMap, strMap, sizeof(strMap));
-	Format(strBuffer, sizeof(strBuffer), "%s (%s)", g_strVoteName[iVote], strMap);
-
-	SetMenuTitle(hMenu, "%s", strBuffer);
-	SetMenuExitButton(hMenu, false);
-
-	/*AddMenuItem(hMenu, "", " ", ITEMDRAW_NOTEXT);
-	AddMenuItem(hMenu, "", " ", ITEMDRAW_NOTEXT);
-	AddMenuItem(hMenu, "", " ", ITEMDRAW_NOTEXT);*/
-	AddMenuItem(hMenu, "Yes", "Yes");
-	AddMenuItem(hMenu, "No", "No");
-
-	g_iCurrentVoteIndex = iVote;
-	g_iCurrentVoteMap = iMap;
-	VoteMenu(hMenu, iPlayers, iTotal, 30);
+	StartNativeVote(iVote, iVoter, iMap);
 }
-
-public VoteHandler_Map(Handle:hMenu, MenuAction:iAction, iVoter, iParam2)
-{
-	if(iAction == MenuAction_End)
-	{
-		CloseHandle(hMenu);
-		return;
-	}
-
-	if(iAction == MenuAction_Select)
-	{
-		decl String:strInfo[16];
-		GetMenuItem(hMenu, iParam2, strInfo, sizeof(strInfo));
-
-		if(StrEqual(strInfo, "Yes"))
-		{
-			g_bVoteForMap[iVoter][g_iCurrentVoteIndex][g_iCurrentVoteMap] = true;
-			if(g_strVoteCallNotify[g_iCurrentVoteIndex][0])
-			{
-				decl String:strNotification[255];
-				strcopy(strNotification, sizeof(strNotification), g_strVoteCallNotify[g_iCurrentVoteIndex]);
-
-				FormatVoteString(g_iCurrentVoteIndex, g_iCurrentVoteMap, strNotification, sizeof(strNotification));
-				FormatVoterString(g_iCurrentVoteIndex, iVoter, strNotification, sizeof(strNotification));
-				FormatMapString(g_iCurrentVoteIndex, g_iCurrentVoteMap, strNotification, sizeof(strNotification));
-
-				ReplaceString(strNotification, sizeof(strNotification), "{Yes|No}", "Yes", true);
-				ReplaceString(strNotification, sizeof(strNotification), "{yes|no}", "yes", true);
-
-				CPrintToChatAll("%s", strNotification);
-			}
-		}
-		else if(StrEqual(strInfo, "No"))
-		{
-			g_bVoteForMap[iVoter][g_iCurrentVoteIndex][g_iCurrentVoteMap] = false;
-			if(g_strVoteCallNotify[g_iCurrentVoteIndex][0])
-			{
-				decl String:strNotification[255];
-				strcopy(strNotification, sizeof(strNotification), g_strVoteCallNotify[g_iCurrentVoteIndex]);
-
-				FormatVoteString(g_iCurrentVoteIndex, g_iCurrentVoteMap, strNotification, sizeof(strNotification));
-				FormatVoterString(g_iCurrentVoteIndex, iVoter, strNotification, sizeof(strNotification));
-				FormatMapString(g_iCurrentVoteIndex, g_iCurrentVoteMap, strNotification, sizeof(strNotification));
-
-				ReplaceString(strNotification, sizeof(strNotification), "{Yes|No}", "No", true);
-				ReplaceString(strNotification, sizeof(strNotification), "{yes|no}", "no", true);
-
-				CPrintToChatAll("%s", strNotification);
-			}
-		}
-	}
-	else if(iAction == MenuAction_VoteEnd)
-	{
-		if(!CheckVotesForMap(g_iCurrentVoteIndex, g_iCurrentVoteMap) && g_strVoteFailNotify[g_iCurrentVoteIndex][0])
-		{
-			decl String:strNotification[255];
-			strcopy(strNotification, sizeof(strNotification), g_strVoteFailNotify[g_iCurrentVoteIndex]);
-
-			FormatVoteString(g_iCurrentVoteIndex, g_iCurrentVoteMap, strNotification, sizeof(strNotification));
-			FormatMapString(g_iCurrentVoteIndex, g_iCurrentVoteMap, strNotification, sizeof(strNotification));
-
-			CPrintToChatAll("%s", strNotification);
-		}
-		g_iCurrentVoteMap = -1;
-		g_iCurrentVoteIndex = -1;
-	}
-}
-
 public Menu_ListVote(iVote, iVoter)
 {
-	if(IsVoteInProgress())
+	if(IsAnyVoteInProgress())
 	{
 		CPrintToChat(iVoter, "[SM] %t", "Vote in Progress");
 		return;
@@ -1135,17 +610,11 @@ public Menu_ListVote(iVote, iVoter)
 	for(new iOption = 0; iOption < GetArraySize(g_hArrayVoteOptionName[iVote]); iOption++)
 	{
 		GetArrayString(g_hArrayVoteOptionName[iVote], iOption, strOptionName, sizeof(strOptionName));
-		if(g_bVoteCallVote[iVote])
-			Format(strBuffer, sizeof(strBuffer), "%s", strOptionName, GetVotesForOption(iVote, iOption), GetRequiredVotes(iVote));
-		else
-			Format(strBuffer, sizeof(strBuffer), "%s [%i/%i]", strOptionName, GetVotesForOption(iVote, iOption), GetRequiredVotes(iVote));
+		Format(strBuffer, sizeof(strBuffer), "%s", strOptionName);
 
 		IntToString(iOption, strIndex, sizeof(strIndex));
 
-		if(GetVotesForOption(iVote, iOption) > 0)
-			InsertMenuItem(hMenu, 0, strIndex, strBuffer);
-		else
-			AddMenuItem(hMenu, strIndex, strBuffer);
+		AddMenuItem(hMenu, strIndex, strBuffer);
 	}
 
 	DisplayMenu(hMenu, iVoter, 30);
@@ -1176,206 +645,24 @@ public MenuHandler_ListVote(Handle:hMenu, MenuAction:iAction, iVoter, iParam2)
 			return;
 		}
 
-		if(IsVoteInProgress())
+		if(IsAnyVoteInProgress())
 		{
 			CPrintToChat(iVoter, "[SM] %t", "Vote in Progress");
 			return;
 		}
 
-		if(g_iVoteMaxCalls[iVote] > 0 && !CheckCommandAccess(iVoter, "customvotes_maxvotes", ADMFLAG_GENERIC))
-		{
-			g_iVoteRemaining[iVoter][iVote]--;
-			CPrintToChat(iVoter, "%t", "Votes Remaining", g_iVoteRemaining[iVoter][iVote]);
-		}
-
 		new iOption = StringToInt(strBuffer);
-		
-		g_iVoteLast[iVoter][iVote] = GetTime();
-		if(g_bVoteCallVote[iVote])
-		{
-			Vote_List(iVote, iVoter, iOption);
-			return;
-		}
-
-		if(g_bVoteForOption[iVoter][iVote][iOption])
-		{
-			CPrintToChat(iVoter, "%t", "Already Voted");
-			Menu_ChooseVote(iVoter);
-			return;
-		}
-
-		g_bVoteForOption[iVoter][iVote][iOption] = true;
-		if(!g_bVoteMultiple[iVote])
-		{
-			for(new iOptionList = 0; iOptionList < GetArraySize(g_hArrayVoteOptionName[iVote]); iOptionList++)
-			{
-				if(iOptionList != iOption)
-					g_bVoteForOption[iVoter][iVote][iOptionList] = false;
-			}
-		}
-
-		if(g_strVoteCallNotify[iVote][0])
-		{
-			decl String:strNotification[255];
-			strcopy(strNotification, sizeof(strNotification), g_strVoteCallNotify[iVote]);
-
-			FormatVoteString(iVote, iOption, strNotification, sizeof(strNotification));
-			FormatVoterString(iVote, iVoter, strNotification, sizeof(strNotification));
-			FormatOptionString(iVote, iOption, strNotification, sizeof(strNotification));
-
-			ReplaceString(strNotification, sizeof(strNotification), "{Yes|No}", "Yes", true);
-			ReplaceString(strNotification, sizeof(strNotification), "{yes|no}", "yes", true);
-
-			CPrintToChatAll("%s", strNotification);
-		}
-
-		CheckVotesForOption(iVote, iOption);
-		Menu_ChooseVote(iVoter);
+		Vote_List(iVote, iVoter, iOption);
 	}
 }
 
 public Vote_List(iVote, iVoter, iOption)
 {
-	if(IsVoteInProgress())
-	{
-		CPrintToChat(iVoter, "[SM] %t", "Vote in Progress");
-		return;
-	}
-
-	new iPlayers[MAXPLAYERS + 1];
-	new iTotal;
-
-	for(new i = 1; i <= MaxClients; i++)
-	{
-		g_bVoteForOption[i][iVote][iOption] = false;
-		if(IsClientInGame(i) && !IsFakeClient(i))
-			iPlayers[iTotal++] = i;
-	}
-
-	if(g_iVoteMinimum[iVote] > iTotal || iTotal <= 0)
-	{
-		CPrintToChat(iVoter, "%t", "Not Enough Valid Clients");
-		return;
-	}
-
-	if(g_strVoteStartNotify[iVote][0])
-	{
-		decl String:strNotification[255];
-		strcopy(strNotification, sizeof(strNotification), g_strVoteStartNotify[iVote]);
-
-		FormatVoteString(iVote, iOption, strNotification, sizeof(strNotification));
-		FormatVoterString(iVote, iVoter, strNotification, sizeof(strNotification));
-		FormatOptionString(iVote, iOption, strNotification, sizeof(strNotification));
-
-		if(g_strVoteConVar[iVote][0] && GetConVarBool(FindConVar(g_strVoteConVar[iVote])))
-		{
-			ReplaceString(strNotification, sizeof(strNotification), "{On|Off}", "Off", true);
-			ReplaceString(strNotification, sizeof(strNotification), "{on|off}", "off", true);
-		}
-		else
-		{
-			ReplaceString(strNotification, sizeof(strNotification), "{On|Off}", "On", true);
-			ReplaceString(strNotification, sizeof(strNotification), "{on|off}", "on", true);
-		}
-
-		ReplaceString(strNotification, sizeof(strNotification), "{Yes|No}", "Yes", true);
-		ReplaceString(strNotification, sizeof(strNotification), "{yes|no}", "yes", true);
-
-		CPrintToChatAll("%s", strNotification);
-	}
-
-	new Handle:hMenu = CreateMenu(VoteHandler_List);
-
-	decl String:strOption[MAX_NAME_LENGTH];
-	decl String:strBuffer[MAX_NAME_LENGTH + 12];
-
-	GetArrayString(g_hArrayVoteOptionName[iVote], iOption, strOption, sizeof(strOption));
-	Format(strBuffer, sizeof(strBuffer), "%s (%s)", g_strVoteName[iVote], strOption);
-
-	SetMenuTitle(hMenu, "%s", strBuffer);
-	SetMenuExitButton(hMenu, false);
-
-	/*AddMenuItem(hMenu, "", " ", ITEMDRAW_NOTEXT);
-	AddMenuItem(hMenu, "", " ", ITEMDRAW_NOTEXT);
-	AddMenuItem(hMenu, "", " ", ITEMDRAW_NOTEXT);*/
-	AddMenuItem(hMenu, "Yes", "Yes");
-	AddMenuItem(hMenu, "No", "No");
-
-	g_iCurrentVoteIndex = iVote;
-	g_iCurrentVoteOption = iOption;
-	VoteMenu(hMenu, iPlayers, iTotal, 30);
+	StartNativeVote(iVote, iVoter, iOption);
 }
-
-public VoteHandler_List(Handle:hMenu, MenuAction:iAction, iVoter, iParam2)
-{
-	if(iAction == MenuAction_End)
-	{
-		CloseHandle(hMenu);
-		return;
-	}
-
-	if(iAction == MenuAction_Select)
-	{
-		decl String:strInfo[16];
-		GetMenuItem(hMenu, iParam2, strInfo, sizeof(strInfo));
-
-		if(StrEqual(strInfo, "Yes"))
-		{
-			g_bVoteForOption[iVoter][g_iCurrentVoteIndex][g_iCurrentVoteOption] = true;
-			if(g_strVoteCallNotify[g_iCurrentVoteIndex][0])
-			{
-				decl String:strNotification[255];
-				strcopy(strNotification, sizeof(strNotification), g_strVoteCallNotify[g_iCurrentVoteIndex]);
-
-				FormatVoteString(g_iCurrentVoteIndex, g_iCurrentVoteOption, strNotification, sizeof(strNotification));
-				FormatVoterString(g_iCurrentVoteIndex, iVoter, strNotification, sizeof(strNotification));
-				FormatOptionString(g_iCurrentVoteIndex, g_iCurrentVoteOption, strNotification, sizeof(strNotification));
-
-				ReplaceString(strNotification, sizeof(strNotification), "{Yes|No}", "Yes", true);
-				ReplaceString(strNotification, sizeof(strNotification), "{yes|no}", "yes", true);
-
-				CPrintToChatAll("%s", strNotification);
-			}
-		}
-		else if(StrEqual(strInfo, "No"))
-		{
-			g_bVoteForOption[iVoter][g_iCurrentVoteIndex][g_iCurrentVoteOption] = false;
-			if(g_strVoteCallNotify[g_iCurrentVoteIndex][0])
-			{
-				decl String:strNotification[255];
-				strcopy(strNotification, sizeof(strNotification), g_strVoteCallNotify[g_iCurrentVoteIndex]);
-
-				FormatVoteString(g_iCurrentVoteIndex, g_iCurrentVoteOption, strNotification, sizeof(strNotification));
-				FormatVoterString(g_iCurrentVoteIndex, iVoter, strNotification, sizeof(strNotification));
-				FormatOptionString(g_iCurrentVoteIndex, g_iCurrentVoteOption, strNotification, sizeof(strNotification));
-
-				ReplaceString(strNotification, sizeof(strNotification), "{Yes|No}", "No", true);
-				ReplaceString(strNotification, sizeof(strNotification), "{yes|no}", "no", true);
-
-				CPrintToChatAll("%s", strNotification);
-			}
-		}
-	}
-	else if(iAction == MenuAction_VoteEnd)
-	{
-		if(!CheckVotesForOption(g_iCurrentVoteIndex, g_iCurrentVoteOption) && g_strVoteFailNotify[g_iCurrentVoteIndex][0])
-		{
-			decl String:strNotification[255];
-			strcopy(strNotification, sizeof(strNotification), g_strVoteFailNotify[g_iCurrentVoteIndex]);
-
-			FormatVoteString(g_iCurrentVoteIndex, g_iCurrentVoteOption, strNotification, sizeof(strNotification));
-			FormatOptionString(g_iCurrentVoteIndex, g_iCurrentVoteOption, strNotification, sizeof(strNotification));
-
-			CPrintToChatAll("%s", strNotification);
-		}
-		g_iCurrentVoteOption = -1;
-		g_iCurrentVoteIndex = -1;
-	}
-}
-
 public CastSimpleVote(iVote, iVoter)
 {
-	if(IsVoteInProgress())
+	if(IsAnyVoteInProgress())
 	{
 		CPrintToChat(iVoter, "[SM] %t", "Vote in Progress");
 		return;
@@ -1412,217 +699,274 @@ public CastSimpleVote(iVote, iVoter)
 		return;
 	}
 
+	Vote_Simple(iVote, iVoter);
+}
+
+public Vote_Simple(iVote, iVoter)
+{
+	StartNativeVote(iVote, iVoter, -1);
+}
+stock bool:IsAnyVoteInProgress()
+{
+	return IsVoteInProgress() || NativeVotes_IsVoteInProgress();
+}
+
+stock ResetActiveVote()
+{
+	g_hActiveNativeVote = null;
+	g_iActiveVoteIndex = -1;
+	g_iActiveVoteInitiatorUserId = 0;
+	g_iActiveVoteSubject = -1;
+	g_iActiveVoteEligibleClients = 0;
+	g_iActiveVoteYesVotes = 0;
+	g_iActiveVoteTargetUserId = 0;
+	g_strActiveVoteTargetIndex[0] = '\0';
+	g_strActiveVoteTargetId[0] = '\0';
+	g_strActiveVoteTargetAuth[0] = '\0';
+	g_strActiveVoteTargetName[0] = '\0';
+}
+
+stock GetActiveVoteRequiredVotes()
+{
+	new iRequired = RoundToCeil(float(g_iActiveVoteEligibleClients) * g_flVoteRatio[g_iActiveVoteIndex]);
+	if(iRequired < g_iVoteMinimum[g_iActiveVoteIndex])
+		iRequired = g_iVoteMinimum[g_iActiveVoteIndex];
+	return iRequired > 0 ? iRequired : 1;
+}
+
+stock ApplyOnOffString(iVote, String:strBuffer[], iBufferSize, bool:bCommandValue = false)
+{
+	new Handle:hConVar = FindConVar(g_strVoteConVar[iVote]);
+	new bool:bEnabled = hConVar != INVALID_HANDLE && GetConVarBool(hConVar);
+	if(bCommandValue)
+		ReplaceString(strBuffer, iBufferSize, "{On|Off}", bEnabled ? "0" : "1", false);
+	else if(bEnabled)
+	{
+		ReplaceString(strBuffer, iBufferSize, "{On|Off}", "Off", true);
+		ReplaceString(strBuffer, iBufferSize, "{on|off}", "off", true);
+	}
+	else
+	{
+		ReplaceString(strBuffer, iBufferSize, "{On|Off}", "On", true);
+		ReplaceString(strBuffer, iBufferSize, "{on|off}", "on", true);
+	}
+}
+
+stock FormatActiveSubjectString(String:strBuffer[], iBufferSize, bool:bCommandValue = false)
+{
+	switch(g_iVoteType[g_iActiveVoteIndex])
+	{
+		case VoteType_Players: FormatTargetString(GetClientOfUserId(g_iActiveVoteTargetUserId), strBuffer, iBufferSize);
+		case VoteType_Map: FormatMapString(g_iActiveVoteIndex, g_iActiveVoteSubject, strBuffer, iBufferSize);
+		case VoteType_List: FormatOptionString(g_iActiveVoteIndex, g_iActiveVoteSubject, strBuffer, iBufferSize);
+		case VoteType_Simple: ApplyOnOffString(g_iActiveVoteIndex, strBuffer, iBufferSize, bCommandValue);
+	}
+}
+
+stock FormatActiveNotification(String:strBuffer[], iBufferSize, iVoter = 0)
+{
+	FormatVoteString(strBuffer, iBufferSize);
+	if(!IsValidClient(iVoter))
+		iVoter = GetClientOfUserId(g_iActiveVoteInitiatorUserId);
+	if(IsValidClient(iVoter))
+		FormatVoterString(iVoter, strBuffer, iBufferSize);
+	FormatActiveSubjectString(strBuffer, iBufferSize);
+}
+
+stock BuildActiveVoteTitle(String:strTitle[], iTitleSize)
+{
+	strcopy(strTitle, iTitleSize, g_strVoteName[g_iActiveVoteIndex]);
+	decl String:strSubject[MAX_NAME_LENGTH];
+	new bool:bAppendSubject = true;
+	switch(g_iVoteType[g_iActiveVoteIndex])
+	{
+		case VoteType_Players: strcopy(strSubject, sizeof(strSubject), g_strActiveVoteTargetName);
+		case VoteType_Map: GetArrayString(g_hArrayVoteMapList[g_iActiveVoteIndex], g_iActiveVoteSubject, strSubject, sizeof(strSubject));
+		case VoteType_List: GetArrayString(g_hArrayVoteOptionName[g_iActiveVoteIndex], g_iActiveVoteSubject, strSubject, sizeof(strSubject));
+		case VoteType_Simple:
+		{
+			ApplyOnOffString(g_iActiveVoteIndex, strTitle, iTitleSize);
+			bAppendSubject = false;
+		}
+	}
+	if(bAppendSubject)
+		Format(strTitle, iTitleSize, "%s (%s)", g_strVoteName[g_iActiveVoteIndex], strSubject);
+	CRemoveTags(strTitle, iTitleSize);
+}
+
+stock bool:StartNativeVote(iVote, iVoter, iSubject)
+{
+	if(!IsValidClient(iVoter))
+		return false;
+	if(GetClientTeam(iVoter) <= 1)
+	{
+		CPrintToChat(iVoter, "[SM] 旁观者不允许投票");
+		return false;
+	}
+	if(IsAnyVoteInProgress())
+	{
+		CPrintToChat(iVoter, "[SM] %t", "Vote in Progress");
+		return false;
+	}
+	if(!NativeVotes_IsVoteTypeSupported(NativeVotesType_Custom_YesNo))
+	{
+		CPrintToChat(iVoter, "[SM] NativeVotes Custom Yes/No is not supported.");
+		return false;
+	}
+
+	new iPlayers[MAXPLAYERS + 1], iTotal, iVoterTeam = GetClientTeam(iVoter);
+	for(new iClient = 1; iClient <= MaxClients; iClient++)
+	{
+		if(!IsClientInGame(iClient) || IsFakeClient(iClient) || GetClientTeam(iClient) <= 1)
+			continue;
+		if(g_iVoteType[iVote] == VoteType_Players && (iClient == iSubject || (g_bVotePlayersTeam[iVote] && GetClientTeam(iClient) != iVoterTeam)))
+			continue;
+		iPlayers[iTotal++] = iClient;
+	}
+	if(iTotal <= 0 || iTotal < g_iVoteMinimum[iVote])
+	{
+		CPrintToChat(iVoter, "%t", "Not Enough Valid Clients");
+		return false;
+	}
+
+	ResetActiveVote();
+	g_iActiveVoteIndex = iVote;
+	g_iActiveVoteInitiatorUserId = GetClientUserId(iVoter);
+	g_iActiveVoteSubject = iSubject;
+	g_iActiveVoteEligibleClients = iTotal;
+	if(g_iVoteType[iVote] == VoteType_Players)
+	{
+		g_iActiveVoteTargetUserId = GetClientUserId(iSubject);
+		IntToString(iSubject, g_strActiveVoteTargetIndex, sizeof(g_strActiveVoteTargetIndex));
+		IntToString(g_iActiveVoteTargetUserId, g_strActiveVoteTargetId, sizeof(g_strActiveVoteTargetId));
+		GetClientAuthId(iSubject, AuthId_Steam2, g_strActiveVoteTargetAuth, sizeof(g_strActiveVoteTargetAuth));
+		GetClientName(iSubject, g_strActiveVoteTargetName, sizeof(g_strActiveVoteTargetName));
+	}
+
+	NativeVote vote = new NativeVote(NativeVoteHandler, NativeVotesType_Custom_YesNo, NATIVEVOTES_ACTIONS_DEFAULT | MenuAction_Select);
+	if(vote == null)
+	{
+		ResetActiveVote();
+		CPrintToChat(iVoter, "[SM] Unable to create NativeVotes vote.");
+		return false;
+	}
+	g_hActiveNativeVote = vote;
+	vote.Initiator = iVoter;
+	decl String:strTitle[192];
+	BuildActiveVoteTitle(strTitle, sizeof(strTitle));
+	vote.SetDetails("%s", strTitle);
+	NativeVotes_SetResultCallback(vote, NativeVoteResultHandler);
+	if(!vote.DisplayVote(iPlayers, iTotal, 30, VOTEFLAG_NO_REVOTES))
+	{
+		vote.Close();
+		ResetActiveVote();
+		CPrintToChat(iVoter, "[SM] Unable to display NativeVotes vote.");
+		return false;
+	}
+
 	if(g_iVoteMaxCalls[iVote] > 0 && !CheckCommandAccess(iVoter, "customvotes_maxvotes", ADMFLAG_GENERIC))
 	{
 		g_iVoteRemaining[iVoter][iVote]--;
 		CPrintToChat(iVoter, "%t", "Votes Remaining", g_iVoteRemaining[iVoter][iVote]);
 	}
-
-	g_iVoteLast[iVoter][iVote] = iTime;
-	if(g_bVoteCallVote[iVote])
-	{
-		Vote_Simple(iVote, iVoter);
-		return;
-	}
-
-	g_bVoteForSimple[iVoter][iVote] = true;
-	if(g_strVoteCallNotify[iVote][0])
-	{
-		decl String:strNotification[255];
-		strcopy(strNotification, sizeof(strNotification), g_strVoteCallNotify[iVote]);
-
-		FormatVoteString(iVote, _, strNotification, sizeof(strNotification));
-		FormatVoterString(iVote, iVoter, strNotification, sizeof(strNotification));
-
-		if(g_strVoteConVar[iVote][0] && GetConVarBool(FindConVar(g_strVoteConVar[iVote])))
-		{
-			ReplaceString(strNotification, sizeof(strNotification), "{On|Off}", "Off", true);
-			ReplaceString(strNotification, sizeof(strNotification), "{on|off}", "off", true);
-		}
-		else
-		{
-			ReplaceString(strNotification, sizeof(strNotification), "{On|Off}", "On", true);
-			ReplaceString(strNotification, sizeof(strNotification), "{on|off}", "on", true);
-		}
-
-		ReplaceString(strNotification, sizeof(strNotification), "{Yes|No}", "Yes", true);
-		ReplaceString(strNotification, sizeof(strNotification), "{yes|no}", "yes", true);
-
-		CPrintToChatAll("%s", strNotification);
-	}
-
-	CheckVotesForSimple(iVote);
-	Menu_ChooseVote(iVoter);
-}
-
-public Vote_Simple(iVote, iVoter)
-{
-	if(IsVoteInProgress())
-	{
-		CPrintToChat(iVoter, "[SM] %t", "Vote in Progress");
-		return;
-	}
-
-	new iPlayers[MAXPLAYERS + 1];
-	new iTotal;
-
-	for(new i = 1; i <= MaxClients; i++)
-	{
-		g_bVoteForSimple[i][iVote] = false;
-		if(IsClientInGame(i) && !IsFakeClient(i))
-			iPlayers[iTotal++] = i;
-	}
-
-	if(g_iVoteMinimum[iVote] > iTotal || iTotal <= 0)
-	{
-		CPrintToChat(iVoter, "%t", "Not Enough Valid Clients");
-		return;
-	}
-
+	g_iVoteLast[iVoter][iVote] = GetTime();
 	if(g_strVoteStartNotify[iVote][0])
 	{
 		decl String:strNotification[255];
 		strcopy(strNotification, sizeof(strNotification), g_strVoteStartNotify[iVote]);
-
-		FormatVoteString(iVote, _, strNotification, sizeof(strNotification));
-		FormatVoterString(iVote, iVoter, strNotification, sizeof(strNotification));
-
-		if(g_strVoteConVar[iVote][0] && GetConVarBool(FindConVar(g_strVoteConVar[iVote])))
-		{
-			ReplaceString(strNotification, sizeof(strNotification), "{On|Off}", "Off", true);
-			ReplaceString(strNotification, sizeof(strNotification), "{on|off}", "off", true);
-		}
-		else
-		{
-			ReplaceString(strNotification, sizeof(strNotification), "{On|Off}", "On", true);
-			ReplaceString(strNotification, sizeof(strNotification), "{on|off}", "on", true);
-		}
-
+		FormatActiveNotification(strNotification, sizeof(strNotification), iVoter);
 		ReplaceString(strNotification, sizeof(strNotification), "{Yes|No}", "Yes", true);
 		ReplaceString(strNotification, sizeof(strNotification), "{yes|no}", "yes", true);
-
 		CPrintToChatAll("%s", strNotification);
 	}
-
-	new Handle:hMenu = CreateMenu(VoteHandler_Simple);
-
-	decl String:strName[56];
-	strcopy(strName, sizeof(strName), g_strVoteName[iVote]);
-
-	if(g_iVoteType[iVote] == VoteType_Simple)
-	{
-		if(g_strVoteConVar[iVote][0] && GetConVarBool(FindConVar(g_strVoteConVar[iVote])))
-		{
-			ReplaceString(strName, sizeof(strName), "{On|Off}", "Off", true);
-			ReplaceString(strName, sizeof(strName), "{on|off}", "off", true);
-		}
-		else
-		{
-			ReplaceString(strName, sizeof(strName), "{On|Off}", "On", true);
-			ReplaceString(strName, sizeof(strName), "{on|off}", "on", true);
-		}
-	}
-
-	SetMenuTitle(hMenu, "%s", strName);
-	SetMenuExitButton(hMenu, false);
-
-	/*AddMenuItem(hMenu, "", " ", ITEMDRAW_NOTEXT);
-	AddMenuItem(hMenu, "", " ", ITEMDRAW_NOTEXT);
-	AddMenuItem(hMenu, "", " ", ITEMDRAW_NOTEXT);*/
-	AddMenuItem(hMenu, "Yes", "Yes");
-	AddMenuItem(hMenu, "No", "No");
-
-	g_iCurrentVoteIndex = iVote;
-	VoteMenu(hMenu, iPlayers, iTotal, 30);
+	return true;
 }
 
-public VoteHandler_Simple(Handle:hMenu, MenuAction:iAction, iVoter, iParam2)
+public int NativeVoteHandler(NativeVote vote, MenuAction action, int param1, int param2)
 {
-	if(iAction == MenuAction_End)
+	switch(action)
 	{
-		CloseHandle(hMenu);
+		case MenuAction_Select:
+		{
+			if(vote != g_hActiveNativeVote || g_iActiveVoteIndex < 0)
+				return 0;
+			if(param2 == NATIVEVOTES_VOTE_YES)
+				g_iActiveVoteYesVotes++;
+			if(g_strVoteCallNotify[g_iActiveVoteIndex][0])
+			{
+				decl String:strNotification[255];
+				strcopy(strNotification, sizeof(strNotification), g_strVoteCallNotify[g_iActiveVoteIndex]);
+				FormatActiveNotification(strNotification, sizeof(strNotification), param1);
+				ReplaceString(strNotification, sizeof(strNotification), "{Yes|No}", param2 == NATIVEVOTES_VOTE_YES ? "Yes" : "No", true);
+				ReplaceString(strNotification, sizeof(strNotification), "{yes|no}", param2 == NATIVEVOTES_VOTE_YES ? "yes" : "no", true);
+				CPrintToChatAll("%s", strNotification);
+			}
+		}
+		case MenuAction_VoteCancel:
+		{
+			if(vote == g_hActiveNativeVote && g_iActiveVoteIndex >= 0)
+			{
+				vote.DisplayFail(param1 == VoteCancel_NoVotes ? NativeVotesFail_NotEnoughVotes : NativeVotesFail_Generic);
+				NotifyActiveVoteFailure();
+			}
+		}
+		case MenuAction_End:
+		{
+			new bool:bWasActive = vote == g_hActiveNativeVote;
+			vote.Close();
+			if(bWasActive)
+				ResetActiveVote();
+		}
+	}
+	return 0;
+}
+
+public void NativeVoteResultHandler(NativeVote vote, int num_votes, int num_clients, const int[] client_indexes, const int[] client_votes, int num_items, const int[] item_indexes, const int[] item_votes)
+{
+	if(vote != g_hActiveNativeVote || g_iActiveVoteIndex < 0)
+		return;
+	g_iActiveVoteYesVotes = 0;
+	for(new iItem = 0; iItem < num_items; iItem++)
+		if(item_indexes[iItem] == NATIVEVOTES_VOTE_YES)
+			g_iActiveVoteYesVotes = item_votes[iItem];
+
+	if(g_iActiveVoteYesVotes < GetActiveVoteRequiredVotes())
+	{
+		vote.DisplayFail(NativeVotesFail_Loses);
+		NotifyActiveVoteFailure();
 		return;
 	}
 
-	if(iAction == MenuAction_Select)
+	g_iVotePasses[g_iActiveVoteIndex]++;
+	if(g_strVoteCommand[g_iActiveVoteIndex][0])
 	{
-		decl String:strInfo[16];
-		GetMenuItem(hMenu, iParam2, strInfo, sizeof(strInfo));
-
-		if(StrEqual(strInfo, "Yes"))
-		{
-			g_bVoteForSimple[iVoter][g_iCurrentVoteIndex] = true;
-			if(g_strVoteCallNotify[g_iCurrentVoteIndex][0])
-			{
-				decl String:strNotification[255];
-				strcopy(strNotification, sizeof(strNotification), g_strVoteCallNotify[g_iCurrentVoteIndex]);
-
-				FormatVoteString(g_iCurrentVoteIndex, _, strNotification, sizeof(strNotification));
-				FormatVoterString(g_iCurrentVoteIndex, iVoter, strNotification, sizeof(strNotification));
-				ConVar t_VoteConVar = FindConVar(g_strVoteConVar[g_iCurrentVoteIndex]);
-				if(t_VoteConVar != null && t_VoteConVar != INVALID_HANDLE && GetConVarBool(t_VoteConVar))
-				{
-					ReplaceString(strNotification, sizeof(strNotification), "{On|Off}", "Off", true);
-					ReplaceString(strNotification, sizeof(strNotification), "{on|off}", "off", true);
-				}
-				else
-				{
-					ReplaceString(strNotification, sizeof(strNotification), "{On|Off}", "On", true);
-					ReplaceString(strNotification, sizeof(strNotification), "{on|off}", "on", true);
-				}
-
-				ReplaceString(strNotification, sizeof(strNotification), "{Yes|No}", "Yes", true);
-				ReplaceString(strNotification, sizeof(strNotification), "{yes|no}", "yes", true);
-
-				CPrintToChatAll("%s", strNotification);
-			}
-		}
-		else if(StrEqual(strInfo, "No"))
-		{
-			g_bVoteForSimple[iVoter][g_iCurrentVoteIndex] = false;
-			if(g_strVoteCallNotify[g_iCurrentVoteIndex][0])
-			{
-				decl String:strNotification[255];
-				strcopy(strNotification, sizeof(strNotification), g_strVoteCallNotify[g_iCurrentVoteIndex]);
-
-				FormatVoteString(g_iCurrentVoteIndex, _, strNotification, sizeof(strNotification));
-				FormatVoterString(g_iCurrentVoteIndex, iVoter, strNotification, sizeof(strNotification));
-
-				ConVar t_VoteConVar = FindConVar(g_strVoteConVar[g_iCurrentVoteIndex]);
-				if(t_VoteConVar != null && t_VoteConVar != INVALID_HANDLE  && GetConVarBool(t_VoteConVar))
-				{
-					ReplaceString(strNotification, sizeof(strNotification), "{On|Off}", "Off", true);
-					ReplaceString(strNotification, sizeof(strNotification), "{on|off}", "off", true);
-				}
-				else
-				{
-					ReplaceString(strNotification, sizeof(strNotification), "{On|Off}", "On", true);
-					ReplaceString(strNotification, sizeof(strNotification), "{on|off}", "on", true);
-				}
-
-				ReplaceString(strNotification, sizeof(strNotification), "{Yes|No}", "No", true);
-				ReplaceString(strNotification, sizeof(strNotification), "{yes|no}", "no", true);
-
-				CPrintToChatAll("%s", strNotification);
-			}
-		}
+		decl String:strCommand[255];
+		strcopy(strCommand, sizeof(strCommand), g_strVoteCommand[g_iActiveVoteIndex]);
+		FormatVoteString(strCommand, sizeof(strCommand));
+		FormatActiveSubjectString(strCommand, sizeof(strCommand), true);
+		ServerCommand(strCommand);
 	}
-	else if(iAction == MenuAction_VoteEnd)
+	if(g_strVotePassNotify[g_iActiveVoteIndex][0])
 	{
-		if(!CheckVotesForSimple(g_iCurrentVoteIndex) && g_strVoteFailNotify[g_iCurrentVoteIndex][0])
-		{
-			decl String:strNotification[255];
-			strcopy(strNotification, sizeof(strNotification), g_strVoteFailNotify[g_iCurrentVoteIndex]);
-
-			FormatVoteString(g_iCurrentVoteIndex, _, strNotification, sizeof(strNotification));
-
-			CPrintToChatAll("%s", strNotification);
-		}
-		g_iCurrentVoteIndex = -1;
+		decl String:strNotification[255];
+		strcopy(strNotification, sizeof(strNotification), g_strVotePassNotify[g_iActiveVoteIndex]);
+		FormatActiveNotification(strNotification, sizeof(strNotification));
+		CPrintToChatAll("%s", strNotification);
 	}
+	decl String:strTitle[192];
+	BuildActiveVoteTitle(strTitle, sizeof(strTitle));
+	vote.DisplayPass("%s", strTitle);
 }
 
-// ====[ FUNCTIONS ]===========================================================
+stock NotifyActiveVoteFailure()
+{
+	if(g_iActiveVoteIndex < 0 || !g_strVoteFailNotify[g_iActiveVoteIndex][0])
+		return;
+	decl String:strNotification[255];
+	strcopy(strNotification, sizeof(strNotification), g_strVoteFailNotify[g_iActiveVoteIndex]);
+	FormatActiveNotification(strNotification, sizeof(strNotification));
+	CPrintToChatAll("%s", strNotification);
+}
 public Config_Load()
 {
 	if(!FileExists(g_strConfigFile))
@@ -1639,15 +983,6 @@ public Config_Load()
 	}
 
 	g_iVoteCount = 0;
-	g_iCurrentVoteIndex = -1;
-	g_iCurrentVoteTarget = -1;
-	g_iCurrentVoteMap = -1;
-	g_iCurrentVoteOption = -1;
-
-	strcopy(g_strVoteTargetIndex, sizeof(g_strVoteTargetIndex), "");
-	strcopy(g_strVoteTargetId, sizeof(g_strVoteTargetId), "");
-	strcopy(g_strVoteTargetAuth, sizeof(g_strVoteTargetAuth), "");
-	strcopy(g_strVoteTargetName, sizeof(g_strVoteTargetName), "");
 
 	for(new iVoter = 1; iVoter <= MaxClients; iVoter++)
 		g_iVoteCurrent[iVoter] = -1;
@@ -1661,11 +996,9 @@ public Config_Load()
 		g_iVotePasses[iVote] = 0;
 		g_iVoteMaxPasses[iVote] = 0;
 		g_iVoteMapRecent[iVote] = 0;
-		g_bVoteCallVote[iVote] = false;
 		g_bVotePlayersBots[iVote] = false;
 		g_bVotePlayersTeam[iVote] = false;
 		g_bVoteMapCurrent[iVote] = false;
-		g_bVoteMultiple[iVote] = false;
 		g_flVoteRatio[iVote] = 0.0;
 		strcopy(g_strVoteName[iVote], sizeof(g_strVoteName[]), "");
 		strcopy(g_strVoteConVar[iVote], sizeof(g_strVoteConVar[]), "");
@@ -1681,31 +1014,6 @@ public Config_Load()
 		{
 			g_iVoteRemaining[iVoter][iVote] = 0;
 			g_iVoteLast[iVoter][iVote] = 0;
-			for(new iTarget = 1; iTarget <= MaxClients; iTarget++)
-			{
-				g_bVoteForTarget[iTarget][iVote][iVoter] = false;
-				g_bVoteForTarget[iVoter][iVote][iTarget] = false;
-			}
-
-			for(new iMap = 0; iMap < MAX_VOTE_MAPS; iMap++)
-				g_bVoteForMap[iVoter][iVote][iMap] = false;
-
-			for(new iOption = 0; iOption < MAX_VOTE_OPTIONS; iOption++)
-				g_bVoteForOption[iVoter][iVote][iOption] = false;
-
-			g_bVoteForSimple[iVoter][iVote] = false;
-
-			if(g_hArrayVotePlayerSteamID[iVoter][iVote] != INVALID_HANDLE)
-			{
-				CloseHandle(g_hArrayVotePlayerSteamID[iVoter][iVote]);
-				g_hArrayVotePlayerSteamID[iVoter][iVote] = INVALID_HANDLE;
-			}
-
-			if(g_hArrayVotePlayerIP[iVoter][iVote] != INVALID_HANDLE)
-			{
-				CloseHandle(g_hArrayVotePlayerIP[iVoter][iVote]);
-				g_hArrayVotePlayerIP[iVoter][iVote] = INVALID_HANDLE;
-			}
 		}
 
 		if(g_hArrayVoteOptionName[iVote] != INVALID_HANDLE)
@@ -1751,9 +1059,6 @@ public Config_Load()
 			continue;
 		}
 
-		// Determine if a vote is called to determine the result of the selection, or if each selection is chosen  manually by the players
-		g_bVoteCallVote[iVote] = bool:KvGetNum(hKeyValues, "vote");
-
 		// Delay in seconds before players vote after the map has changed
 		g_iVoteDelay[iVote] = KvGetNum(hKeyValues, "delay");
 
@@ -1773,9 +1078,6 @@ public Config_Load()
 
 		// Maximum times a player can cast a selection
 		g_iVoteMaxPasses[iVote] = KvGetNum(hKeyValues, "maxpasses");
-
-		// Allow/disallow players from casting a selection on more than one option
-		g_bVoteMultiple[iVote] = bool:KvGetNum(hKeyValues, "multiple");
 
 		// Ratio of players required to cast a selection for the vote to pass
 		g_flVoteRatio[iVote] = KvGetFloat(hKeyValues, "ratio");
@@ -1814,11 +1116,6 @@ public Config_Load()
 				// Restricts players to only casting selections on team members
 				g_bVotePlayersTeam[iVote] = bool:KvGetNum(hKeyValues, "team");
 
-				for(new iTarget = 0; iTarget <= MaxClients; iTarget++)
-				{
-					g_hArrayVotePlayerSteamID[iTarget][iVote] = CreateArray(MAX_NAME_LENGTH);
-					g_hArrayVotePlayerIP[iTarget][iVote] = CreateArray(MAX_NAME_LENGTH);
-				}
 			}
 			case VoteType_Map:
 			{
@@ -1875,222 +1172,6 @@ public Config_Load()
 	LogMessage("Configuration file %s loaded.", g_strConfigFile);
 }
 
-public bool:CheckVotesForTarget(iVote, iTarget)
-{
-	new iVotes = GetVotesForTarget(iVote, iTarget);
-	new iRequired = GetRequiredVotes(iVote);
-
-	if(iVotes >= iRequired)
-	{
-		g_iVotePasses[iVote]++;
-
-		if(g_strVoteCommand[iVote][0])
-		{
-			decl String:strCommand[255];
-			strcopy(strCommand, sizeof(strCommand), g_strVoteCommand[iVote]);
-
-			FormatTargetString(iVote, iTarget, strCommand, sizeof(strCommand));
-			ServerCommand(strCommand);
-		}
-
-		for(new iVoter = 1; iVoter <= MaxClients; iVoter++)
-			g_bVoteForTarget[iVoter][iVote][iTarget] = false;
-
-		if(g_strVotePassNotify[iVote][0])
-		{
-			decl String:strNotification[255];
-			strcopy(strNotification, sizeof(strNotification), g_strVotePassNotify[iVote]);
-
-			FormatTargetString(iVote, iTarget, strNotification, sizeof(strNotification));
-			CPrintToChatAll("%s", strNotification);
-		}
-		return true;
-	}
-	return false;
-}
-
-public bool:CheckVotesForMap(iVote, iMap)
-{
-	new iVotes = GetVotesForMap(iVote, iMap);
-	new iRequired = GetRequiredVotes(iVote);
-
-	if(iVotes >= iRequired)
-	{
-		g_iVotePasses[iVote]++;
-
-		if(g_strVoteCommand[iVote][0])
-		{
-			decl String:strCommand[255];
-			strcopy(strCommand, sizeof(strCommand), g_strVoteCommand[iVote]);
-
-			FormatMapString(iVote, iMap, strCommand, sizeof(strCommand));
-			ServerCommand(strCommand);
-		}
-
-		for(new iVoter = 1; iVoter <= MaxClients; iVoter++)
-			g_bVoteForMap[iVoter][iVote][iMap] = false;
-
-		if(g_strVotePassNotify[iVote][0])
-		{
-			decl String:strNotification[255];
-			strcopy(strNotification, sizeof(strNotification), g_strVotePassNotify[iVote]);
-
-			FormatMapString(iVote, iMap, strNotification, sizeof(strNotification));
-			CPrintToChatAll("%s", strNotification);
-		}
-		return true;
-	}
-	return false;
-}
-
-public bool:CheckVotesForOption(iVote, iOption)
-{
-	new iVotes = GetVotesForOption(iVote, iOption);
-	new iRequired = GetRequiredVotes(iVote);
-
-	if(iVotes >= iRequired)
-	{
-		g_iVotePasses[iVote]++;
-
-		if(g_strVoteCommand[iVote][0])
-		{
-			decl String:strCommand[255];
-			strcopy(strCommand, sizeof(strCommand), g_strVoteCommand[iVote]);
-
-			FormatOptionString(iVote, iOption, strCommand, sizeof(strCommand));
-			ServerCommand(strCommand);
-		}
-
-		for(new iVoter = 1; iVoter <= MaxClients; iVoter++)
-			g_bVoteForOption[iVoter][iVote][iOption] = false;
-
-		if(g_strVotePassNotify[iVote][0])
-		{
-			decl String:strNotification[255];
-			strcopy(strNotification, sizeof(strNotification), g_strVotePassNotify[iVote]);
-
-			FormatOptionString(iVote, iOption, strNotification, sizeof(strNotification));
-			CPrintToChatAll("%s", strNotification);
-		}
-		return true;
-	}
-	return false;
-}
-
-public bool:CheckVotesForSimple(iVote)
-{
-	new iVotes = GetVotesForSimple(iVote);
-	new iRequired = GetRequiredVotes(iVote);
-
-	if(iVotes >= iRequired)
-	{
-		g_iVotePasses[iVote]++;
-
-		if(g_strVoteCommand[iVote][0])
-		{
-			decl String:strCommand[255];
-			strcopy(strCommand, sizeof(strCommand), g_strVoteCommand[iVote]);
-
-			if(g_strVoteConVar[iVote][0] && GetConVarBool(FindConVar(g_strVoteConVar[iVote])))
-				ReplaceString(strCommand, sizeof(strCommand), "{On|Off}", "0", false);
-			else
-				ReplaceString(strCommand, sizeof(strCommand), "{On|Off}", "1", false);
-
-			FormatVoteString(iVote, _, strCommand, sizeof(strCommand));
-			ServerCommand(strCommand);
-		}
-
-		for(new iVoter = 1; iVoter <= MaxClients; iVoter++)
-			g_bVoteForSimple[iVoter][iVote] = false;
-
-		if(g_strVotePassNotify[iVote][0])
-		{
-			decl String:strNotification[255];
-			strcopy(strNotification, sizeof(strNotification), g_strVotePassNotify[iVote]);
-
-			if(g_strVoteConVar[iVote][0] && GetConVarBool(FindConVar(g_strVoteConVar[iVote])))
-			{
-				ReplaceString(strNotification, sizeof(strNotification), "{On|Off}", "Off", true);
-				ReplaceString(strNotification, sizeof(strNotification), "{on|off}", "off", true);
-			}
-			else
-			{
-				ReplaceString(strNotification, sizeof(strNotification), "{On|Off}", "On", true);
-				ReplaceString(strNotification, sizeof(strNotification), "{on|off}", "on", true);
-			}
-
-			FormatVoteString(iVote, _, strNotification, sizeof(strNotification));
-			CPrintToChatAll("%s", strNotification);
-		}
-		return true;
-	}
-	return false;
-}
-
-public GetVotesForTarget(iVote, iTarget)
-{
-	new iCount;
-	for(new iVoter = 1; iVoter <= MaxClients; iVoter++) if(IsClientInGame(iVoter))
-	{
-		if(g_bVoteForTarget[iVoter][iVote][iTarget])
-			iCount++;
-	}
-	return iCount;
-}
-
-public GetVotesForMap(iVote, iMap)
-{
-	new iCount;
-	for(new iVoter = 1; iVoter <= MaxClients; iVoter++) if(IsClientInGame(iVoter))
-	{
-		if(g_bVoteForMap[iVoter][iVote][iMap])
-			iCount++;
-	}
-	return iCount;
-}
-
-public GetVotesForOption(iVote, iOption)
-{
-	new iCount;
-	for(new iVoter = 1; iVoter <= MaxClients; iVoter++) if(IsClientInGame(iVoter))
-	{
-		if(g_bVoteForOption[iVoter][iVote][iOption])
-			iCount++;
-	}
-	return iCount;
-}
-
-public GetVotesForSimple(iVote)
-{
-	new iCount;
-	for(new iVoter = 1; iVoter <= MaxClients; iVoter++) if(IsClientInGame(iVoter))
-	{
-		if(g_bVoteForSimple[iVoter][iVote])
-			iCount++;
-	}
-	return iCount;
-}
-
-public GetRequiredVotes(iVote)
-{
-	new iCount;
-	for(new iVoter = 1; iVoter <= MaxClients; iVoter++) if(IsClientInGame(iVoter))
-	{
-		if(!IsFakeClient(iVoter))
-			iCount++;
-	}
-
-	new iRequired = RoundToCeil(float(iCount) * g_flVoteRatio[iVote]);
-	if(iRequired < g_iVoteMinimum[iVote])
-		iRequired = g_iVoteMinimum[iVote];
-
-	if(iRequired < 1)
-		iRequired = 1;
-
-	return iRequired;
-}
-
-// ====[ TIMERS ]==============================================================
 public Action:Timer_Second(Handle:hTimer)
 {
 	g_iMapTime++;
@@ -2104,7 +1185,7 @@ stock bool:IsValidClient(iClient)
 	return true;
 }
 
-stock FormatVoterString(iVote, iVoter, String:strBuffer[], iBufferSize)
+stock FormatVoterString(iVoter, String:strBuffer[], iBufferSize)
 {
 	decl String:strVoter[MAX_NAME_LENGTH];
 	IntToString(iVoter, strVoter, sizeof(strVoter));
@@ -2131,48 +1212,42 @@ stock FormatVoterString(iVote, iVoter, String:strBuffer[], iBufferSize)
 	ReplaceString(strBuffer, iBufferSize, "{VOTER_NAME}", strVoterName, false);
 }
 
-stock FormatVoteString(iVote, iChoice = -1, String:strBuffer[], iBufferSize)
+stock FormatVoteString(String:strBuffer[], iBufferSize)
 {
 	decl String:strVoteAmount[MAX_NAME_LENGTH];
-	switch(g_iVoteType[iVote])
-	{
-		case VoteType_Players: IntToString(GetVotesForTarget(iVote, iChoice), strVoteAmount, sizeof(strVoteAmount));
-		case VoteType_Map: IntToString(GetVotesForMap(iVote, iChoice), strVoteAmount, sizeof(strVoteAmount));
-		case VoteType_List: IntToString(GetVotesForOption(iVote, iChoice), strVoteAmount, sizeof(strVoteAmount));
-		case VoteType_Simple: IntToString(GetVotesForSimple(iVote), strVoteAmount, sizeof(strVoteAmount));
-	}
+	IntToString(g_iActiveVoteYesVotes, strVoteAmount, sizeof(strVoteAmount));
 
 	QuoteString(strVoteAmount, sizeof(strVoteAmount));
 	ReplaceString(strBuffer, iBufferSize, "{VOTE_AMOUNT}", strVoteAmount, false);
 
 	decl String:strVoteRequired[MAX_NAME_LENGTH];
-	IntToString(GetRequiredVotes(iVote), strVoteRequired, sizeof(strVoteRequired));
+	IntToString(GetActiveVoteRequiredVotes(), strVoteRequired, sizeof(strVoteRequired));
 
 	QuoteString(strVoteRequired, sizeof(strVoteRequired));
 	ReplaceString(strBuffer, iBufferSize, "{VOTE_REQUIRED}", strVoteRequired, false);
 }
 
-stock FormatTargetString(iVote, iTarget, String:strBuffer[], iBufferSize)
+stock FormatTargetString(iTarget, String:strBuffer[], iBufferSize)
 {
 	// Check if target disconnected (Anti-Grief)
 	if(!IsValidClient(iTarget))
 	{
 		decl String:strAntiGrief[255];
-		strcopy(strAntiGrief, sizeof(strAntiGrief), g_strVoteTargetIndex);
+		strcopy(strAntiGrief, sizeof(strAntiGrief), "0");
 		QuoteString(strAntiGrief, sizeof(strAntiGrief));
-		ReplaceString(strBuffer, iBufferSize, "{TARGET_INDEX}", g_strVoteTargetIndex, false);
+		ReplaceString(strBuffer, iBufferSize, "{TARGET_INDEX}", strAntiGrief, false);
 
-		strcopy(strAntiGrief, sizeof(strAntiGrief), g_strVoteTargetId);
+		strcopy(strAntiGrief, sizeof(strAntiGrief), g_strActiveVoteTargetId);
 		QuoteString(strAntiGrief, sizeof(strAntiGrief));
-		ReplaceString(strBuffer, iBufferSize, "{TARGET_ID}", g_strVoteTargetId, false);
+		ReplaceString(strBuffer, iBufferSize, "{TARGET_ID}", strAntiGrief, false);
 
-		strcopy(strAntiGrief, sizeof(strAntiGrief), g_strVoteTargetAuth);
+		strcopy(strAntiGrief, sizeof(strAntiGrief), g_strActiveVoteTargetAuth);
 		QuoteString(strAntiGrief, sizeof(strAntiGrief));
-		ReplaceString(strBuffer, iBufferSize, "{TARGET_STEAMID}", g_strVoteTargetAuth, false);
+		ReplaceString(strBuffer, iBufferSize, "{TARGET_STEAMID}", strAntiGrief, false);
 
-		strcopy(strAntiGrief, sizeof(strAntiGrief), g_strVoteTargetName);
+		strcopy(strAntiGrief, sizeof(strAntiGrief), g_strActiveVoteTargetName);
 		QuoteString(strAntiGrief, sizeof(strAntiGrief));
-		ReplaceString(strBuffer, iBufferSize, "{TARGET_NAME}", g_strVoteTargetName, false);
+		ReplaceString(strBuffer, iBufferSize, "{TARGET_NAME}", strAntiGrief, false);
 		return;
 	}
 

@@ -6,3 +6,4 @@
 - `work/2026-07-29-si-director-hooks/`: implementation plan and verification evidence for that migration.
 - `specs/2026-07-30-si-spawn-naming-migration-design.md`: hard cutover of SI spawn ConVars, commands, and internal identifiers to the `si_spawn` namespace.
 - `work/2026-07-30-si-spawn-naming/`: implementation plan and evidence for the naming hard cutover.
+- `specs/2026-07-30-customvotes-nativevotes-design.md`: hard cutover from accumulated menu votes to NativeVotes-backed vote sessions.

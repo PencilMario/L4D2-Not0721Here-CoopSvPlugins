@@ -3,7 +3,6 @@
 #include <multicolors>
 #include <left4dhooks>
 #include <sirputil/better_mutations4.sp>
-#include <l4d2util>
 
 ConVar g_cvMaxSpecials;
 ConVar g_cvRespawnInterval;
@@ -154,7 +153,7 @@ public Action Timer_AccelerateSpecialRespawn(Handle Timer)
 	for (int i = 1; i <= MaxClients; i++){
 		if (!IsClientInGame(i)) continue;
 		if (!IsFakeClient(i)) continue;
-		if (!IsInfected(i)) continue;
+		if (GetClientTeam(i) != L4D_TEAM_INFECTED) continue;
 		//if (L4D2_GetPlayerZombieClass(i) == L4D2Infected_Spitter) continue;
 		if (!IsPlayerAlive(i)) KickClient(i);
 	}

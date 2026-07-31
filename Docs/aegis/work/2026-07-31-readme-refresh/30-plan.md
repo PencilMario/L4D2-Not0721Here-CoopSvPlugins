@@ -142,4 +142,3 @@ git diff -- Docs/readme.md
 ```
 
 Expected: runtime files are unchanged and the README diff implements the approved structure.
-

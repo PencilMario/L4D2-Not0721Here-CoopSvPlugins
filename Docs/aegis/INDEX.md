@@ -8,3 +8,5 @@
 - `work/2026-07-30-si-spawn-naming/`: implementation plan and evidence for the naming hard cutover.
 - `specs/2026-07-30-customvotes-nativevotes-design.md`: hard cutover from accumulated menu votes to NativeVotes-backed vote sessions.
 - `work/2026-07-30-customvotes-nativevotes/`: implementation plan and verification evidence for the NativeVotes hard cutover.
+- `specs/2026-07-31-readme-refresh-design.md`: approved structure and authority rules for refreshing the configuration README.
+- `work/2026-07-31-readme-refresh/`: implementation plan and verification evidence for the configuration README refresh.

@@ -68,8 +68,6 @@
             sm plugins load ThirdPersonShoulder_Detect.smx
             // 显示谁在开麦
             sm plugins load show_mic.smx
-            // 多特插件 用于重载脚本来实现修改刷特设置
-            sm plugins load script_reloader.smx
             // 多特插件 使用cvar来控制脚本中特感数量相关的值，以及      跳过     Relax等的控制
             sm plugins load Si_SpawnSetting.smx
             // MVP 

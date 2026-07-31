@@ -12,3 +12,4 @@
 - `work/2026-07-31-readme-refresh/`: implementation plan and verification evidence for the configuration README refresh.
 - `work/2026-07-31-charger-melee-350/`: contract, implementation plan, and evidence for binding 350 Charger melee damage to AI damage-fix bit 2.
 - `specs/2026-07-31-si-spawn-mutation-class-limits-design.md`: preserve the official special-infected class restrictions of Mutation 17, Mutation 16, and Mutation 11.
+- `work/2026-07-31-si-spawn-mutations/`: implementation plan and verification evidence for mode-aware special-infected class allocation.

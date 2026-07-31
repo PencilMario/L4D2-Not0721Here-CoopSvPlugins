@@ -328,6 +328,18 @@ Hunter -> Jockey -> Smoker -> Charger -> Spitter -> Boomer
 
 这里的 DPS 特感指 Spitter 和 Boomer。达到 `si_spawn_dps_special_limit` 后，本轮会跳过这两类并从 Hunter 重新分配。限制值小于或等于 0 时，分配只在前四种控制类特感中循环。
 
+### 突变模式的特感种类
+
+以下官方突变保留模式原本的特感种类限制，不使用上述通用分配顺序：
+
+| 模式 | 中文名称 | 特感种类 |
+| --- | --- | --- |
+| `Mutation17` | 骑乘派对（Riding My Survivor） | 仅 Jockey |
+| `Mutation16` | 感染季节（Flu Season） | 仅 Boomer 和 Spitter |
+| `Mutation11` | 寻猎派对（Hunting Party） | 仅 Hunter |
+
+这些模式会忽略 `si_spawn_dps_special_limit`，避免通用 DPS 限制排除模式指定的特感。游戏引擎限制单类特感最多同时存在 14 只；插件不会额外写死或裁剪这个上限。因此，`Mutation16` 中 Boomer 和 Spitter 可各有 14 只，总同屏上限可达到 28 只。
+
 ### Relax
 
 `si_spawn_relax_enabled` 控制是否保留导演的 Relax 节奏：

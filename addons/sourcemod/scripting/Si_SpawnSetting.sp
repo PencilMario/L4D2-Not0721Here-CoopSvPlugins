@@ -10,6 +10,7 @@ ConVar g_cvRelaxEnabled, g_cvFastRespawnMode;
 ConVar g_cvDpsSpecialLimit;
 ConVar g_cvAutoScaleEnabled, g_cvAutoBaseInterval, g_cvAutoIntervalReductionPerPlayer, g_cvAutoBaseSpecials, g_cvAutoSpecialsPerPlayer;
 ConVar g_cvMutation4FixEnabled;
+ConVar g_cvGameMode;
 ConVar g_cvBattlefieldRespawnInterval, g_cvInitialSpawnDelayMax, g_cvInitialSpawnDelayMaxExtra;
 ConVar g_cvInitialSpawnDelayMin, g_cvFinaleOfferLength, g_cvOriginalOfferLength;
 
@@ -43,6 +44,7 @@ public void OnPluginStart()
 	g_cvAutoBaseSpecials = CreateConVar("si_spawn_auto_base_specials", "3", "在4名玩家时，基础特感数量");
 	g_cvAutoSpecialsPerPlayer = CreateConVar("si_spawn_auto_specials_per_player", "1", "每多一名生还，增加几只特感");
 	g_cvMutation4FixEnabled = CreateConVar("si_spawn_mutation4_fix_enabled", "0", "是否启用绝境修复");
+	g_cvGameMode = FindConVar("mp_gamemode");
 
 	g_cvBattlefieldRespawnInterval = FindConVar("director_special_battlefield_respawn_interval");
 	g_cvInitialSpawnDelayMax = FindConVar("director_special_initial_spawn_delay_max");
@@ -61,6 +63,7 @@ public void OnPluginStart()
 
 	HookConVarChange(g_cvRelaxEnabled, ConVarChanged_Relax);
 	HookConVarChange(g_cvMutation4FixEnabled, ConVarChanged_Mutation4Fix)
+	if (g_cvGameMode != null) HookConVarChange(g_cvGameMode, ConVarChanged_GameMode);
 
 	RefreshDirectorSettings();
 	
@@ -86,6 +89,10 @@ public Action Event_RoundStart(Event event, const String:name[], bool:dontBroadc
 public ConVarChanged_SpawnSetting(Handle:convar, const String:oldValue[], const String:newValue[]){
 	if (convar == g_cvAutoScaleEnabled && g_cvAutoScaleEnabled.IntValue == 1) ApplyAutomaticSpawnSettings();
 	else RefreshDirectorSettings();
+}
+public void ConVarChanged_GameMode(ConVar convar, const char[] oldValue, const char[] newValue)
+{
+	RefreshDirectorSettings();
 }
 public void OnClientPutInServer(int client)
 {
@@ -199,6 +206,7 @@ void CalculateClassLimits(int maxSpecials, int dpsLimit)
 {
 	for (int zombieClass = 1; zombieClass <= 6; zombieClass++)
 		g_iSpecialClassLimits[zombieClass] = 0;
+	if (CalculateMutationClassLimits(maxSpecials)) return;
 
 	int allocationOrder[6] = {3, 5, 1, 6, 4, 2}; // Hunter, Jockey, Smoker, Charger, Spitter, Boomer
 	int allocationCount = maxSpecials < 6 ? 6 : maxSpecials;
@@ -216,6 +224,41 @@ void CalculateClassLimits(int maxSpecials, int dpsLimit)
 		if (dpsCount >= dpsLimit && index > 3) index = 0;
 		else if (index > 5) index = 0;
 	}
+}
+
+bool CalculateMutationClassLimits(int maxSpecials)
+{
+	if (g_cvGameMode == null) return false;
+
+	char gameMode[32];
+	g_cvGameMode.GetString(gameMode, sizeof(gameMode));
+
+	if (StrEqual(gameMode, "mutation17", false))
+	{
+		int allocationOrder[1] = {5}; // Jockey
+		AllocateMutationClassLimits(maxSpecials, allocationOrder, sizeof(allocationOrder));
+		return true;
+	}
+	if (StrEqual(gameMode, "mutation16", false))
+	{
+		int allocationOrder[2] = {2, 4}; // Boomer, Spitter
+		AllocateMutationClassLimits(maxSpecials, allocationOrder, sizeof(allocationOrder));
+		return true;
+	}
+	if (StrEqual(gameMode, "mutation11", false))
+	{
+		int allocationOrder[1] = {3}; // Hunter
+		AllocateMutationClassLimits(maxSpecials, allocationOrder, sizeof(allocationOrder));
+		return true;
+	}
+
+	return false;
+}
+
+void AllocateMutationClassLimits(int maxSpecials, const int[] allocationOrder, int allocationCount)
+{
+	for (int i = 0; i < maxSpecials; i++)
+		g_iSpecialClassLimits[allocationOrder[i % allocationCount]]++;
 }
 
 void ApplyRelaxConVars()

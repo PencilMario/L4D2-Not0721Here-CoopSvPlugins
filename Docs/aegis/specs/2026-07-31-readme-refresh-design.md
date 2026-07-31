@@ -78,14 +78,14 @@ The change affects documentation only. Users should gain a more accurate mode re
 
 ## Follow-up: Charger Melee Damage Binding
 
-Modes whose effective `sm_aidmgfix_enable` bitmask contains bit `2` (values `2` or `3`) must explicitly set:
+Modes that explicitly declare `sm_aidmgfix_enable` with bit `2` set (values `2` or `3`) must also explicitly set:
 
 ```text
 confogl_addcvar l4d2_melee_damage_charger 350
 ```
 
-Modes whose effective value is `0` or `1` must not add this setting and therefore retain the plugin default of `-1` (disabled).
+Modes that explicitly declare `0` or `1`, and modes that do not declare `sm_aidmgfix_enable`, must not add this setting and therefore retain the melee plugin default of `-1` (disabled).
 
 This binding makes the two related Charger behaviors visible at the mode level: removing the charging AI damage reduction also fixes survivor melee damage against Charger to 350 per swing. The README must show the 350 damage for affected modes and explain that the final hit is capped to the Charger's remaining health.
 
-A repository contract test must enumerate current menu modes and verify that effective `sm_aidmgfix_enable & 2` exactly matches the presence of `l4d2_melee_damage_charger 350`. The test must reject a 350 override on modes with values `0` or `1`.
+A repository contract test must enumerate current menu modes and verify that an explicit `sm_aidmgfix_enable & 2` exactly matches the presence of `l4d2_melee_damage_charger 350`. The test must reject a 350 override on modes with values `0` or `1` or no explicit declaration.

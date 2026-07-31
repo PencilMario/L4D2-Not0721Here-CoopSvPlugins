@@ -2,15 +2,15 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use aegis:subagent-driven-development (recommended) or aegis:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** Bind `l4d2_melee_damage_charger 350` to every selectable mode whose effective `sm_aidmgfix_enable` contains bit `2`, and document the resulting behavior.
+**Goal:** Bind `l4d2_melee_damage_charger 350` to every selectable mode that explicitly declares `sm_aidmgfix_enable` with bit `2`, and document the resulting behavior.
 
-**Architecture:** A PowerShell contract test reads the real match-mode menu and mode CFG files, treating the plugin defaults (`sm_aidmgfix_enable=3`, Charger melee override disabled) as the baseline. Each affected mode explicitly owns its 350 override; modes with effective values `0` or `1` remain untouched.
+**Architecture:** A PowerShell contract test reads the real match-mode menu and mode CFG files. Each explicitly declared bit-2 mode owns its 350 override; modes declaring `0` or `1`, and modes without an explicit declaration, remain untouched.
 
 **Tech Stack:** SourceMod CFG, PowerShell regression test, Markdown
 
 **Baseline / Authority Refs:** `Docs/aegis/specs/2026-07-31-readme-refresh-design.md`, `addons/sourcemod/scripting/l4d2_ai_damagefix.sp` historical source at `eca1ebff`, `addons/sourcemod/scripting/l4d2_melee_damage_control.sp`, `addons/sourcemod/configs/matchmodes.txt`
 
-**Compatibility Boundary:** Do not change `sm_aidmgfix_enable`, AI damage-fix plugin logic, or modes whose effective bitmask lacks bit `2`. The last hit against a Charger remains capped to its current health by the existing plugin.
+**Compatibility Boundary:** Do not change `sm_aidmgfix_enable`, AI damage-fix plugin logic, or modes without an explicit bit-2 declaration. The last hit against a Charger remains capped to its current health by the existing plugin.
 
 **Verification:** Run the new contract test, existing PowerShell tests, README structure/link checks, and `git diff --check`.
 
@@ -32,7 +32,7 @@
 
 - [ ] **Step 1: Write the contract test**
 
-The test must parse selectable directories from `matchmodes.txt`, resolve an explicit `sm_aidmgfix_enable` or default to `3`, and require exactly one `l4d2_melee_damage_charger 350` setting when `(value -band 2) -ne 0`. Values `0` and `1` must have no Charger melee override.
+The test must parse selectable directories from `matchmodes.txt` and require exactly one `l4d2_melee_damage_charger 350` setting when an explicit `sm_aidmgfix_enable` satisfies `(value -band 2) -ne 0`. Values `0`, `1`, and modes without an explicit declaration must have no Charger melee override.
 
 - [ ] **Step 2: Run RED verification**
 
@@ -53,8 +53,8 @@ Expected: non-zero exit with the current bit-2 modes listed as missing `l4d2_mel
 - The existing melee plugin supports fixed Charger damage but defaults the feature off.
 
 **Impact / Compatibility:**
-- Only selectable modes whose effective `sm_aidmgfix_enable` is `2` or `3` receive the override.
-- Modes with effective values `0` or `1` retain plugin default `-1`.
+- Only selectable modes that explicitly declare `sm_aidmgfix_enable` as `2` or `3` receive the override.
+- Modes declaring `0` or `1`, and modes without a declaration, retain plugin default `-1`.
 
 **Repair Track:**
 - Canonical owners are the affected mode-specific CFG files.
@@ -69,7 +69,7 @@ Expected: non-zero exit with the current bit-2 modes listed as missing `l4d2_mel
 
 - [ ] **Step 1: Add the minimal CFG settings**
 
-Add one explicit 350 override to each bit-2 mode and no other mode.
+Add one explicit 350 override to each explicitly declared bit-2 mode and no other mode.
 
 - [ ] **Step 2: Run GREEN verification**
 
@@ -89,7 +89,7 @@ Expected: exit 0 with all selectable modes checked.
 - Modify: `Docs/aegis/INDEX.md`
 
 **Why this task exists:**
-- Operators need to see that bit-2 modes combine removed Charger charge reduction with fixed 350 melee damage.
+- Operators need to see which explicit bit-2 modes combine removed Charger charge reduction with fixed 350 melee damage.
 
 **Impact / Compatibility:**
 - Documentation must distinguish 350-per-swing from the final hit, which is capped to remaining health.
@@ -99,7 +99,7 @@ Expected: exit 0 with all selectable modes checked.
 
 - [ ] **Step 1: Update overview and mechanism text**
 
-Show `350` for all bit-2 modes and explain the remaining-health cap.
+Show `350` for all explicitly declared bit-2 modes and explain the remaining-health cap.
 
 - [ ] **Step 2: Run full regression and document evidence**
 

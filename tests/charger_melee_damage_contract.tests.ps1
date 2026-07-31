@@ -27,17 +27,19 @@ foreach ($modeName in $modeNames) {
         $modeConfig,
         '(?m)^\s*confogl_addcvar\s+sm_aidmgfix_enable\s+([0-3])(?:\s|$)'
     )
-    $aiDamageFix = if ($aiMatches.Count -gt 0) {
-        [int]$aiMatches[$aiMatches.Count - 1].Groups[1].Value
-    } else {
-        3
-    }
-
     $chargerMatches = [regex]::Matches(
         $modeConfig,
         '(?m)^\s*confogl_addcvar\s+l4d2_melee_damage_charger\s+([^\s/]+)'
     )
 
+    if ($aiMatches.Count -eq 0) {
+        if ($chargerMatches.Count -ne 0) {
+            $errors.Add("$modeName`: mode does not explicitly set sm_aidmgfix_enable and must not override l4d2_melee_damage_charger")
+        }
+        continue
+    }
+
+    $aiDamageFix = [int]$aiMatches[$aiMatches.Count - 1].Groups[1].Value
     if (($aiDamageFix -band 2) -ne 0) {
         $bit2ModeCount++
         if ($chargerMatches.Count -ne 1 -or $chargerMatches[0].Groups[1].Value -ne '350') {
@@ -53,4 +55,4 @@ if ($errors.Count -gt 0) {
     throw "Charger melee damage contract failed:`n$($errors -join "`n")"
 }
 
-"charger melee damage contract passed: $($modeNames.Count) selectable modes checked, $bit2ModeCount modes fixed at 350"
+"charger melee damage contract passed: $($modeNames.Count) selectable modes checked, $bit2ModeCount explicit bit-2 modes fixed at 350"

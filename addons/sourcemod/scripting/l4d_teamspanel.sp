@@ -22,6 +22,16 @@
 // 最大特感数
 ConVar g_cMaxSpecials;
 
+int GetMaxSpecials()
+{
+    if (g_cMaxSpecials == null)
+    {
+        g_cMaxSpecials = FindConVar("si_spawn_max_specials");
+    }
+
+    return g_cMaxSpecials == null ? 0 : g_cMaxSpecials.IntValue;
+}
+
 // Sdk calls
 new Handle:gConf = INVALID_HANDLE;
 new Handle:fSHS = INVALID_HANDLE;
@@ -306,7 +316,7 @@ public BuildPrintPanel(client)
     //
     //Gamemode is Versus
     //Draw Infected count line
-    Format(text, sizeof(text), "->特殊感染者 (%d/%d)", suminf, g_cMaxSpecials.IntValue);
+    Format(text, sizeof(text), "->特殊感染者 (%d/%d)", suminf, GetMaxSpecials());
     DrawPanelItem(TeamPanel, text);
     //DrawPanelText(TeamPanel, " \n");
     count = 0;

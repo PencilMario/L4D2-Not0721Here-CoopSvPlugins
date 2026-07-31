@@ -51,7 +51,13 @@ Docs/readme.md | 1012 lines changed
 385 insertions, 627 deletions
 ```
 
-The rewrite reduces the README from 1012 lines to 385 lines while documenting all 24 current menu configurations.
+The initial rewrite reduced the README from 1012 lines to 385 lines while documenting all 24 current menu configurations.
+
+## Follow-up: AI Damage Fix Coverage
+
+The README now records the effective `sm_aidmgfix_enable` value for all 24 menu configurations. Values were compared against every mode CFG, with the plugin default of `3` used when a mode does not override the ConVar; all 24 mappings matched. The historical plugin source confirms the bitmask semantics: `1` for AI Hunter skeet/pounce handling, `2` for AI Charger charging damage, `3` for both, and `0` for off. `z_pounce_damage_interrupt` is `150` in `cfg/cfgogl/coop_base/shared_cvars.cfg`.
+
+The current README length after this follow-up is 399 lines.
 
 ## Drift Check
 

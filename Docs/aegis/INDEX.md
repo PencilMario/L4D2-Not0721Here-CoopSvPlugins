@@ -10,3 +10,4 @@
 - `work/2026-07-30-customvotes-nativevotes/`: implementation plan and verification evidence for the NativeVotes hard cutover.
 - `specs/2026-07-31-readme-refresh-design.md`: approved structure and authority rules for refreshing the configuration README.
 - `work/2026-07-31-readme-refresh/`: implementation plan and verification evidence for the configuration README refresh.
+- `work/2026-07-31-charger-melee-350/`: contract, implementation plan, and evidence for binding 350 Charger melee damage to AI damage-fix bit 2.

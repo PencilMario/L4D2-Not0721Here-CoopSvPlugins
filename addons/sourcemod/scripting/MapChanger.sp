@@ -6,6 +6,7 @@
 #include <sourcemod>
 #include <sdktools>
 #include <localizer>
+#include <nativevotes>
 #undef REQUIRE_PLUGIN
 #tryinclude <hx_stats>
 #tryinclude <vip_core>
@@ -109,6 +110,8 @@ StringMap g_hNameByMapCustom;
 StringMap g_hCampaignByMap;
 StringMap g_hCampaignByMapCustom;
 StringMap g_hMapStamp;
+
+NativeVote g_hMapVote;
 
 ArrayList g_aMapOrder;
 ArrayList g_aMapCustomOrder;
@@ -652,7 +655,7 @@ public Action Command_Veto(int client, int args)
 		}
 		g_bVeto = true;
 		CPrintToChatAll("%t", "veto", client);
-		if( g_bVoteDisplayed ) CancelVote();
+		if( g_bVoteDisplayed && g_hMapVote != null ) NativeVotes_Cancel();
 		LogVoteAction(client, "[VETO]");
 	}
 	return Plugin_Handled;
@@ -671,7 +674,7 @@ public Action Command_Votepass(int client, int args)
 		}
 		g_bVotepass = true;
 		CPrintToChatAll("%t", "votepass", client);
-		if( g_bVoteDisplayed ) CancelVote();
+		if( g_bVoteDisplayed && g_hMapVote != null ) NativeVotes_Cancel();
 		LogVoteAction(client, "[PASS]");
 	}
 	return Plugin_Handled;
@@ -1653,7 +1656,7 @@ void CheckVoteMap(int client, char[] map, bool bIsCustom)
 
 void StartVoteMap(int client, char[] map)
 {
-	if( g_bVoteInProgress || IsVoteInProgress() ) {
+	if( g_bVoteInProgress || IsVoteInProgress() || NativeVotes_IsVoteInProgress() ) {
 		PrintToChat(client, "%t", "vote_in_progress"); // Другое голосование ещё не закончилось!
 		return;
 	}
@@ -1664,11 +1667,16 @@ void StartVoteMap(int client, char[] map)
 	g_bVoteDisplayed = false;
 	LogVoteAction(client, "[STARTED] Change map to: %s", map);
 	
-	Menu menu = new Menu(Handle_VoteMapMenu, MenuAction_DisplayItem | MenuAction_Display);
-	menu.AddItem("", "Yes");
-	menu.AddItem("", "No");
-	menu.ExitButton = false;
-	CreateTimer(g_hCvarAnnounceDelay.FloatValue, Timer_VoteDelayed, menu, TIMER_FLAG_NO_MAPCHANGE);
+	NativeVote vote = NativeVotes_Create(Handle_VoteMap, NativeVotesType_Custom_YesNo, NATIVEVOTES_ACTIONS_DEFAULT | MenuAction_Display);
+	if( vote == null )
+	{
+		PrintToChat(client, "%t", "vote_in_progress");
+		return;
+	}
+	g_hMapVote = vote;
+	vote.Initiator = client;
+	vote.SetDetails("%s", map);
+	CreateTimer(g_hCvarAnnounceDelay.FloatValue, Timer_VoteDelayed, vote, TIMER_FLAG_NO_MAPCHANGE);
 	
 	char campaign[MAX_CAMPAIGN_TITLE], map_display[MAX_MAP_TITLE], display[MAX_CAMPAIGN_TITLE + MAX_MAP_TITLE];
 	GetCampaignDisplay(map, campaign, sizeof(campaign), true, client);
@@ -1677,66 +1685,88 @@ void StartVoteMap(int client, char[] map)
 	CPrintHintTextToAll("%t", "vote_started_announce", display);
 }
 
-Action Timer_VoteDelayed(Handle timer, Menu menu)
+Action Timer_VoteDelayed(Handle timer, NativeVote vote)
 {
 	if( g_bVotepass || g_bVeto ) {
 		Handler_PostVoteAction(g_bVotepass);
-		delete menu;
+		vote.Close();
+		g_hMapVote = null;
 	}
 	else {
-		if( !IsVoteInProgress() ) {
+		if( !IsVoteInProgress() && !NativeVotes_IsVoteInProgress() ) {
+			int players[MAXPLAYERS], total;
+			for( int i = 1; i <= MaxClients; i++ )
+			{
+				if( IsClientInGame(i) && !IsFakeClient(i) )
+				{
+					players[total++] = i;
+				}
+			}
+
 			g_bVoteInProgress = true;
-			menu.DisplayVoteToAll(g_hCvarTimeout.IntValue);
-			g_bVoteDisplayed = true;
+			g_bVoteDisplayed = NativeVotes_Display(vote, players, total, g_hCvarTimeout.IntValue);
+			if( !g_bVoteDisplayed )
+			{
+				g_bVoteInProgress = false;
+				vote.Close();
+				g_hMapVote = null;
+			}
 		}
 		else {
-			delete menu;
+			vote.Close();
+			g_hMapVote = null;
 		}
 	}
 	return Plugin_Continue;
 }
 
-public int Handle_VoteMapMenu(Menu menu, MenuAction action, int param1, int param2)
+public int Handle_VoteMap(NativeVote vote, MenuAction action, int param1, int param2)
 {
-	char display[MAX_CAMPAIGN_TITLE], buffer[MAX_CAMPAIGN_TITLE + MAX_MAP_TITLE];
-	int client = param1;
-
 	switch( action )
 	{
 		case MenuAction_End:
 		{
-			if( g_bVoteInProgress && g_bVotepass ) { // in case vote is passed with CancelVote(), so MenuAction_VoteEnd is not called.
-				Handler_PostVoteAction(true);
-			}
+			vote.Close();
+			if( vote == g_hMapVote ) g_hMapVote = null;
 			g_bVoteInProgress = false;
-			delete menu;
+			g_bVoteDisplayed = false;
 		}
 		
 		case MenuAction_VoteEnd: // 0=yes, 1=no
 		{
 			if( (param1 == 0 || g_bVotepass) && !g_bVeto ) {
+				NativeVotes_DisplayPass(vote, "%s", g_sVoteResult);
 				Handler_PostVoteAction(true);
 			}
 			else {
+				NativeVotes_DisplayFail(vote, NativeVotesFail_Loses);
 				Handler_PostVoteAction(false);
 			}
-			g_bVoteInProgress = false;
 		}
-		case MenuAction_DisplayItem:
+		case MenuAction_VoteCancel:
 		{
-			menu.GetItem(param2, "", 0, _, display, sizeof(display));
-			FormatEx(buffer, sizeof(buffer), "%T", display, client);
-			return RedrawMenuItem(buffer);
+			if( g_bVotepass && !g_bVeto )
+			{
+				NativeVotes_DisplayPass(vote, "%s", g_sVoteResult);
+				Handler_PostVoteAction(true);
+			}
+			else
+			{
+				NativeVotes_DisplayFail(vote, param1 == VoteCancel_NoVotes ? NativeVotesFail_NotEnoughVotes : NativeVotesFail_Generic);
+				Handler_PostVoteAction(false);
+			}
 		}
 		case MenuAction_Display:
 		{
 			char campaign[MAX_CAMPAIGN_TITLE], map_display[MAX_MAP_TITLE], map[MAX_MAP_NAME];
+			char display[MAX_CAMPAIGN_TITLE], buffer[MAX_CAMPAIGN_TITLE + MAX_MAP_TITLE];
 			strcopy(map, sizeof(map), g_sVoteResult);
-			GetCampaignDisplay(map, campaign, sizeof(campaign), true, client);
-			GetMapDisplay(map, map_display, sizeof(map_display), true, client);
+			GetCampaignDisplay(map, campaign, sizeof(campaign), true, param1);
+			GetMapDisplay(map, map_display, sizeof(map_display), true, param1);
 			FormatEx(display, sizeof(display), "%s - %s", campaign, map_display);
-			FormatEx(buffer, sizeof(buffer), "%T", "vote_started_announce", client, display);
-			menu.SetTitle(buffer);
+			FormatEx(buffer, sizeof(buffer), "%T", "vote_started_announce", param1, display);
+			NativeVotes_RedrawVoteTitle(buffer);
+			return view_as<int>(Plugin_Changed);
 		}
 	}
 	return 0;

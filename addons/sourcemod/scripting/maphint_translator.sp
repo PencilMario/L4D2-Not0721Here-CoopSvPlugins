@@ -11,6 +11,7 @@
 #define MAX_PROPERTY_NAME 64
 #define MAX_WAITERS 512
 #define MAX_ENTITY_SCAN_RETRIES 5
+#define TRANSLATION_RETRY_DELAY 0.5
 #define CACHE_PATH "data/map_hint_translations.txt"
 
 Logger log;
@@ -21,11 +22,13 @@ ConVar g_cvApiUrl;
 ConVar g_cvModel;
 ConVar g_cvTimeout;
 ConVar g_cvMaxWaiters;
+ConVar g_cvMaxRetries;
 
 StringMap g_translationCache;
 StringMap g_pendingTexts;
 StringMap g_requestTexts;
 StringMap g_consoleSayWaiters;
+StringMap g_translationRetryCounts;
 ArrayList g_translateQueue;
 
 char g_apiKey[256];
@@ -70,6 +73,7 @@ public void OnPluginStart()
 	g_pendingTexts = new StringMap();
 	g_requestTexts = new StringMap();
 	g_consoleSayWaiters = new StringMap();
+	g_translationRetryCounts = new StringMap();
 	g_translateQueue = new ArrayList(ByteCountToCells(MAX_HINT_TEXT));
 
 	g_cvEnabled = CreateConVar("sm_maphint_translate_enable", "1", "Enable online map hint translation.", FCVAR_NOTIFY, true, 0.0, true, 1.0);
@@ -78,6 +82,7 @@ public void OnPluginStart()
 	g_cvModel = CreateConVar("sm_maphint_translate_model", "deepseek-v4-flash", "DeepSeek model used for map hint translation.");
 	g_cvTimeout = CreateConVar("sm_maphint_translate_timeout", "15", "Translation HTTP timeout in seconds.", FCVAR_NONE, true, 3.0, true, 60.0);
 	g_cvMaxWaiters = CreateConVar("sm_maphint_translate_max_waiters", "512", "Maximum pending entity property writebacks.", FCVAR_NONE, true, 16.0, true, float(MAX_WAITERS));
+	g_cvMaxRetries = CreateConVar("sm_maphint_translate_max_retries", "2", "Maximum retries after a translation request fails.", FCVAR_NONE, true, 0.0, true, 5.0);
 	AutoExecConfig(true, "maphint_translator");
 
 	BuildPath(Path_SM, g_cachePath, sizeof(g_cachePath), CACHE_PATH);
@@ -89,7 +94,7 @@ public void OnPluginStart()
 	HookConVarChange(g_cvModel, OnTranslatorConVarChanged);
 
 	AddCommandListener(Command_ServerSay, "say");
-	HookEvent("instructor_server_hint_create", Event_InstructorHintCreate);
+	HookEvent("instructor_server_hint_create", Event_InstructorHintCreate, EventHookMode_Pre);
 	HookEntityOutput("point_script_use_target", "OnUseFinished", Output_UseFinished);
 	HookEntityOutput("point_script_use_target", "OnUseCancelled", Output_UseCancelled);
 	HookEntityOutput("point_prop_use_target", "OnUseFinished", Output_UseFinished);
@@ -122,6 +127,7 @@ public void OnMapStart()
 	g_pendingTexts.Clear();
 	g_requestTexts.Clear();
 	g_consoleSayWaiters.Clear();
+	g_translationRetryCounts.Clear();
 	g_translateQueue.Clear();
 
 	for (int client = 1; client <= MaxClients; client++)
@@ -215,7 +221,7 @@ public void Output_UseCancelled(const char[] output, int caller, int activator, 
 	LogUseOutput("USE_CANCELLED", caller, activator);
 }
 
-public void Event_InstructorHintCreate(Event event, const char[] name, bool dontBroadcast)
+public Action Event_InstructorHintCreate(Event event, const char[] name, bool dontBroadcast)
 {
 	char hintName[128];
 	char caption[MAX_HINT_TEXT];
@@ -227,18 +233,20 @@ public void Event_InstructorHintCreate(Event event, const char[] name, bool dont
 
 	if (!g_cvEnabled.BoolValue || ShouldSkipTranslation(caption))
 	{
-		return;
+		return Plugin_Continue;
 	}
 
 	char translation[MAX_HINT_TEXT];
 	if (g_translationCache.GetString(caption, translation, sizeof(translation)))
 	{
 		log.info("SHOW_CACHE_HIT hint_name=%s caption=%s translation=%s", hintName, caption, translation);
+		event.SetString("hint_caption", translation);
 	}
 	else
 	{
 		QueueTranslation(caption);
 	}
+	return Plugin_Continue;
 }
 
 public Action Command_ServerSay(int client, const char[] command, int argc)
@@ -667,6 +675,7 @@ void QueueTranslation(const char[] text)
 	}
 
 	g_pendingTexts.SetValue(text, 1);
+	g_translationRetryCounts.SetValue(text, 0);
 	g_translateQueue.PushString(text);
 	log.info("TRANSLATE_QUEUED text=%s", text);
 	ProcessTranslationQueue();
@@ -749,7 +758,7 @@ public void OnDeepSeekTranslationResponse(HTTPResponse response, any value, cons
 	if (error[0] != '\0')
 	{
 		log.warning("TRANSLATE_FAIL reason=http_error text=%s error=%s", sourceText, error);
-		CompleteTranslationFailure(sourceText);
+		RetryOrCompleteTranslation(sourceText);
 		if (isActiveRequest)
 		{
 			ProcessTranslationQueue();
@@ -760,7 +769,7 @@ public void OnDeepSeekTranslationResponse(HTTPResponse response, any value, cons
 	if (response.Status < HTTPStatus_OK || response.Status >= HTTPStatus_MultipleChoices)
 	{
 		log.warning("TRANSLATE_FAIL reason=http_status status=%i text=%s", response.Status, sourceText);
-		CompleteTranslationFailure(sourceText);
+		RetryOrCompleteTranslation(sourceText);
 		if (isActiveRequest)
 		{
 			ProcessTranslationQueue();
@@ -772,7 +781,7 @@ public void OnDeepSeekTranslationResponse(HTTPResponse response, any value, cons
 	if (!ExtractDeepSeekTranslation(response, translation, sizeof(translation)) || translation[0] == '\0')
 	{
 		log.warning("TRANSLATE_FAIL reason=parse text=%s", sourceText);
-		CompleteTranslationFailure(sourceText);
+		RetryOrCompleteTranslation(sourceText);
 		if (isActiveRequest)
 		{
 			ProcessTranslationQueue();
@@ -786,6 +795,7 @@ public void OnDeepSeekTranslationResponse(HTTPResponse response, any value, cons
 	ApplyTranslationToWaiters(sourceText, translation);
 	ApplyTranslationToConsoleSayWaiters(sourceText, translation);
 	g_pendingTexts.Remove(sourceText);
+	g_translationRetryCounts.Remove(sourceText);
 	if (isActiveRequest)
 	{
 		ProcessTranslationQueue();
@@ -888,9 +898,48 @@ bool ExtractJsonStringField(const char[] json, const char[] key, char[] value, i
 	return value[0] != '\0';
 }
 
+void RetryOrCompleteTranslation(const char[] sourceText)
+{
+	int retryCount;
+	g_translationRetryCounts.GetValue(sourceText, retryCount);
+	if (retryCount < g_cvMaxRetries.IntValue)
+	{
+		retryCount++;
+		g_translationRetryCounts.SetValue(sourceText, retryCount);
+
+		DataPack pack = new DataPack();
+		pack.WriteString(sourceText);
+		CreateTimer(TRANSLATION_RETRY_DELAY, Timer_RetryTranslation, pack, TIMER_DATA_HNDL_CLOSE | TIMER_FLAG_NO_MAPCHANGE);
+		log.info("TRANSLATE_RETRY_SCHEDULED attempt=%i max=%i text=%s", retryCount, g_cvMaxRetries.IntValue, sourceText);
+		return;
+	}
+
+	log.warning("TRANSLATE_FAIL_FINAL attempts=%i text=%s", retryCount + 1, sourceText);
+	CompleteTranslationFailure(sourceText);
+}
+
+public Action Timer_RetryTranslation(Handle timer, any data)
+{
+	DataPack pack = view_as<DataPack>(data);
+	pack.Reset();
+
+	char sourceText[MAX_HINT_TEXT];
+	pack.ReadString(sourceText, sizeof(sourceText));
+	if (!g_pendingTexts.ContainsKey(sourceText))
+	{
+		return Plugin_Stop;
+	}
+
+	g_translateQueue.PushString(sourceText);
+	log.info("TRANSLATE_RETRY_QUEUED text=%s", sourceText);
+	ProcessTranslationQueue();
+	return Plugin_Stop;
+}
+
 void CompleteTranslationFailure(const char[] sourceText)
 {
 	g_pendingTexts.Remove(sourceText);
+	g_translationRetryCounts.Remove(sourceText);
 	RemoveWaitersForText(sourceText);
 	g_consoleSayWaiters.Remove(sourceText);
 }

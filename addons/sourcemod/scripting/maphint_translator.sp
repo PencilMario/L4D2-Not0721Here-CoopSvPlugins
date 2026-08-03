@@ -779,7 +779,7 @@ bool ExtractJsonStringField(const char[] json, const char[] key, char[] value, i
 		return false;
 	}
 	i++;
-	while (json[i] == ' ' || json[i] == '\t')
+	while (json[i] == ' ' || json[i] == '\t' || json[i] == '\r' || json[i] == '\n')
 	{
 		i++;
 	}
@@ -789,7 +789,7 @@ bool ExtractJsonStringField(const char[] json, const char[] key, char[] value, i
 	}
 	i++;
 
-	int out;
+	int out = 0;
 	while (json[i] != '\0' && out < maxlength - 1)
 	{
 		if (json[i] == '"')

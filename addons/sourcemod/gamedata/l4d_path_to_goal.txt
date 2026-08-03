@@ -1,0 +1,27 @@
+"Games"
+  {
+      "left4dead"   // credit: zyiks
+      {
+          "Signatures"
+          {
+              "TerrorNavMesh::RecomputeFlowDistances"
+              {
+                  "library" "server"
+                  "linux"   "@_ZN13TerrorNavMesh22RecomputeFlowDistancesEv"
+                  "windows" "\x83\xEC\x28\x56\x6A\x04\x6A\x00\x68\x2A\x2A\x2A\x2A\x6A\x00\x8B\xF1\x8B\x0D\x2A\x2A\x2A\x2A\x68\x2A\x2A\x2A\x2A\xFF\x15\x2A\x2A\x2A\x2A\x8B\x0D\x2A\x2A\x2A\x2A\x8B\x01\x8B\x90\xC4\x00\x00\x00\xFF\xD2"
+              }
+          }   
+      }
+      "left4dead2"  // credit: zyiks
+      {
+          "Signatures"
+          {
+              "TerrorNavMesh::RecomputeFlowDistances"
+              {
+                  "library" "server"
+                  "linux"   "@_ZN13TerrorNavMesh22RecomputeFlowDistancesEv"
+                  "windows" "\x55\x8B\xEC\x83\xEC\x40\xA1\x2A\x2A\x2A\x2A\x53\x33\xDB\x56\x89\x5D\xF4\x89\x5D\xF8\x57\x8B\xF1\x39\x58\x08"
+              }
+          }   
+      }
+  }

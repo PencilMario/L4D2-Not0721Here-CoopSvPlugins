@@ -1,0 +1,51 @@
+// Credit: gvazdas
+"Phrases"
+{
+	
+	"ptg_wait"
+	{
+		"lt"			"Palaukite..."
+	}
+	
+	"ptg_busy"
+	{
+		"lt"			"Pabandykite vėliau."
+	}
+	
+	"ptg_look"
+	{
+		"lt"			"Žiūrėkite: "
+	}
+
+	"ptg_ahead"
+	{
+		"lt"			"į priekį"
+	}
+
+	"ptg_behind"
+	{
+		"lt"			"į nugarą"
+	}
+	
+	"ptg_left"
+	{
+		"lt"			"į kairę"
+	}
+
+	"ptg_right"
+	{
+		"lt"			"į dešinę"
+	}
+
+	"ptg_up"
+	{
+		"lt"			"aukštyn"
+	}
+
+	"ptg_down"
+	{
+		"lt"			"žemyn"
+	}
+	
+	
+}

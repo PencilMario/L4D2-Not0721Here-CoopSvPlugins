@@ -1,0 +1,49 @@
+"Phrases"
+{
+	
+	"ptg_wait"
+	{
+		"en"			"Please wait..."
+	}
+	
+	"ptg_busy"
+	{
+		"en"			"Busy, try again later."
+	}
+	
+	"ptg_look"
+	{
+		"en"			"Look: "
+	}
+
+	"ptg_ahead"
+	{
+		"en"			"ahead"
+	}
+
+	"ptg_behind"
+	{
+		"en"			"behind"
+	}
+	
+	"ptg_left"
+	{
+		"en"			"left"
+	}
+
+	"ptg_right"
+	{
+		"en"			"right"
+	}
+
+	"ptg_up"
+	{
+		"en"			"up"
+	}
+
+	"ptg_down"
+	{
+		"en"			"down"
+	}
+	
+}

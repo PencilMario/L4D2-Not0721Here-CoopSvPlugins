@@ -25,6 +25,7 @@ ConVar g_cvMaxWaiters;
 StringMap g_translationCache;
 StringMap g_pendingTexts;
 StringMap g_requestTexts;
+StringMap g_consoleSayWaiters;
 ArrayList g_translateQueue;
 
 char g_apiKey[256];
@@ -68,6 +69,7 @@ public void OnPluginStart()
 	g_translationCache = new StringMap();
 	g_pendingTexts = new StringMap();
 	g_requestTexts = new StringMap();
+	g_consoleSayWaiters = new StringMap();
 	g_translateQueue = new ArrayList(ByteCountToCells(MAX_HINT_TEXT));
 
 	g_cvEnabled = CreateConVar("sm_maphint_translate_enable", "1", "Enable online map hint translation.", FCVAR_NOTIFY, true, 0.0, true, 1.0);
@@ -86,6 +88,7 @@ public void OnPluginStart()
 	HookConVarChange(g_cvApiUrl, OnTranslatorConVarChanged);
 	HookConVarChange(g_cvModel, OnTranslatorConVarChanged);
 
+	AddCommandListener(Command_ServerSay, "say");
 	HookEvent("instructor_server_hint_create", Event_InstructorHintCreate);
 	HookEntityOutput("point_script_use_target", "OnUseFinished", Output_UseFinished);
 	HookEntityOutput("point_script_use_target", "OnUseCancelled", Output_UseCancelled);
@@ -118,6 +121,7 @@ public void OnMapStart()
 	g_activeText[0] = '\0';
 	g_pendingTexts.Clear();
 	g_requestTexts.Clear();
+	g_consoleSayWaiters.Clear();
 	g_translateQueue.Clear();
 
 	for (int client = 1; client <= MaxClients; client++)
@@ -235,6 +239,42 @@ public void Event_InstructorHintCreate(Event event, const char[] name, bool dont
 	{
 		QueueTranslation(caption);
 	}
+}
+
+public Action Command_ServerSay(int client, const char[] command, int argc)
+{
+	if (client != 0 || argc < 1 || !g_cvEnabled.BoolValue)
+	{
+		return Plugin_Continue;
+	}
+
+	char text[MAX_HINT_TEXT];
+	GetCmdArgString(text, sizeof(text));
+	StripQuotes(text);
+	TrimString(text);
+	log.info("CONSOLE_SAY text=%s", text);
+
+	if (ShouldSkipTranslation(text))
+	{
+		return Plugin_Continue;
+	}
+
+	char translation[MAX_HINT_TEXT];
+	if (g_translationCache.GetString(text, translation, sizeof(translation)))
+	{
+		PrintConsoleSayTranslation(translation);
+		return Plugin_Continue;
+	}
+
+	if (g_apiKey[0] == '\0' && !g_pendingTexts.ContainsKey(text))
+	{
+		QueueTranslation(text);
+		return Plugin_Continue;
+	}
+
+	AddConsoleSayWaiter(text);
+	QueueTranslation(text);
+	return Plugin_Continue;
 }
 
 bool IsUseActionTracked(L4D2UseAction action)
@@ -586,6 +626,33 @@ void AddTranslationWaiter(int entity, PropType propType, const char[] property, 
 	g_waiterCount++;
 }
 
+void AddConsoleSayWaiter(const char[] text)
+{
+	int count;
+	g_consoleSayWaiters.GetValue(text, count);
+	g_consoleSayWaiters.SetValue(text, count + 1);
+}
+
+void PrintConsoleSayTranslation(const char[] translation)
+{
+	PrintToChatAll("\x04[地图提示]\x01 %s", translation);
+}
+
+void ApplyTranslationToConsoleSayWaiters(const char[] sourceText, const char[] translation)
+{
+	int count;
+	if (!g_consoleSayWaiters.GetValue(sourceText, count))
+	{
+		return;
+	}
+
+	for (int i = 0; i < count; i++)
+	{
+		PrintConsoleSayTranslation(translation);
+	}
+	g_consoleSayWaiters.Remove(sourceText);
+}
+
 void QueueTranslation(const char[] text)
 {
 	if (g_apiKey[0] == '\0')
@@ -717,6 +784,7 @@ public void OnDeepSeekTranslationResponse(HTTPResponse response, any value, cons
 	SaveTranslationCacheEntry(sourceText, translation);
 	log.info("TRANSLATE_OK text=%s translation=%s", sourceText, translation);
 	ApplyTranslationToWaiters(sourceText, translation);
+	ApplyTranslationToConsoleSayWaiters(sourceText, translation);
 	g_pendingTexts.Remove(sourceText);
 	if (isActiveRequest)
 	{
@@ -824,6 +892,7 @@ void CompleteTranslationFailure(const char[] sourceText)
 {
 	g_pendingTexts.Remove(sourceText);
 	RemoveWaitersForText(sourceText);
+	g_consoleSayWaiters.Remove(sourceText);
 }
 
 void RemoveWaitersForText(const char[] sourceText)

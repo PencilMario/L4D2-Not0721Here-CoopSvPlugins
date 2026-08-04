@@ -15,6 +15,12 @@ if (-not $source.Contains('DeepL-Auth-Key %s')) { throw 'DeepL authorization con
 if (-not $source.Contains('body.SetString("target_lang", "ZH-HANS")')) { throw 'DeepL target language contract is missing' }
 if (-not $source.Contains('OnDeepLTranslationResponse')) { throw 'DeepL response callback is missing' }
 if (-not $source.Contains('StartDeepLTranslation(sourceText)')) { throw 'DeepSeek terminal failure does not start DeepL' }
+if (-not $source.Contains('sm_maphint_translate_progress')) { throw 'progress ConVar is missing' }
+if (-not $source.Contains('StringMap g_startupTranslationTexts')) { throw 'unique startup translation tracking is missing' }
+if (-not $source.Contains('ScheduleEntityTranslation(entity, 0, true)')) { throw 'map-start scans are not tagged' }
+if (-not $source.Contains('ScheduleEntityTranslation(entity, 0, false)')) { throw 'runtime scans are not excluded' }
+if (-not $source.Contains('int processing = g_startupTotal - g_startupSucceeded - g_startupFailed')) { throw 'processing count contract is missing' }
+if (-not $source.Contains('[地图翻译] 正在翻译:%s\n总计: %i, 成功: %i, 失败: %i, 处理中: %i')) { throw 'progress hint format changed' }
 if (-not $source.Contains("json[i] == '\r'")) { throw 'JSON parser does not skip carriage returns' }
 if (-not $source.Contains("json[i] == '\n'")) { throw 'JSON parser does not skip line feeds' }
 if (-not $source.Contains('int out = 0;')) { throw 'JSON parser output index is not initialized' }

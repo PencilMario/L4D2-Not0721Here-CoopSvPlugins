@@ -22,6 +22,7 @@ ConVar g_cvApiUrl;
 ConVar g_cvModel;
 ConVar g_cvDeepLApiKey;
 ConVar g_cvDeepLApiUrl;
+ConVar g_cvProgress;
 ConVar g_cvTimeout;
 ConVar g_cvMaxWaiters;
 ConVar g_cvMaxRetries;
@@ -31,6 +32,7 @@ StringMap g_pendingTexts;
 StringMap g_requestTexts;
 StringMap g_consoleSayWaiters;
 StringMap g_translationRetryCounts;
+StringMap g_startupTranslationTexts;
 ArrayList g_translateQueue;
 
 char g_apiKey[256];
@@ -43,6 +45,12 @@ char g_activeText[MAX_HINT_TEXT];
 bool g_requestInFlight;
 int g_activeRequestId;
 int g_nextRequestId;
+int g_startupScansPending;
+int g_startupTotal;
+int g_startupSucceeded;
+int g_startupFailed;
+bool g_startupFinalShown;
+char g_startupCurrentText[MAX_HINT_TEXT];
 
 int g_useTargetRef[MAXPLAYERS + 1];
 L4D2UseAction g_useAction[MAXPLAYERS + 1];
@@ -78,6 +86,7 @@ public void OnPluginStart()
 	g_requestTexts = new StringMap();
 	g_consoleSayWaiters = new StringMap();
 	g_translationRetryCounts = new StringMap();
+	g_startupTranslationTexts = new StringMap();
 	g_translateQueue = new ArrayList(ByteCountToCells(MAX_HINT_TEXT));
 
 	g_cvEnabled = CreateConVar("sm_maphint_translate_enable", "1", "Enable online map hint translation.", FCVAR_NOTIFY, true, 0.0, true, 1.0);
@@ -86,6 +95,7 @@ public void OnPluginStart()
 	g_cvModel = CreateConVar("sm_maphint_translate_model", "deepseek-v4-flash", "DeepSeek model used for map hint translation.");
 	g_cvDeepLApiKey = CreateConVar("sm_maphint_translate_deepl_key", "", "DeepL API key used after DeepSeek retries fail.", FCVAR_DONTRECORD | FCVAR_PROTECTED);
 	g_cvDeepLApiUrl = CreateConVar("sm_maphint_translate_deepl_api_url", "https://api-free.deepl.com/v2/translate", "DeepL translate endpoint; set the Pro endpoint when required.");
+	g_cvProgress = CreateConVar("sm_maphint_translate_progress", "1", "Show map-start online translation progress to all players.", FCVAR_NOTIFY, true, 0.0, true, 1.0);
 	g_cvTimeout = CreateConVar("sm_maphint_translate_timeout", "15", "Translation HTTP timeout in seconds.", FCVAR_NONE, true, 3.0, true, 60.0);
 	g_cvMaxWaiters = CreateConVar("sm_maphint_translate_max_waiters", "512", "Maximum pending entity property writebacks.", FCVAR_NONE, true, 16.0, true, float(MAX_WAITERS));
 	g_cvMaxRetries = CreateConVar("sm_maphint_translate_max_retries", "2", "Maximum retries after a translation request fails.", FCVAR_NONE, true, 0.0, true, 5.0);
@@ -136,7 +146,14 @@ public void OnMapStart()
 	g_requestTexts.Clear();
 	g_consoleSayWaiters.Clear();
 	g_translationRetryCounts.Clear();
+	g_startupTranslationTexts.Clear();
 	g_translateQueue.Clear();
+	g_startupScansPending = 0;
+	g_startupTotal = 0;
+	g_startupSucceeded = 0;
+	g_startupFailed = 0;
+	g_startupFinalShown = false;
+	g_startupCurrentText[0] = '\0';
 
 	for (int client = 1; client <= MaxClients; client++)
 	{
@@ -148,7 +165,8 @@ public void OnMapStart()
 		if (IsValidEntity(entity))
 		{
 			LogEntityText(entity, "Find");
-			ScheduleEntityTranslation(entity, 0);
+			g_startupScansPending++;
+			ScheduleEntityTranslation(entity, 0, true);
 		}
 	}
 }
@@ -157,15 +175,16 @@ public void OnEntityCreated(int entity, const char[] classname)
 {
 	if (IsTrackedClassname(classname))
 	{
-		ScheduleEntityTranslation(entity, 0);
+		ScheduleEntityTranslation(entity, 0, false);
 	}
 }
 
-void ScheduleEntityTranslation(int entity, int attempt)
+void ScheduleEntityTranslation(int entity, int attempt, bool startupScan)
 {
 	DataPack pack = new DataPack();
 	pack.WriteCell(EntIndexToEntRef(entity));
 	pack.WriteCell(attempt);
+	pack.WriteCell(startupScan);
 	RequestFrame(Frame_ProcessEntityText, pack);
 }
 
@@ -175,22 +194,28 @@ public void Frame_ProcessEntityText(any data)
 	pack.Reset();
 	int entityRef = pack.ReadCell();
 	int attempt = pack.ReadCell();
+	bool startupScan = pack.ReadCell();
 	delete pack;
 
 	int entity = EntRefToEntIndex(entityRef);
 	if (entity == INVALID_ENT_REFERENCE || !IsValidEntity(entity))
 	{
+		FinishStartupScan(startupScan);
 		return;
 	}
 
-	bool foundText = ProcessEntityText(entity, "OnEntityCreated");
+	bool foundText = ProcessEntityText(entity, "OnEntityCreated", startupScan);
 	if (!foundText && attempt + 1 < MAX_ENTITY_SCAN_RETRIES)
 	{
 		DataPack retry = new DataPack();
 		retry.WriteCell(entityRef);
 		retry.WriteCell(attempt + 1);
+		retry.WriteCell(startupScan);
 		CreateTimer(0.10, Timer_RetryEntityTranslation, retry, TIMER_FLAG_NO_MAPCHANGE);
+		return;
 	}
+
+	FinishStartupScan(startupScan);
 }
 
 public Action Timer_RetryEntityTranslation(Handle timer, any data)
@@ -252,7 +277,7 @@ public Action Event_InstructorHintCreate(Event event, const char[] name, bool do
 	}
 	else
 	{
-		QueueTranslation(caption);
+		QueueTranslation(caption, false);
 	}
 	return Plugin_Continue;
 }
@@ -284,12 +309,12 @@ public Action Command_ServerSay(int client, const char[] command, int argc)
 
 	if (g_apiKey[0] == '\0' && !g_pendingTexts.ContainsKey(text))
 	{
-		QueueTranslation(text);
+		QueueTranslation(text, false);
 		return Plugin_Continue;
 	}
 
 	AddConsoleSayWaiter(text);
-	QueueTranslation(text);
+	QueueTranslation(text, false);
 	return Plugin_Continue;
 }
 
@@ -398,7 +423,7 @@ void LogEntityText(int entity, const char[] source)
 	LogTextProperty(entity, classname, source, "m_sUseSubString");
 }
 
-bool ProcessEntityText(int entity, const char[] source)
+bool ProcessEntityText(int entity, const char[] source, bool startupScan)
 {
 	char classname[64];
 	GetEntityClassname(entity, classname, sizeof(classname));
@@ -410,18 +435,18 @@ bool ProcessEntityText(int entity, const char[] source)
 
 	if (StrEqual(classname, "env_instructor_hint"))
 	{
-		return ProcessTextProperty(entity, classname, source, "m_iszCaption");
+		return ProcessTextProperty(entity, classname, source, "m_iszCaption", startupScan);
 	}
 
 	bool foundText;
-	foundText = ProcessTextProperty(entity, classname, source, "m_iszUseText") || foundText;
-	foundText = ProcessTextProperty(entity, classname, source, "m_iszProgressBarText") || foundText;
-	foundText = ProcessTextProperty(entity, classname, source, "m_sUseString") || foundText;
-	foundText = ProcessTextProperty(entity, classname, source, "m_sUseSubString") || foundText;
+	foundText = ProcessTextProperty(entity, classname, source, "m_iszUseText", startupScan) || foundText;
+	foundText = ProcessTextProperty(entity, classname, source, "m_iszProgressBarText", startupScan) || foundText;
+	foundText = ProcessTextProperty(entity, classname, source, "m_sUseString", startupScan) || foundText;
+	foundText = ProcessTextProperty(entity, classname, source, "m_sUseSubString", startupScan) || foundText;
 	return foundText;
 }
 
-bool ProcessTextProperty(int entity, const char[] classname, const char[] source, const char[] property)
+bool ProcessTextProperty(int entity, const char[] classname, const char[] source, const char[] property, bool startupScan)
 {
 	char text[MAX_HINT_TEXT];
 	PropType propType;
@@ -451,7 +476,7 @@ bool ProcessTextProperty(int entity, const char[] classname, const char[] source
 	}
 
 	AddTranslationWaiter(entity, propType, property, text);
-	QueueTranslation(text);
+	QueueTranslation(text, startupScan);
 	return true;
 }
 
@@ -671,12 +696,82 @@ void ApplyTranslationToConsoleSayWaiters(const char[] sourceText, const char[] t
 	g_consoleSayWaiters.Remove(sourceText);
 }
 
-void QueueTranslation(const char[] text)
+void FinishStartupScan(bool startupScan)
+{
+	if (!startupScan || g_startupScansPending <= 0)
+	{
+		return;
+	}
+
+	g_startupScansPending--;
+	if (g_startupScansPending == 0
+		&& g_startupTranslationTexts.Size == 0
+		&& g_startupTotal > 0
+		&& !g_startupFinalShown)
+	{
+		ShowStartupTranslationProgress(g_startupCurrentText, true);
+	}
+}
+
+void ShowStartupTranslationProgress(const char[] currentText, bool terminalUpdate)
+{
+	if (!terminalUpdate && !g_startupTranslationTexts.ContainsKey(currentText))
+	{
+		return;
+	}
+
+	if (currentText[0] != '\0')
+	{
+		strcopy(g_startupCurrentText, sizeof(g_startupCurrentText), currentText);
+	}
+
+	int processing = g_startupTotal - g_startupSucceeded - g_startupFailed;
+	if (g_cvProgress.BoolValue && g_startupCurrentText[0] != '\0')
+	{
+		char displayText[128];
+		char hintText[256];
+		strcopy(displayText, sizeof(displayText), g_startupCurrentText);
+		FormatEx(hintText, sizeof(hintText), "[地图翻译] 正在翻译:%s\n总计: %i, 成功: %i, 失败: %i, 处理中: %i",
+			displayText, g_startupTotal, g_startupSucceeded, g_startupFailed, processing);
+		PrintHintTextToAll("%s", hintText);
+	}
+
+	if (terminalUpdate && g_startupScansPending == 0 && processing == 0)
+	{
+		g_startupFinalShown = true;
+	}
+}
+
+void CompleteStartupTranslation(const char[] sourceText, bool success)
+{
+	if (!g_startupTranslationTexts.Remove(sourceText))
+	{
+		return;
+	}
+
+	if (success)
+	{
+		g_startupSucceeded++;
+	}
+	else
+	{
+		g_startupFailed++;
+	}
+	ShowStartupTranslationProgress(sourceText, true);
+}
+
+void QueueTranslation(const char[] text, bool startupScan)
 {
 	if (g_apiKey[0] == '\0')
 	{
 		log.warning("TRANSLATE_SKIP reason=missing_api_key text=%s", text);
 		return;
+	}
+
+	if (startupScan && !g_startupTranslationTexts.ContainsKey(text))
+	{
+		g_startupTranslationTexts.SetValue(text, 1);
+		g_startupTotal++;
 	}
 
 	if (g_pendingTexts.ContainsKey(text))
@@ -716,6 +811,7 @@ void ProcessTranslationQueue()
 	g_requestInFlight = true;
 	request.Post(body, OnDeepSeekTranslationResponse, g_activeRequestId);
 	delete body;
+	ShowStartupTranslationProgress(g_activeText, false);
 }
 
 JSONObject BuildDeepSeekRequest(const char[] text)
@@ -770,6 +866,7 @@ void StartDeepLTranslation(const char[] sourceText)
 	log.info("TRANSLATE_FALLBACK provider=deepl text=%s", sourceText);
 	request.Post(body, OnDeepLTranslationResponse, g_activeRequestId);
 	delete body;
+	ShowStartupTranslationProgress(sourceText, false);
 }
 
 public void OnDeepSeekTranslationResponse(HTTPResponse response, any value, const char[] error)
@@ -918,6 +1015,7 @@ void CompleteTranslationSuccess(const char[] sourceText, const char[] translatio
 	ApplyTranslationToConsoleSayWaiters(sourceText, translation);
 	g_pendingTexts.Remove(sourceText);
 	g_translationRetryCounts.Remove(sourceText);
+	CompleteStartupTranslation(sourceText, true);
 }
 
 bool ExtractDeepSeekTranslation(HTTPResponse response, const char[] sourceText, char[] translation, int maxlength)
@@ -1073,6 +1171,7 @@ void CompleteTranslationFailure(const char[] sourceText)
 	g_translationRetryCounts.Remove(sourceText);
 	RemoveWaitersForText(sourceText);
 	g_consoleSayWaiters.Remove(sourceText);
+	CompleteStartupTranslation(sourceText, false);
 }
 
 void RemoveWaitersForText(const char[] sourceText)

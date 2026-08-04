@@ -248,37 +248,37 @@ sm_weapon weapon_grenade_launcher reloaddurationmult 0.6
 |upgrade_item 	| upgrade_item |
 
 ## 属性名称对比和解释
-> 由GPT生成
+> 以 `addons/sourcemod/scripting/l4d2_weapon_attributes.sp` 中 `sWeaponAttrShortName` 和 `sWeaponAttrNames` 为准。
 
-| Internal name | Display name | Effect |
+| sm_weapon 属性名 | 插件显示名 | 说明 |
 | --- | --- | --- |
-| damage | Damage | 每颗子弹或弹丸造成的伤害量 |
-| bullets | Bullets | 每次射击发射的子弹或弹丸数量 |
-| clipsize | Clip Size | 武器可以装载的子弹或弹丸的最大数量 |
-| bucket | Bucket | 武器使用的弹药类型（例如手枪，步枪，霰弹枪等） |
-| tier | Tier | 武器的质量或稀有度（例如普通，不常见，稀有等） |
-| speed | Max player speed | 玩家持有武器时可以移动的最大速度 |
-| spreadpershot | Spread per shot | 每次射击给武器的精度增加的散布或偏差量 |
-| maxspread | Max spread | 武器可以拥有的散布或偏差的最大量 |
-| spreaddecay | Spread decay | 散布或偏差随时间减少的速率 |
-| minduckspread | Min ducking spread | 玩家蹲下时武器拥有的散布或偏差的最小量 |
-| minstandspread | Min standing spread | 玩家站立时武器拥有的散布或偏差的最小量 |
-| minairspread | Min in air spread | 玩家在空中时武器拥有的散布或偏差的最小量 |
-| maxmovespread | Max movement spread | 玩家移动时武器拥有的散布或偏差的最大量 |
-| penlayers | Penetration num layers | 子弹或弹丸可以穿透的层或表面的数量 |
-| penpower | Penetration power | 子弹或弹丸每穿透一层或表面后应用的伤害减少量 |
-| penmaxdist | Penetration max dist | 子弹或弹丸在穿透一层或表面后可以行进的最大距离 |
-| charpenmaxdist | Char penetration max dist | 子弹或弹丸在穿透一个角色（例如敌人，盟友等）后可以行进的最大距离 |
-| range | Range | 子弹或弹丸可以行进的最大距离 |
-| rangemod | Range modifier | 子弹或弹丸的伤害随距离减少的因子 |
-| cycletime | Cycle time | 武器每次射击或连发之间的时间间隔 |
-| scatterpitch | Pellet scatter pitch | 每次射击中每个弹丸或弹丸的垂直散布或偏差量（例如对于霰弹枪） |
-| scatteryaw | Pellet scatter yaw | 每次射击中每个弹丸或弹丸的水平散布或偏差量（例如对于霰弹枪） |
-| verticalpunch | Vertical punch | 每次射击给武器施加的垂直后坐力或反冲量 |
-| horizpunch | Horizontal punch | 每次射击给武器施加的水平后坐力或反冲量 |
-| gainrange | Gain range | 武器的伤害开始随距离增加的距离（例如对于狙击步枪） |
-| reloadduration | Reload duration | 重新装载武器所需的时间 |
-| tankdamagemult | Tank damage multiplier | 武器对坦克或装甲敌人造成的伤害乘以的因子 |
-| reloaddurationmult | Reload duration multiplier | 武器的重新装载时间乘以的因子 |
+| damage | Damage | 每发子弹或单颗霰弹弹丸的基础伤害 |
+| bullets | Bullets | 每次开火发射的子弹或弹丸数量 |
+| clipsize | Clip Size | 弹匣或弹仓容量 |
+| bucket | Bucket | 武器脚本里的武器选择分组数值，通常不用于伤害平衡 |
+| tier | Tier | 武器脚本里的武器等级数值 |
+| speed | Max player speed | 持有该武器时的玩家最大移动速度 |
+| spreadpershot | Spread per shot | 每次开火增加的散布量，越低连射越稳 |
+| maxspread | Max spread | 连续开火可累计到的最大散布 |
+| spreaddecay | Spread decay | 停火后散布回落的速度 |
+| minduckspread | Min ducking spread | 蹲下时的最低基础散布 |
+| minstandspread | Min standing spread | 站立时的最低基础散布 |
+| minairspread | Min in air spread | 空中时的最低基础散布 |
+| maxmovespread | Max movement spread | 移动时的最大散布 |
+| penlayers | Penetration num layers | 子弹可穿透的层数 |
+| penpower | Penetration power | 子弹穿透强度，影响穿透后的伤害表现 |
+| penmaxdist | Penetration max dist | 子弹穿透后的最大继续飞行距离 |
+| charpenmaxdist | Char penetration max dist | 子弹穿透角色后的最大继续飞行距离 |
+| range | Range | 武器有效射程 |
+| rangemod | Range modifier | 距离伤害衰减倍率 |
+| cycletime | Cycle time | 两次开火之间的间隔，越低射速越快 |
+| scatterpitch | Pellet scatter pitch | 霰弹弹丸的垂直散布 |
+| scatteryaw | Pellet scatter yaw | 霰弹弹丸的水平散布 |
+| verticalpunch | Vertical punch | 开火产生的垂直后坐抬升 |
+| horizpunch | Horizontal punch | 开火产生的水平后坐偏移，需要 `z_gun_horiz_punch` 支持 |
+| gainrange | Gain range | 伤害增益或衰减计算使用的距离参数 |
+| reloadduration | Reload duration | 武器基础换弹时长 |
+| tankdamagemult | Tank damage multiplier | 插件额外处理的对 Tank 伤害倍率 |
+| reloaddurationmult | Reload duration multiplier | 插件额外处理的霰弹枪装填时长倍率 |
 
 

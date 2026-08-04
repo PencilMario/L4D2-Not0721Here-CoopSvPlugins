@@ -20,6 +20,8 @@ ConVar g_cvEnabled;
 ConVar g_cvApiKey;
 ConVar g_cvApiUrl;
 ConVar g_cvModel;
+ConVar g_cvDeepLApiKey;
+ConVar g_cvDeepLApiUrl;
 ConVar g_cvTimeout;
 ConVar g_cvMaxWaiters;
 ConVar g_cvMaxRetries;
@@ -34,6 +36,8 @@ ArrayList g_translateQueue;
 char g_apiKey[256];
 char g_apiUrl[256];
 char g_model[64];
+char g_deepLApiKey[256];
+char g_deepLApiUrl[256];
 char g_cachePath[PLATFORM_MAX_PATH];
 char g_activeText[MAX_HINT_TEXT];
 bool g_requestInFlight;
@@ -80,6 +84,8 @@ public void OnPluginStart()
 	g_cvApiKey = CreateConVar("sm_maphint_translate_deepseek_key", "", "DeepSeek API key for map hint translation.", FCVAR_DONTRECORD | FCVAR_PROTECTED);
 	g_cvApiUrl = CreateConVar("sm_maphint_translate_api_url", "https://api.deepseek.com/chat/completions", "DeepSeek chat completions endpoint.");
 	g_cvModel = CreateConVar("sm_maphint_translate_model", "deepseek-v4-flash", "DeepSeek model used for map hint translation.");
+	g_cvDeepLApiKey = CreateConVar("sm_maphint_translate_deepl_key", "", "DeepL API key used after DeepSeek retries fail.", FCVAR_DONTRECORD | FCVAR_PROTECTED);
+	g_cvDeepLApiUrl = CreateConVar("sm_maphint_translate_deepl_api_url", "https://api-free.deepl.com/v2/translate", "DeepL translate endpoint; set the Pro endpoint when required.");
 	g_cvTimeout = CreateConVar("sm_maphint_translate_timeout", "15", "Translation HTTP timeout in seconds.", FCVAR_NONE, true, 3.0, true, 60.0);
 	g_cvMaxWaiters = CreateConVar("sm_maphint_translate_max_waiters", "512", "Maximum pending entity property writebacks.", FCVAR_NONE, true, 16.0, true, float(MAX_WAITERS));
 	g_cvMaxRetries = CreateConVar("sm_maphint_translate_max_retries", "2", "Maximum retries after a translation request fails.", FCVAR_NONE, true, 0.0, true, 5.0);
@@ -92,6 +98,8 @@ public void OnPluginStart()
 	HookConVarChange(g_cvApiKey, OnTranslatorConVarChanged);
 	HookConVarChange(g_cvApiUrl, OnTranslatorConVarChanged);
 	HookConVarChange(g_cvModel, OnTranslatorConVarChanged);
+	HookConVarChange(g_cvDeepLApiKey, OnTranslatorConVarChanged);
+	HookConVarChange(g_cvDeepLApiUrl, OnTranslatorConVarChanged);
 
 	AddCommandListener(Command_ServerSay, "say");
 	HookEvent("instructor_server_hint_create", Event_InstructorHintCreate, EventHookMode_Pre);
@@ -519,6 +527,8 @@ void RefreshTranslatorConfig()
 	g_cvApiKey.GetString(g_apiKey, sizeof(g_apiKey));
 	g_cvApiUrl.GetString(g_apiUrl, sizeof(g_apiUrl));
 	g_cvModel.GetString(g_model, sizeof(g_model));
+	g_cvDeepLApiKey.GetString(g_deepLApiKey, sizeof(g_deepLApiKey));
+	g_cvDeepLApiUrl.GetString(g_deepLApiUrl, sizeof(g_deepLApiUrl));
 }
 
 bool ShouldSkipTranslation(const char[] text)
@@ -735,6 +745,33 @@ JSONObject BuildDeepSeekRequest(const char[] text)
 	return body;
 }
 
+void StartDeepLTranslation(const char[] sourceText)
+{
+	g_activeRequestId = ++g_nextRequestId;
+
+	char requestKey[16];
+	IntToString(g_activeRequestId, requestKey, sizeof(requestKey));
+	g_requestTexts.SetString(requestKey, sourceText);
+
+	HTTPRequest request = new HTTPRequest(g_deepLApiUrl);
+	request.SetHeader("Content-Type", "application/json");
+	request.SetHeader("Authorization", "DeepL-Auth-Key %s", g_deepLApiKey);
+	request.ConnectTimeout = g_cvTimeout.IntValue;
+	request.Timeout = g_cvTimeout.IntValue;
+
+	JSONObject body = new JSONObject();
+	JSONArray texts = new JSONArray();
+	texts.PushString(sourceText);
+	body.Set("text", texts);
+	body.SetString("target_lang", "ZH-HANS");
+
+	g_requestInFlight = true;
+	strcopy(g_activeText, sizeof(g_activeText), sourceText);
+	log.info("TRANSLATE_FALLBACK provider=deepl text=%s", sourceText);
+	request.Post(body, OnDeepLTranslationResponse, g_activeRequestId);
+	delete body;
+}
+
 public void OnDeepSeekTranslationResponse(HTTPResponse response, any value, const char[] error)
 {
 	int requestId = value;
@@ -789,17 +826,98 @@ public void OnDeepSeekTranslationResponse(HTTPResponse response, any value, cons
 		return;
 	}
 
-	g_translationCache.SetString(sourceText, translation);
-	SaveTranslationCacheEntry(sourceText, translation);
-	log.info("TRANSLATE_OK text=%s translation=%s", sourceText, translation);
-	ApplyTranslationToWaiters(sourceText, translation);
-	ApplyTranslationToConsoleSayWaiters(sourceText, translation);
-	g_pendingTexts.Remove(sourceText);
-	g_translationRetryCounts.Remove(sourceText);
+	CompleteTranslationSuccess(sourceText, translation, "deepseek");
 	if (isActiveRequest)
 	{
 		ProcessTranslationQueue();
 	}
+}
+
+public void OnDeepLTranslationResponse(HTTPResponse response, any value, const char[] error)
+{
+	int requestId = value;
+	char requestKey[16];
+	char sourceText[MAX_HINT_TEXT];
+	IntToString(requestId, requestKey, sizeof(requestKey));
+	if (!g_requestTexts.GetString(requestKey, sourceText, sizeof(sourceText)))
+	{
+		return;
+	}
+	g_requestTexts.Remove(requestKey);
+
+	bool isActiveRequest = requestId == g_activeRequestId;
+	if (isActiveRequest)
+	{
+		g_activeText[0] = '\0';
+		g_requestInFlight = false;
+		g_activeRequestId = 0;
+	}
+
+	char translation[MAX_HINT_TEXT];
+	bool success = error[0] == '\0'
+		&& response.Status >= HTTPStatus_OK
+		&& response.Status < HTTPStatus_MultipleChoices
+		&& ExtractDeepLTranslation(response, translation, sizeof(translation))
+		&& translation[0] != '\0';
+
+	if (success)
+	{
+		CompleteTranslationSuccess(sourceText, translation, "deepl");
+	}
+	else
+	{
+		if (error[0] != '\0')
+		{
+			log.warning("TRANSLATE_FAIL provider=deepl reason=http_error text=%s error=%s", sourceText, error);
+		}
+		else if (response.Status < HTTPStatus_OK || response.Status >= HTTPStatus_MultipleChoices)
+		{
+			log.warning("TRANSLATE_FAIL provider=deepl reason=http_status status=%i text=%s", response.Status, sourceText);
+		}
+		else
+		{
+			log.warning("TRANSLATE_FAIL provider=deepl reason=parse text=%s", sourceText);
+		}
+		CompleteTranslationFailure(sourceText);
+	}
+
+	if (isActiveRequest)
+	{
+		ProcessTranslationQueue();
+	}
+}
+
+bool ExtractDeepLTranslation(HTTPResponse response, char[] translation, int maxlength)
+{
+	translation[0] = '\0';
+	JSONObject data = view_as<JSONObject>(response.Data);
+	JSON translationsJson = data.Get("translations");
+	JSONArray translations = view_as<JSONArray>(translationsJson);
+	if (translations.Length < 1)
+	{
+		delete translations;
+		delete data;
+		return false;
+	}
+
+	JSON firstJson = translations.Get(0);
+	JSONObject first = view_as<JSONObject>(firstJson);
+	bool ok = first.GetString("text", translation, maxlength);
+	delete first;
+	delete translations;
+	delete data;
+	return ok;
+}
+
+void CompleteTranslationSuccess(const char[] sourceText, const char[] translation, const char[] provider)
+{
+	g_translationCache.SetString(sourceText, translation);
+	SaveTranslationCacheEntry(sourceText, translation);
+	log.info("TRANSLATE_OK provider=%s text=%s translation=%s", provider, sourceText, translation);
+	ApplyTranslationToWaiters(sourceText, translation);
+	ApplyTranslationToConsoleSayWaiters(sourceText, translation);
+	g_pendingTexts.Remove(sourceText);
+	g_translationRetryCounts.Remove(sourceText);
 }
 
 bool ExtractDeepSeekTranslation(HTTPResponse response, const char[] sourceText, char[] translation, int maxlength)
@@ -923,6 +1041,11 @@ void RetryOrCompleteTranslation(const char[] sourceText)
 	}
 
 	log.warning("TRANSLATE_FAIL_FINAL attempts=%i text=%s", retryCount + 1, sourceText);
+	if (g_deepLApiKey[0] != '\0')
+	{
+		StartDeepLTranslation(sourceText);
+		return;
+	}
 	CompleteTranslationFailure(sourceText);
 }
 

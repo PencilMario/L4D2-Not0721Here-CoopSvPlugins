@@ -54,8 +54,15 @@ bool IsChainsawEntity(int entity) {
     return StrEqual(classname, "weapon_chainsaw");
 }
 
+bool IsValidInGameClient(int client) {
+    return client >= 1 && client <= MaxClients && IsClientInGame(client);
+}
+
 public Action OnTakeDamage(int victim, int &attacker, int &inflictor, float &damage, int &damagetype, int &weapon, float damageForce[3], float damagePosition[3]) {
-    if (IsClientInGame(victim) && IsClientInGame(attacker)){
+    if (!IsValidInGameClient(victim) || !IsValidInGameClient(attacker)) {
+        return Plugin_Continue;
+    }
+
         if (GetClientTeam(victim) != GetClientTeam(attacker)) return Plugin_Continue;
         float pos1[3], pos2[3];
         GetClientAbsOrigin(victim, pos1);
@@ -92,6 +99,4 @@ public Action OnTakeDamage(int victim, int &attacker, int &inflictor, float &dam
             damage *= targetMaxDamagePercent;
         }
         return Plugin_Changed;
-    }
-    return Plugin_Continue;
 }

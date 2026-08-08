@@ -149,7 +149,7 @@ void InitPathWithin()
 	}
 	*/
 
-	HSCRIPT script = VScript_CompileScript("::IBPathWithin <- function (iClient, fRadius) { local player = GetPlayerFromUserID(iClient); if (player == null) return Vector(0, 0, 0); local location = player.TryGetPathableLocationWithin(fRadius); return location == null ? Vector(0, 0, 0) : location }");
+	HSCRIPT script = VScript_CompileScript("::IBPathWithin <- function (iClient, fRadius) { return GetPlayerFromUserID(iClient).TryGetPathableLocationWithin(fRadius) }");
 	VScriptExecute execute = new VScriptExecute(script);
 	ScriptStatus_t valid = execute.Execute();
 	delete execute;

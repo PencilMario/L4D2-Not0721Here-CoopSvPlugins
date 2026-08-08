@@ -243,7 +243,7 @@ public void OnClientDisconnect(int client) {
 	if (!IsValidClient(client) || IsFakeClient(client)) {
 		return;
 	}
-	SDKUnhook(client, SDK_HOOK_TYPE, sdkHookThinkCallback);
+	SDKHook(client, SDK_HOOK_TYPE, sdkHookThinkCallback);
 	if (teleportInfecteds[client] != null) {
 		teleportInfecteds[client].Clear();
 	}

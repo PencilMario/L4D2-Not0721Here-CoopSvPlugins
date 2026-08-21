@@ -96,7 +96,11 @@ bool SurvivorBot_AbleToShootWeapon(int iClient)
 void GetClosestToEyePosEntityBonePos(int iClient, int iTarget, float fAimPos[3])
 {
 	float fBoneDist, fBonePos[3], fAimPartPos[3], fLastDist = -1.0;
-	if (SDKCall(g_hLookupBone, iTarget, "ValveBiped.Bip01_Pelvis") != -1)
+	fAimPos[0] = fAimPos[1] = fAimPos[2] = 0.0;
+	GetEntityAbsOrigin(iTarget, fAimPos);
+	if (!LBI_IsBoneQueryReady(iTarget))return;
+
+	if (LBI_LookupBone(iTarget, "ValveBiped.Bip01_Pelvis") != -1)
 	{
 		for (int i = 0; i < sizeof(g_sBoneNames_Old); i++)
 		{
@@ -129,15 +133,17 @@ void GetClosestToEyePosEntityBonePos(int iClient, int iTarget, float fAimPos[3])
 
 void GetTargetAimPart(int iClient, int iTarget, float fAimPos[3])
 {
+	fAimPos[0] = fAimPos[1] = fAimPos[2] = 0.0;
+	GetEntityAbsOrigin(iTarget, fAimPos);
+
 	if (IsWeaponSlotActive(iClient, 0) && g_iClientInvFlags[iClient] & FLAG_GL && (!IsValidClient(iTarget) || L4D2_GetPlayerZombieClass(iTarget) != L4D2ZombieClass_Jockey))
-	{
-		GetEntityAbsOrigin(iTarget, fAimPos);
 		return;
-	}
+
+	if (!LBI_IsBoneQueryReady(iTarget))return;
 
 	static char sAimBone[64];
 	float fDist = GetEntityDistance(iClient, iTarget, true);
-	bool bIsUsingOldSkeleton = (SDKCall(g_hLookupBone, iTarget, "ValveBiped.Bip01_Pelvis") != -1);
+	bool bIsUsingOldSkeleton = (LBI_LookupBone(iTarget, "ValveBiped.Bip01_Pelvis") != -1);
 	if (IsWitch(iTarget) && fDist <= 65536.0 && IsWeaponSlotActive(iClient, 0) && g_iClientInvFlags[iClient] & FLAG_SHOTGUN || (L4D_IsPlayerIncapacitated(iClient)
 		&& fDist <= 147456.0 || L4D2_IsRealismMode() && fDist <= 262144.0) && (!IsValidClient(iTarget) || L4D2_GetPlayerZombieClass(iTarget) != L4D2ZombieClass_Tank))
 	{
@@ -149,7 +155,7 @@ void GetTargetAimPart(int iClient, int iTarget, float fAimPos[3])
 	}
 
 	float fAimPartPos[3];
-	LBI_GetBonePosition(iTarget, sAimBone, fAimPartPos);
+	if (!LBI_GetBonePosition(iTarget, sAimBone, fAimPartPos))return;
 
 	if (!IsVisibleVector(iClient, fAimPartPos))
 	{

@@ -374,12 +374,29 @@ public Action ClearBadPathEntsTable(Handle timer)
 	return Plugin_Handled;
 }
 
-bool LBI_GetBonePosition(int iEntity, const char[] sBoneName, float fBuffer[3])
+bool LBI_IsBoneQueryReady(int iEntity)
 {
 	if (!IsEntityExists(iEntity))return false;
+	if (!HasEntProp(iEntity, Prop_Send, "m_nModelIndex") || GetEntProp(iEntity, Prop_Send, "m_nModelIndex") <= 0)return false;
+	if (!HasEntProp(iEntity, Prop_Data, "m_ModelName"))return false;
 
-	int iBoneIndex = SDKCall(g_hLookupBone, iEntity, sBoneName);
-	if (iBoneIndex == -1)return false;
+	static char sModelName[PLATFORM_MAX_PATH];
+	GetEntPropString(iEntity, Prop_Data, "m_ModelName", sModelName, sizeof(sModelName));
+	return (sModelName[0] != '\0');
+}
+
+int LBI_LookupBone(int iEntity, const char[] sBoneName)
+{
+	if (!LBI_IsBoneQueryReady(iEntity) || sBoneName[0] == '\0')return -1;
+	return SDKCall(g_hLookupBone, iEntity, sBoneName);
+}
+
+bool LBI_GetBonePosition(int iEntity, const char[] sBoneName, float fBuffer[3])
+{
+	fBuffer[0] = fBuffer[1] = fBuffer[2] = 0.0;
+
+	int iBoneIndex = LBI_LookupBone(iEntity, sBoneName);
+	if (iBoneIndex == -1 || !LBI_IsBoneQueryReady(iEntity))return false;
 
 	static float fUnusedAngles[3];
 	SDKCall(g_hGetBonePosition, iEntity, iBoneIndex, fBuffer, fUnusedAngles);

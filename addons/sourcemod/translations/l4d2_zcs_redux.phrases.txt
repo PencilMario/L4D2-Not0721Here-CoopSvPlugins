@@ -1,0 +1,104 @@
+﻿"Phrases"
+{
+	"ZCS_NotifyKey"
+	{
+		"#format"	"{1:s}"
+		"en"		"Press the {1} key while ghosted to change your infected class."
+		"chi"		"作为鬼魂时按下 {1} 键切换特感类别。"
+	}
+	"ZCS_LimitsUp"
+	{
+		"#format"	"{1:d},{2:d}"
+		"en"		"Limit reached. Select your current class or wait. ({1}/{2})"
+		"chi"		"已达到限制。请选择当前类别或等待。({1}/{2})"
+	}
+	"ZCS_CooldownWait"
+	{
+		"#format"	"{1:s},{2:d},{3:d}"
+		"en"		"Wait for {1} to become available. ({2}/{3})"
+		"chi"		"请等待 {1} 类别可用。({2}/{3})"
+	}
+	"ZCS_ClassesUpAllow"
+	{
+		"en"		"No more classes are available. Your last class is allowed."
+		"chi"		"没有更多类别可用，允许选择上一个类别。"
+	}
+	"ZCS_ClassesUpDeny"
+	{
+		"en"		"No more classes are available. Select your current class or wait."
+		"chi"		"没有更多类别可用，请选择当前类别或等待。"
+	}
+	"ZCS_NotifyLock"
+	{
+		"#format"	"{1:0.0f}"
+		"en"		"Class selection will lock in {1} seconds."
+		"chi"		"类别选择将在 {1} 秒后锁定。"
+	}
+	"ZCS_SwitchLock"
+	{
+		"#format"	"{1:0.0f}"
+		"en"		"Class selection is now locked. (Unlocks in {1} seconds)"
+		"chi"		"类别选择现在已锁定。({1} 秒后解锁)"
+	}
+	"ZCS_HudTitle"
+	{
+		"en"		"Infected Limits"
+		"chi"		"特感数量限制"
+	}
+	"ZCS_HudLine"
+	{
+		"#format"	"{1:d},{2:d},{3:d},{4:s},{5:s}"
+		"en"		"->{1}. ({2}/{3}) {4} {5}"
+		"chi"		"->{1}. ({2}/{3}) {4} {5}"
+	}
+	"ZCS_HudCooldown"
+	{
+		"en"		"(C)"
+		"chi"		"(冷却)"
+	}
+	"ZCS_Class_Smoker"
+	{
+		"en"		"Smoker"
+		"chi"		"烟鬼"
+	}
+	"ZCS_Class_Boomer"
+	{
+		"en"		"Boomer"
+		"chi"		"胖子"
+	}
+	"ZCS_Class_Hunter"
+	{
+		"en"		"Hunter"
+		"chi"		"猎人"
+	}
+	"ZCS_Class_Spitter"
+	{
+		"en"		"Spitter"
+		"chi"		"喷吐者"
+	}
+	"ZCS_Class_Jockey"
+	{
+		"en"		"Jockey"
+		"chi"		"骑师"
+	}
+	"ZCS_Class_Charger"
+	{
+		"en"		"Charger"
+		"chi"		"牛"
+	}
+	"ZCS_Class_Witch"
+	{
+		"en"		"Witch"
+		"chi"		"女巫"
+	}
+	"ZCS_Class_Tank"
+	{
+		"en"		"Tank"
+		"chi"		"坦克"
+	}
+	"ZCS_Class_Survivor"
+	{
+		"en"		"Survivor"
+		"chi"		"生还者"
+	}
+}

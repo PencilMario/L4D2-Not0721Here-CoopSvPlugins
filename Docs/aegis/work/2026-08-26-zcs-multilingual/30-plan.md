@@ -44,12 +44,12 @@ pwsh -NoProfile -File tests/l4d2_zcs_multilingual.tests.ps1
 
 **Impact / Compatibility:** 消息展示层改变；选择/限制状态机及前序 Tank 改动保持不变。
 
-- [ ] **Step 1: 添加 `en`/`chi` phrases**：为设计中的每个键提供两种语言，保留聊天颜色控制码和原有格式参数数量。
-- [ ] **Step 2: 启动时加载翻译**：在 `OnPluginStart` 中加入 `LoadTranslations("l4d2_zcs_redux.phrases");`。
-- [ ] **Step 3: 替换聊天提示**：将提示宏改为 phrase key，并将每次 `PrintToChat(Client, ...)` 改为 `PrintToChat(Client, "%T", phrase, Client, ...)`。
-- [ ] **Step 4: 添加类别名称翻译辅助**：用 ID 对齐的 phrase-key 数组和目标客户端参数生成类别名；只把本地化结果传给外层 `%s`。
-- [ ] **Step 5: 重建逐玩家 HUD**：在满足原条件的玩家循环内创建面板，使用目标玩家翻译标题、类别名、行格式和冷却标记，发送后关闭该面板。
-- [ ] **Step 6: 运行 GREEN**：执行多语言契约测试，预期输出 `Zombie Character Select multilingual contract passed`。
+- [x] **Step 1: 添加 `en`/`chi` phrases**：为设计中的每个键提供两种语言，保留聊天颜色控制码和原有格式参数数量。
+- [x] **Step 2: 启动时加载翻译**：在 `OnPluginStart` 中加入 `LoadTranslations("l4d2_zcs_redux.phrases");`。
+- [x] **Step 3: 替换聊天提示**：将提示宏改为 phrase key，并将每次 `PrintToChat(Client, ...)` 改为 `PrintToChat(Client, "%T", phrase, Client, ...)`。
+- [x] **Step 4: 添加类别名称翻译辅助**：用 ID 对齐的 phrase-key 数组和目标客户端参数生成类别名；只把本地化结果传给外层 `%s`。
+- [x] **Step 5: 重建逐玩家 HUD**：在满足原条件的玩家循环内创建面板，使用目标玩家翻译标题、类别名、行格式和冷却标记，发送后关闭该面板。
+- [x] **Step 6: 运行 GREEN**：`pwsh -NoProfile -File tests/l4d2_zcs_multilingual.tests.ps1` 输出 `Zombie Character Select multilingual contract passed`，退出码 `0`。
 
 ### Task 3: 编译和回归验证
 
@@ -60,7 +60,7 @@ pwsh -NoProfile -File tests/l4d2_zcs_multilingual.tests.ps1
 
 **Retirement Track:** 旧的中文 `PLAYER_*` 字符串、固定英文 HUD 标题/类别名和共享面板构建路径退出；内部英文 `g_sBossNames`、`sm_buy` 参数和调试日志保留，因为它们不是玩家本地化输出边界。
 
-- [ ] **Step 1: 编译源码**：使用 `AGENTS.md` 指定的 `spcomp.exe`、include 路径和临时输出，确认 `Compilation successful.`。
-- [ ] **Step 2: 运行回归**：执行多语言契约、Tank 契约和受影响的静态测试。
-- [ ] **Step 3: 检查差异**：执行 `git diff --check`，确认没有覆盖前序 Tank/配置改动。
-- [ ] **Step 4: 记录证据**：记录命令、退出码、编译器既有警告、未验证的 live server 场景和手工复现步骤。
+- [x] **Step 1: 编译源码**：使用 `AGENTS.md` 指定的 `spcomp.exe`、include 路径编译成功，退出码 `0`；仅有原有两个未使用数组警告。
+- [x] **Step 2: 运行回归**：多语言契约、Tank 契约和其余受影响静态测试通过；仓库全量 17 项中只有缺失 `install_release_updaters.sh` 的既有检查失败。
+- [x] **Step 3: 检查差异**：执行差异、BOM 和临时编译产物检查，确认没有覆盖前序 Tank/配置改动。
+- [x] **Step 4: 记录证据**：证据、未验证的 live server 场景和手工复现步骤已记录在 `50-evidence.md`。

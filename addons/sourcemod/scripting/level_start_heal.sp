@@ -48,6 +48,10 @@ void set_temp_health(int client, float buffer)
 void heal_player(int client)
 {
     int health = GetClientHealth(client);
+    if(O_health > 100)
+    {
+        SetEntProp(client, Prop_Send, "m_iMaxHealth", O_health);
+    }
     if(health < O_health)
     {
         float buffer = get_temp_health(client) + float(health) - float(O_health);

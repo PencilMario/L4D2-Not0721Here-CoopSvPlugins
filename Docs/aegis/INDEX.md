@@ -15,3 +15,4 @@
 - `work/2026-07-31-si-spawn-mutations/`: implementation plan and verification evidence for mode-aware special-infected class allocation.
 - `specs/2026-08-04-maphint-deepl-fallback-design.md`: DeepL fallback after exhausted DeepSeek retries and startup-only translation progress hints.
 - `work/2026-08-04-maphint-deepl-fallback/`: implementation plan and verification evidence for the map-hint DeepL fallback and startup progress.
+- `specs/2026-08-26-gungame-modularization-design.md`: private single-plugin SourcePawn module split design for the L4D2 Gun Game plugin.

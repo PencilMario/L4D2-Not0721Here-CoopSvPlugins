@@ -39,6 +39,9 @@ Require-Text $source 'HookEvent("player_death"' 'Spitter death must clean its ch
 Require-Text $source 'HookEvent("player_team"' 'Leaving the infected team must clean its child entities.'
 Require-Text $source 'OnClientDisconnect' 'Disconnect cleanup is required.'
 Require-Text $source 'OnPluginEnd' 'Plugin shutdown cleanup is required.'
+Require-Text $source 'StartUpdateTimer' 'The global slime update timer must be restartable after a map change.'
+Require-Pattern $source '(?ms)public void OnMapStart\(\)\s*\{.*?StartUpdateTimer\(\);' 'OnMapStart must restart the global slime update timer.'
+Require-Text $source 'OnSlimeEnableChanged' 'Slime enable changes must be handled while the plugin is loaded.'
 Require-Text $source 'TR_TraceRayFilterEx' 'Targets must be selected using a visibility trace.'
 Require-Text $source 'SDKHook(entity, SDKHook_Touch' 'Gas cans must explode on contact with any entity.'
 Require-Text $source 'gas_explosion_initialburst_blast' 'Gas explosion must have its initial blast particle.'
@@ -47,6 +50,9 @@ Require-Text $source 'weapons/hegrenade/explode3.wav' 'Gas explosion must play a
 Require-Text $source 'weapons/hegrenade/explode5.wav' 'Gas explosion must have the alternate explosion sound.'
 Require-Text $source 'models/props_junk/gascan001a.mdl' 'The active projectile must be a visible gas can.'
 Require-Text $source 'IN_ATTACK' 'The replacement must document/use the IN_ATTACK path.'
+Require-Pattern $source 'SetEntProp\(entity,\s*Prop_Send,\s*"m_bIsLive",\s*1\s*\)' 'Native slime must retain its live visual state.'
+Require-Pattern $source 'DispatchKeyValue\(entity,\s*"physdamagescale",\s*"0\.0"\)' 'Gas cans must not inflict engine physics damage.'
+Require-Pattern $source 'if\s*\(!L4D2_SetCustomAbilityCooldown\(client,\s*g_hGasCooldown\.FloatValue\)\)' 'Gas-can creation must fail safely when its cooldown cannot be set.'
 
 foreach ($cvar in @(
     'l4d2_spitter_slime_enable',
@@ -89,6 +95,11 @@ foreach ($forbidden in @('point_hurt', 'env_explosion', 'L4D2_CTerrorPlayer_Flin
 Require-Pattern $loader '(?m)^sm plugins load optional/l4d2_spitter_slime\.smx\s*$' 'versus_isfullshit must load the new plugin.'
 if ($loader -match '(?im)^sm plugins load .*L4D2 Spitter Supergirl\.smx\s*$') {
     $errors.Add('The retired Supergirl plugin is still loaded.')
+}
+
+$legacyRootBinaryPath = Join-Path $repo 'addons/sourcemod/plugins/L4D2 Spitter Supergirl.smx'
+if (Test-Path -LiteralPath $legacyRootBinaryPath) {
+    $errors.Add("The retired root plugin binary still exists: $legacyRootBinaryPath")
 }
 
 if (-not (Test-Path -LiteralPath $binaryPath)) {

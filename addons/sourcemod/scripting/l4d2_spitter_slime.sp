@@ -96,14 +96,16 @@ public void OnPluginStart()
 	HookEvent("mission_lost", Event_RoundCleanup, EventHookMode_PostNoCopy);
 	HookEvent("map_transition", Event_RoundCleanup, EventHookMode_PostNoCopy);
 
+	HookConVarChange(g_hSlimeEnable, OnSlimeEnableChanged);
 	HookConVarChange(g_hSlimeInterval, OnSlimeIntervalChanged);
-	g_UpdateTimer = CreateTimer(SLIME_UPDATE_INTERVAL, Timer_UpdateSlimes, _, TIMER_REPEAT | TIMER_FLAG_NO_MAPCHANGE);
+	StartUpdateTimer();
 	CreateTimer(0.1, Timer_StartupScan, _, TIMER_FLAG_NO_MAPCHANGE);
 }
 
 public void OnMapStart()
 {
 	PrecacheAssets();
+	StartUpdateTimer();
 }
 
 public void OnMapEnd()
@@ -206,6 +208,12 @@ void StopUpdateTimer()
 		KillTimer(g_UpdateTimer);
 		g_UpdateTimer = null;
 	}
+}
+
+void StartUpdateTimer()
+{
+	StopUpdateTimer();
+	g_UpdateTimer = CreateTimer(SLIME_UPDATE_INTERVAL, Timer_UpdateSlimes, _, TIMER_REPEAT | TIMER_FLAG_NO_MAPCHANGE);
 }
 
 void CleanupAllSpitters()
@@ -318,6 +326,28 @@ void OnSlimeIntervalChanged(ConVar convar, const char[] oldValue, const char[] n
 	}
 }
 
+void OnSlimeEnableChanged(ConVar convar, const char[] oldValue, const char[] newValue)
+{
+	for (int client = 1; client <= MaxClients; client++)
+	{
+		if (!g_hSlimeEnable.BoolValue)
+		{
+			if (g_SlimeTimers[client] != null)
+			{
+				KillTimer(g_SlimeTimers[client]);
+				g_SlimeTimers[client] = null;
+			}
+			ClearSlimes(client);
+			continue;
+		}
+
+		if (IsValidSpitter(client))
+		{
+			StartSpitter(client);
+		}
+	}
+}
+
 bool IsValidClient(int client)
 {
 	return client > 0 && client <= MaxClients && IsClientInGame(client);
@@ -426,7 +456,7 @@ void CreateSlime(int client)
 	}
 	if (HasEntProp(entity, Prop_Send, "m_bIsLive"))
 	{
-		SetEntProp(entity, Prop_Send, "m_bIsLive", 0);
+		SetEntProp(entity, Prop_Send, "m_bIsLive", 1);
 	}
 	if (HasEntProp(entity, Prop_Send, "m_CollisionGroup"))
 	{
@@ -871,7 +901,18 @@ public Action L4D2_ActivateAbility_Spitter(int client, int ability)
 		return Plugin_Continue;
 	}
 
-	L4D2_SetCustomAbilityCooldown(client, g_hGasCooldown.FloatValue);
+	if (!L4D2_SetCustomAbilityCooldown(client, g_hGasCooldown.FloatValue))
+	{
+		g_GasRefs[client] = INVALID_ENT_REFERENCE;
+		g_GasOwner[gas] = 0;
+		g_GasExploded[gas] = true;
+		if (IsValidEntity(gas))
+		{
+			SDKUnhook(gas, SDKHook_Touch, OnGasCanTouch);
+			RemoveEntity(gas);
+		}
+		return Plugin_Continue;
+	}
 	return Plugin_Handled;
 }
 
@@ -901,6 +942,7 @@ int CreateGasCan(int client)
 	}
 
 	DispatchKeyValue(entity, "model", MODEL_GAS_CAN);
+	DispatchKeyValue(entity, "physdamagescale", "0.0");
 	DispatchSpawn(entity);
 
 	float angles[3];

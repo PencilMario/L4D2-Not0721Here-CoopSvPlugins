@@ -12,10 +12,9 @@
 #define MAX_SLIMES 32
 #define MAX_TRACKED_ENTITIES 2048
 #define SLIME_UPDATE_INTERVAL 0.05
-#define SLIME_COLLISION_HALF_SIZE 10.0
 #define SLIME_GRAVITY 800.0
-#define SLIME_BOUNCE_DAMPING 0.72
-#define SLIME_MIN_BOUNCE_SPEED 45.0
+#define SLIME_MOVECOLLIDE_FLY_BOUNCE 1
+#define SLIME_BOUNCE_RECOVERY_TIME 0.15
 #define ARC_TWO_PI 6.28318530718
 
 #define MODEL_GAS_CAN "models/props_junk/gascan001a.mdl"
@@ -31,11 +30,12 @@ enum struct SlimeState
 	int target;
 	bool tracking;
 	float targetOffset[3];
-	float arcStart[3];
-	float arcEnd[3];
 	float arcStartedAt;
 	float arcDuration;
-	float lastPos[3];
+	float spawnedAt;
+	float trackingStartedAt;
+	float bounceUntil;
+	bool everTracked;
 	bool bouncing;
 	float velocity[3];
 }
@@ -47,9 +47,12 @@ ConVar g_hSlimeRadius;
 ConVar g_hSlimeReturnDistance;
 ConVar g_hSlimeTargetRange;
 ConVar g_hSlimeSpeed;
+ConVar g_hSlimeTrackingSpeedMultiplier;
 ConVar g_hSlimeArcHeight;
 ConVar g_hSlimeDamage;
 ConVar g_hSlimeHitRadius;
+ConVar g_hSlimeIdleLifetime;
+ConVar g_hSlimeMissTimeout;
 
 ConVar g_hGasEnable;
 ConVar g_hGasCooldown;
@@ -146,9 +149,12 @@ void CreateConVars()
 	g_hSlimeReturnDistance = CreateConVar("l4d2_spitter_slime_return_distance", "600.0", "Distance at which a slime returns to its Spitter.", FCVAR_NOTIFY, true, 1.0, true, 5000.0);
 	g_hSlimeTargetRange = CreateConVar("l4d2_spitter_slime_target_range", "2000.0", "Visible survivor search range around a Spitter.", FCVAR_NOTIFY, true, 0.0, true, 5000.0);
 	g_hSlimeSpeed = CreateConVar("l4d2_spitter_slime_speed", "450.0", "Slime movement speed.", FCVAR_NOTIFY, true, 1.0, true, 5000.0);
+	g_hSlimeTrackingSpeedMultiplier = CreateConVar("l4d2_spitter_slime_tracking_speed_multiplier", "2.0", "Tracking slime speed multiplier.", FCVAR_NOTIFY, true, 1.0, true, 5.0);
 	g_hSlimeArcHeight = CreateConVar("l4d2_spitter_slime_arc_height", "80.0", "Idle and tracking slime parabolic height.", FCVAR_NOTIFY, true, 0.0, true, 2000.0);
 	g_hSlimeDamage = CreateConVar("l4d2_spitter_slime_damage", "10.0", "SDKDamage dealt when a slime reaches a survivor.", FCVAR_NOTIFY, true, 0.0, true, 10000.0);
-	g_hSlimeHitRadius = CreateConVar("l4d2_spitter_slime_hit_radius", "32.0", "Slime survivor hit radius.", FCVAR_NOTIFY, true, 1.0, true, 256.0);
+	g_hSlimeHitRadius = CreateConVar("l4d2_spitter_slime_hit_radius", "100.0", "Slime survivor hit radius.", FCVAR_NOTIFY, true, 1.0, true, 256.0);
+	g_hSlimeIdleLifetime = CreateConVar("l4d2_spitter_slime_idle_lifetime", "3.0", "Seconds an untracked slime may remain alive.", FCVAR_NOTIFY, true, 0.1, true, 60.0);
+	g_hSlimeMissTimeout = CreateConVar("l4d2_spitter_slime_miss_timeout", "5.0", "Seconds a tracked slime may chase without a hit.", FCVAR_NOTIFY, true, 0.1, true, 60.0);
 
 	g_hGasEnable = CreateConVar("l4d2_spitter_gas_enable", "1", "Replace the Spitter IN_ATTACK ability with a gas can.", FCVAR_NOTIFY, true, 0.0, true, 1.0);
 	g_hGasCooldown = CreateConVar("l4d2_spitter_gas_cooldown", "5.0", "Gas-can ability cooldown in seconds.", FCVAR_NOTIFY, true, 0.0, true, 60.0);
@@ -201,17 +207,12 @@ void ResetSlimeState(int client, int slot)
 	g_Slimes[client][slot].targetOffset[0] = 0.0;
 	g_Slimes[client][slot].targetOffset[1] = 0.0;
 	g_Slimes[client][slot].targetOffset[2] = 0.0;
-	g_Slimes[client][slot].arcStart[0] = 0.0;
-	g_Slimes[client][slot].arcStart[1] = 0.0;
-	g_Slimes[client][slot].arcStart[2] = 0.0;
-	g_Slimes[client][slot].arcEnd[0] = 0.0;
-	g_Slimes[client][slot].arcEnd[1] = 0.0;
-	g_Slimes[client][slot].arcEnd[2] = 0.0;
 	g_Slimes[client][slot].arcStartedAt = 0.0;
 	g_Slimes[client][slot].arcDuration = 0.0;
-	g_Slimes[client][slot].lastPos[0] = 0.0;
-	g_Slimes[client][slot].lastPos[1] = 0.0;
-	g_Slimes[client][slot].lastPos[2] = 0.0;
+	g_Slimes[client][slot].spawnedAt = 0.0;
+	g_Slimes[client][slot].trackingStartedAt = 0.0;
+	g_Slimes[client][slot].bounceUntil = 0.0;
+	g_Slimes[client][slot].everTracked = false;
 	g_Slimes[client][slot].bouncing = false;
 	g_Slimes[client][slot].velocity[0] = 0.0;
 	g_Slimes[client][slot].velocity[1] = 0.0;
@@ -514,12 +515,20 @@ void CreateSlime(int client)
 	{
 		SetEntProp(entity, Prop_Send, "m_nSolidType", 1);
 	}
-	SetEntityMoveType(entity, MOVETYPE_NONE);
+	SetEntityMoveType(entity, MOVETYPE_FLYGRAVITY);
+	if (HasEntProp(entity, Prop_Data, "m_MoveCollide"))
+	{
+		SetEntProp(entity, Prop_Data, "m_MoveCollide", SLIME_MOVECOLLIDE_FLY_BOUNCE);
+	}
+	if (HasEntProp(entity, Prop_Data, "m_flElasticity"))
+	{
+		SetEntPropFloat(entity, Prop_Data, "m_flElasticity", 1.0);
+	}
 	SDKHook(entity, SDKHook_StartTouch, OnSlimeTouch);
 	SDKHook(entity, SDKHook_Touch, OnSlimeTouch);
 
 	g_Slimes[client][slot].entRef = EntIndexToEntRef(entity);
-	g_Slimes[client][slot].lastPos = position;
+	g_Slimes[client][slot].spawnedAt = GetGameTime();
 	g_SlimeCount[client]++;
 	BeginRandomArc(client, slot, position);
 }
@@ -657,6 +666,12 @@ void UpdateSlime(int client, int slot, int entity)
 	float current[3];
 	GetEntPropVector(entity, Prop_Data, "m_vecAbsOrigin", current);
 
+	float engineVelocity[3];
+	if (ReadSlimeVelocity(entity, engineVelocity))
+	{
+		g_Slimes[client][slot].velocity = engineVelocity;
+	}
+
 	float ownerPosition[3];
 	GetClientAbsOrigin(client, ownerPosition);
 	if (GetVectorDistance(current, ownerPosition) > g_hSlimeReturnDistance.FloatValue)
@@ -666,55 +681,87 @@ void UpdateSlime(int client, int slot, int entity)
 		returnPosition[1] = ownerPosition[1];
 		returnPosition[2] = ownerPosition[2] + 36.0;
 		TeleportEntity(entity, returnPosition, NULL_VECTOR, NULL_VECTOR);
-		g_Slimes[client][slot].lastPos = returnPosition;
 		BeginRandomArc(client, slot, returnPosition);
 		return;
 	}
 
 	if (g_Slimes[client][slot].bouncing)
 	{
-		UpdateBouncingSlime(client, slot, entity, current);
+		if (GetGameTime() >= g_Slimes[client][slot].bounceUntil)
+		{
+			g_Slimes[client][slot].bouncing = false;
+			BeginRandomArc(client, slot, current);
+		}
 		return;
 	}
 
-	g_Slimes[client][slot].lastPos = current;
-
 	if (!g_Slimes[client][slot].tracking)
 	{
+		float lifetime = GetGameTime() - g_Slimes[client][slot].spawnedAt;
+		if ((!g_Slimes[client][slot].everTracked && lifetime >= g_hSlimeIdleLifetime.FloatValue)
+			|| (g_Slimes[client][slot].everTracked
+				&& GetGameTime() - g_Slimes[client][slot].trackingStartedAt >= g_hSlimeMissTimeout.FloatValue))
+		{
+			DestroySlimeSlot(client, slot);
+			return;
+		}
+
 		int target = FindVisibleSurvivor(client);
 		if (target > 0)
 		{
 			BeginTrackingArc(client, slot, current, target);
-		}
-	}
-
-	if (g_Slimes[client][slot].tracking)
-	{
-		int target = g_Slimes[client][slot].target;
-		if (!IsValidSlimeTarget(client, target))
-		{
-			BeginRandomArc(client, slot, current);
 			return;
 		}
-		UpdateTrackingSlime(client, slot, entity, current, target);
+
+		if (GetGameTime() >= g_Slimes[client][slot].arcStartedAt + g_Slimes[client][slot].arcDuration)
+		{
+			BeginRandomArc(client, slot, current);
+		}
 		return;
 	}
 
-	UpdateRandomSlime(client, slot, entity, current);
+	if (GetGameTime() - g_Slimes[client][slot].trackingStartedAt >= g_hSlimeMissTimeout.FloatValue)
+	{
+		DestroySlimeSlot(client, slot);
+		return;
+	}
+
+	int target = g_Slimes[client][slot].target;
+	if (!IsValidSlimeTarget(client, target))
+	{
+		target = FindVisibleSurvivor(client);
+		if (target <= 0)
+		{
+			DestroySlimeSlot(client, slot);
+			return;
+		}
+		g_Slimes[client][slot].target = target;
+	}
+
+	float targetPosition[3];
+	GetClientEyePosition(target, targetPosition);
+	if (GetVectorDistance(current, targetPosition) < g_hSlimeHitRadius.FloatValue)
+	{
+		HitSlime(client, slot, entity, target, current);
+		return;
+	}
+
+	SetTrackingVelocity(client, slot, entity, current, targetPosition);
 }
 
 void BeginRandomArc(int client, int slot, const float start[3])
 {
 	float radius = g_hSlimeRadius.FloatValue;
+	if (radius < 1.0)
+	{
+		radius = 1.0;
+	}
 	float distance = GetRandomFloat(radius * 0.25, radius);
 	float angle = GetRandomFloat(0.0, ARC_TWO_PI);
 
 	g_Slimes[client][slot].target = 0;
 	g_Slimes[client][slot].tracking = false;
 	g_Slimes[client][slot].bouncing = false;
-	g_Slimes[client][slot].velocity[0] = 0.0;
-	g_Slimes[client][slot].velocity[1] = 0.0;
-	g_Slimes[client][slot].velocity[2] = 0.0;
 	g_Slimes[client][slot].targetOffset[0] = Cosine(angle) * distance;
 	g_Slimes[client][slot].targetOffset[1] = Sine(angle) * distance;
 	g_Slimes[client][slot].targetOffset[2] = GetRandomFloat(-radius * 0.25, radius * 0.35) + 36.0;
@@ -723,31 +770,32 @@ void BeginRandomArc(int client, int slot, const float start[3])
 	float end[3];
 	GetClientAbsOrigin(client, ownerPosition);
 	AddVectors(ownerPosition, g_Slimes[client][slot].targetOffset, end);
-	SetSlimeArc(client, slot, start, end);
+
+	g_Slimes[client][slot].arcStartedAt = GetGameTime();
+	g_Slimes[client][slot].arcDuration = CalculateFlightTime(
+		GetVectorDistance(start, end),
+		g_hSlimeSpeed.FloatValue);
+
+	float velocity[3];
+	BuildBallisticVelocity(start, end, g_hSlimeSpeed.FloatValue, g_hSlimeArcHeight.FloatValue, velocity);
+	SetSlimeVelocity(client, slot, EntRefToEntIndex(g_Slimes[client][slot].entRef), velocity);
 }
 
 void BeginTrackingArc(int client, int slot, const float start[3], int target)
 {
-	float targetPosition[3];
-	GetClientEyePosition(target, targetPosition);
 	g_Slimes[client][slot].target = target;
 	g_Slimes[client][slot].tracking = true;
 	g_Slimes[client][slot].bouncing = false;
-	g_Slimes[client][slot].velocity[0] = 0.0;
-	g_Slimes[client][slot].velocity[1] = 0.0;
-	g_Slimes[client][slot].velocity[2] = 0.0;
-	SetSlimeArc(client, slot, start, targetPosition);
+	g_Slimes[client][slot].everTracked = true;
+	g_Slimes[client][slot].trackingStartedAt = GetGameTime();
+
+	float targetPosition[3];
+	GetClientEyePosition(target, targetPosition);
+	int entity = EntRefToEntIndex(g_Slimes[client][slot].entRef);
+	SetTrackingVelocity(client, slot, entity, start, targetPosition);
 }
 
-void SetSlimeArc(int client, int slot, const float start[3], const float end[3])
-{
-	g_Slimes[client][slot].arcStart = start;
-	g_Slimes[client][slot].arcEnd = end;
-	g_Slimes[client][slot].arcStartedAt = GetGameTime();
-	g_Slimes[client][slot].arcDuration = CalculateArcDuration(GetVectorDistance(start, end), g_hSlimeSpeed.FloatValue);
-}
-
-float CalculateArcDuration(float distance, float speed)
+float CalculateFlightTime(float distance, float speed)
 {
 	if (speed < 1.0)
 	{
@@ -758,296 +806,96 @@ float CalculateArcDuration(float distance, float speed)
 	{
 		return SLIME_UPDATE_INTERVAL;
 	}
-	if (duration > 2.0)
+	if (duration > 5.0)
 	{
-		return 2.0;
+		return 5.0;
 	}
 	return duration;
 }
 
-void BuildSlimeVelocity(const float start[3], const float end[3], float velocity[3])
+void BuildBallisticVelocity(const float start[3], const float end[3], float speed, float arcHeight, float velocity[3])
 {
-	MakeVectorFromPoints(start, end, velocity);
-	if (GetVectorLength(velocity, true) > 0.0001)
-	{
-		ScaleVector(velocity, 1.0 / SLIME_UPDATE_INTERVAL);
-	}
+	float duration = CalculateFlightTime(GetVectorDistance(start, end), speed);
+	float delta[3];
+	MakeVectorFromPoints(start, end, delta);
+
+	velocity[0] = delta[0] / duration;
+	velocity[1] = delta[1] / duration;
+	velocity[2] = (delta[2] + 0.5 * SLIME_GRAVITY * duration * duration + (2.0 * arcHeight)) / duration;
 }
 
-bool TraceSlimeCollision(int client, int entity, const float start[3], const float end[3], float hitPosition[3], float hitNormal[3], int &hitEntity)
+void SetTrackingVelocity(int client, int slot, int entity, const float start[3], const float targetPosition[3])
 {
-	float mins[3] = {-SLIME_COLLISION_HALF_SIZE, -SLIME_COLLISION_HALF_SIZE, -SLIME_COLLISION_HALF_SIZE};
-	float maxs[3] = {SLIME_COLLISION_HALF_SIZE, SLIME_COLLISION_HALF_SIZE, SLIME_COLLISION_HALF_SIZE};
-	int filterData = client * MAX_TRACKED_ENTITIES + entity;
-	Handle trace = TR_TraceHullFilterEx(start, end, mins, maxs, MASK_SOLID | CONTENTS_PLAYERCLIP, TraceFilterSlimeCollision, filterData);
-	if (trace == null)
+	if (entity == INVALID_ENT_REFERENCE || !IsValidEntity(entity))
 	{
-		hitEntity = -1;
-		hitPosition = end;
-		hitNormal[0] = 0.0;
-		hitNormal[1] = 0.0;
-		hitNormal[2] = 0.0;
+		return;
+	}
+
+	float velocity[3];
+	float speed = g_hSlimeSpeed.FloatValue * g_hSlimeTrackingSpeedMultiplier.FloatValue;
+	BuildBallisticVelocity(start, targetPosition, speed, g_hSlimeArcHeight.FloatValue, velocity);
+	SetSlimeVelocity(client, slot, entity, velocity);
+}
+
+void SetSlimeVelocity(int client, int slot, int entity, const float velocity[3])
+{
+	if (entity == INVALID_ENT_REFERENCE || !IsValidEntity(entity))
+	{
+		return;
+	}
+
+	g_Slimes[client][slot].velocity = velocity;
+	TeleportEntity(entity, NULL_VECTOR, NULL_VECTOR, velocity);
+}
+
+bool ReadSlimeVelocity(int entity, float velocity[3])
+{
+	if (entity == INVALID_ENT_REFERENCE || !IsValidEntity(entity) || !HasEntProp(entity, Prop_Data, "m_vecVelocity"))
+	{
 		return false;
 	}
 
-	bool collided = TR_DidHit(trace);
-	if (collided)
+	GetEntPropVector(entity, Prop_Data, "m_vecVelocity", velocity);
+	return GetVectorLength(velocity, true) > 0.0001;
+}
+
+void BounceSlime(int client, int slot, int entity)
+{
+	if (g_Slimes[client][slot].bouncing && GetGameTime() < g_Slimes[client][slot].bounceUntil)
 	{
-		TR_GetEndPosition(hitPosition, trace);
-		TR_GetPlaneNormal(trace, hitNormal);
-		hitEntity = TR_GetEntityIndex(trace);
+		return;
+	}
+
+	float engineVelocity[3];
+	float oldVelocity[3];
+	oldVelocity = g_Slimes[client][slot].velocity;
+	float oldSpeed = GetVectorLength(oldVelocity);
+	bool hasEngineVelocity = ReadSlimeVelocity(entity, engineVelocity);
+	float engineSpeed = GetVectorLength(engineVelocity);
+	if (oldSpeed < 0.0001)
+	{
+		oldSpeed = engineSpeed;
+	}
+	if (oldSpeed < 0.0001)
+	{
+		return;
+	}
+
+	if (!hasEngineVelocity || engineSpeed < 0.0001)
+	{
+		engineVelocity = oldVelocity;
 	}
 	else
 	{
-		hitPosition = end;
-		hitNormal[0] = 0.0;
-		hitNormal[1] = 0.0;
-		hitNormal[2] = 0.0;
-		hitEntity = -1;
+		NormalizeVector(engineVelocity, engineVelocity);
+		ScaleVector(engineVelocity, oldSpeed);
 	}
-	delete trace;
-	return collided;
-}
-
-public bool TraceFilterSlimeCollision(int entity, int contentsMask, any data)
-{
-	int owner = data / MAX_TRACKED_ENTITIES;
-	int ignored = data % MAX_TRACKED_ENTITIES;
-	return entity != owner && entity != ignored;
-}
-
-void BounceSlime(int client, int slot, int entity, const float position[3], const float incomingVelocity[3], const float hitNormal[3])
-{
-	float normal[3];
-	normal = hitNormal;
-	if (GetVectorLength(normal, true) <= 0.0001)
-	{
-		normal = incomingVelocity;
-		if (GetVectorLength(normal, true) > 0.0001)
-		{
-			ScaleVector(normal, -1.0);
-			NormalizeVector(normal, normal);
-		}
-		else
-		{
-			normal[0] = 0.0;
-			normal[1] = 0.0;
-			normal[2] = 1.0;
-		}
-	}
-	else
-	{
-		NormalizeVector(normal, normal);
-	}
-
-	float reflected[3];
-	float normalSpeed = GetVectorDotProduct(incomingVelocity, normal);
-	reflected[0] = incomingVelocity[0] - 2.0 * normalSpeed * normal[0];
-	reflected[1] = incomingVelocity[1] - 2.0 * normalSpeed * normal[1];
-	reflected[2] = incomingVelocity[2] - 2.0 * normalSpeed * normal[2];
-	ScaleVector(reflected, SLIME_BOUNCE_DAMPING);
-
-	float reflectedSpeed = GetVectorLength(reflected);
-	if (reflectedSpeed < SLIME_MIN_BOUNCE_SPEED)
-	{
-		if (reflectedSpeed > 0.0001)
-		{
-			ScaleVector(reflected, SLIME_MIN_BOUNCE_SPEED / reflectedSpeed);
-		}
-		else
-		{
-			reflected = normal;
-			ScaleVector(reflected, SLIME_MIN_BOUNCE_SPEED);
-		}
-	}
-
-	float bouncePosition[3];
-	bouncePosition[0] = position[0] + normal[0];
-	bouncePosition[1] = position[1] + normal[1];
-	bouncePosition[2] = position[2] + normal[2];
 
 	g_Slimes[client][slot].target = 0;
 	g_Slimes[client][slot].tracking = false;
 	g_Slimes[client][slot].bouncing = true;
-	g_Slimes[client][slot].velocity[0] = reflected[0];
-	g_Slimes[client][slot].velocity[1] = reflected[1];
-	g_Slimes[client][slot].velocity[2] = reflected[2];
-	g_Slimes[client][slot].lastPos = bouncePosition;
-	TeleportEntity(entity, bouncePosition, NULL_VECTOR, NULL_VECTOR);
-}
-
-void UpdateBouncingSlime(int client, int slot, int entity, const float current[3])
-{
-	float velocity[3];
-	velocity = g_Slimes[client][slot].velocity;
-	if (GetVectorLength(velocity, true) <= 0.0001)
-	{
-		BeginRandomArc(client, slot, current);
-		return;
-	}
-
-	float next[3];
-	next[0] = current[0] + velocity[0] * SLIME_UPDATE_INTERVAL;
-	next[1] = current[1] + velocity[1] * SLIME_UPDATE_INTERVAL;
-	next[2] = current[2] + velocity[2] * SLIME_UPDATE_INTERVAL;
-
-	float hitPosition[3];
-	float hitNormal[3];
-	int hitEntity;
-	if (TraceSlimeCollision(client, entity, current, next, hitPosition, hitNormal, hitEntity))
-	{
-		BounceSlime(client, slot, entity, hitPosition, velocity, hitNormal);
-		return;
-	}
-
-	TeleportEntity(entity, next, NULL_VECTOR, NULL_VECTOR);
-	g_Slimes[client][slot].lastPos = next;
-	velocity[2] -= SLIME_GRAVITY * SLIME_UPDATE_INTERVAL;
-	g_Slimes[client][slot].velocity = velocity;
-	if (GetVectorLength(velocity) < SLIME_MIN_BOUNCE_SPEED * 0.25)
-	{
-		BeginRandomArc(client, slot, next);
-	}
-}
-
-void UpdateRandomSlime(int client, int slot, int entity, const float current[3])
-{
-	float ownerPosition[3];
-	float end[3];
-	GetClientAbsOrigin(client, ownerPosition);
-	AddVectors(ownerPosition, g_Slimes[client][slot].targetOffset, end);
-
-	float duration = g_Slimes[client][slot].arcDuration;
-	if (duration <= 0.0)
-	{
-		BeginRandomArc(client, slot, current);
-		return;
-	}
-
-	float progress = (GetGameTime() - g_Slimes[client][slot].arcStartedAt) / duration;
-	if (progress >= 1.0)
-	{
-		BeginRandomArc(client, slot, current);
-		return;
-	}
-	if (progress < 0.0)
-	{
-		progress = 0.0;
-	}
-
-	float next[3];
-	CalculateParabolicPosition(g_Slimes[client][slot].arcStart, end, progress, next);
-	float incomingVelocity[3];
-	BuildSlimeVelocity(current, next, incomingVelocity);
-	float hitPosition[3];
-	float hitNormal[3];
-	int hitEntity;
-	if (TraceSlimeCollision(client, entity, current, next, hitPosition, hitNormal, hitEntity))
-	{
-		BounceSlime(client, slot, entity, hitPosition, incomingVelocity, hitNormal);
-		return;
-	}
-	TeleportEntity(entity, next, NULL_VECTOR, NULL_VECTOR);
-	g_Slimes[client][slot].lastPos = next;
-}
-
-void UpdateTrackingSlime(int client, int slot, int entity, const float current[3], int target)
-{
-	float targetPosition[3];
-	GetClientEyePosition(target, targetPosition);
-	float distance = GetVectorDistance(current, targetPosition);
-	if (distance <= g_hSlimeHitRadius.FloatValue)
-	{
-		HitSlime(client, slot, entity, target, current);
-		return;
-	}
-
-	float duration = CalculateArcDuration(distance, g_hSlimeSpeed.FloatValue);
-	g_Slimes[client][slot].arcStart = current;
-	g_Slimes[client][slot].arcEnd = targetPosition;
-	g_Slimes[client][slot].arcStartedAt = GetGameTime();
-	g_Slimes[client][slot].arcDuration = duration;
-
-	float progress = SLIME_UPDATE_INTERVAL / duration;
-	if (progress > 1.0)
-	{
-		progress = 1.0;
-	}
-	float next[3];
-	CalculateParabolicPosition(current, targetPosition, progress, next);
-	float incomingVelocity[3];
-	BuildSlimeVelocity(current, next, incomingVelocity);
-	float hitPosition[3];
-	float hitNormal[3];
-	int hitEntity;
-	if (TraceSlimeCollision(client, entity, current, next, hitPosition, hitNormal, hitEntity))
-	{
-		if (IsValidSurvivor(hitEntity))
-		{
-			HitSlime(client, slot, entity, hitEntity, hitPosition);
-		}
-		else
-		{
-			BounceSlime(client, slot, entity, hitPosition, incomingVelocity, hitNormal);
-		}
-		return;
-	}
-	if (GetVectorDistance(targetPosition, next) <= g_hSlimeHitRadius.FloatValue
-		|| DistanceToSegment(targetPosition, current, next) <= g_hSlimeHitRadius.FloatValue)
-	{
-		HitSlime(client, slot, entity, target, next);
-		return;
-	}
-
-	TeleportEntity(entity, next, NULL_VECTOR, NULL_VECTOR);
-	g_Slimes[client][slot].lastPos = next;
-}
-
-void CalculateParabolicPosition(const float start[3], const float end[3], float progress, float result[3])
-{
-	if (progress < 0.0)
-	{
-		progress = 0.0;
-	}
-	if (progress > 1.0)
-	{
-		progress = 1.0;
-	}
-
-	result[0] = start[0] + (end[0] - start[0]) * progress;
-	result[1] = start[1] + (end[1] - start[1]) * progress;
-	result[2] = start[2] + (end[2] - start[2]) * progress;
-	result[2] += 4.0 * g_hSlimeArcHeight.FloatValue * progress * (1.0 - progress);
-}
-
-float DistanceToSegment(const float point[3], const float start[3], const float end[3])
-{
-	float segment[3];
-	float toPoint[3];
-	MakeVectorFromPoints(start, end, segment);
-	MakeVectorFromPoints(start, point, toPoint);
-
-	float lengthSquared = GetVectorLength(segment, true);
-	if (lengthSquared <= 0.0001)
-	{
-		return GetVectorDistance(point, start);
-	}
-
-	float progress = GetVectorDotProduct(toPoint, segment) / lengthSquared;
-	if (progress < 0.0)
-	{
-		progress = 0.0;
-	}
-	if (progress > 1.0)
-	{
-		progress = 1.0;
-	}
-
-	float closest[3];
-	closest[0] = start[0] + segment[0] * progress;
-	closest[1] = start[1] + segment[1] * progress;
-	closest[2] = start[2] + segment[2] * progress;
-	return GetVectorDistance(point, closest);
+	g_Slimes[client][slot].bounceUntil = GetGameTime() + SLIME_BOUNCE_RECOVERY_TIME;
+	SetSlimeVelocity(client, slot, entity, engineVelocity);
 }
 
 void HitSlime(int client, int slot, int entity, int target, const float hitPosition[3])
@@ -1084,33 +932,6 @@ bool FindSlimeState(int entity, int &owner, int &slot)
 	return false;
 }
 
-void GetSlimeIncomingVelocity(int client, int slot, int entity, const float current[3], float velocity[3])
-{
-	velocity = g_Slimes[client][slot].velocity;
-	if (GetVectorLength(velocity, true) > 0.0001)
-	{
-		return;
-	}
-
-	if (HasEntProp(entity, Prop_Data, "m_vecVelocity"))
-	{
-		GetEntPropVector(entity, Prop_Data, "m_vecVelocity", velocity);
-		if (GetVectorLength(velocity, true) > 0.0001)
-		{
-			return;
-		}
-	}
-
-	MakeVectorFromPoints(g_Slimes[client][slot].arcStart, g_Slimes[client][slot].arcEnd, velocity);
-	if (g_Slimes[client][slot].arcDuration > 0.0 && GetVectorLength(velocity, true) > 0.0001)
-	{
-		ScaleVector(velocity, 1.0 / g_Slimes[client][slot].arcDuration);
-		return;
-	}
-
-	BuildSlimeVelocity(g_Slimes[client][slot].lastPos, current, velocity);
-}
-
 public void OnSlimeTouch(int entity, int other)
 {
 	int client;
@@ -1131,28 +952,36 @@ public void OnSlimeTouch(int entity, int other)
 
 	float position[3];
 	GetEntPropVector(entity, Prop_Data, "m_vecAbsOrigin", position);
-	if (g_Slimes[client][slot].tracking && IsValidSurvivor(other))
+	if (g_Slimes[client][slot].tracking)
 	{
-		HitSlime(client, slot, entity, other, position);
+		int target = g_Slimes[client][slot].target;
+		if (other == target && IsValidSurvivor(target))
+		{
+			float targetPosition[3];
+			GetClientEyePosition(target, targetPosition);
+			if (GetVectorDistance(position, targetPosition) < g_hSlimeHitRadius.FloatValue)
+			{
+				HitSlime(client, slot, entity, target, position);
+			}
+			else
+			{
+				SetTrackingVelocity(client, slot, entity, position, targetPosition);
+			}
+			return;
+		}
+
+		if (IsValidSlimeTarget(client, target))
+		{
+			float targetPosition[3];
+			GetClientEyePosition(target, targetPosition);
+			SetTrackingVelocity(client, slot, entity, position, targetPosition);
+		}
 		return;
 	}
 
-	float velocity[3];
-	GetSlimeIncomingVelocity(client, slot, entity, position, velocity);
-	float normal[3];
-	normal = velocity;
-	if (GetVectorLength(normal, true) > 0.0001)
-	{
-		ScaleVector(normal, -1.0);
-		NormalizeVector(normal, normal);
-	}
-	else
-	{
-		normal[0] = 0.0;
-		normal[1] = 0.0;
-		normal[2] = 1.0;
-	}
-	BounceSlime(client, slot, entity, position, velocity, normal);
+	// MOVECOLLIDE_FLY_BOUNCE lets the engine calculate the reflected direction.
+	// BounceSlime only restores the pre-impact speed and writes the resulting velocity.
+	BounceSlime(client, slot, entity);
 }
 
 public MRESReturn OnSlimeDetonate(int entity)
@@ -1175,38 +1004,20 @@ public MRESReturn OnSlimeDetonate(int entity)
 	{
 		float targetPosition[3];
 		GetClientEyePosition(g_Slimes[client][slot].target, targetPosition);
-		if (GetVectorDistance(position, targetPosition) <= g_hSlimeHitRadius.FloatValue)
+		if (GetVectorDistance(position, targetPosition) < g_hSlimeHitRadius.FloatValue)
 		{
 			HitSlime(client, slot, entity, g_Slimes[client][slot].target, position);
 			return MRES_Supercede;
 		}
-	}
-	if (g_Slimes[client][slot].bouncing)
-	{
+		SetTrackingVelocity(client, slot, entity, position, targetPosition);
 		return MRES_Supercede;
-	}
-
-	float velocity[3];
-	GetSlimeIncomingVelocity(client, slot, entity, position, velocity);
-	float normal[3];
-	normal = velocity;
-	if (GetVectorLength(normal, true) > 0.0001)
-	{
-		ScaleVector(normal, -1.0);
-		NormalizeVector(normal, normal);
-	}
-	else
-	{
-		normal[0] = 0.0;
-		normal[1] = 0.0;
-		normal[2] = 1.0;
 	}
 
 	if (HasEntProp(entity, Prop_Send, "m_bIsLive"))
 	{
 		SetEntProp(entity, Prop_Send, "m_bIsLive", 1);
 	}
-	BounceSlime(client, slot, entity, position, velocity, normal);
+	// The native detour suppresses acid-pool creation; the SDK touch callback handles bounce.
 	return MRES_Supercede;
 }
 
@@ -1257,17 +1068,9 @@ int FindVisibleSurvivor(int client)
 
 bool IsValidSlimeTarget(int client, int target)
 {
-	if (!IsValidSurvivor(target))
-	{
-		return false;
-	}
-
-	float ownerPosition[3];
-	float targetPosition[3];
-	GetClientEyePosition(client, ownerPosition);
-	GetClientEyePosition(target, targetPosition);
-	return GetVectorDistance(ownerPosition, targetPosition) <= g_hSlimeTargetRange.FloatValue
-		&& IsVisibleToSpitter(client, target);
+	// Visibility is required when acquiring a target; a locked target remains valid
+	// while alive so a wall collision can re-steer toward it instead of dropping velocity.
+	return IsValidSpitter(client) && IsValidSurvivor(target);
 }
 
 bool IsVisibleToSpitter(int client, int target)

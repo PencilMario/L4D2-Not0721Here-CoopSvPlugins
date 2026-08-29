@@ -35,7 +35,14 @@ Require-Text $source 'CSpitterProjectile::Detonate' 'The native slime detonation
 Require-Text $source 'L4D2_OnSpitSpread' 'The native acid-pool spread forward must be filtered.'
 Require-Text $source 'OnSlimeDetonate' 'Native slime detonation must be intercepted.'
 Require-Text $source 'BounceSlime' 'Idle slime collision must reflect into a bounce.'
-Require-Text $source 'TraceSlimeCollision' 'Plugin-controlled slime movement must test its collision path.'
+Require-Pattern $source 'SetEntityMoveType\(entity,\s*MOVETYPE_FLYGRAVITY\)' 'Slime trajectory must be calculated by the engine with gravity.'
+Require-Text $source 'SetSlimeVelocity' 'Slime movement must be driven by velocity vectors.'
+Require-Pattern $source 'TeleportEntity\(entity,\s*NULL_VECTOR,\s*NULL_VECTOR,\s*velocity\)' 'Slime updates must set velocity without teleporting its position.'
+Require-Pattern $source 'CreateConVar\("l4d2_spitter_slime_tracking_speed_multiplier",\s*"2\.0"' 'Tracking speed multiplier must default to two times and remain configurable.'
+Require-Pattern $source 'g_hSlimeSpeed\.FloatValue\s*\*\s*g_hSlimeTrackingSpeedMultiplier\.FloatValue' 'Tracking velocity must apply the configurable two-times speed multiplier.'
+foreach ($forbidden in @('SLIME_BOUNCE_DAMPING', 'TraceSlimeCollision', 'UpdateBouncingSlime', 'UpdateRandomSlime', 'UpdateTrackingSlime', 'CalculateParabolicPosition')) {
+    if ($source.Contains($forbidden)) { $errors.Add("Manual slime trajectory owner remains: $forbidden") }
+}
 Require-Text $source 'L4D2_ActivateAbility_Spitter' 'The original Spitter ability hook is missing.'
 Require-Text $source 'L4D2_SetCustomAbilityCooldown' 'The gas-can ability must set its custom cooldown.'
 Require-Text $source 'SDKHooks_TakeDamage' 'Player damage must use SDKDamage.'
@@ -85,9 +92,12 @@ foreach ($cvar in @(
     'l4d2_spitter_slime_return_distance',
     'l4d2_spitter_slime_target_range',
     'l4d2_spitter_slime_speed',
+    'l4d2_spitter_slime_tracking_speed_multiplier',
     'l4d2_spitter_slime_arc_height',
     'l4d2_spitter_slime_damage',
     'l4d2_spitter_slime_hit_radius',
+    'l4d2_spitter_slime_idle_lifetime',
+    'l4d2_spitter_slime_miss_timeout',
     'l4d2_spitter_gas_enable',
     'l4d2_spitter_gas_cooldown',
     'l4d2_spitter_gas_fuse',
@@ -108,6 +118,10 @@ Require-Pattern $modeConfig '(?m)^confogl_addcvar\s+l4d2_spitter_slime_interval\
 Require-Pattern $modeConfig '(?m)^confogl_addcvar\s+l4d2_spitter_slime_target_range\s+2000(?:\.0)?\s*$' 'Slime target range default must be 2000.'
 Require-Pattern $source 'CreateConVar\("l4d2_spitter_slime_target_range",\s*"2000(?:\.0)?"' 'Plugin target range default must be 2000.'
 Require-Pattern $modeConfig '(?m)^confogl_addcvar\s+l4d2_spitter_slime_max\s+5\s*$' 'Each Spitter must default to five slimes.'
+Require-Pattern $modeConfig '(?m)^confogl_addcvar\s+l4d2_spitter_slime_hit_radius\s+100(?:\.0)?\s*$' 'Slime hit radius default must be 100.'
+Require-Pattern $source 'CreateConVar\("l4d2_spitter_slime_hit_radius",\s*"100(?:\.0)?"' 'Plugin slime hit radius default must be 100.'
+Require-Pattern $modeConfig '(?m)^confogl_addcvar\s+l4d2_spitter_slime_idle_lifetime\s+3(?:\.0)?\s*$' 'Untracked slimes must expire after three seconds.'
+Require-Pattern $modeConfig '(?m)^confogl_addcvar\s+l4d2_spitter_slime_miss_timeout\s+5(?:\.0)?\s*$' 'Tracked slimes must have a configurable miss timeout.'
 Require-Pattern $modeConfig '(?m)^confogl_addcvar\s+l4d2_spitter_gas_fuse\s+2(?:\.0)?\s*$' 'Gasoline barrel air-time fuse default must be 2 seconds.'
 
 if (($source | Select-String -Pattern 'SDKHooks_TakeDamage' -AllMatches).Matches.Count -lt 2) {

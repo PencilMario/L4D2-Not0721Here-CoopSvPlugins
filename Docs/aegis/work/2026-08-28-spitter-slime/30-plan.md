@@ -4,7 +4,7 @@
 
 **Goal:** Replace the `versus_isfullshit`-only `L4D2 Spitter Supergirl` plugin with a new per-Spitter visible slime system and an `IN_ATTACK` gas-can ability.
 
-**Architecture:** One SourcePawn plugin owns all Spitter state. Each Spitter has an independent timer, fixed-size slime slots containing entity references and arc/target state, and one gas-can entity reference. A short global timer moves slimes and performs lifecycle cleanup; `L4D2_ActivateAbility_Spitter` blocks the original spit only after a gas can is created successfully. All player damage is issued by `SDKHooks_TakeDamage`; particle entities and direct `TeleportEntity` velocity provide visual and knockback effects without an explosion damage entity or Fling SDK call.
+**Architecture:** One SourcePawn plugin owns all Spitter state. Each Spitter has an independent timer, fixed-size slime slots containing entity references, target/lifecycle state, and velocity steering state, plus one gas-can entity reference. A short global timer performs targeting and lifecycle cleanup while the engine owns slime movement/collision through `MOVETYPE_FLYGRAVITY`; `L4D2_ActivateAbility_Spitter` blocks the original spit only after a gas can is created successfully. All player damage is issued by `SDKHooks_TakeDamage`; particle entities and direct `TeleportEntity` velocity provide visual and knockback effects without an explosion damage entity or Fling SDK call.
 
 **Tech Stack:** SourceMod/SourcePawn 1.12, `sdktools`, `sdkhooks`, existing Left4DHooks natives/forwards, PowerShell static contract tests, the repository `spcomp.exe`.
 
@@ -23,7 +23,7 @@
 
 **Why this task exists:** The feature changes a mode loader, a compiled plugin, and two damage paths. The contract protects the user-visible replacement and the non-negotiable SDKDamage/no-hard-stun boundary before any implementation is written.
 
-**Impact / Compatibility:** The test reads files only. It must fail because the new source is missing, not because the test itself has a syntax error. It must reject loading both old and new plugins, `point_hurt`, `env_explosion`, `L4D2_CTerrorPlayer_Fling`, and `IN_ATTACK2`.
+**Impact / Compatibility:** The test reads files only. The existing source is intentionally expected to fail the new physics/lifecycle assertions until the implementation is changed. It must reject loading both old and new plugins, manual slime position integration, `point_hurt`, `env_explosion`, `L4D2_CTerrorPlayer_Fling`, and `IN_ATTACK2`.
 
 **Verification:**
 
@@ -68,6 +68,10 @@ Require-Text $source 'L4D2_SetCustomAbilityCooldown' 'The gas-can ability must s
 Require-Text $source 'SDKHooks_TakeDamage' 'Player damage must use SDKDamage.'
 Require-Text $source 'EntIndexToEntRef' 'Child entities must be stored as entity references.'
 Require-Text $source 'EntRefToEntIndex' 'Child entity references must be validated before use.'
+Require-Pattern $source 'SetEntityMoveType\(entity,\s*MOVETYPE_FLYGRAVITY\)' 'Slime trajectory must be calculated by the engine with gravity.'
+Require-Text $source 'SetSlimeVelocity' 'Slime movement must be driven by velocity vectors.'
+Require-Pattern $source 'CreateConVar\("l4d2_spitter_slime_tracking_speed_multiplier",\s*"2\.0"' 'Tracking speed multiplier must default to two times and remain configurable.'
+Require-Pattern $source 'g_hSlimeSpeed\.FloatValue\s*\*\s*g_hSlimeTrackingSpeedMultiplier\.FloatValue' 'Tracking velocity must apply the configurable two-times speed multiplier.'
 Require-Text $source 'CleanupSpitter' 'A shared per-Spitter cleanup owner is required.'
 Require-Text $source 'HookEvent("player_death"' 'Spitter death must clean its child entities.'
 Require-Text $source 'HookEvent("player_team"' 'Leaving the infected team must clean its child entities.'
@@ -90,9 +94,12 @@ foreach ($cvar in @(
     'l4d2_spitter_slime_return_distance',
     'l4d2_spitter_slime_target_range',
     'l4d2_spitter_slime_speed',
+    'l4d2_spitter_slime_tracking_speed_multiplier',
     'l4d2_spitter_slime_arc_height',
     'l4d2_spitter_slime_damage',
     'l4d2_spitter_slime_hit_radius',
+    'l4d2_spitter_slime_idle_lifetime',
+    'l4d2_spitter_slime_miss_timeout',
     'l4d2_spitter_gas_enable',
     'l4d2_spitter_gas_cooldown',
     'l4d2_spitter_gas_speed',
@@ -109,8 +116,11 @@ foreach ($cvar in @(
 }
 
 Require-Pattern $modeConfig '(?m)^confogl_addcvar\s+l4d2_spitter_slime_interval\s+0\.3\s*$' 'Slime interval default must be 0.3 seconds.'
-Require-Pattern $modeConfig '(?m)^confogl_addcvar\s+l4d2_spitter_slime_target_range\s+300(?:\.0)?\s*$' 'Slime target range default must be 300.'
+Require-Pattern $modeConfig '(?m)^confogl_addcvar\s+l4d2_spitter_slime_target_range\s+2000(?:\.0)?\s*$' 'Slime target range default must be 2000.'
 Require-Pattern $modeConfig '(?m)^confogl_addcvar\s+l4d2_spitter_slime_max\s+5\s*$' 'Each Spitter must default to five slimes.'
+Require-Pattern $modeConfig '(?m)^confogl_addcvar\s+l4d2_spitter_slime_hit_radius\s+100(?:\.0)?\s*$' 'Slime hit radius default must be 100.'
+Require-Pattern $modeConfig '(?m)^confogl_addcvar\s+l4d2_spitter_slime_idle_lifetime\s+3(?:\.0)?\s*$' 'Untracked slimes must expire after three seconds.'
+Require-Pattern $modeConfig '(?m)^confogl_addcvar\s+l4d2_spitter_slime_miss_timeout\s+5(?:\.0)?\s*$' 'Tracked slimes must have a configurable miss timeout.'
 
 if (($source | Select-String -Pattern 'SDKHooks_TakeDamage' -AllMatches).Matches.Count -lt 2) {
     $errors.Add('Slime and gas damage must each have an SDKHooks_TakeDamage path.')
@@ -160,7 +170,7 @@ git commit -m "test(spitter): 增加粘液替换契约"
 
 **Why this task exists:** This is the user-visible behavior: independently managed native slime projectiles, visible-survivor targeting, one-hit SDKDamage, and a gas can replacing the Spitter’s left-click ability.
 
-**Impact / Compatibility:** Keep all state per Spitter. Never use a bare child entity index after a callback boundary. Slime projectiles are made non-solid/non-moving after creation so they remain visual entities controlled by the plugin and cannot create unintended acid pools. Gas damage is `DMG_GENERIC` through `SDKHooks_TakeDamage`; knockback is a direct velocity write and never a Fling or entity explosion damage path.
+**Impact / Compatibility:** Keep all state per Spitter. Never use a bare child entity index after a callback boundary. Slime projectiles retain a solid collision hull and use engine-owned `MOVETYPE_FLYGRAVITY` movement; only the native detonation/spread path is suppressed so they cannot create unintended acid pools. Gas damage is `DMG_GENERIC` through `SDKHooks_TakeDamage`; knockback is a direct velocity write and never a Fling or entity explosion damage path.
 
 **Verification:** The contract must still fail only for missing config/binary after this source is created; then compile this source with the command in Task 4 and fix every compiler error before proceeding.
 
@@ -177,11 +187,14 @@ enum struct SlimeState
     int target;
     bool tracking;
     float targetOffset[3];
-    float arcStart[3];
-    float arcEnd[3];
     float arcStartedAt;
     float arcDuration;
-    float lastPos[3];
+    float spawnedAt;
+    float trackingStartedAt;
+    float bounceUntil;
+    bool everTracked;
+    bool bouncing;
+    float velocity[3];
 }
 
 SlimeState g_Slimes[MAXPLAYERS + 1][MAX_SLIMES];
@@ -194,7 +207,7 @@ float g_GasIgnoreUntil[MAX_TRACKED_ENTITIES];
 Handle g_UpdateTimer;
 ```
 
-Create all twenty listed ConVars with the design defaults/bounds: interval `0.3` min `0.05`, max slimes `5` range `0..32`, radius `180`, return distance `600`, target range `300`, speed `450`, arc height `80`, slime damage `10`, hit radius `32`, gas enabled `1`, cooldown `5`, gas speed `700`, gas arc height `140`, gas damage `50`, gas radius `250`, knockback `300`, knockup `100`, survivor hurt `1`, infected hurt `0`.
+Create all listed ConVars with the design defaults/bounds: interval `0.3` min `0.05`, max slimes `5` range `0..32`, radius `180`, return distance `600`, target range `2000`, speed `450`, tracking speed multiplier `2.0`, arc height `80`, slime damage `10`, hit radius `100`, idle lifetime `3`, miss timeout `5`, gas enabled `1`, cooldown `5`, fuse `2`, gas speed `700`, gas arc height `140`, gas damage `50`, gas radius `250`, knockback `300`, knockup `100`, survivor hurt `1`, infected hurt `0`.
 
 2. Add lifecycle entry points and the single cleanup owner:
 
@@ -210,11 +223,11 @@ void CleanupSpitter(int client);
 
 `CleanupSpitter` kills the per-owner timer, removes every valid `EntRefToEntIndex` slime, removes its gas can if still valid, resets all slots/guards, and is safe to call repeatedly. Hook `player_spawn`, `player_death`, `player_team`, `round_end`, `mission_lost`, and `map_transition`; use `round_start` to rescan and start valid Spitters. Start a `0.05`-second no-map-change update timer.
 
-3. Add `StartSpitter`, `Timer_SpawnSlime`, `CreateSlime`, and `DestroySlimeSlot`. `CreateSlime` must call `L4D2_SpitterPrj`, set `m_hThrower`, preserve `m_bIsLive` only for the native visual, set collision group/solid type to non-colliding, set `MOVETYPE_NONE`, save `EntIndexToEntRef`, and initialize one random arc. The timer must stop and clean the owner if it is no longer a live non-ghost Spitter and must never exceed the current `l4d2_spitter_slime_max`.
+3. Add `StartSpitter`, `Timer_SpawnSlime`, `CreateSlime`, and `DestroySlimeSlot`. `CreateSlime` must call `L4D2_SpitterPrj`, set `m_hThrower`, preserve `m_bIsLive` only for the native visual, retain a solid collision hull, set `MOVETYPE_FLYGRAVITY` with bounce collision, save `EntIndexToEntRef`, initialize its spawn timestamp, and set one random velocity vector. The timer must stop and clean the owner if it is no longer a live non-ghost Spitter and must never exceed the current `l4d2_spitter_slime_max`.
 
 4. Add `FindVisibleSurvivor`, `IsVisibleToSpitter`, and the arc helpers. Candidate filtering must require in-game, alive team-2 players, owner-to-eye distance `<= l4d2_spitter_slime_target_range`, and a `TR_TraceRayFilterEx` from owner eye to survivor eye that either does not hit or hits that survivor. Select `GetRandomInt(0, count - 1)` from the candidate list; do not lock all slimes to one shared target.
 
-5. Add `Timer_UpdateSlimes`, `UpdateSlime`, `BeginRandomArc`, and `BeginTrackingArc`. For an owner-distance breach, teleport the slime to owner origin plus a small vertical offset and reset its target. Random arcs use a random local offset around the owner and `4.0 * arcHeight * progress * (1.0 - progress)` for the parabolic z component. Tracking arcs recalculate from the current slime position to the moving target each tick. Use a point-to-segment distance check against `l4d2_spitter_slime_hit_radius`, call `SDKHooks_TakeDamage(target, owner, owner, damage, DMG_ACID, -1, NULL_VECTOR, slimePos, true)`, then remove that slot immediately.
+5. Add `Timer_UpdateSlimes`, `UpdateSlime`, `BeginRandomArc`, and `BeginTrackingArc`. For an owner-distance breach, teleport the slime to owner origin plus a small vertical offset and reset its target. Random and tracking phases must only refresh a velocity vector; the engine supplies gravity, parabolic motion, and collision response. Tracking uses `g_hSlimeSpeed * g_hSlimeTrackingSpeedMultiplier` (default multiplier `2.0`), keeps gravity enabled, treats a current target distance `< l4d2_spitter_slime_hit_radius` as a hit, re-steers after a non-target collision, deletes an untracked slime after `l4d2_spitter_slime_idle_lifetime` (default 3 seconds), and deletes a tracked miss after `l4d2_spitter_slime_miss_timeout` (default 5 seconds). A hit calls `SDKHooks_TakeDamage(target, owner, owner, damage, DMG_ACID, -1, NULL_VECTOR, slimePos, true)`, then removes that slot immediately.
 
 6. Add `L4D2_ActivateAbility_Spitter` and gas-can helpers. This Left4DHooks forward is the `IN_ATTACK` replacement path (include the literal `IN_ATTACK` in the explanatory comment); when enabled and `CreateGasCan` succeeds, call `L4D2_SetCustomAbilityCooldown` and return `Plugin_Handled`. On entity creation failure return `Plugin_Continue` so normal spit remains available. Create `prop_physics` with `models/props_junk/gascan001a.mdl`, set owner/ref state, apply a forward velocity plus vertical `l4d2_spitter_gas_arc_height`, and hook `SDKHook_Touch`.
 
@@ -279,11 +292,14 @@ confogl_addcvar l4d2_spitter_slime_interval 0.3
 confogl_addcvar l4d2_spitter_slime_max 5
 confogl_addcvar l4d2_spitter_slime_radius 180.0
 confogl_addcvar l4d2_spitter_slime_return_distance 600.0
-confogl_addcvar l4d2_spitter_slime_target_range 300.0
+confogl_addcvar l4d2_spitter_slime_target_range 2000.0
 confogl_addcvar l4d2_spitter_slime_speed 450.0
+confogl_addcvar l4d2_spitter_slime_tracking_speed_multiplier 2.0
 confogl_addcvar l4d2_spitter_slime_arc_height 80.0
 confogl_addcvar l4d2_spitter_slime_damage 10.0
-confogl_addcvar l4d2_spitter_slime_hit_radius 32.0
+confogl_addcvar l4d2_spitter_slime_hit_radius 100.0
+confogl_addcvar l4d2_spitter_slime_idle_lifetime 3.0
+confogl_addcvar l4d2_spitter_slime_miss_timeout 5.0
 confogl_addcvar l4d2_spitter_gas_enable 1
 confogl_addcvar l4d2_spitter_gas_cooldown 5.0
 confogl_addcvar l4d2_spitter_gas_speed 700.0

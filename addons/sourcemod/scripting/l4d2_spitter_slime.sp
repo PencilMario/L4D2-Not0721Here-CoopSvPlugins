@@ -160,7 +160,7 @@ void CreateConVars()
 	g_hSlimeSpeed = CreateConVar("l4d2_spitter_slime_speed", "450.0", "Slime movement speed.", FCVAR_NOTIFY, true, 1.0, true, 5000.0);
 	g_hSlimeTrackingSpeedMultiplier = CreateConVar("l4d2_spitter_slime_tracking_speed_multiplier", "2.0", "Tracking slime speed multiplier.", FCVAR_NOTIFY, true, 1.0, true, 5.0);
 	g_hSlimeArcHeight = CreateConVar("l4d2_spitter_slime_arc_height", "80.0", "Idle slime parabolic height; tracking arcs terminate at the target.", FCVAR_NOTIFY, true, 0.0, true, 2000.0);
-	g_hSlimeDamage = CreateConVar("l4d2_spitter_slime_damage", "10.0", "SDKDamage dealt when a slime reaches a survivor.", FCVAR_NOTIFY, true, 0.0, true, 10000.0);
+	g_hSlimeDamage = CreateConVar("l4d2_spitter_slime_damage", "3.0", "SDKDamage dealt when a slime reaches a survivor.", FCVAR_NOTIFY, true, 0.0, true, 10000.0);
 	g_hSlimeHitRadius = CreateConVar("l4d2_spitter_slime_hit_radius", "100.0", "Slime survivor hit radius.", FCVAR_NOTIFY, true, 1.0, true, 256.0);
 	g_hSlimeIdleLifetime = CreateConVar("l4d2_spitter_slime_idle_lifetime", "3.0", "Seconds an untracked slime may remain alive.", FCVAR_NOTIFY, true, 0.1, true, 60.0);
 	g_hSlimeMissTimeout = CreateConVar("l4d2_spitter_slime_miss_timeout", "5.0", "Seconds a tracked slime may chase without a hit.", FCVAR_NOTIFY, true, 0.1, true, 60.0);

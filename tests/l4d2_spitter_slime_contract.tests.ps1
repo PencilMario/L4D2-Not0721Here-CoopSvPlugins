@@ -138,6 +138,8 @@ Require-Pattern $source 'CreateConVar\("l4d2_spitter_slime_target_range",\s*"200
 Require-Pattern $modeConfig '(?m)^confogl_addcvar\s+l4d2_spitter_slime_max\s+5\s*$' 'Each Spitter must default to five slimes.'
 Require-Pattern $modeConfig '(?m)^confogl_addcvar\s+l4d2_spitter_slime_hit_radius\s+100(?:\.0)?\s*$' 'Slime hit radius default must be 100.'
 Require-Pattern $source 'CreateConVar\("l4d2_spitter_slime_hit_radius",\s*"100(?:\.0)?"' 'Plugin slime hit radius default must be 100.'
+Require-Pattern $modeConfig '(?m)^confogl_addcvar\s+l4d2_spitter_slime_damage\s+3(?:\.0)?\s*$' 'Slime damage default must be 3.'
+Require-Pattern $source 'CreateConVar\("l4d2_spitter_slime_damage",\s*"3(?:\.0)?"' 'Plugin slime damage default must be 3.'
 Require-Pattern $modeConfig '(?m)^confogl_addcvar\s+l4d2_spitter_slime_idle_lifetime\s+3(?:\.0)?\s*$' 'Untracked slimes must expire after three seconds.'
 Require-Pattern $modeConfig '(?m)^confogl_addcvar\s+l4d2_spitter_slime_miss_timeout\s+5(?:\.0)?\s*$' 'Tracked slimes must have a configurable miss timeout.'
 Require-Pattern $modeConfig '(?m)^confogl_addcvar\s+l4d2_spitter_gas_fuse\s+2(?:\.0)?\s*$' 'Gasoline barrel air-time fuse default must be 2 seconds.'

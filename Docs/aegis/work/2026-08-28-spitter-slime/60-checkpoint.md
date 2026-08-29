@@ -1,9 +1,9 @@
 # TodoCheckpointDraft
 
-- current todo：创建并执行 `30-plan.md`，先完成失败契约，再实现/编译新插件，切换模式配置，退役旧 owner，完成静态和编译验证。
-- active slice：计划已写入，下一步是创建契约测试并运行预期的缺失源码失败。
-- completed todos：设计文档已审阅并提交；基线文件已读取；用户确认的 SDKDamage、IN_ATTACK、可视目标、每只独立状态、死亡清理、爆炸特效约束已落入设计和计划。
-- evidence refs：`e04af2ce`；`Docs/aegis/specs/2026-08-28-spitter-slime-design.md`；`Docs/aegis/work/2026-08-28-spitter-slime/10-baseline-readset.md`。
-- blocked-on：无。
-- next step：按 Task 1 写入 `tests/l4d2_spitter_slime_contract.tests.ps1`，立即运行并确认失败原因是新源码缺失。
-- drift check：继续；仍只影响 `versus_isfullshit`，不修改其他任务留下的未跟踪文件。
+- current todo：完成最终证据记录并交付已验证的静态/编译范围。
+- active slice：最终 QA 与证据记录已完成，准备交付。
+- completed todos：设计和计划已提交；契约测试已先观察 RED 后 GREEN；新插件、模式配置和二进制已完成；计时器换图重建、enable 热修改、原生粘液 live 标志、煤气罐物理伤害隔离、冷却失败回退、粒子预缓存和失效 owner attacker 回退已修复；旧 Supergirl 源码、目标目录二进制及根目录残留二进制已退役；最终契约、编译、空白和 owner 审计均通过。
+- evidence refs：`e04af2ce`；`a9077887`；`6d75e3b3`；`6da5d6c3`；`fbd2147f`；`Docs/aegis/specs/2026-08-28-spitter-slime-design.md`；`Docs/aegis/work/2026-08-28-spitter-slime/50-evidence.md`；`tests/l4d2_spitter_slime_contract.tests.ps1`。
+- blocked-on：无；没有可用的 L4D2 实服是已记录的部署验证边界，不阻塞静态和编译验证。
+- next step：向用户报告 Repair Track、Retirement Track 和实服残余风险。
+- drift check：继续；仍只影响 `versus_isfullshit` 和新插件 owner，没有修改其他任务留下的未跟踪文件；旧 owner 退役轨迹保持明确。

@@ -35,6 +35,9 @@ Require-Text $source 'CSpitterProjectile::Detonate' 'The native slime detonation
 Require-Text $source 'L4D2_OnSpitSpread' 'The native acid-pool spread forward must be filtered.'
 Require-Text $source 'OnSlimeDetonate' 'Native slime detonation must be intercepted.'
 Require-Text $source 'BounceSlime' 'Idle slime collision must reflect into a bounce.'
+Require-Pattern $source '(?ms)public Action L4D2_OnSpitSpread\(int spitter, int projectile, float &x, float &y, float &z\).*?FindSlimeOwner\(spitter, client, slot\).*?return Plugin_Handled;' 'Acid-pool spread must be filtered by the Spitter owner because its projectile parameter is the insect_swarm entity.'
+Require-Pattern $source '(?ms)void DestroySlimeSlot\(int client, int slot\).*?SetSlimeDetonateBlocked\(entity\).*?RemoveEntity\(entity\)' 'Slime removal must block native detonation before deleting the projectile.'
+Require-Pattern $source '(?ms)public MRESReturn OnSlimeDetonate\(int entity\).*?IsSlimeDetonateBlocked\(entity\).*?return MRES_Supercede;' 'Native detonation must ignore projectiles already being removed.'
 Require-Pattern $source 'SetEntityMoveType\(entity,\s*MOVETYPE_FLYGRAVITY\)' 'Slime trajectory must be calculated by the engine with gravity.'
 Require-Text $source 'SetSlimeVelocity' 'Slime movement must be driven by velocity vectors.'
 Require-Pattern $source 'TeleportEntity\(entity,\s*NULL_VECTOR,\s*NULL_VECTOR,\s*velocity\)' 'Slime updates must set velocity without teleporting its position.'
@@ -57,10 +60,13 @@ Require-Text $source 'OnClientDisconnect' 'Disconnect cleanup is required.'
 Require-Text $source 'OnPluginEnd' 'Plugin shutdown cleanup is required.'
 Require-Text $source 'StartUpdateTimer' 'The global slime update timer must be restartable after a map change.'
 Require-Pattern $source '(?ms)public void OnMapStart\(\)\s*\{.*?StartUpdateTimer\(\);' 'OnMapStart must restart the global slime update timer.'
+Require-Pattern $source '(?ms)public Action Timer_UpdateSlimes\(Handle timer\).*?if\s*\(\s*!IsValidSpitter\(client\)\s*\).*?continue;.*?g_SlimeTimers\[client\]\s*==\s*null.*?StartSpitter\(client\);' 'The global update loop must restart a missing Spitter slime timer after a class mutation back from Tank.'
 Require-Text $source 'OnSlimeEnableChanged' 'Slime enable changes must be handled while the plugin is loaded.'
 Require-Text $source 'TR_TraceRayFilterEx' 'Targets must be selected using a visibility trace.'
-Require-Text $source 'SDKHook(entity, SDKHook_Touch' 'Gas cans must explode on contact with any entity.'
-Require-Pattern $source '(?ms)public void OnGasCanTouch\(int entity, int other\).*?if\s*\(\s*GetGameTime\(\)\s*<\s*g_GasIgnoreUntil\[entity\]\s*\)\s*\{\s*return;\s*\}' 'Gas cans must ignore every initial spawn-overlap touch before arming.'
+if ($source.Contains('OnGasCanTouch') -or $source.Contains('g_GasIgnoreUntil')) {
+    $errors.Add('Gas cans must not have collision state or a touch callback that can detonate them before the fuse expires.')
+}
+Require-Pattern $source '(?ms)public Action Timer_GasCanFuse\(Handle timer, any entityRef\).*?ExplodeGasCan\(entity,\s*g_GasOwner\[entity\]\);' 'Only the gas-can lifetime fuse may detonate the barrel.'
 Require-Text $source 'gas_explosion_initialburst_blast' 'Gas explosion must have its initial blast particle.'
 Require-Text $source 'weapon_pipebomb_child_fire' 'Gas explosion must have its child-fire particle.'
 Require-Pattern $source 'L4D_PrecacheParticle\(PARTICLE_GAS_BLAST\)' 'Gas blast particle must be precached.'
@@ -73,7 +79,6 @@ if ($source.Contains('g_bGasAbilityUsed')) {
     $errors.Add('The gas-can replacement must remain permanent for the Spitter lifetime.')
 }
 Require-Pattern $source '(?ms)public Action L4D2_ActivateAbility_Spitter\(int client, int ability\).*?int existingGas = EntRefToEntIndex\(g_GasRefs\[client\]\);.*?return Plugin_Handled;' 'An already active gas can must keep IN_ATTACK handled instead of restoring normal spit.'
-Require-Text $source 'SDKHook(entity, SDKHook_StartTouch' 'The gasoline barrel must react when it starts touching a wall or entity.'
 Require-Text $source 'Timer_GasCanFuse' 'The gasoline barrel must have an air-time fuse.'
 Require-Pattern $source 'g_hGasFuse\.FloatValue' 'The gasoline barrel fuse must be CVar-configurable.'
 Require-Pattern $source 'SetEntityMoveType\(entity,\s*MOVETYPE_VPHYSICS\)' 'The gasoline barrel must use physics movement.'

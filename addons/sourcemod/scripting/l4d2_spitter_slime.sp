@@ -69,10 +69,18 @@ ConVar g_hGasHurtInfected;
 SlimeState g_Slimes[MAXPLAYERS + 1][MAX_SLIMES];
 int g_SlimeCount[MAXPLAYERS + 1];
 Handle g_SlimeTimers[MAXPLAYERS + 1];
+int g_SlimeCreateOwner;
+int g_SlimeCreateSlot;
+int g_SlimeCreateEntityRef;
+bool g_SlimeDetonateContext;
+int g_SlimeDetonateEntity;
+int g_SlimeDetonateOwner;
+int g_SlimeDetonateSlot;
+bool g_SlimeDetonateBlocked[MAX_TRACKED_ENTITIES];
+int g_SlimeDetonateBlockedRef[MAX_TRACKED_ENTITIES];
 int g_GasRefs[MAXPLAYERS + 1];
 int g_GasOwner[MAX_TRACKED_ENTITIES];
 bool g_GasExploded[MAX_TRACKED_ENTITIES];
-float g_GasIgnoreUntil[MAX_TRACKED_ENTITIES];
 Handle g_UpdateTimer;
 
 public Plugin myinfo =
@@ -184,10 +192,16 @@ void InitializeState()
 
 	for (int entity = 0; entity < MAX_TRACKED_ENTITIES; entity++)
 	{
+		g_SlimeDetonateBlocked[entity] = false;
+		g_SlimeDetonateBlockedRef[entity] = INVALID_ENT_REFERENCE;
 		g_GasOwner[entity] = 0;
 		g_GasExploded[entity] = false;
-		g_GasIgnoreUntil[entity] = 0.0;
 	}
+
+	g_SlimeCreateOwner = 0;
+	g_SlimeCreateSlot = -1;
+	g_SlimeCreateEntityRef = INVALID_ENT_REFERENCE;
+	ClearSlimeDetonateContext();
 }
 
 void PrecacheAssets()
@@ -219,6 +233,119 @@ void ResetSlimeState(int client, int slot)
 	g_Slimes[client][slot].velocity[2] = 0.0;
 }
 
+void PrepareSlimeCreation(int client, int slot)
+{
+	g_SlimeCreateOwner = client;
+	g_SlimeCreateSlot = slot;
+	g_SlimeCreateEntityRef = INVALID_ENT_REFERENCE;
+}
+
+void ClearSlimeCreationContext()
+{
+	g_SlimeCreateOwner = 0;
+	g_SlimeCreateSlot = -1;
+	g_SlimeCreateEntityRef = INVALID_ENT_REFERENCE;
+}
+
+void ClearSlimeDetonateContext()
+{
+	g_SlimeDetonateContext = false;
+	g_SlimeDetonateEntity = INVALID_ENT_REFERENCE;
+	g_SlimeDetonateOwner = 0;
+	g_SlimeDetonateSlot = -1;
+}
+
+void SetSlimeDetonateBlocked(int entity)
+{
+	if (entity <= MaxClients || entity >= MAX_TRACKED_ENTITIES || !IsValidEntity(entity))
+	{
+		return;
+	}
+
+	g_SlimeDetonateBlocked[entity] = true;
+	g_SlimeDetonateBlockedRef[entity] = EntIndexToEntRef(entity);
+}
+
+void ClearSlimeDetonateBlocked(int entity)
+{
+	if (entity <= MaxClients || entity >= MAX_TRACKED_ENTITIES)
+	{
+		return;
+	}
+
+	g_SlimeDetonateBlocked[entity] = false;
+	g_SlimeDetonateBlockedRef[entity] = INVALID_ENT_REFERENCE;
+}
+
+bool IsSlimeDetonateBlocked(int entity)
+{
+	if (entity <= MaxClients || entity >= MAX_TRACKED_ENTITIES || !IsValidEntity(entity))
+	{
+		return false;
+	}
+
+	return g_SlimeDetonateBlocked[entity]
+		&& g_SlimeDetonateBlockedRef[entity] == EntIndexToEntRef(entity);
+}
+
+bool IsPendingSlimeEntity(int entity)
+{
+	if (g_SlimeCreateOwner <= 0 || g_SlimeCreateSlot < 0 || g_SlimeCreateSlot >= MAX_SLIMES)
+	{
+		return false;
+	}
+	if (entity <= MaxClients || !IsValidEntity(entity))
+	{
+		return false;
+	}
+	if (g_SlimeCreateEntityRef != INVALID_ENT_REFERENCE
+		&& EntRefToEntIndex(g_SlimeCreateEntityRef) == entity)
+	{
+		return true;
+	}
+
+	char classname[64];
+	if (!GetEdictClassname(entity, classname, sizeof(classname))
+		|| !StrEqual(classname, "spitter_projectile"))
+	{
+		return false;
+	}
+
+	if (HasEntProp(entity, Prop_Send, "m_hThrower")
+		&& GetEntPropEnt(entity, Prop_Send, "m_hThrower") == g_SlimeCreateOwner)
+	{
+		return true;
+	}
+	if (HasEntProp(entity, Prop_Send, "m_hOwnerEntity")
+		&& GetEntPropEnt(entity, Prop_Send, "m_hOwnerEntity") == g_SlimeCreateOwner)
+	{
+		return true;
+	}
+	return false;
+}
+
+bool FindSlimeOwner(int spitter, int &owner, int &slot)
+{
+	owner = 0;
+	slot = -1;
+	if (!g_SlimeDetonateContext || spitter != g_SlimeDetonateOwner)
+	{
+		return false;
+	}
+	if (g_SlimeDetonateEntity == INVALID_ENT_REFERENCE)
+	{
+		return false;
+	}
+	if (g_SlimeDetonateSlot < 0 || g_SlimeDetonateSlot >= MAX_SLIMES)
+	{
+		return false;
+	}
+
+	owner = g_SlimeDetonateOwner;
+	slot = g_SlimeDetonateSlot;
+	return true;
+}
+
 void InstallSlimeDetour()
 {
 	Handle gameData = LoadGameConfigFile(SLIME_GAMEDATA);
@@ -241,6 +368,13 @@ void InstallSlimeDetour()
 		delete detour;
 		delete gameData;
 		SetFailState("Failed to detour CSpitterProjectile::Detonate for native slime collision handling.");
+		return;
+	}
+	if (!DHookEnableDetour(detour, true, OnSlimeDetonatePost))
+	{
+		delete detour;
+		delete gameData;
+		SetFailState("Failed to post-detour CSpitterProjectile::Detonate for native slime collision handling.");
 		return;
 	}
 
@@ -297,8 +431,6 @@ void CleanupSpitter(int client)
 		{
 			g_GasExploded[gas] = true;
 			g_GasOwner[gas] = 0;
-			SDKUnhook(gas, SDKHook_StartTouch, OnGasCanTouch);
-			SDKUnhook(gas, SDKHook_Touch, OnGasCanTouch);
 		}
 		RemoveEntity(gas);
 	}
@@ -481,6 +613,8 @@ void CreateSlime(int client)
 		return;
 	}
 
+	PrepareSlimeCreation(client, slot);
+
 	float position[3];
 	float angles[3];
 	float zero[3] = { 0.0, 0.0, 0.0 };
@@ -489,8 +623,12 @@ void CreateSlime(int client)
 	GetClientEyeAngles(client, angles);
 
 	int entity = L4D2_SpitterPrj(client, position, angles, zero, zero);
+	g_SlimeCreateEntityRef = entity > MaxClients && IsValidEntity(entity)
+		? EntIndexToEntRef(entity)
+		: INVALID_ENT_REFERENCE;
 	if (entity <= MaxClients || !IsValidEntity(entity))
 	{
+		ClearSlimeCreationContext();
 		LogError("L4D2_SpitterPrj failed for Spitter %N.", client);
 		return;
 	}
@@ -526,11 +664,13 @@ void CreateSlime(int client)
 	}
 	SDKHook(entity, SDKHook_StartTouch, OnSlimeTouch);
 	SDKHook(entity, SDKHook_Touch, OnSlimeTouch);
+	ClearSlimeDetonateBlocked(entity);
 
 	g_Slimes[client][slot].entRef = EntIndexToEntRef(entity);
 	g_Slimes[client][slot].spawnedAt = GetGameTime();
 	g_SlimeCount[client]++;
 	BeginRandomArc(client, slot, position);
+	ClearSlimeCreationContext();
 }
 
 int FindFreeSlimeSlot(int client)
@@ -578,6 +718,7 @@ void DestroySlimeSlot(int client, int slot)
 		int entity = EntRefToEntIndex(ref);
 		if (entity != INVALID_ENT_REFERENCE && IsValidEntity(entity))
 		{
+			SetSlimeDetonateBlocked(entity);
 			SDKUnhook(entity, SDKHook_StartTouch, OnSlimeTouch);
 			SDKUnhook(entity, SDKHook_Touch, OnSlimeTouch);
 			RemoveEntity(entity);
@@ -601,6 +742,12 @@ public Action Timer_UpdateSlimes(Handle timer)
 				CleanupSpitter(client);
 			}
 			continue;
+		}
+
+		if (g_SlimeTimers[client] == null)
+		{
+			// Class mutations can bypass player_spawn/player_team; restore the owner timer here.
+			StartSpitter(client);
 		}
 
 		ValidateGasReference(client);
@@ -988,12 +1135,33 @@ public void OnSlimeTouch(int entity, int other)
 
 public MRESReturn OnSlimeDetonate(int entity)
 {
+	if (IsSlimeDetonateBlocked(entity))
+	{
+		ClearSlimeDetonateContext();
+		return MRES_Supercede;
+	}
+
+	ClearSlimeDetonateContext();
+
 	int client;
 	int slot;
-	if (!FindSlimeState(entity, client, slot))
+	bool managed = FindSlimeState(entity, client, slot);
+	if (!managed && IsPendingSlimeEntity(entity))
+	{
+		client = g_SlimeCreateOwner;
+		slot = g_SlimeCreateSlot;
+		managed = true;
+	}
+	if (!managed)
 	{
 		return MRES_Ignored;
 	}
+
+	g_SlimeDetonateContext = true;
+	g_SlimeDetonateEntity = EntIndexToEntRef(entity);
+	g_SlimeDetonateOwner = client;
+	g_SlimeDetonateSlot = slot;
+
 	if (!IsValidSpitter(client))
 	{
 		CleanupSpitter(client);
@@ -1023,13 +1191,19 @@ public MRESReturn OnSlimeDetonate(int entity)
 	return MRES_Supercede;
 }
 
+public MRESReturn OnSlimeDetonatePost(int entity)
+{
+	ClearSlimeDetonateContext();
+	return MRES_Ignored;
+}
+
 public Action L4D2_OnSpitSpread(int spitter, int projectile, float &x, float &y, float &z)
 {
 	int client;
 	int slot;
-	if (FindSlimeState(projectile, client, slot))
+	if (FindSlimeOwner(spitter, client, slot))
 	{
-		// A managed slime is a physical visual projectile, never an acid pool.
+		// Left4DHooks passes the generated insect_swarm as projectile here.
 		return Plugin_Handled;
 	}
 	return Plugin_Continue;
@@ -1126,8 +1300,6 @@ public Action L4D2_ActivateAbility_Spitter(int client, int ability)
 		g_GasExploded[gas] = true;
 		if (IsValidEntity(gas))
 		{
-			SDKUnhook(gas, SDKHook_StartTouch, OnGasCanTouch);
-			SDKUnhook(gas, SDKHook_Touch, OnGasCanTouch);
 			RemoveEntity(gas);
 		}
 		return Plugin_Continue;
@@ -1181,32 +1353,15 @@ int CreateGasCan(int client)
 
 	g_GasOwner[entity] = client;
 	g_GasExploded[entity] = false;
-	g_GasIgnoreUntil[entity] = GetGameTime() + 0.15;
 	g_GasRefs[client] = EntIndexToEntRef(entity);
 	if (HasEntProp(entity, Prop_Send, "m_hOwnerEntity"))
 	{
 		SetEntPropEnt(entity, Prop_Send, "m_hOwnerEntity", client);
 	}
 	SetEntityMoveType(entity, MOVETYPE_VPHYSICS);
-	SDKHook(entity, SDKHook_StartTouch, OnGasCanTouch);
-	SDKHook(entity, SDKHook_Touch, OnGasCanTouch);
 	CreateTimer(g_hGasFuse.FloatValue, Timer_GasCanFuse, EntIndexToEntRef(entity), TIMER_FLAG_NO_MAPCHANGE);
 	TeleportEntity(entity, start, angles, velocity);
 	return entity;
-}
-
-public void OnGasCanTouch(int entity, int other)
-{
-	if (entity < 0 || entity >= MAX_TRACKED_ENTITIES || !IsValidEntity(entity) || g_GasExploded[entity])
-	{
-		return;
-	}
-
-	if (GetGameTime() < g_GasIgnoreUntil[entity])
-	{
-		return;
-	}
-	ExplodeGasCan(entity, g_GasOwner[entity]);
 }
 
 public Action Timer_GasCanFuse(Handle timer, any entityRef)
@@ -1227,8 +1382,6 @@ void ExplodeGasCan(int entity, int owner)
 	}
 
 	g_GasExploded[entity] = true;
-	SDKUnhook(entity, SDKHook_StartTouch, OnGasCanTouch);
-	SDKUnhook(entity, SDKHook_Touch, OnGasCanTouch);
 
 	float position[3];
 	GetEntPropVector(entity, Prop_Data, "m_vecAbsOrigin", position);

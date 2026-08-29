@@ -3,6 +3,7 @@
 #include <sdkhooks>
 #include <dhooks>
 #include <left4dhooks>
+#include <treeutil>
 
 #pragma semicolon 1
 #pragma newdecls required
@@ -529,11 +530,6 @@ void OnSlimeEnableChanged(ConVar convar, const char[] oldValue, const char[] new
 	}
 }
 
-bool IsValidClient(int client)
-{
-	return client > 0 && client <= MaxClients && IsClientInGame(client);
-}
-
 bool IsValidSpitter(int client)
 {
 	return IsValidClient(client)
@@ -541,13 +537,6 @@ bool IsValidSpitter(int client)
 		&& GetClientTeam(client) == 3
 		&& GetEntProp(client, Prop_Send, "m_zombieClass") == ZOMBIECLASS_SPITTER
 		&& GetEntProp(client, Prop_Send, "m_isGhost") == 0;
-}
-
-bool IsValidSurvivor(int client)
-{
-	return IsValidClient(client)
-		&& IsPlayerAlive(client)
-		&& GetClientTeam(client) == 2;
 }
 
 void StartSpitter(int client)
@@ -877,13 +866,8 @@ void UpdateSlime(int client, int slot, int entity)
 	int target = g_Slimes[client][slot].target;
 	if (!IsValidSlimeTarget(client, target))
 	{
-		target = FindVisibleSurvivor(client);
-		if (target <= 0)
-		{
-			DestroySlimeSlot(client, slot);
-			return;
-		}
-		g_Slimes[client][slot].target = target;
+		TryReacquireSlimeTarget(client, slot, current);
+		return;
 	}
 
 	float targetPosition[3];
@@ -941,6 +925,22 @@ void BeginTrackingArc(int client, int slot, const float start[3], int target)
 	GetClientEyePosition(target, targetPosition);
 	int entity = EntRefToEntIndex(g_Slimes[client][slot].entRef);
 	SetTrackingVelocity(client, slot, entity, start, targetPosition);
+}
+
+bool TryReacquireSlimeTarget(int client, int slot, const float start[3])
+{
+	int target = FindVisibleSurvivor(client);
+	if (target <= 0)
+	{
+		// Keep the projectile alive and retry next update instead of losing tracking.
+		g_Slimes[client][slot].target = 0;
+		g_Slimes[client][slot].tracking = true;
+		g_Slimes[client][slot].bouncing = false;
+		return false;
+	}
+
+	BeginTrackingArc(client, slot, start, target);
+	return true;
 }
 
 float CalculateFlightTime(float distance, float speed)
@@ -1049,7 +1049,7 @@ void BounceSlime(int client, int slot, int entity)
 
 void HitSlime(int client, int slot, int entity, int target, const float hitPosition[3])
 {
-	if (IsValidSurvivor(target) && IsValidSpitter(client))
+	if (IsValidSurvivor(target) && IsPlayerAlive(target) && IsValidSpitter(client))
 	{
 		SDKHooks_TakeDamage(target, entity, client, g_hSlimeDamage.FloatValue, DMG_ACID, -1, NULL_VECTOR, hitPosition, true);
 	}
@@ -1104,7 +1104,7 @@ public void OnSlimeTouch(int entity, int other)
 	if (g_Slimes[client][slot].tracking)
 	{
 		int target = g_Slimes[client][slot].target;
-		if (other == target && IsValidSurvivor(target))
+		if (other == target && IsValidSlimeTarget(client, target))
 		{
 			float targetPosition[3];
 			GetClientEyePosition(target, targetPosition);
@@ -1124,6 +1124,10 @@ public void OnSlimeTouch(int entity, int other)
 			float targetPosition[3];
 			GetClientEyePosition(target, targetPosition);
 			SetTrackingVelocity(client, slot, entity, position, targetPosition);
+		}
+		else
+		{
+			TryReacquireSlimeTarget(client, slot, position);
 		}
 		return;
 	}
@@ -1170,7 +1174,7 @@ public MRESReturn OnSlimeDetonate(int entity)
 
 	float position[3];
 	GetEntPropVector(entity, Prop_Data, "m_vecAbsOrigin", position);
-	if (g_Slimes[client][slot].tracking && IsValidSurvivor(g_Slimes[client][slot].target))
+	if (g_Slimes[client][slot].tracking && IsValidSlimeTarget(client, g_Slimes[client][slot].target))
 	{
 		float targetPosition[3];
 		GetClientEyePosition(g_Slimes[client][slot].target, targetPosition);
@@ -1180,6 +1184,11 @@ public MRESReturn OnSlimeDetonate(int entity)
 			return MRES_Supercede;
 		}
 		SetTrackingVelocity(client, slot, entity, position, targetPosition);
+		return MRES_Supercede;
+	}
+	if (g_Slimes[client][slot].tracking)
+	{
+		TryReacquireSlimeTarget(client, slot, position);
 		return MRES_Supercede;
 	}
 
@@ -1218,7 +1227,7 @@ int FindVisibleSurvivor(int client)
 
 	for (int target = 1; target <= MaxClients; target++)
 	{
-		if (!IsValidSurvivor(target))
+		if (!IsValidSurvivor(target) || !IsPlayerAlive(target))
 		{
 			continue;
 		}
@@ -1229,7 +1238,7 @@ int FindVisibleSurvivor(int client)
 		{
 			continue;
 		}
-		if (IsVisibleToSpitter(client, target))
+		if (Player_IsVisible_To(client, target))
 		{
 			candidates[count++] = target;
 		}
@@ -1246,25 +1255,7 @@ bool IsValidSlimeTarget(int client, int target)
 {
 	// Visibility is required when acquiring a target; a locked target remains valid
 	// while alive so a wall collision can re-steer toward it instead of dropping velocity.
-	return IsValidSpitter(client) && IsValidSurvivor(target);
-}
-
-bool IsVisibleToSpitter(int client, int target)
-{
-	float start[3];
-	float end[3];
-	GetClientEyePosition(client, start);
-	GetClientEyePosition(target, end);
-
-	Handle trace = TR_TraceRayFilterEx(start, end, MASK_VISIBLE, RayType_EndPoint, TraceFilterIgnoreEntity, client);
-	bool visible = !TR_DidHit(trace) || TR_GetEntityIndex(trace) == target;
-	delete trace;
-	return visible;
-}
-
-public bool TraceFilterIgnoreEntity(int entity, int contentsMask, any data)
-{
-	return entity != data;
+	return IsValidSpitter(client) && IsValidSurvivor(target) && IsPlayerAlive(target);
 }
 
 public Action L4D2_ActivateAbility_Spitter(int client, int ability)

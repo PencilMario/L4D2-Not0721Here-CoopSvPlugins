@@ -2,6 +2,7 @@ $ErrorActionPreference = 'Stop'
 
 $repo = Split-Path -Parent $PSScriptRoot
 $sourcePath = Join-Path $repo 'addons/sourcemod/scripting/l4d2_spitter_slime.sp'
+$treeutilPath = Join-Path $repo 'addons/sourcemod/scripting/include/treeutil.inc'
 $binaryPath = Join-Path $repo 'addons/sourcemod/plugins/optional/l4d2_spitter_slime.smx'
 $loaderPath = Join-Path $repo 'cfg/cfgogl/versus_isfullshit/confogl_plugins.cfg'
 $modeConfigPath = Join-Path $repo 'cfg/cfgogl/versus_isfullshit/versus.cfg'
@@ -11,6 +12,7 @@ if (-not (Test-Path -LiteralPath $sourcePath)) {
 }
 
 $source = Get-Content -Raw -LiteralPath $sourcePath
+$treeutil = Get-Content -Raw -LiteralPath $treeutilPath
 $loader = Get-Content -Raw -LiteralPath $loaderPath
 $modeConfig = Get-Content -Raw -LiteralPath $modeConfigPath
 $errors = [System.Collections.Generic.List[string]]::new()
@@ -29,6 +31,7 @@ Require-Text $source '#include <left4dhooks>' 'The plugin must use the existing 
 Require-Text $source '#include <sdktools>' 'The plugin must include sdktools.'
 Require-Text $source '#include <sdkhooks>' 'The plugin must include sdkhooks.'
 Require-Text $source '#include <dhooks>' 'The plugin must be able to intercept native slime detonation.'
+Require-Text $source '#include <treeutil>' 'The plugin must use the shared treeutil visibility helper.'
 Require-Text $source 'L4D2_SpitterPrj' 'Slime must be the native spitter_projectile entity.'
 Require-Text $source 'DHookCreateFromConf' 'The plugin must install the native slime detonation detour.'
 Require-Text $source 'CSpitterProjectile::Detonate' 'The native slime detonation signature must be owned by this plugin.'
@@ -45,6 +48,9 @@ Require-Pattern $source 'CreateConVar\("l4d2_spitter_slime_tracking_speed_multip
 Require-Pattern $source 'g_hSlimeSpeed\.FloatValue\s*\*\s*g_hSlimeTrackingSpeedMultiplier\.FloatValue' 'Tracking velocity must apply the configurable two-times speed multiplier.'
 Require-Pattern $source '(?ms)void UpdateSlime\(int client, int slot, int entity\).*?if\s*\(\s*!g_Slimes\[client\]\[slot\]\.tracking\s*&&\s*GetVectorDistance\(current, ownerPosition\)\s*>\s*g_hSlimeReturnDistance\.FloatValue\s*\)' 'Tracking slimes must not be teleported back to their Spitter.'
 Require-Pattern $source '(?ms)void SetTrackingVelocity\(int client, int slot, int entity, const float start\[3\], const float targetPosition\[3\]\).*?BuildBallisticVelocity\(start,\s*targetPosition,\s*speed,\s*0\.0,\s*velocity\)' 'Tracking slimes must use a gravity arc that terminates at the survivor instead of adding a target-height offset.'
+Require-Pattern $source '(?ms)if\s*\(!IsValidSlimeTarget\(client, target\)\).*?TryReacquireSlimeTarget\(client, slot, current\);.*?return;' 'Tracking slimes must keep their entity and retry target acquisition after target loss.'
+Require-Pattern $source '(?ms)bool TryReacquireSlimeTarget\(int client, int slot, const float start\[3\]\).*?int target = FindVisibleSurvivor\(client\);.*?if\s*\(target\s*<=\s*0\).*?g_Slimes\[client\]\[slot\]\.target\s*=\s*0;.*?g_Slimes\[client\]\[slot\]\.tracking\s*=\s*true;.*?return false;.*?BeginTrackingArc\(client, slot, start, target\);'
+Require-Pattern $source '(?ms)bool IsValidSlimeTarget\(int client, int target\).*?IsValidSurvivor\(target\).*?IsPlayerAlive\(target\)' 'A slime must never lock onto a non-alive survivor from treeutil.'
 foreach ($forbidden in @('SLIME_BOUNCE_DAMPING', 'TraceSlimeCollision', 'UpdateBouncingSlime', 'UpdateRandomSlime', 'UpdateTrackingSlime', 'CalculateParabolicPosition')) {
     if ($source.Contains($forbidden)) { $errors.Add("Manual slime trajectory owner remains: $forbidden") }
 }
@@ -62,7 +68,11 @@ Require-Text $source 'StartUpdateTimer' 'The global slime update timer must be r
 Require-Pattern $source '(?ms)public void OnMapStart\(\)\s*\{.*?StartUpdateTimer\(\);' 'OnMapStart must restart the global slime update timer.'
 Require-Pattern $source '(?ms)public Action Timer_UpdateSlimes\(Handle timer\).*?if\s*\(\s*!IsValidSpitter\(client\)\s*\).*?continue;.*?g_SlimeTimers\[client\]\s*==\s*null.*?StartSpitter\(client\);' 'The global update loop must restart a missing Spitter slime timer after a class mutation back from Tank.'
 Require-Text $source 'OnSlimeEnableChanged' 'Slime enable changes must be handled while the plugin is loaded.'
-Require-Text $source 'TR_TraceRayFilterEx' 'Targets must be selected using a visibility trace.'
+Require-Pattern $source '(?ms)int FindVisibleSurvivor\(int client\).*?Player_IsVisible_To\(client, target\)' 'Targets must use treeutil Player_IsVisible_To visibility checks.'
+Require-Pattern $treeutil '(?ms)stock bool Player_IsVisible_To\(int client, int target\).*?TR_TraceRayFilterEx' 'The shared Player_IsVisible_To helper must perform the visibility trace.'
+if ($source.Contains('IsVisibleToSpitter') -or $source.Contains('TraceFilterIgnoreEntity')) {
+    $errors.Add('The plugin must not keep a private visibility helper after switching to treeutil.')
+}
 if ($source.Contains('OnGasCanTouch') -or $source.Contains('g_GasIgnoreUntil')) {
     $errors.Add('Gas cans must not have collision state or a touch callback that can detonate them before the fuse expires.')
 }

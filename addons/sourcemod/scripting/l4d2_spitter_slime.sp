@@ -150,7 +150,7 @@ void CreateConVars()
 	g_hSlimeTargetRange = CreateConVar("l4d2_spitter_slime_target_range", "2000.0", "Visible survivor search range around a Spitter.", FCVAR_NOTIFY, true, 0.0, true, 5000.0);
 	g_hSlimeSpeed = CreateConVar("l4d2_spitter_slime_speed", "450.0", "Slime movement speed.", FCVAR_NOTIFY, true, 1.0, true, 5000.0);
 	g_hSlimeTrackingSpeedMultiplier = CreateConVar("l4d2_spitter_slime_tracking_speed_multiplier", "2.0", "Tracking slime speed multiplier.", FCVAR_NOTIFY, true, 1.0, true, 5.0);
-	g_hSlimeArcHeight = CreateConVar("l4d2_spitter_slime_arc_height", "80.0", "Idle and tracking slime parabolic height.", FCVAR_NOTIFY, true, 0.0, true, 2000.0);
+	g_hSlimeArcHeight = CreateConVar("l4d2_spitter_slime_arc_height", "80.0", "Idle slime parabolic height; tracking arcs terminate at the target.", FCVAR_NOTIFY, true, 0.0, true, 2000.0);
 	g_hSlimeDamage = CreateConVar("l4d2_spitter_slime_damage", "10.0", "SDKDamage dealt when a slime reaches a survivor.", FCVAR_NOTIFY, true, 0.0, true, 10000.0);
 	g_hSlimeHitRadius = CreateConVar("l4d2_spitter_slime_hit_radius", "100.0", "Slime survivor hit radius.", FCVAR_NOTIFY, true, 1.0, true, 256.0);
 	g_hSlimeIdleLifetime = CreateConVar("l4d2_spitter_slime_idle_lifetime", "3.0", "Seconds an untracked slime may remain alive.", FCVAR_NOTIFY, true, 0.1, true, 60.0);
@@ -674,7 +674,8 @@ void UpdateSlime(int client, int slot, int entity)
 
 	float ownerPosition[3];
 	GetClientAbsOrigin(client, ownerPosition);
-	if (GetVectorDistance(current, ownerPosition) > g_hSlimeReturnDistance.FloatValue)
+	if (!g_Slimes[client][slot].tracking
+		&& GetVectorDistance(current, ownerPosition) > g_hSlimeReturnDistance.FloatValue)
 	{
 		float returnPosition[3];
 		returnPosition[0] = ownerPosition[0];
@@ -833,7 +834,8 @@ void SetTrackingVelocity(int client, int slot, int entity, const float start[3],
 
 	float velocity[3];
 	float speed = g_hSlimeSpeed.FloatValue * g_hSlimeTrackingSpeedMultiplier.FloatValue;
-	BuildBallisticVelocity(start, targetPosition, speed, g_hSlimeArcHeight.FloatValue, velocity);
+	// Tracking must arrive at the target. A non-zero arc offset would leave it hovering above the survivor.
+	BuildBallisticVelocity(start, targetPosition, speed, 0.0, velocity);
 	SetSlimeVelocity(client, slot, entity, velocity);
 }
 
@@ -1200,12 +1202,11 @@ public void OnGasCanTouch(int entity, int other)
 		return;
 	}
 
-	int owner = g_GasOwner[entity];
-	if (other == owner && GetGameTime() < g_GasIgnoreUntil[entity])
+	if (GetGameTime() < g_GasIgnoreUntil[entity])
 	{
 		return;
 	}
-	ExplodeGasCan(entity, owner);
+	ExplodeGasCan(entity, g_GasOwner[entity]);
 }
 
 public Action Timer_GasCanFuse(Handle timer, any entityRef)

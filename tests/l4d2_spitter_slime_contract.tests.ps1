@@ -40,6 +40,8 @@ Require-Text $source 'SetSlimeVelocity' 'Slime movement must be driven by veloci
 Require-Pattern $source 'TeleportEntity\(entity,\s*NULL_VECTOR,\s*NULL_VECTOR,\s*velocity\)' 'Slime updates must set velocity without teleporting its position.'
 Require-Pattern $source 'CreateConVar\("l4d2_spitter_slime_tracking_speed_multiplier",\s*"2\.0"' 'Tracking speed multiplier must default to two times and remain configurable.'
 Require-Pattern $source 'g_hSlimeSpeed\.FloatValue\s*\*\s*g_hSlimeTrackingSpeedMultiplier\.FloatValue' 'Tracking velocity must apply the configurable two-times speed multiplier.'
+Require-Pattern $source '(?ms)void UpdateSlime\(int client, int slot, int entity\).*?if\s*\(\s*!g_Slimes\[client\]\[slot\]\.tracking\s*&&\s*GetVectorDistance\(current, ownerPosition\)\s*>\s*g_hSlimeReturnDistance\.FloatValue\s*\)' 'Tracking slimes must not be teleported back to their Spitter.'
+Require-Pattern $source '(?ms)void SetTrackingVelocity\(int client, int slot, int entity, const float start\[3\], const float targetPosition\[3\]\).*?BuildBallisticVelocity\(start,\s*targetPosition,\s*speed,\s*0\.0,\s*velocity\)' 'Tracking slimes must use a gravity arc that terminates at the survivor instead of adding a target-height offset.'
 foreach ($forbidden in @('SLIME_BOUNCE_DAMPING', 'TraceSlimeCollision', 'UpdateBouncingSlime', 'UpdateRandomSlime', 'UpdateTrackingSlime', 'CalculateParabolicPosition')) {
     if ($source.Contains($forbidden)) { $errors.Add("Manual slime trajectory owner remains: $forbidden") }
 }
@@ -58,6 +60,7 @@ Require-Pattern $source '(?ms)public void OnMapStart\(\)\s*\{.*?StartUpdateTimer
 Require-Text $source 'OnSlimeEnableChanged' 'Slime enable changes must be handled while the plugin is loaded.'
 Require-Text $source 'TR_TraceRayFilterEx' 'Targets must be selected using a visibility trace.'
 Require-Text $source 'SDKHook(entity, SDKHook_Touch' 'Gas cans must explode on contact with any entity.'
+Require-Pattern $source '(?ms)public void OnGasCanTouch\(int entity, int other\).*?if\s*\(\s*GetGameTime\(\)\s*<\s*g_GasIgnoreUntil\[entity\]\s*\)\s*\{\s*return;\s*\}' 'Gas cans must ignore every initial spawn-overlap touch before arming.'
 Require-Text $source 'gas_explosion_initialburst_blast' 'Gas explosion must have its initial blast particle.'
 Require-Text $source 'weapon_pipebomb_child_fire' 'Gas explosion must have its child-fire particle.'
 Require-Pattern $source 'L4D_PrecacheParticle\(PARTICLE_GAS_BLAST\)' 'Gas blast particle must be precached.'

@@ -1,6 +1,7 @@
 #include <sourcemod>
 #include <sdktools>
 #include <sdkhooks>
+#include <dhooks>
 #include <left4dhooks>
 
 #pragma semicolon 1
@@ -11,9 +12,14 @@
 #define MAX_SLIMES 32
 #define MAX_TRACKED_ENTITIES 2048
 #define SLIME_UPDATE_INTERVAL 0.05
+#define SLIME_COLLISION_HALF_SIZE 10.0
+#define SLIME_GRAVITY 800.0
+#define SLIME_BOUNCE_DAMPING 0.72
+#define SLIME_MIN_BOUNCE_SPEED 45.0
 #define ARC_TWO_PI 6.28318530718
 
 #define MODEL_GAS_CAN "models/props_junk/gascan001a.mdl"
+#define SLIME_GAMEDATA "l4d2_spit_spread_patch"
 #define PARTICLE_GAS_BLAST "gas_explosion_initialburst_blast"
 #define PARTICLE_GAS_FIRE "weapon_pipebomb_child_fire"
 #define SOUND_EXPLODE_1 "weapons/hegrenade/explode3.wav"
@@ -30,6 +36,8 @@ enum struct SlimeState
 	float arcStartedAt;
 	float arcDuration;
 	float lastPos[3];
+	bool bouncing;
+	float velocity[3];
 }
 
 ConVar g_hSlimeEnable;
@@ -45,6 +53,7 @@ ConVar g_hSlimeHitRadius;
 
 ConVar g_hGasEnable;
 ConVar g_hGasCooldown;
+ConVar g_hGasFuse;
 ConVar g_hGasSpeed;
 ConVar g_hGasArcHeight;
 ConVar g_hGasDamage;
@@ -84,6 +93,7 @@ public void OnPluginStart()
 		SetFailState("This plugin requires left4dhooks.smx.");
 	}
 
+	InstallSlimeDetour();
 	CreateConVars();
 	InitializeState();
 	PrecacheAssets();
@@ -134,7 +144,7 @@ void CreateConVars()
 	g_hSlimeMax = CreateConVar("l4d2_spitter_slime_max", "5", "Maximum number of slimes owned by each Spitter.", FCVAR_NOTIFY, true, 0.0, true, float(MAX_SLIMES));
 	g_hSlimeRadius = CreateConVar("l4d2_spitter_slime_radius", "180.0", "Maximum random local radius for an idle slime.", FCVAR_NOTIFY, true, 0.0, true, 2000.0);
 	g_hSlimeReturnDistance = CreateConVar("l4d2_spitter_slime_return_distance", "600.0", "Distance at which a slime returns to its Spitter.", FCVAR_NOTIFY, true, 1.0, true, 5000.0);
-	g_hSlimeTargetRange = CreateConVar("l4d2_spitter_slime_target_range", "300.0", "Visible survivor search range around a Spitter.", FCVAR_NOTIFY, true, 0.0, true, 5000.0);
+	g_hSlimeTargetRange = CreateConVar("l4d2_spitter_slime_target_range", "2000.0", "Visible survivor search range around a Spitter.", FCVAR_NOTIFY, true, 0.0, true, 5000.0);
 	g_hSlimeSpeed = CreateConVar("l4d2_spitter_slime_speed", "450.0", "Slime movement speed.", FCVAR_NOTIFY, true, 1.0, true, 5000.0);
 	g_hSlimeArcHeight = CreateConVar("l4d2_spitter_slime_arc_height", "80.0", "Idle and tracking slime parabolic height.", FCVAR_NOTIFY, true, 0.0, true, 2000.0);
 	g_hSlimeDamage = CreateConVar("l4d2_spitter_slime_damage", "10.0", "SDKDamage dealt when a slime reaches a survivor.", FCVAR_NOTIFY, true, 0.0, true, 10000.0);
@@ -142,6 +152,7 @@ void CreateConVars()
 
 	g_hGasEnable = CreateConVar("l4d2_spitter_gas_enable", "1", "Replace the Spitter IN_ATTACK ability with a gas can.", FCVAR_NOTIFY, true, 0.0, true, 1.0);
 	g_hGasCooldown = CreateConVar("l4d2_spitter_gas_cooldown", "5.0", "Gas-can ability cooldown in seconds.", FCVAR_NOTIFY, true, 0.0, true, 60.0);
+	g_hGasFuse = CreateConVar("l4d2_spitter_gas_fuse", "2.0", "Gasoline barrel air-time fuse in seconds.", FCVAR_NOTIFY, true, 0.1, true, 60.0);
 	g_hGasSpeed = CreateConVar("l4d2_spitter_gas_speed", "700.0", "Initial gas-can forward speed.", FCVAR_NOTIFY, true, 1.0, true, 5000.0);
 	g_hGasArcHeight = CreateConVar("l4d2_spitter_gas_arc_height", "140.0", "Initial gas-can upward impulse for its parabola.", FCVAR_NOTIFY, true, 0.0, true, 2000.0);
 	g_hGasDamage = CreateConVar("l4d2_spitter_gas_damage", "50.0", "SDKDamage dealt by a gas-can blast.", FCVAR_NOTIFY, true, 0.0, true, 10000.0);
@@ -201,6 +212,39 @@ void ResetSlimeState(int client, int slot)
 	g_Slimes[client][slot].lastPos[0] = 0.0;
 	g_Slimes[client][slot].lastPos[1] = 0.0;
 	g_Slimes[client][slot].lastPos[2] = 0.0;
+	g_Slimes[client][slot].bouncing = false;
+	g_Slimes[client][slot].velocity[0] = 0.0;
+	g_Slimes[client][slot].velocity[1] = 0.0;
+	g_Slimes[client][slot].velocity[2] = 0.0;
+}
+
+void InstallSlimeDetour()
+{
+	Handle gameData = LoadGameConfigFile(SLIME_GAMEDATA);
+	if (gameData == null)
+	{
+		SetFailState("Failed to load %s.txt for native slime collision handling.", SLIME_GAMEDATA);
+		return;
+	}
+
+	Handle detour = DHookCreateFromConf(gameData, "CSpitterProjectile::Detonate");
+	if (detour == null)
+	{
+		delete gameData;
+		SetFailState("Failed to find CSpitterProjectile::Detonate for native slime collision handling.");
+		return;
+	}
+
+	if (!DHookEnableDetour(detour, false, OnSlimeDetonate))
+	{
+		delete detour;
+		delete gameData;
+		SetFailState("Failed to detour CSpitterProjectile::Detonate for native slime collision handling.");
+		return;
+	}
+
+	delete detour;
+	delete gameData;
 }
 
 void StopUpdateTimer()
@@ -252,6 +296,8 @@ void CleanupSpitter(int client)
 		{
 			g_GasExploded[gas] = true;
 			g_GasOwner[gas] = 0;
+			SDKUnhook(gas, SDKHook_StartTouch, OnGasCanTouch);
+			SDKUnhook(gas, SDKHook_Touch, OnGasCanTouch);
 		}
 		RemoveEntity(gas);
 	}
@@ -462,13 +508,15 @@ void CreateSlime(int client)
 	}
 	if (HasEntProp(entity, Prop_Send, "m_CollisionGroup"))
 	{
-		SetEntProp(entity, Prop_Send, "m_CollisionGroup", 1);
+		SetEntProp(entity, Prop_Send, "m_CollisionGroup", 0);
 	}
 	if (HasEntProp(entity, Prop_Send, "m_nSolidType"))
 	{
-		SetEntProp(entity, Prop_Send, "m_nSolidType", 0);
+		SetEntProp(entity, Prop_Send, "m_nSolidType", 1);
 	}
 	SetEntityMoveType(entity, MOVETYPE_NONE);
+	SDKHook(entity, SDKHook_StartTouch, OnSlimeTouch);
+	SDKHook(entity, SDKHook_Touch, OnSlimeTouch);
 
 	g_Slimes[client][slot].entRef = EntIndexToEntRef(entity);
 	g_Slimes[client][slot].lastPos = position;
@@ -521,6 +569,8 @@ void DestroySlimeSlot(int client, int slot)
 		int entity = EntRefToEntIndex(ref);
 		if (entity != INVALID_ENT_REFERENCE && IsValidEntity(entity))
 		{
+			SDKUnhook(entity, SDKHook_StartTouch, OnSlimeTouch);
+			SDKUnhook(entity, SDKHook_Touch, OnSlimeTouch);
 			RemoveEntity(entity);
 		}
 		if (g_SlimeCount[client] > 0)
@@ -606,7 +656,6 @@ void UpdateSlime(int client, int slot, int entity)
 {
 	float current[3];
 	GetEntPropVector(entity, Prop_Data, "m_vecAbsOrigin", current);
-	g_Slimes[client][slot].lastPos = current;
 
 	float ownerPosition[3];
 	GetClientAbsOrigin(client, ownerPosition);
@@ -621,6 +670,14 @@ void UpdateSlime(int client, int slot, int entity)
 		BeginRandomArc(client, slot, returnPosition);
 		return;
 	}
+
+	if (g_Slimes[client][slot].bouncing)
+	{
+		UpdateBouncingSlime(client, slot, entity, current);
+		return;
+	}
+
+	g_Slimes[client][slot].lastPos = current;
 
 	if (!g_Slimes[client][slot].tracking)
 	{
@@ -654,6 +711,10 @@ void BeginRandomArc(int client, int slot, const float start[3])
 
 	g_Slimes[client][slot].target = 0;
 	g_Slimes[client][slot].tracking = false;
+	g_Slimes[client][slot].bouncing = false;
+	g_Slimes[client][slot].velocity[0] = 0.0;
+	g_Slimes[client][slot].velocity[1] = 0.0;
+	g_Slimes[client][slot].velocity[2] = 0.0;
 	g_Slimes[client][slot].targetOffset[0] = Cosine(angle) * distance;
 	g_Slimes[client][slot].targetOffset[1] = Sine(angle) * distance;
 	g_Slimes[client][slot].targetOffset[2] = GetRandomFloat(-radius * 0.25, radius * 0.35) + 36.0;
@@ -671,6 +732,10 @@ void BeginTrackingArc(int client, int slot, const float start[3], int target)
 	GetClientEyePosition(target, targetPosition);
 	g_Slimes[client][slot].target = target;
 	g_Slimes[client][slot].tracking = true;
+	g_Slimes[client][slot].bouncing = false;
+	g_Slimes[client][slot].velocity[0] = 0.0;
+	g_Slimes[client][slot].velocity[1] = 0.0;
+	g_Slimes[client][slot].velocity[2] = 0.0;
 	SetSlimeArc(client, slot, start, targetPosition);
 }
 
@@ -700,6 +765,151 @@ float CalculateArcDuration(float distance, float speed)
 	return duration;
 }
 
+void BuildSlimeVelocity(const float start[3], const float end[3], float velocity[3])
+{
+	MakeVectorFromPoints(start, end, velocity);
+	if (GetVectorLength(velocity, true) > 0.0001)
+	{
+		ScaleVector(velocity, 1.0 / SLIME_UPDATE_INTERVAL);
+	}
+}
+
+bool TraceSlimeCollision(int client, int entity, const float start[3], const float end[3], float hitPosition[3], float hitNormal[3], int &hitEntity)
+{
+	float mins[3] = {-SLIME_COLLISION_HALF_SIZE, -SLIME_COLLISION_HALF_SIZE, -SLIME_COLLISION_HALF_SIZE};
+	float maxs[3] = {SLIME_COLLISION_HALF_SIZE, SLIME_COLLISION_HALF_SIZE, SLIME_COLLISION_HALF_SIZE};
+	int filterData = client * MAX_TRACKED_ENTITIES + entity;
+	Handle trace = TR_TraceHullFilterEx(start, end, mins, maxs, MASK_SOLID | CONTENTS_PLAYERCLIP, TraceFilterSlimeCollision, filterData);
+	if (trace == null)
+	{
+		hitEntity = -1;
+		hitPosition = end;
+		hitNormal[0] = 0.0;
+		hitNormal[1] = 0.0;
+		hitNormal[2] = 0.0;
+		return false;
+	}
+
+	bool collided = TR_DidHit(trace);
+	if (collided)
+	{
+		TR_GetEndPosition(hitPosition, trace);
+		TR_GetPlaneNormal(trace, hitNormal);
+		hitEntity = TR_GetEntityIndex(trace);
+	}
+	else
+	{
+		hitPosition = end;
+		hitNormal[0] = 0.0;
+		hitNormal[1] = 0.0;
+		hitNormal[2] = 0.0;
+		hitEntity = -1;
+	}
+	delete trace;
+	return collided;
+}
+
+public bool TraceFilterSlimeCollision(int entity, int contentsMask, any data)
+{
+	int owner = data / MAX_TRACKED_ENTITIES;
+	int ignored = data % MAX_TRACKED_ENTITIES;
+	return entity != owner && entity != ignored;
+}
+
+void BounceSlime(int client, int slot, int entity, const float position[3], const float incomingVelocity[3], const float hitNormal[3])
+{
+	float normal[3];
+	normal = hitNormal;
+	if (GetVectorLength(normal, true) <= 0.0001)
+	{
+		normal = incomingVelocity;
+		if (GetVectorLength(normal, true) > 0.0001)
+		{
+			ScaleVector(normal, -1.0);
+			NormalizeVector(normal, normal);
+		}
+		else
+		{
+			normal[0] = 0.0;
+			normal[1] = 0.0;
+			normal[2] = 1.0;
+		}
+	}
+	else
+	{
+		NormalizeVector(normal, normal);
+	}
+
+	float reflected[3];
+	float normalSpeed = GetVectorDotProduct(incomingVelocity, normal);
+	reflected[0] = incomingVelocity[0] - 2.0 * normalSpeed * normal[0];
+	reflected[1] = incomingVelocity[1] - 2.0 * normalSpeed * normal[1];
+	reflected[2] = incomingVelocity[2] - 2.0 * normalSpeed * normal[2];
+	ScaleVector(reflected, SLIME_BOUNCE_DAMPING);
+
+	float reflectedSpeed = GetVectorLength(reflected);
+	if (reflectedSpeed < SLIME_MIN_BOUNCE_SPEED)
+	{
+		if (reflectedSpeed > 0.0001)
+		{
+			ScaleVector(reflected, SLIME_MIN_BOUNCE_SPEED / reflectedSpeed);
+		}
+		else
+		{
+			reflected = normal;
+			ScaleVector(reflected, SLIME_MIN_BOUNCE_SPEED);
+		}
+	}
+
+	float bouncePosition[3];
+	bouncePosition[0] = position[0] + normal[0];
+	bouncePosition[1] = position[1] + normal[1];
+	bouncePosition[2] = position[2] + normal[2];
+
+	g_Slimes[client][slot].target = 0;
+	g_Slimes[client][slot].tracking = false;
+	g_Slimes[client][slot].bouncing = true;
+	g_Slimes[client][slot].velocity[0] = reflected[0];
+	g_Slimes[client][slot].velocity[1] = reflected[1];
+	g_Slimes[client][slot].velocity[2] = reflected[2];
+	g_Slimes[client][slot].lastPos = bouncePosition;
+	TeleportEntity(entity, bouncePosition, NULL_VECTOR, NULL_VECTOR);
+}
+
+void UpdateBouncingSlime(int client, int slot, int entity, const float current[3])
+{
+	float velocity[3];
+	velocity = g_Slimes[client][slot].velocity;
+	if (GetVectorLength(velocity, true) <= 0.0001)
+	{
+		BeginRandomArc(client, slot, current);
+		return;
+	}
+
+	float next[3];
+	next[0] = current[0] + velocity[0] * SLIME_UPDATE_INTERVAL;
+	next[1] = current[1] + velocity[1] * SLIME_UPDATE_INTERVAL;
+	next[2] = current[2] + velocity[2] * SLIME_UPDATE_INTERVAL;
+
+	float hitPosition[3];
+	float hitNormal[3];
+	int hitEntity;
+	if (TraceSlimeCollision(client, entity, current, next, hitPosition, hitNormal, hitEntity))
+	{
+		BounceSlime(client, slot, entity, hitPosition, velocity, hitNormal);
+		return;
+	}
+
+	TeleportEntity(entity, next, NULL_VECTOR, NULL_VECTOR);
+	g_Slimes[client][slot].lastPos = next;
+	velocity[2] -= SLIME_GRAVITY * SLIME_UPDATE_INTERVAL;
+	g_Slimes[client][slot].velocity = velocity;
+	if (GetVectorLength(velocity) < SLIME_MIN_BOUNCE_SPEED * 0.25)
+	{
+		BeginRandomArc(client, slot, next);
+	}
+}
+
 void UpdateRandomSlime(int client, int slot, int entity, const float current[3])
 {
 	float ownerPosition[3];
@@ -727,6 +937,16 @@ void UpdateRandomSlime(int client, int slot, int entity, const float current[3])
 
 	float next[3];
 	CalculateParabolicPosition(g_Slimes[client][slot].arcStart, end, progress, next);
+	float incomingVelocity[3];
+	BuildSlimeVelocity(current, next, incomingVelocity);
+	float hitPosition[3];
+	float hitNormal[3];
+	int hitEntity;
+	if (TraceSlimeCollision(client, entity, current, next, hitPosition, hitNormal, hitEntity))
+	{
+		BounceSlime(client, slot, entity, hitPosition, incomingVelocity, hitNormal);
+		return;
+	}
 	TeleportEntity(entity, next, NULL_VECTOR, NULL_VECTOR);
 	g_Slimes[client][slot].lastPos = next;
 }
@@ -755,6 +975,23 @@ void UpdateTrackingSlime(int client, int slot, int entity, const float current[3
 	}
 	float next[3];
 	CalculateParabolicPosition(current, targetPosition, progress, next);
+	float incomingVelocity[3];
+	BuildSlimeVelocity(current, next, incomingVelocity);
+	float hitPosition[3];
+	float hitNormal[3];
+	int hitEntity;
+	if (TraceSlimeCollision(client, entity, current, next, hitPosition, hitNormal, hitEntity))
+	{
+		if (IsValidSurvivor(hitEntity))
+		{
+			HitSlime(client, slot, entity, hitEntity, hitPosition);
+		}
+		else
+		{
+			BounceSlime(client, slot, entity, hitPosition, incomingVelocity, hitNormal);
+		}
+		return;
+	}
 	if (GetVectorDistance(targetPosition, next) <= g_hSlimeHitRadius.FloatValue
 		|| DistanceToSegment(targetPosition, current, next) <= g_hSlimeHitRadius.FloatValue)
 	{
@@ -820,6 +1057,169 @@ void HitSlime(int client, int slot, int entity, int target, const float hitPosit
 		SDKHooks_TakeDamage(target, entity, client, g_hSlimeDamage.FloatValue, DMG_ACID, -1, NULL_VECTOR, hitPosition, true);
 	}
 	DestroySlimeSlot(client, slot);
+}
+
+bool FindSlimeState(int entity, int &owner, int &slot)
+{
+	owner = 0;
+	slot = -1;
+	if (entity <= MaxClients || !IsValidEntity(entity))
+	{
+		return false;
+	}
+
+	for (int client = 1; client <= MaxClients; client++)
+	{
+		for (int slimeSlot = 0; slimeSlot < MAX_SLIMES; slimeSlot++)
+		{
+			int ref = g_Slimes[client][slimeSlot].entRef;
+			if (ref != INVALID_ENT_REFERENCE && EntRefToEntIndex(ref) == entity)
+			{
+				owner = client;
+				slot = slimeSlot;
+				return true;
+			}
+		}
+	}
+	return false;
+}
+
+void GetSlimeIncomingVelocity(int client, int slot, int entity, const float current[3], float velocity[3])
+{
+	velocity = g_Slimes[client][slot].velocity;
+	if (GetVectorLength(velocity, true) > 0.0001)
+	{
+		return;
+	}
+
+	if (HasEntProp(entity, Prop_Data, "m_vecVelocity"))
+	{
+		GetEntPropVector(entity, Prop_Data, "m_vecVelocity", velocity);
+		if (GetVectorLength(velocity, true) > 0.0001)
+		{
+			return;
+		}
+	}
+
+	MakeVectorFromPoints(g_Slimes[client][slot].arcStart, g_Slimes[client][slot].arcEnd, velocity);
+	if (g_Slimes[client][slot].arcDuration > 0.0 && GetVectorLength(velocity, true) > 0.0001)
+	{
+		ScaleVector(velocity, 1.0 / g_Slimes[client][slot].arcDuration);
+		return;
+	}
+
+	BuildSlimeVelocity(g_Slimes[client][slot].lastPos, current, velocity);
+}
+
+public void OnSlimeTouch(int entity, int other)
+{
+	int client;
+	int slot;
+	if (!FindSlimeState(entity, client, slot))
+	{
+		return;
+	}
+	if (other == client)
+	{
+		return;
+	}
+	if (!IsValidSpitter(client))
+	{
+		CleanupSpitter(client);
+		return;
+	}
+
+	float position[3];
+	GetEntPropVector(entity, Prop_Data, "m_vecAbsOrigin", position);
+	if (g_Slimes[client][slot].tracking && IsValidSurvivor(other))
+	{
+		HitSlime(client, slot, entity, other, position);
+		return;
+	}
+
+	float velocity[3];
+	GetSlimeIncomingVelocity(client, slot, entity, position, velocity);
+	float normal[3];
+	normal = velocity;
+	if (GetVectorLength(normal, true) > 0.0001)
+	{
+		ScaleVector(normal, -1.0);
+		NormalizeVector(normal, normal);
+	}
+	else
+	{
+		normal[0] = 0.0;
+		normal[1] = 0.0;
+		normal[2] = 1.0;
+	}
+	BounceSlime(client, slot, entity, position, velocity, normal);
+}
+
+public MRESReturn OnSlimeDetonate(int entity)
+{
+	int client;
+	int slot;
+	if (!FindSlimeState(entity, client, slot))
+	{
+		return MRES_Ignored;
+	}
+	if (!IsValidSpitter(client))
+	{
+		CleanupSpitter(client);
+		return MRES_Supercede;
+	}
+
+	float position[3];
+	GetEntPropVector(entity, Prop_Data, "m_vecAbsOrigin", position);
+	if (g_Slimes[client][slot].tracking && IsValidSurvivor(g_Slimes[client][slot].target))
+	{
+		float targetPosition[3];
+		GetClientEyePosition(g_Slimes[client][slot].target, targetPosition);
+		if (GetVectorDistance(position, targetPosition) <= g_hSlimeHitRadius.FloatValue)
+		{
+			HitSlime(client, slot, entity, g_Slimes[client][slot].target, position);
+			return MRES_Supercede;
+		}
+	}
+	if (g_Slimes[client][slot].bouncing)
+	{
+		return MRES_Supercede;
+	}
+
+	float velocity[3];
+	GetSlimeIncomingVelocity(client, slot, entity, position, velocity);
+	float normal[3];
+	normal = velocity;
+	if (GetVectorLength(normal, true) > 0.0001)
+	{
+		ScaleVector(normal, -1.0);
+		NormalizeVector(normal, normal);
+	}
+	else
+	{
+		normal[0] = 0.0;
+		normal[1] = 0.0;
+		normal[2] = 1.0;
+	}
+
+	if (HasEntProp(entity, Prop_Send, "m_bIsLive"))
+	{
+		SetEntProp(entity, Prop_Send, "m_bIsLive", 1);
+	}
+	BounceSlime(client, slot, entity, position, velocity, normal);
+	return MRES_Supercede;
+}
+
+public Action L4D2_OnSpitSpread(int spitter, int projectile, float &x, float &y, float &z)
+{
+	int client;
+	int slot;
+	if (FindSlimeState(projectile, client, slot))
+	{
+		// A managed slime is a physical visual projectile, never an acid pool.
+		return Plugin_Handled;
+	}
+	return Plugin_Continue;
 }
 
 int FindVisibleSurvivor(int client)
@@ -896,6 +1296,17 @@ public Action L4D2_ActivateAbility_Spitter(int client, int ability)
 		return Plugin_Continue;
 	}
 
+	if (g_GasRefs[client] != INVALID_ENT_REFERENCE)
+	{
+		int existingGas = EntRefToEntIndex(g_GasRefs[client]);
+		if (existingGas != INVALID_ENT_REFERENCE && IsValidEntity(existingGas))
+		{
+			// Keep the permanent replacement active while the previous barrel is in flight.
+			return Plugin_Handled;
+		}
+		g_GasRefs[client] = INVALID_ENT_REFERENCE;
+	}
+
 	int gas = CreateGasCan(client);
 	if (gas == INVALID_ENT_REFERENCE)
 	{
@@ -910,6 +1321,7 @@ public Action L4D2_ActivateAbility_Spitter(int client, int ability)
 		g_GasExploded[gas] = true;
 		if (IsValidEntity(gas))
 		{
+			SDKUnhook(gas, SDKHook_StartTouch, OnGasCanTouch);
 			SDKUnhook(gas, SDKHook_Touch, OnGasCanTouch);
 			RemoveEntity(gas);
 		}
@@ -970,7 +1382,10 @@ int CreateGasCan(int client)
 	{
 		SetEntPropEnt(entity, Prop_Send, "m_hOwnerEntity", client);
 	}
+	SetEntityMoveType(entity, MOVETYPE_VPHYSICS);
+	SDKHook(entity, SDKHook_StartTouch, OnGasCanTouch);
 	SDKHook(entity, SDKHook_Touch, OnGasCanTouch);
+	CreateTimer(g_hGasFuse.FloatValue, Timer_GasCanFuse, EntIndexToEntRef(entity), TIMER_FLAG_NO_MAPCHANGE);
 	TeleportEntity(entity, start, angles, velocity);
 	return entity;
 }
@@ -990,6 +1405,16 @@ public void OnGasCanTouch(int entity, int other)
 	ExplodeGasCan(entity, owner);
 }
 
+public Action Timer_GasCanFuse(Handle timer, any entityRef)
+{
+	int entity = EntRefToEntIndex(entityRef);
+	if (entity != INVALID_ENT_REFERENCE && entity < MAX_TRACKED_ENTITIES && IsValidEntity(entity) && !g_GasExploded[entity])
+	{
+		ExplodeGasCan(entity, g_GasOwner[entity]);
+	}
+	return Plugin_Stop;
+}
+
 void ExplodeGasCan(int entity, int owner)
 {
 	if (entity < 0 || entity >= MAX_TRACKED_ENTITIES || g_GasExploded[entity])
@@ -998,6 +1423,7 @@ void ExplodeGasCan(int entity, int owner)
 	}
 
 	g_GasExploded[entity] = true;
+	SDKUnhook(entity, SDKHook_StartTouch, OnGasCanTouch);
 	SDKUnhook(entity, SDKHook_Touch, OnGasCanTouch);
 
 	float position[3];

@@ -344,7 +344,7 @@ Record command outputs and commit SHAs in `50-evidence.md`. Record the following
 
 ```powershell
 git add -- addons/sourcemod/scripting/l4d2_spitter_slime.sp addons/sourcemod/plugins/optional/l4d2_spitter_slime.smx cfg/cfgogl/versus_isfullshit tests/l4d2_spitter_slime_contract.tests.ps1 Docs/aegis/work/2026-08-28-spitter-slime
-git commit -m "feat(spitter): 用粘液与煤气罐替换旧强化"
+git commit -m "feat(spitter): 用粘液与汽油桶替换旧强化"
 ```
 
 Do not add the unrelated existing untracked work files to this commit.

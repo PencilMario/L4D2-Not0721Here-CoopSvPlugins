@@ -28,7 +28,14 @@ function Require-Pattern {
 Require-Text $source '#include <left4dhooks>' 'The plugin must use the existing Left4DHooks dependency.'
 Require-Text $source '#include <sdktools>' 'The plugin must include sdktools.'
 Require-Text $source '#include <sdkhooks>' 'The plugin must include sdkhooks.'
+Require-Text $source '#include <dhooks>' 'The plugin must be able to intercept native slime detonation.'
 Require-Text $source 'L4D2_SpitterPrj' 'Slime must be the native spitter_projectile entity.'
+Require-Text $source 'DHookCreateFromConf' 'The plugin must install the native slime detonation detour.'
+Require-Text $source 'CSpitterProjectile::Detonate' 'The native slime detonation signature must be owned by this plugin.'
+Require-Text $source 'L4D2_OnSpitSpread' 'The native acid-pool spread forward must be filtered.'
+Require-Text $source 'OnSlimeDetonate' 'Native slime detonation must be intercepted.'
+Require-Text $source 'BounceSlime' 'Idle slime collision must reflect into a bounce.'
+Require-Text $source 'TraceSlimeCollision' 'Plugin-controlled slime movement must test its collision path.'
 Require-Text $source 'L4D2_ActivateAbility_Spitter' 'The original Spitter ability hook is missing.'
 Require-Text $source 'L4D2_SetCustomAbilityCooldown' 'The gas-can ability must set its custom cooldown.'
 Require-Text $source 'SDKHooks_TakeDamage' 'Player damage must use SDKDamage.'
@@ -52,7 +59,20 @@ Require-Text $source 'weapons/hegrenade/explode3.wav' 'Gas explosion must play a
 Require-Text $source 'weapons/hegrenade/explode5.wav' 'Gas explosion must have the alternate explosion sound.'
 Require-Text $source 'models/props_junk/gascan001a.mdl' 'The active projectile must be a visible gas can.'
 Require-Text $source 'IN_ATTACK' 'The replacement must document/use the IN_ATTACK path.'
+if ($source.Contains('g_bGasAbilityUsed')) {
+    $errors.Add('The gas-can replacement must remain permanent for the Spitter lifetime.')
+}
+Require-Pattern $source '(?ms)public Action L4D2_ActivateAbility_Spitter\(int client, int ability\).*?int existingGas = EntRefToEntIndex\(g_GasRefs\[client\]\);.*?return Plugin_Handled;' 'An already active gas can must keep IN_ATTACK handled instead of restoring normal spit.'
+Require-Text $source 'SDKHook(entity, SDKHook_StartTouch' 'The gasoline barrel must react when it starts touching a wall or entity.'
+Require-Text $source 'Timer_GasCanFuse' 'The gasoline barrel must have an air-time fuse.'
+Require-Pattern $source 'g_hGasFuse\.FloatValue' 'The gasoline barrel fuse must be CVar-configurable.'
+Require-Pattern $source 'SetEntityMoveType\(entity,\s*MOVETYPE_VPHYSICS\)' 'The gasoline barrel must use physics movement.'
 Require-Pattern $source 'SetEntProp\(entity,\s*Prop_Send,\s*"m_bIsLive",\s*1\s*\)' 'Native slime must retain its live visual state.'
+Require-Pattern $source 'SetEntProp\(entity,\s*Prop_Send,\s*"m_CollisionGroup",\s*0\s*\)' 'Slime must collide like a normal physical projectile.'
+Require-Pattern $source 'SetEntProp\(entity,\s*Prop_Send,\s*"m_nSolidType",\s*1\s*\)' 'Slime must retain a solid collision hull.'
+if ($source -match 'SetEntProp\(entity,\s*Prop_Send,\s*"m_nSolidType",\s*0\s*\)') {
+    $errors.Add('Slime must not disable collision to suppress acid pools.')
+}
 Require-Pattern $source 'DispatchKeyValue\(entity,\s*"physdamagescale",\s*"0\.0"\)' 'Gas cans must not inflict engine physics damage.'
 Require-Pattern $source 'if\s*\(!L4D2_SetCustomAbilityCooldown\(client,\s*g_hGasCooldown\.FloatValue\)\)' 'Gas-can creation must fail safely when its cooldown cannot be set.'
 Require-Pattern $source 'int attacker = owner;\s*if\s*\(!IsValidClient\(attacker\)\)\s*\{\s*attacker = inflictor;\s*\}' 'Gas damage must keep a valid SDKDamage attacker when the owner has left.'
@@ -70,6 +90,7 @@ foreach ($cvar in @(
     'l4d2_spitter_slime_hit_radius',
     'l4d2_spitter_gas_enable',
     'l4d2_spitter_gas_cooldown',
+    'l4d2_spitter_gas_fuse',
     'l4d2_spitter_gas_speed',
     'l4d2_spitter_gas_arc_height',
     'l4d2_spitter_gas_damage',
@@ -84,8 +105,10 @@ foreach ($cvar in @(
 }
 
 Require-Pattern $modeConfig '(?m)^confogl_addcvar\s+l4d2_spitter_slime_interval\s+0\.3\s*$' 'Slime interval default must be 0.3 seconds.'
-Require-Pattern $modeConfig '(?m)^confogl_addcvar\s+l4d2_spitter_slime_target_range\s+300(?:\.0)?\s*$' 'Slime target range default must be 300.'
+Require-Pattern $modeConfig '(?m)^confogl_addcvar\s+l4d2_spitter_slime_target_range\s+2000(?:\.0)?\s*$' 'Slime target range default must be 2000.'
+Require-Pattern $source 'CreateConVar\("l4d2_spitter_slime_target_range",\s*"2000(?:\.0)?"' 'Plugin target range default must be 2000.'
 Require-Pattern $modeConfig '(?m)^confogl_addcvar\s+l4d2_spitter_slime_max\s+5\s*$' 'Each Spitter must default to five slimes.'
+Require-Pattern $modeConfig '(?m)^confogl_addcvar\s+l4d2_spitter_gas_fuse\s+2(?:\.0)?\s*$' 'Gasoline barrel air-time fuse default must be 2 seconds.'
 
 if (($source | Select-String -Pattern 'SDKHooks_TakeDamage' -AllMatches).Matches.Count -lt 2) {
     $errors.Add('Slime and gas damage must each have an SDKHooks_TakeDamage path.')

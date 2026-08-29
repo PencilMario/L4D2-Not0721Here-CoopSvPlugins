@@ -178,6 +178,8 @@ void PrecacheAssets()
 	PrecacheModel(MODEL_GAS_CAN, true);
 	PrecacheSound(SOUND_EXPLODE_1, true);
 	PrecacheSound(SOUND_EXPLODE_2, true);
+	L4D_PrecacheParticle(PARTICLE_GAS_BLAST);
+	L4D_PrecacheParticle(PARTICLE_GAS_FIRE);
 }
 
 void ResetSlimeState(int client, int slot)
@@ -1050,7 +1052,11 @@ public Action Timer_RemoveEntity(Handle timer, any entityRef)
 
 void DamageGasTargets(int inflictor, int owner, const float position[3])
 {
-	int attacker = IsValidClient(owner) ? owner : 0;
+	int attacker = owner;
+	if (!IsValidClient(attacker))
+	{
+		attacker = inflictor;
+	}
 	for (int target = 1; target <= MaxClients; target++)
 	{
 		if (!ShouldHurtGasTarget(target))

@@ -46,6 +46,8 @@ Require-Text $source 'TR_TraceRayFilterEx' 'Targets must be selected using a vis
 Require-Text $source 'SDKHook(entity, SDKHook_Touch' 'Gas cans must explode on contact with any entity.'
 Require-Text $source 'gas_explosion_initialburst_blast' 'Gas explosion must have its initial blast particle.'
 Require-Text $source 'weapon_pipebomb_child_fire' 'Gas explosion must have its child-fire particle.'
+Require-Pattern $source 'L4D_PrecacheParticle\(PARTICLE_GAS_BLAST\)' 'Gas blast particle must be precached.'
+Require-Pattern $source 'L4D_PrecacheParticle\(PARTICLE_GAS_FIRE\)' 'Gas child-fire particle must be precached.'
 Require-Text $source 'weapons/hegrenade/explode3.wav' 'Gas explosion must play an explosion sound.'
 Require-Text $source 'weapons/hegrenade/explode5.wav' 'Gas explosion must have the alternate explosion sound.'
 Require-Text $source 'models/props_junk/gascan001a.mdl' 'The active projectile must be a visible gas can.'
@@ -53,6 +55,7 @@ Require-Text $source 'IN_ATTACK' 'The replacement must document/use the IN_ATTAC
 Require-Pattern $source 'SetEntProp\(entity,\s*Prop_Send,\s*"m_bIsLive",\s*1\s*\)' 'Native slime must retain its live visual state.'
 Require-Pattern $source 'DispatchKeyValue\(entity,\s*"physdamagescale",\s*"0\.0"\)' 'Gas cans must not inflict engine physics damage.'
 Require-Pattern $source 'if\s*\(!L4D2_SetCustomAbilityCooldown\(client,\s*g_hGasCooldown\.FloatValue\)\)' 'Gas-can creation must fail safely when its cooldown cannot be set.'
+Require-Pattern $source 'int attacker = owner;\s*if\s*\(!IsValidClient\(attacker\)\)\s*\{\s*attacker = inflictor;\s*\}' 'Gas damage must keep a valid SDKDamage attacker when the owner has left.'
 
 foreach ($cvar in @(
     'l4d2_spitter_slime_enable',

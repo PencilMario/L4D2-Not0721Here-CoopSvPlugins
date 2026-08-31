@@ -2,9 +2,11 @@
 
 ## Decision
 
-Use an event-driven rescue coordinator as the canonical owner of the forced pinned-friend relationship. A grab event records the victim, attacker, and attacker class, builds the existing nearest-Bot rank row once, and assigns only the configured number of candidate Bots. Release, death, revive, round, map, and client lifecycle events invalidate or rebuild the affected state. The usercmd path reads these arrays and does not rediscover the attacker with `L4D_GetPinnedInfected`.
+Use an event-driven rescue coordinator as the canonical owner of the forced pinned-friend relationship. A grab event records the victim, attacker, and attacker class, builds the existing nearest-Bot rank row once, and assigns only the configured number of candidate Bots. Release, death, revive, round, map, client, team, spawn, and Bot/player replacement events invalidate the affected state and request a native-state reconciliation after snapshots are ready. The usercmd path reads these arrays and does not rediscover the attacker with `L4D_GetPinnedInfected`.
 
-The coordinator keeps one rescue assignment per Bot. If multiple victims are active, a Bot is assigned to the closest eligible victim; rank rows remain per victim so the configured nearest-Bot rule is still deterministic. Existing `IsPinnedFriendReactionAllowed` remains the public gate but becomes an O(1) coordinator/rank lookup instead of rebuilding a rank cache from the usercmd path.
+The coordinator keeps one rescue assignment per Bot. If multiple victims are active, a Bot is assigned to the closest eligible victim; rank rows remain per victim so the configured nearest-Bot rule is still deterministic. Existing `IsPinnedFriendReactionAllowed` remains the public gate but becomes an O(1) coordinator/rank lookup instead of rebuilding a rank cache from the usercmd path. A Bot's assignment is fixed at coordinator rebuild time; movement does not continuously reorder assignments.
+
+All shared client snapshots (`g_fClientEyePos`, `g_fClientEyeAng`, `g_fClientAbsOrigin`, and `g_fClientCenteroid`) are refreshed by one runtime helper whose expiry is always `GetProcessCacheExpiry()`. The rescue coordinator consumes those snapshots and never refreshes global position data from an event callback. The rescue interval only throttles a Bot's decision evaluation and is not a second global-data clock. Lifecycle invalidation may mark a snapshot stale, but only the centralized runtime helper repopulates it and publishes the next `ib_process_time` expiry.
 
 ## Rescue evaluation path
 

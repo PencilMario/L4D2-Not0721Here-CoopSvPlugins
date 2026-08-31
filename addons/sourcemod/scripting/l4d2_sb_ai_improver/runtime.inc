@@ -1,3 +1,29 @@
+void InvalidateClientGlobalInfo(int iClient)
+{
+	if (iClient < 1 || iClient > MaxClients)
+		return;
+
+	g_fClientGlobalInfo_Expiry[iClient] = 0.0;
+	g_bClientGlobalInfo_Ready[iClient] = false;
+}
+
+void UpdateClientGlobalInfo(int iClient, const float fAngles[3])
+{
+	if (!IsValidClient(iClient))
+		return;
+
+	float fNow = GetGameTime();
+	if (fNow < g_fClientGlobalInfo_Expiry[iClient])
+		return;
+
+	GetClientEyePosition(iClient, g_fClientEyePos[iClient]);
+	g_fClientEyeAng[iClient] = fAngles;
+	GetClientAbsOrigin(iClient, g_fClientAbsOrigin[iClient]);
+	GetEntityCenteroid(iClient, g_fClientCenteroid[iClient]);
+	g_fClientGlobalInfo_Expiry[iClient] = GetProcessCacheExpiry();
+	g_bClientGlobalInfo_Ready[iClient] = true;
+}
+
 void UpdateClientNavArea(int iClient)
 {
 	static float fNow;
@@ -15,10 +41,12 @@ void UpdateClientNavArea(int iClient)
 
 public Action OnPlayerRunCmd(int iClient, int &iButtons, int &iImpulse, float fVel[3], float fAngles[3])
 {
-	GetClientEyePosition(iClient, g_fClientEyePos[iClient]);
-	g_fClientEyeAng[iClient] = fAngles;
-	GetClientAbsOrigin(iClient, g_fClientAbsOrigin[iClient]);
-	GetEntityCenteroid(iClient, g_fClientCenteroid[iClient]);
+	UpdateClientGlobalInfo(iClient, fAngles);
+	if (g_bPinnedRescueRecoveryPending && ArePinnedRescueSnapshotsReady())
+	{
+		g_bPinnedRescueRecoveryPending = false;
+		RecoverPinnedRescueCoordinator();
+	}
 	UpdateClientNavArea(iClient);
 
 	if (!IsClientSurvivor(iClient))

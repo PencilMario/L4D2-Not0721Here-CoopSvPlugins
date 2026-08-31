@@ -38,6 +38,10 @@ public void OnPluginStart()
 
 	HookEvent("weapon_fire", 			Event_OnWeaponFire);
 	HookEvent("player_death", 			Event_OnPlayerDeath);
+	HookEvent("player_spawn", 			Event_OnPlayerSpawn);
+	HookEvent("player_team", 			Event_OnPlayerTeam);
+	HookEvent("player_bot_replace", 	Event_OnPlayerReplacement);
+	HookEvent("bot_player_replace", 	Event_OnPlayerReplacement);
 	HookEvent("player_use",				Event_OnPlayerUse);
 
 	HookEvent("player_incapacitated_start",	Event_OnIncap);
@@ -48,6 +52,12 @@ public void OnPluginStart()
 	HookEvent("tongue_grab", 			Event_OnSurvivorGrabbed);
 	HookEvent("jockey_ride", 			Event_OnSurvivorGrabbed);
 	HookEvent("charger_carry_start", 	Event_OnSurvivorGrabbed);
+	HookEvent("charger_pummel_start", 	Event_OnSurvivorGrabbed);
+	HookEvent("pounce_end", 			Event_OnSurvivorReleased);
+	HookEvent("tongue_release", 		Event_OnSurvivorReleased);
+	HookEvent("jockey_ride_end", 		Event_OnSurvivorReleased);
+	HookEvent("charger_carry_end", 	Event_OnSurvivorReleased);
+	HookEvent("charger_pummel_end", 	Event_OnSurvivorReleased);
 
 	HookEvent("charger_charge_start",	Event_OnChargeStart);
 

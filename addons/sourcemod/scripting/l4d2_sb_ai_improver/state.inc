@@ -244,8 +244,10 @@ ConVar g_hCvar_HelpPinnedFriend_Enabled;
 ConVar g_hCvar_HelpPinnedFriend_ShootRange;
 ConVar g_hCvar_HelpPinnedFriend_ShoveRange;
 ConVar g_hCvar_HelpPinnedFriend_ReactionBots;
+ConVar g_hCvar_HelpPinnedFriend_ReactionInterval;
 int g_iCvar_HelpPinnedFriend_Enabled;
 int g_iCvar_HelpPinnedFriend_ReactionBots;
+float g_fCvar_HelpPinnedFriend_ReactionInterval;
 //static float g_fCvar_HelpPinnedFriend_ShootRange;
 float g_fCvar_HelpPinnedFriend_ShootRange_Sqr;
 float g_fCvar_HelpPinnedFriend_ShoveRange_Sqr;
@@ -425,6 +427,7 @@ bool g_bSurvivorBot_ForceSwitchWeapon[MAXPLAYERS+1];
 bool g_bSurvivorBot_ForceBash[MAXPLAYERS+1];
 
 float g_fSurvivorBot_PinnedReactTime[MAXPLAYERS+1];
+float g_fSurvivorBot_NextPinnedRescueThinkTime[MAXPLAYERS+1];
 
 int g_iSurvivorBot_NearbyInfectedCount[MAXPLAYERS+1];
 int g_iSurvivorBot_NearestInfectedCount[MAXPLAYERS+1];
@@ -477,6 +480,8 @@ float g_fClientEyePos[MAXPLAYERS+1][3];
 float g_fClientEyeAng[MAXPLAYERS+1][3];
 float g_fClientAbsOrigin[MAXPLAYERS+1][3];
 float g_fClientCenteroid[MAXPLAYERS+1][3];
+float g_fClientGlobalInfo_Expiry[MAXPLAYERS+1];
+bool g_bClientGlobalInfo_Ready[MAXPLAYERS+1];
 int g_iClientNavArea[MAXPLAYERS+1];
 float g_fClientNavAreaCache_Expiry[MAXPLAYERS+1];
 float g_fClientNavAreaCache_Position[MAXPLAYERS+1][3];
@@ -584,6 +589,12 @@ bool g_bSurvivorBot_AcidEscapeCache_Result[MAXPLAYERS+1];
 float g_fPinnedReactionCache_Expiry[MAXPLAYERS+1];
 float g_fPinnedReactionCache_Position[MAXPLAYERS+1][3];
 int g_iPinnedReactionRank[MAXPLAYERS+1][MAXPLAYERS+1];
+int g_iPinnedRescueAttacker[MAXPLAYERS+1];
+L4D2ZombieClassType g_iPinnedRescueClass[MAXPLAYERS+1];
+bool g_bPinnedRescueActive[MAXPLAYERS+1];
+int g_iSurvivorBot_RescueVictim[MAXPLAYERS+1];
+int g_iSurvivorBot_RescueAttacker[MAXPLAYERS+1];
+bool g_bPinnedRescueRecoveryPending;
 
 int g_iCommonInfectedMeleeTargetMask[MAXENTITIES+1];
 

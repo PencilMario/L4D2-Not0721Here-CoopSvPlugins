@@ -265,6 +265,8 @@ void SurvivorBotThinkImpl(int iClient, int &iButtons, int iWpnSlots[6])
 	}
 
 	int iPinnedFriend = g_iSurvivorBot_PinnedFriend[iClient];
+	if (IsValidClient(g_iSurvivorBot_RescueVictim[iClient]))
+		iPinnedFriend = g_iSurvivorBot_RescueVictim[iClient];
 	if (IsValidVector(g_fSurvivorBot_MovePos_Position[iClient]))
 	{
 		float fMovePos[3]; fMovePos = g_fSurvivorBot_MovePos_Position[iClient];
@@ -274,7 +276,7 @@ void SurvivorBotThinkImpl(int iClient, int &iButtons, int iWpnSlots[6])
 
 		if (GetGameTime() > fMoveDuration || fMoveTolerance >= 0.0 && fMoveDist <= (fMoveTolerance*fMoveTolerance) ||
 			!g_bSurvivorBot_MovePos_IgnoreDamaging[iClient] && LBI_IsDamagingPosition(fMovePos) || !LBI_IsReachablePosition(iClient, fMovePos, false) ||
-			IsValidClient(iPinnedFriend) && L4D_GetPinnedInfected(iPinnedFriend) != 0 && L4D2_GetPlayerZombieClass(L4D_GetPinnedInfected(iPinnedFriend)) != L4D2ZombieClass_Smoker
+			IsPinnedFriendMoveBlocked(iPinnedFriend)
 		)
 		{
 			ClearMoveToPosition(iClient);
@@ -287,14 +289,14 @@ void SurvivorBotThinkImpl(int iClient, int &iButtons, int iWpnSlots[6])
 	}
 
 	int iInfectedTarget = g_iSurvivorBot_TargetInfected[iClient];
-	if (GetGameTime() > g_fSurvivorBot_PinnedReactTime[iClient] && IsPinnedFriendReactionAllowed(iClient, iPinnedFriend))
+	// PINNED FRIEND RESCUE
+	float fPinnedRescueNow = GetGameTime();
+	if (g_iCvar_HelpPinnedFriend_Enabled != 0 && fPinnedRescueNow > g_fSurvivorBot_PinnedReactTime[iClient]
+		&& IsPinnedFriendReactionAllowed(iClient, iPinnedFriend) && TryBeginPinnedRescueThink(iClient, fPinnedRescueNow))
 	{
-		int iAttacker = L4D_GetPinnedInfected(iPinnedFriend);
+		int iAttacker = g_iSurvivorBot_RescueAttacker[iClient];
 		if (IsValidClient(iAttacker))
 		{
-			float fAttackerAimPos[3]; GetTargetAimPart(iClient, iAttacker, fAttackerAimPos);
-			bool bAttackerVisible = HasVisualContactWithEntity(iClient, iAttacker, false, fAttackerAimPos);
-
 			float fFriendDist = GetVectorDistance(g_fClientEyePos[iClient], g_fClientCenteroid[iPinnedFriend], true);
 			bool bCanShoot = (iCurWeapon != -1 && g_iCvar_HelpPinnedFriend_Enabled & (1 << 0) != 0 && fFriendDist <= g_fCvar_HelpPinnedFriend_ShootRange_Sqr
 				&& (iCurWeapon != iWpnSlots[1] || !SurvivorHasMeleeWeapon(iClient) || GetClientDistance(iClient, iAttacker, true) <= g_fCvar_ImprovedMelee_AttackRange_Sqr)
@@ -306,7 +308,24 @@ void SurvivorBotThinkImpl(int iClient, int &iButtons, int iWpnSlots[6])
 				iCanShove = (fFriendDist <= g_fCvar_HelpPinnedFriend_ShoveRange_Sqr ? 1 : (GetVectorDistance(g_fClientEyePos[iClient], g_fClientCenteroid[iAttacker], true) <= g_fCvar_HelpPinnedFriend_ShoveRange_Sqr ? 2 : 0));
 			}
 
-			L4D2ZombieClassType iZombieClass = L4D2_GetPlayerZombieClass(iAttacker);
+			L4D2ZombieClassType iZombieClass = g_iPinnedRescueClass[iPinnedFriend];
+			float fAttackerAimPos[3];
+			bool bAttackerVisible;
+			if (bCanShoot)
+			{
+				if (iZombieClass == L4D2ZombieClass_Jockey || iZombieClass == L4D2ZombieClass_Smoker)
+				{
+					bAttackerVisible = GetPinnedRescueAimPosition(iAttacker, iZombieClass, fAttackerAimPos);
+					if (bAttackerVisible)
+						bAttackerVisible = IsPinnedRescueAimVisible(iClient, fAttackerAimPos);
+				}
+				else
+				{
+					GetTargetAimPart(iClient, iAttacker, fAttackerAimPos);
+					bAttackerVisible = HasVisualContactWithEntity(iClient, iAttacker, false, fAttackerAimPos);
+				}
+			}
+
 			if (iZombieClass != L4D2ZombieClass_Smoker)
 			{
 				if (iWpnSlots[0] != -1 && g_iWeapon_AmmoLeft[iWpnSlots[0]] > 0 && g_iWeapon_Clip1[iWpnSlots[0]] > 0 && iCurWeapon == iWpnSlots[1] && SurvivorHasMeleeWeapon(iClient) && fFriendDist > g_fCvar_ImprovedMelee_AimRange_Sqr)
@@ -352,26 +371,11 @@ void SurvivorBotThinkImpl(int iClient, int &iButtons, int iWpnSlots[6])
 						SnapViewToPosition(iClient, fAttackerAimPos);
 						PressAttackButton(iClient, iButtons); // help pinned
 					}
-					else
-					{
-						float fTipPos[3]; GetEntPropVector(L4D_GetPlayerCustomAbility(iAttacker), Prop_Send, "m_tipPosition", fTipPos);
-						if (!IsValidVector(fTipPos))fTipPos = g_fClientEyePos[iPinnedFriend];
-
-						if (IsVisibleVector(iClient, fTipPos))
-						{
-							float fMidPos[3];
-							fMidPos[0] = ((g_fClientEyePos[iAttacker][0] + fTipPos[0]) / 2.0);
-							fMidPos[1] = ((g_fClientEyePos[iAttacker][1] + fTipPos[1]) / 2.0);
-							fMidPos[2] = ((g_fClientEyePos[iAttacker][2] + fTipPos[2]) / 2.0);
-
-							SnapViewToPosition(iClient, (IsVisibleVector(iClient, fMidPos) ? fMidPos : fTipPos));
-							PressAttackButton(iClient, iButtons); // help pinned
-						}
-					}
 				}
 			}
 		}
 	}
+	// END PINNED FRIEND RESCUE
 
 	bool bTankRetreat = false;
 	if (IsValidClient(iTankTarget) && IsPlayerAlive(iTankTarget))

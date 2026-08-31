@@ -71,6 +71,7 @@ void CreateAndHookConVars()
 	g_hCvar_HelpPinnedFriend_ShootRange				= CreateConVar("ib_help_pinned_shootrange", "2000", "Range at which bots will start firing at SI.", FCVAR_NOTIFY, true, 0.0);
 	g_hCvar_HelpPinnedFriend_ShoveRange				= CreateConVar("ib_help_pinned_shoverange", "75", "Range at which bots will start to bash SI.", FCVAR_NOTIFY, true, 0.0);
 	g_hCvar_HelpPinnedFriend_ReactionBots				= CreateConVar("ib_help_pinned_reaction_bots", "2", "Limits pinned-friend reaction to the nearest survivor Bots. 0: Plugin does not process this reaction; >0: nearest Bots only.", FCVAR_NOTIFY, true, 0.0);
+	g_hCvar_HelpPinnedFriend_ReactionInterval				= CreateConVar("ib_help_pinned_reaction_interval", "0.15", "Minimum interval between forced pinned-friend rescue evaluations for the same Bot.", FCVAR_NOTIFY, true, 0.05, true, 2.0);
 
 	g_hCvar_DefibRevive_Enabled						= CreateConVar("ib_defib_revive_enabled", "1", "Enable bots reviving dead players with defibrillators if they have one available.", FCVAR_NOTIFY, true, 0.0, true, 1.0);
 	g_hCvar_DefibRevive_ScanDist 					= CreateConVar("ib_defib_revive_distance", "2000", "Range at which survivor's dead body should be for bot to consider it reviveable.", FCVAR_NOTIFY, true, 0.0);
@@ -197,6 +198,7 @@ void CreateAndHookConVars()
 	g_hCvar_HelpPinnedFriend_ShootRange.AddChangeHook(OnConVarChanged);
 	g_hCvar_HelpPinnedFriend_ShoveRange.AddChangeHook(OnConVarChanged);
 	g_hCvar_HelpPinnedFriend_ReactionBots.AddChangeHook(OnConVarChanged);
+	g_hCvar_HelpPinnedFriend_ReactionInterval.AddChangeHook(OnConVarChanged);
 
 	g_hCvar_DefibRevive_Enabled.AddChangeHook(OnConVarChanged);
 	g_hCvar_DefibRevive_ScanDist.AddChangeHook(OnConVarChanged);
@@ -261,11 +263,19 @@ public void OnAllPluginsLoaded()
 public void OnConfigsExecuted()
 {
 	UpdateConVarValues();
+	g_bPinnedRescueRecoveryPending = g_bLateLoad;
 }
 
 void OnConVarChanged(Handle convar, const char[] oldValue, const char[] newValue)
 {
 	UpdateConVarValues();
+	if (convar == g_hCvar_NextProcessTime)
+	{
+		for (int i = 1; i <= MaxClients; i++)
+			g_fClientGlobalInfo_Expiry[i] = 0.0;
+	}
+	if (convar == g_hCvar_HelpPinnedFriend_ReactionBots)
+		RebuildPinnedRescueCoordinator();
 }
 
 void UpdateConVarValues()
@@ -366,6 +376,7 @@ void UpdateConVarValues()
 
 	g_iCvar_HelpPinnedFriend_Enabled 					= g_hCvar_HelpPinnedFriend_Enabled.IntValue;
 	g_iCvar_HelpPinnedFriend_ReactionBots = g_hCvar_HelpPinnedFriend_ReactionBots.IntValue;
+	g_fCvar_HelpPinnedFriend_ReactionInterval = g_hCvar_HelpPinnedFriend_ReactionInterval.FloatValue;
 	//g_fCvar_HelpPinnedFriend_ShootRange 				= g_hCvar_HelpPinnedFriend_ShootRange.FloatValue;
 	g_fCvar_HelpPinnedFriend_ShootRange_Sqr				= (g_hCvar_HelpPinnedFriend_ShootRange.FloatValue * g_hCvar_HelpPinnedFriend_ShootRange.FloatValue);
 	g_fCvar_HelpPinnedFriend_ShoveRange_Sqr 			= (g_hCvar_HelpPinnedFriend_ShoveRange.FloatValue * g_hCvar_HelpPinnedFriend_ShoveRange.FloatValue);

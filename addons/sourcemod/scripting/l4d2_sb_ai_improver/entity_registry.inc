@@ -259,6 +259,12 @@ public void OnMapStart()
 	g_bMapStarted = true;
 	ResetNavigationCaches();
 	ResetTeamInventoryCaches();
+	ResetPinnedReactionCaches();
+	for (int i = 1; i <= MaxClients; i++)
+	{
+		g_fClientGlobalInfo_Expiry[i] = 0.0;
+		g_bClientGlobalInfo_Ready[i] = false;
+	}
 	GetCurrentMap(g_sCurrentMapName, sizeof(g_sCurrentMapName));
 	for (int i = 1; i <= MaxClients; i++)g_fClient_ThinkFunctionDelay[i] = GetGameTime() + (g_bLateLoad ? 1.0 : 10.0);
 	CreateEntityArrayLists();
@@ -328,6 +334,12 @@ public void OnMapEnd()
 	g_bMapStarted = false;
 	ResetNavigationCaches();
 	ResetTeamInventoryCaches();
+	ResetPinnedReactionCaches();
+	for (int i = 1; i <= MaxClients; i++)
+	{
+		g_fClientGlobalInfo_Expiry[i] = 0.0;
+		g_bClientGlobalInfo_Ready[i] = false;
+	}
 	g_sCurrentMapName[0] = 0;
 	ClearEntityArrayLists();
 	ClearHashMaps();

@@ -33,6 +33,8 @@ public void OnClientPutInServer(int iClient)
 
 void OnClientJoinServer(int iClient)
 {
+	InvalidatePinnedRescueClient(iClient);
+	InvalidateClientGlobalInfo(iClient);
 	SDKHook(iClient, SDKHook_WeaponSwitch, OnSurvivorSwitchWeapon);
 	SDKHook(iClient, SDKHook_OnTakeDamage, OnSurvivorTakeDamage);
 	g_fClient_ThinkFunctionDelay[iClient] = GetGameTime() + 5.0;
@@ -41,6 +43,8 @@ void OnClientJoinServer(int iClient)
 
 public void OnClientDisconnect(int iClient)
 {
+	InvalidatePinnedRescueClient(iClient);
+	InvalidateClientGlobalInfo(iClient);
 	SDKUnhook(iClient, SDKHook_WeaponSwitch, OnSurvivorSwitchWeapon);
 	SDKUnhook(iClient, SDKHook_OnTakeDamage, OnSurvivorTakeDamage);
 	g_fClient_ThinkFunctionDelay[iClient] = GetGameTime() + 5.0;
@@ -62,6 +66,7 @@ void ResetClientPluginVariables(int iClient)
 	g_iSurvivorBot_DefibTarget[iClient] = -1;
 	g_iSurvivorBot_Grenade_ThrowTarget[iClient] = -1;
 	g_iClientNavArea[iClient] = 0;
+	InvalidateClientGlobalInfo(iClient);
 	g_fClientNavAreaCache_Expiry[iClient] = 0.0;
 	g_fTakeCoverCache_Expiry[iClient] = 0.0;
 	g_fTakeCoverCache_SearchDist[iClient] = -1.0;
@@ -84,6 +89,7 @@ void ResetClientPluginVariables(int iClient)
 	g_bSurvivorBot_MovePos_IgnoreDamaging[iClient] = false;
 
 	g_fSurvivorBot_PinnedReactTime[iClient] = GetGameTime();
+	g_fSurvivorBot_NextPinnedRescueThinkTime[iClient] = GetGameTime();
 	g_fSurvivorBot_NextUsePressTime[iClient] = GetGameTime() + 0.33;
 	g_fSurvivorBot_NextScavengeItemScanTime[iClient] = GetGameTime() + 1.0;
 	g_fSurvivorBot_BlockWeaponReloadTime[iClient] = GetGameTime();
@@ -163,6 +169,8 @@ void Event_OnPlayerDeath(Event hEvent, const char[] sName, bool bBroadcast)
 	int iVictim = GetClientOfUserId(hEvent.GetInt("userid"));
 	int iAttacker = GetClientOfUserId(hEvent.GetInt("attacker"));
 	int iInfected = hEvent.GetInt("entityid");
+	InvalidatePinnedRescueClient(iVictim);
+	InvalidatePinnedRescueCoordinator(0, iAttacker);
 
 	if (g_iSurvivorBot_TargetInfected[iAttacker] == iVictim || g_iSurvivorBot_TargetInfected[iAttacker] == iInfected)
 	{
@@ -199,6 +207,7 @@ void Event_OnRevive(Event hEvent, const char[] sName, bool bBroadcast)
 	static int iClient, iUserID, iOwner, iEntIndex;
 	iUserID = hEvent.GetInt("subject");
 	iClient = GetClientOfUserId(iUserID);
+	InvalidatePinnedRescueClient(iClient);
 
 	for (int i = 0; i < g_hForbiddenItemList.Length; i++)
 	{
@@ -231,14 +240,46 @@ void Event_OnPlayerUse(Event hEvent, const char[] sName, bool bBroadcast)
 void Event_OnSurvivorGrabbed(Event hEvent, const char[] sName, bool bBroadcast)
 {
 	int iVictim = GetClientOfUserId(hEvent.GetInt("victim"));
+	int iAttacker = GetClientOfUserId(hEvent.GetInt("userid"));
 	if (!IsValidClient(iVictim))return;
+	if (!IsValidClient(iAttacker))
+		iAttacker = L4D_GetPinnedInfected(iVictim);
 
-	for (int i = 1; i <= MaxClients; i++)
-	{
-		if (!IsClientSurvivor(i) || !IsFakeClient(i))continue;
-		float fReactTime = GetRandomFloat(0.33, 0.66); if (i == iVictim)fReactTime *= 0.5;
-		g_fSurvivorBot_PinnedReactTime[i] = GetGameTime() + fReactTime;
-	}
+	StartPinnedRescueCoordinator(iVictim, iAttacker);
+}
+
+void Event_OnSurvivorReleased(Event hEvent, const char[] sName, bool bBroadcast)
+{
+	int iVictim = GetClientOfUserId(hEvent.GetInt("victim"));
+	int iAttacker = GetClientOfUserId(hEvent.GetInt("userid"));
+	InvalidatePinnedRescueCoordinator(iVictim, iAttacker);
+}
+
+void Event_OnPlayerSpawn(Event hEvent, const char[] sName, bool bBroadcast)
+{
+	int iClient = GetClientOfUserId(hEvent.GetInt("userid"));
+	InvalidatePinnedRescueClient(iClient);
+	InvalidateClientGlobalInfo(iClient);
+	RequestPinnedRescueCoordinatorRecovery();
+}
+
+void Event_OnPlayerTeam(Event hEvent, const char[] sName, bool bBroadcast)
+{
+	int iClient = GetClientOfUserId(hEvent.GetInt("userid"));
+	InvalidatePinnedRescueClient(iClient);
+	InvalidateClientGlobalInfo(iClient);
+	RequestPinnedRescueCoordinatorRecovery();
+}
+
+void Event_OnPlayerReplacement(Event hEvent, const char[] sName, bool bBroadcast)
+{
+	int iPlayer = GetClientOfUserId(hEvent.GetInt("player"));
+	int iBot = GetClientOfUserId(hEvent.GetInt("bot"));
+	InvalidatePinnedRescueClient(iPlayer);
+	InvalidatePinnedRescueClient(iBot);
+	InvalidateClientGlobalInfo(iPlayer);
+	InvalidateClientGlobalInfo(iBot);
+	RequestPinnedRescueCoordinatorRecovery();
 }
 
 void Event_OnChargeStart(Event hEvent, const char[] sName, bool bBroadcast)

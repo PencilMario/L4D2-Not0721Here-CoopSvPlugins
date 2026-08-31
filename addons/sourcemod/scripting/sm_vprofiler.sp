@@ -4,6 +4,7 @@
 #pragma newdecls required
 
 #include <sourcemod>
+#include <logger>
 
 public Plugin myinfo =
 {
@@ -36,6 +37,7 @@ char 	g_PathPrefix[PLATFORM_MAX_PATH],
 		g_PathCosole[] = "console.log";
 ConVar 	g_CVarLogFile;
 Handle 	g_hTimer;
+Logger g_hProfilerLogger;
 bool 	g_bL4D2;
 int 	g_ptrFile;
 
@@ -49,6 +51,7 @@ public void OnPluginStart()
 {
 	CreateConVar("sm_prof_version", PLUGIN_VERSION, "Plugin Version", FCVAR_NOTIFY | FCVAR_DONTRECORD);
 	g_CVarLogFile = FindConVar("con_logfile");
+	g_hProfilerLogger = new Logger("sm_vprofiler", LoggerType_NewLogFile);
 	
 	RegAdminCmd("sm_debug", Cmd_Debug, ADMFLAG_ROOT, "Start / stop the valve profiler");
 	
@@ -79,6 +82,7 @@ public Action Cmd_Debug(int client, int args)
 		else {
 			SetCvarSilent(g_CVarLogFile, g_PathProfilerLog);
 		}
+		g_hProfilerLogger.info("VPROF_START client=%d output=%s", client, g_PathProfilerLog);
 		
 		ReplyToCommand(client, "\x04[START]\x05 Profiler is started...");
 		ServerCommand("vprof_on");
@@ -122,8 +126,10 @@ void SetCvarSilent(ConVar cvar, char[] value)
 
 public Action Timer_RestoreCvar(Handle timer)
 {
+	AppendProfilerResultToLogger(g_PathProfilerLog);
 	SetCvarSilent(g_CVarLogFile, g_PathOrig);
 	g_hTimer = null;
+	return Plugin_Stop;
 }
 
 public Action Timer_MirrorLog(Handle timer, int init)
@@ -135,8 +141,9 @@ public Action Timer_MirrorLog(Handle timer, int init)
 	
 	if( sec > LOG_MAX_WAITTIME )
 	{
+		AppendProfilerResultToLogger(g_PathProfilerLog);
 		g_hTimer = null;
-		return;
+		return Plugin_Stop;
 	}
 	if( FileSize(g_PathCosole) != g_ptrFile )
 	{
@@ -145,7 +152,7 @@ public Action Timer_MirrorLog(Handle timer, int init)
 		{
 			LogError("Cannot open file: %s", g_PathCosole);
 			g_hTimer = null;
-			return;
+			return Plugin_Stop;
 		}
 		if( g_ptrFile != -1 )
 		{
@@ -167,4 +174,24 @@ public Action Timer_MirrorLog(Handle timer, int init)
 		delete hr;
 	}
 	g_hTimer = CreateTimer(LOG_CHECK_INTERVAL, Timer_MirrorLog, 0);
+	return Plugin_Continue;
+}
+
+void AppendProfilerResultToLogger(const char[] sourcePath)
+{
+	File file = OpenFile(sourcePath, "rt");
+	if( !file )
+	{
+		g_hProfilerLogger.error("VPROF_RESULT_READ_FAIL path=%s", sourcePath);
+		return;
+	}
+
+	g_hProfilerLogger.info("VPROF_RESULT_BEGIN path=%s", sourcePath);
+	char sLine[MAX_LOG_LINE];
+	while( ReadFileLine(file, sLine, sizeof(sLine)) )
+	{
+		g_hProfilerLogger.lograw("%s", sLine);
+	}
+	delete file;
+	g_hProfilerLogger.info("VPROF_RESULT_END path=%s", sourcePath);
 }

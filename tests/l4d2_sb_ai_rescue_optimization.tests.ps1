@@ -46,8 +46,11 @@ foreach ($module in $otherModules) {
 }
 
 Require-Pattern $convars 'CreateConVar\("ib_help_pinned_reaction_interval",\s*"0\.15"' 'the per-Bot rescue interval cvar must default to 0.15 seconds'
+Require-Pattern $convars 'CreateConVar\("ib_help_pinned_max_distance",\s*"5000"' 'the pinned rescue max-distance cvar must default to 5000 units'
 Require-Text $convars 'g_hCvar_HelpPinnedFriend_ReactionInterval.AddChangeHook(OnConVarChanged);' 'the rescue interval cvar must be hooked'
+Require-Text $convars 'g_hCvar_HelpPinnedFriend_MaxDistance.AddChangeHook(OnConVarChanged);' 'the rescue max-distance cvar must be hooked'
 Require-Pattern $convars 'g_fCvar_HelpPinnedFriend_ReactionInterval\s*=\s*g_hCvar_HelpPinnedFriend_ReactionInterval\.FloatValue;' 'the rescue interval cache assignment is missing'
+Require-Pattern $convars 'g_fCvar_HelpPinnedFriend_MaxDistance_Sqr\s*=\s*\(g_hCvar_HelpPinnedFriend_MaxDistance\.FloatValue\s*\*\s*g_hCvar_HelpPinnedFriend_MaxDistance\.FloatValue\);' 'the rescue max-distance squared cache assignment is missing'
 Require-Pattern $convars 'if\s*\(convar == g_hCvar_HelpPinnedFriend_ReactionBots\)\s*\{?\s*RebuildPinnedRescueCoordinator\(\);' 'reaction-bot cvar changes must rebuild coordinator assignments'
 Require-Text $convars 'g_fClientGlobalInfo_Expiry[i] = 0.0;' 'ib_process_time changes must invalidate global snapshots'
 Require-Text $rescue 'void RecoverPinnedRescueCoordinator()' 'late-load rescue state recovery is missing'
@@ -68,6 +71,12 @@ foreach ($required in @(
 Require-Text $rescue 'm_tipPosition' 'Smoker rescue aim must use the tongue tip when available'
 Require-Text ($rescue + $botThink) 'IsVisibleVector(iClient, fAimPos)' 'specialized rescue aim must use one direct visibility check'
 Require-Text $rescue 'g_fSurvivorBot_NextPinnedRescueThinkTime[iClient]' 'rescue coordinator must own the per-Bot cooldown gate'
+Require-Text $state 'ConVar g_hCvar_HelpPinnedFriend_MaxDistance;' 'rescue max-distance cvar state is missing'
+Require-Text $state 'float g_fCvar_HelpPinnedFriend_MaxDistance_Sqr;' 'rescue max-distance squared cache state is missing'
+Require-Text $rescue 'bool IsPinnedFriendWithinMaxDistance(int iClient, int iPinnedFriend)' 'cached rescue distance helper is missing'
+Require-Pattern $rescue 'GetVectorDistance\(g_fClientAbsOrigin\[iClient\],\s*g_fClientAbsOrigin\[iPinnedFriend\],\s*true\)' 'rescue distance helper must use centralized client origin snapshots'
+Require-Pattern $rescue 'g_fCvar_HelpPinnedFriend_MaxDistance_Sqr\s*<=\s*0\.0\s*\)\s*return true;' 'zero max distance must disable only the distance limit'
+Require-Pattern $rescue 'bool IsPinnedFriendReactionAllowed\(.*?IsPinnedFriendWithinMaxDistance\(iClient,\s*iPinnedFriend\)' 'pinned rescue gate must apply the max-distance helper'
 Require-Text $rescue 'IsPinnedFriendMoveBlocked(int iPinnedFriend)' 'move cancellation must use coordinator state'
 Require-Text $rescue 'return (!g_bPinnedRescueRecoveryPending && IsValidClient(iPinnedFriend)' 'movement cancellation must not use stale rescue state during recovery'
 if ($rescue.Contains('GetEntityCenteroid(iAttacker')) {
@@ -132,5 +141,6 @@ if ($specialAim.Groups['body'].Value.Contains('GetTargetAimPart(iClient, iAttack
 }
 
 Require-Pattern $versus '(?m)^confogl_addcvar ib_help_pinned_reaction_interval 0\.15\s*$' 'versus profile must configure the rescue interval'
+Require-Pattern $versus '(?m)^confogl_addcvar ib_help_pinned_max_distance 1500\s*$' 'versus profile must configure the rescue max distance'
 
 'l4d2_sb_ai rescue optimization contract passed'

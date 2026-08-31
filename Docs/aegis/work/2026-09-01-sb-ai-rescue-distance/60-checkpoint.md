@@ -15,7 +15,10 @@
 - Completed: ran all 28 PowerShell contracts from the complete worktree; 27 passed and the only failure is the pre-existing missing `install_release_updaters.sh` fixture.
 - Completed: verified `runtime.inc` and `actions.inc` are unchanged relative to the rescue optimization baseline.
 - Completed: fast-forward integrated `codex/sb-ai-rescue-distance` into `main` at `519c9b2f`.
-- Pending: final diff review and worktree cleanup.
+- Completed: final diff review passed; only the task-scoped implementation, tests, profile, and checkpoint files changed.
+- Completed: removed the temporary `.worktrees/sb-ai-rescue-distance` worktree.
+- Completed: rebuilt the tracked deployment binary from the merged source; `l4d2_sb_ai_improver.smx` is 396073 bytes.
+- Completed: post-build target and module contracts passed, and `git diff --check` passed.
 
 ## EvidenceBundleDraft
 
@@ -30,6 +33,8 @@
 - Final compile command: project SourcePawn 1.12 compiler with the AGENTS.md include paths; exit 0; code size 276924 bytes; existing `CreateDialog` deprecation warning only.
 - Final full-suite command: each `tests/*.ps1` script under the complete `main` worktree; 28 total, 27 passed, 1 baseline failure (`check_release_updater_names.ps1`, missing `install_release_updaters.sh`).
 - Final boundary check: `git diff --name-only c2f62aec HEAD` contains no `runtime.inc` or `actions.inc`; `git diff --check` passed.
+- Review result: independent advisory review found no Critical, Important, or Minor findings for the distance-gate diff.
+- Deployment note: the tracked `addons/sourcemod/plugins/l4d2_sb_ai_improver.smx` now matches the merged source revision.
 - Authority: `AGENTS.md` and the preceding rescue optimization design/spec.
 
 ## DriftCheckDraft

@@ -15,7 +15,7 @@ $required = @(
     'LogSlowCalculation',
     'GetEngineTime()',
     'g_fCvar_PerformanceThresholdMs / 1000.0',
-    'g_hPerformanceLogger.warning',
+    'g_hPerformanceLogger.lograw',
     'SurvivorBotThinkImpl',
     'CheckForItemsToScavengeImpl',
     'GetItemFromArrayListImpl',

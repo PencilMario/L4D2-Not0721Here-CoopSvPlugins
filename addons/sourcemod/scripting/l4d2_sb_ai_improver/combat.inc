@@ -71,6 +71,8 @@ Action OnSurvivorSwitchWeapon(int iClient, int iWeapon)
 	return Plugin_Continue;
 }
 
+#define ACID_ESCAPE_PATH_ATTEMPTS 6
+
 Action OnSurvivorTakeDamage(int iClient, int &iAttacker, int &iInflictor, float &fDamage, int &iDamageType)
 {
 	if (GetClientTeam(iClient) != 2 || !IsPlayerAlive(iClient))
@@ -117,10 +119,22 @@ Action OnSurvivorTakeDamage(int iClient, int &iAttacker, int &iInflictor, float 
 	static char sInfClass[16]; GetEntityClassname(iInflictor, sInfClass, sizeof(sInfClass));
 	if (strcmp(sInfClass, "insect_swarm") != 0 && strcmp(sInfClass, "inferno") != 0)return Plugin_Continue;
 
+	int iInflictorRef = EntIndexToEntRef(iInflictor);
+	float fNow = GetGameTime();
+	if (fNow < g_fSurvivorBot_AcidEscapeCache_Expiry[iClient]
+		&& g_iSurvivorBot_AcidEscapeCache_Inflictor[iClient] == iInflictorRef
+		&& GetVectorDistance(g_fSurvivorBot_AcidEscapeCache_ClientPos[iClient], g_fClientAbsOrigin[iClient], true) <= GetNavigationCachePositionTolerance())
+	{
+		if (g_bSurvivorBot_AcidEscapeCache_Result[iClient])
+			SetMoveToPosition(iClient, g_fSurvivorBot_AcidEscapeCache_ResultPos[iClient], 4, "EscapeInferno", 0.0, 5.0, true, true);
+		return Plugin_Continue;
+	}
+
 	int iNavArea;
 	float fCurDist, fLastDist = -1.0;
 	float fEscapePos[3], fPathPos[3];
-	for (int i = 0; i < 12; i++)
+	SetVectorToZero(fEscapePos);
+	for (int i = 0; i < ACID_ESCAPE_PATH_ATTEMPTS; i++)
 	{
 		VScript_TryGetPathableLocationWithin(iClient, 250.0 + (50.0 * i), fPathPos);
 		if (!IsValidVector(fPathPos))continue;
@@ -129,13 +143,20 @@ Action OnSurvivorTakeDamage(int iClient, int &iAttacker, int &iInflictor, float 
 		if (fLastDist != -1.0 && fCurDist >= fLastDist)
 			continue;
 
-		iNavArea = L4D_GetNearestNavArea(fPathPos);
+		iNavArea = LBI_GetNearestNavAreaCached(fPathPos);
 		if (!iNavArea || LBI_IsDamagingNavArea(iNavArea, true) || !LBI_IsReachableNavArea(iClient, iNavArea))
 			continue;
 
 		fLastDist = fCurDist;
 		fEscapePos = fPathPos;
 	}
+
+	g_fSurvivorBot_AcidEscapeCache_Expiry[iClient] = GetProcessCacheExpiry();
+	g_iSurvivorBot_AcidEscapeCache_Inflictor[iClient] = iInflictorRef;
+	g_fSurvivorBot_AcidEscapeCache_ClientPos[iClient] = g_fClientAbsOrigin[iClient];
+	g_bSurvivorBot_AcidEscapeCache_Result[iClient] = IsValidVector(fEscapePos);
+	if (g_bSurvivorBot_AcidEscapeCache_Result[iClient])
+		g_fSurvivorBot_AcidEscapeCache_ResultPos[iClient] = fEscapePos;
 
 	if (IsValidVector(fEscapePos))
 		SetMoveToPosition(iClient, fEscapePos, 4, "EscapeInferno", 0.0, 5.0, true, true);

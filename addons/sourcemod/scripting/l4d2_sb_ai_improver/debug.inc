@@ -7,7 +7,18 @@ void LogSlowCalculation(const char[] sName, float fStartedAt, int iClient = -1, 
 	if (fElapsed < g_fCvar_PerformanceThresholdMs / 1000.0)
 		return;
 
-	g_hPerformanceLogger.warning("[SlowCalculation] name=%s elapsed_ms=%.3f client=%d entity=%d", sName, fElapsed * 1000.0, iClient, iEntity);
+	if (g_hPerformanceLogger != null)
+		g_hPerformanceLogger.lograw("[SlowCalculation] name=%s elapsed_ms=%.3f client=%d entity=%d", sName, fElapsed * 1000.0, iClient, iEntity);
+}
+
+void LogDebugMessage(const char[] sMessage, any ...)
+{
+	char sBuffer[512];
+	VFormat(sBuffer, sizeof(sBuffer), sMessage, 2);
+	PrintToServer("%s", sBuffer);
+
+	if (g_hPerformanceLogger != null)
+		g_hPerformanceLogger.lograw("[Debug] %s", sBuffer);
 }
 
 Action CmdDumpCvars(int client, int args)

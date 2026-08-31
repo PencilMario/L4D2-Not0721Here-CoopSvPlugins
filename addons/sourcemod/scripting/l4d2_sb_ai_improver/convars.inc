@@ -70,6 +70,7 @@ void CreateAndHookConVars()
 	g_hCvar_HelpPinnedFriend_Enabled				= CreateConVar("ib_help_pinned_enabled", "3", "Makes survivor bots force attack pinned survivor's SI if possible. <0: Disabled, 1: Shoot at attacker, 2: Shove the attacker if close enough. Add numbers together.>", FCVAR_NOTIFY, true, 0.0, true, 3.0);
 	g_hCvar_HelpPinnedFriend_ShootRange				= CreateConVar("ib_help_pinned_shootrange", "2000", "Range at which bots will start firing at SI.", FCVAR_NOTIFY, true, 0.0);
 	g_hCvar_HelpPinnedFriend_ShoveRange				= CreateConVar("ib_help_pinned_shoverange", "75", "Range at which bots will start to bash SI.", FCVAR_NOTIFY, true, 0.0);
+	g_hCvar_HelpPinnedFriend_ReactionBots				= CreateConVar("ib_help_pinned_reaction_bots", "2", "Limits pinned-friend reaction to the nearest survivor Bots. 0: Plugin does not process this reaction; >0: nearest Bots only.", FCVAR_NOTIFY, true, 0.0);
 
 	g_hCvar_DefibRevive_Enabled						= CreateConVar("ib_defib_revive_enabled", "1", "Enable bots reviving dead players with defibrillators if they have one available.", FCVAR_NOTIFY, true, 0.0, true, 1.0);
 	g_hCvar_DefibRevive_ScanDist 					= CreateConVar("ib_defib_revive_distance", "2000", "Range at which survivor's dead body should be for bot to consider it reviveable.", FCVAR_NOTIFY, true, 0.0);
@@ -195,6 +196,7 @@ void CreateAndHookConVars()
 	g_hCvar_HelpPinnedFriend_Enabled.AddChangeHook(OnConVarChanged);
 	g_hCvar_HelpPinnedFriend_ShootRange.AddChangeHook(OnConVarChanged);
 	g_hCvar_HelpPinnedFriend_ShoveRange.AddChangeHook(OnConVarChanged);
+	g_hCvar_HelpPinnedFriend_ReactionBots.AddChangeHook(OnConVarChanged);
 
 	g_hCvar_DefibRevive_Enabled.AddChangeHook(OnConVarChanged);
 	g_hCvar_DefibRevive_ScanDist.AddChangeHook(OnConVarChanged);
@@ -363,6 +365,7 @@ void UpdateConVarValues()
 	g_iCvar_AutoShove_Enabled 							= g_hCvar_AutoShove_Enabled.BoolValue;
 
 	g_iCvar_HelpPinnedFriend_Enabled 					= g_hCvar_HelpPinnedFriend_Enabled.IntValue;
+	g_iCvar_HelpPinnedFriend_ReactionBots = g_hCvar_HelpPinnedFriend_ReactionBots.IntValue;
 	//g_fCvar_HelpPinnedFriend_ShootRange 				= g_hCvar_HelpPinnedFriend_ShootRange.FloatValue;
 	g_fCvar_HelpPinnedFriend_ShootRange_Sqr				= (g_hCvar_HelpPinnedFriend_ShootRange.FloatValue * g_hCvar_HelpPinnedFriend_ShootRange.FloatValue);
 	g_fCvar_HelpPinnedFriend_ShoveRange_Sqr 			= (g_hCvar_HelpPinnedFriend_ShoveRange.FloatValue * g_hCvar_HelpPinnedFriend_ShoveRange.FloatValue);

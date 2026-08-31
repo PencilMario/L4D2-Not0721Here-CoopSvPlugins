@@ -1,10 +1,25 @@
+void UpdateClientNavArea(int iClient)
+{
+	static float fNow;
+	fNow = GetGameTime();
+
+	if (!g_iClientNavArea[iClient]
+		|| fNow >= g_fClientNavAreaCache_Expiry[iClient]
+		|| GetVectorDistance(g_fClientNavAreaCache_Position[iClient], g_fClientAbsOrigin[iClient], true) > 1024.0)
+	{
+		g_iClientNavArea[iClient] = L4D_GetLastKnownArea(iClient);
+		g_fClientNavAreaCache_Position[iClient] = g_fClientAbsOrigin[iClient];
+		g_fClientNavAreaCache_Expiry[iClient] = GetProcessCacheExpiry();
+	}
+}
+
 public Action OnPlayerRunCmd(int iClient, int &iButtons, int &iImpulse, float fVel[3], float fAngles[3])
 {
 	GetClientEyePosition(iClient, g_fClientEyePos[iClient]);
 	g_fClientEyeAng[iClient] = fAngles;
 	GetClientAbsOrigin(iClient, g_fClientAbsOrigin[iClient]);
 	GetEntityCenteroid(iClient, g_fClientCenteroid[iClient]);
-	g_iClientNavArea[iClient] = L4D_GetLastKnownArea(iClient);
+	UpdateClientNavArea(iClient);
 
 	if (!IsClientSurvivor(iClient))
 		return Plugin_Continue;
@@ -52,7 +67,7 @@ public Action OnPlayerRunCmd(int iClient, int &iButtons, int &iImpulse, float fV
 	if (GetGameTime() > g_fBotProcessing_NextProcessTime && g_iBotProcessing_ProcessedCount >= GetTeamPlayerCount(2, true, true))
 	{
 		g_iBotProcessing_ProcessedCount = 0;
-		g_fBotProcessing_NextProcessTime = GetGameTime() + g_fCvar_NextProcessTime;
+		g_fBotProcessing_NextProcessTime = GetProcessCacheExpiry();
 		for (int i = 1; i <= MaxClients; i++)g_bBotProcessing_IsProcessed[i] = false;
 	}
 

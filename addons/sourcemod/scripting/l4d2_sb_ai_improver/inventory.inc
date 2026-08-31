@@ -46,6 +46,38 @@ int SurvivorHasTier3Weapon(int iClient)
 	return ( (g_iClientInvFlags[iClient] & FLAG_TIER3 != 0) + (g_iClientInvFlags[iClient] & FLAG_M60 != 0) );
 }
 
+#define TEAM_INVENTORY_CACHE_SIZE 32
+#define TEAM_ITEM_CACHE_SIZE 56
+
+float g_fTeamInventoryCache_Expiry[TEAM_INVENTORY_CACHE_SIZE];
+int g_iTeamInventoryCache_Flag1[TEAM_INVENTORY_CACHE_SIZE];
+int g_iTeamInventoryCache_Flag2[TEAM_INVENTORY_CACHE_SIZE];
+int g_iTeamInventoryCache_Result[TEAM_INVENTORY_CACHE_SIZE];
+int g_iTeamInventoryCache_NextSlot;
+
+float g_fTeamItemCache_Expiry[TEAM_ITEM_CACHE_SIZE];
+int g_iTeamItemCache_Result[TEAM_ITEM_CACHE_SIZE];
+float g_fTeamActiveItemCache_Expiry[TEAM_ITEM_CACHE_SIZE];
+int g_iTeamActiveItemCache_Result[TEAM_ITEM_CACHE_SIZE];
+
+stock float GetTeamInventoryCacheExpiry()
+{
+	return GetProcessCacheExpiry();
+}
+
+void ResetTeamInventoryCaches()
+{
+	g_iTeamInventoryCache_NextSlot = 0;
+	for (int i = 0; i < TEAM_INVENTORY_CACHE_SIZE; i++)
+		g_fTeamInventoryCache_Expiry[i] = 0.0;
+
+	for (int i = 0; i < TEAM_ITEM_CACHE_SIZE; i++)
+	{
+		g_fTeamItemCache_Expiry[i] = 0.0;
+		g_fTeamActiveItemCache_Expiry[i] = 0.0;
+	}
+}
+
 int SurvivorHasGrenade(int iClient)
 {
 	int iSlot = GetClientWeaponInventory(iClient, 2);
@@ -89,6 +121,11 @@ int SurvivorHasPistol(int iClient)
 
 int GetSurvivorTeamActiveItemCount(const L4D2WeaponId iWeaponID)
 {
+	int iWeapon = view_as<int>(iWeaponID);
+	float fNow = GetGameTime();
+	if (iWeapon >= 0 && iWeapon < TEAM_ITEM_CACHE_SIZE && fNow < g_fTeamActiveItemCache_Expiry[iWeapon])
+		return g_iTeamActiveItemCache_Result[iWeapon];
+
 	int iCount, iWeaponSlot, iCurWeapon;
 	for (int i = 1; i <= MaxClients; i++)
 	{
@@ -105,13 +142,22 @@ int GetSurvivorTeamActiveItemCount(const L4D2WeaponId iWeaponID)
 			}
 		}
 	}
+	if (iWeapon >= 0 && iWeapon < TEAM_ITEM_CACHE_SIZE)
+	{
+		g_fTeamActiveItemCache_Expiry[iWeapon] = GetProcessCacheExpiry();
+		g_iTeamActiveItemCache_Result[iWeapon] = iCount;
+	}
 	return iCount;
 }
 
 int GetSurvivorTeamItemCount(const L4D2WeaponId iWeaponID)
 {
-	static int iCount, iWeaponSlot;
-	iCount = 0;
+	int iWeapon = view_as<int>(iWeaponID);
+	float fNow = GetGameTime();
+	if (iWeapon >= 0 && iWeapon < TEAM_ITEM_CACHE_SIZE && fNow < g_fTeamItemCache_Expiry[iWeapon])
+		return g_iTeamItemCache_Result[iWeapon];
+
+	int iCount, iWeaponSlot;
 	for (int i = 1; i <= MaxClients; i++)
 	{
 		if (!IsClientSurvivor(i))
@@ -125,6 +171,11 @@ int GetSurvivorTeamItemCount(const L4D2WeaponId iWeaponID)
 				break;
 			}
 		}
+	}
+	if (iWeapon >= 0 && iWeapon < TEAM_ITEM_CACHE_SIZE)
+	{
+		g_fTeamItemCache_Expiry[iWeapon] = GetProcessCacheExpiry();
+		g_iTeamItemCache_Result[iWeapon] = iCount;
 	}
 	return iCount;
 }
@@ -143,13 +194,19 @@ int GetSurvivorTeamItemCount(const L4D2WeaponId iWeaponID)
 */
 int GetSurvivorTeamInventoryCount(int iFlag, int iFlag2 = 0)
 {
-	static int iCount;
-	static bool bNegate, bNegate2;
+	float fNow = GetGameTime();
+	for (int i = 0; i < TEAM_INVENTORY_CACHE_SIZE; i++)
+	{
+		if (fNow < g_fTeamInventoryCache_Expiry[i]
+			&& g_iTeamInventoryCache_Flag1[i] == iFlag
+			&& g_iTeamInventoryCache_Flag2[i] == iFlag2)
+			return g_iTeamInventoryCache_Result[i];
+	}
 
-	bNegate = (iFlag < 0);
-	bNegate2 = (iFlag2 < 0);
+	bool bNegate = (iFlag < 0);
+	bool bNegate2 = (iFlag2 < 0);
 
-	iCount = 0;
+	int iCount;
 	for (int i = 1; i <= MaxClients; i++)
 	{
 		if (!IsClientSurvivor(i))
@@ -160,6 +217,13 @@ int GetSurvivorTeamInventoryCount(int iFlag, int iFlag2 = 0)
 			iCount++;
 		}
 	}
+
+	int iCacheSlot = g_iTeamInventoryCache_NextSlot;
+	g_iTeamInventoryCache_NextSlot = (g_iTeamInventoryCache_NextSlot + 1) % TEAM_INVENTORY_CACHE_SIZE;
+	g_fTeamInventoryCache_Expiry[iCacheSlot] = GetProcessCacheExpiry();
+	g_iTeamInventoryCache_Flag1[iCacheSlot] = iFlag;
+	g_iTeamInventoryCache_Flag2[iCacheSlot] = iFlag2;
+	g_iTeamInventoryCache_Result[iCacheSlot] = iCount;
 	return iCount;
 }
 

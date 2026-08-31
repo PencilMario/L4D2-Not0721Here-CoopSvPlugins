@@ -13,7 +13,7 @@ MRESReturn Detour_CommandIssued(DHookReturn hReturn, DHookParam hParam)
 			GetClientName(iClient, sClientName, sizeof(sClientName));
 		if (iTarget > -1)
 			GetEntityClassname(iTarget, sEntClassname, sizeof(sEntClassname));
-		PrintToServer("Received %s command for %d %s, target %d %s", IBVScriptCommands[iCommand-1], iClient, (iClient > 0 ? sClientName : "everyone"), iTarget, (iTarget != -1 ? sEntClassname : "not defined"));
+		LogDebugMessage("Received %s command for %d %s, target %d %s", IBVScriptCommands[iCommand-1], iClient, (iClient > 0 ? sClientName : "everyone"), iTarget, (iTarget != -1 ? sEntClassname : "not defined"));
 	}
 
 	if (iCommand == 1)
@@ -128,7 +128,7 @@ MRESReturn DTR_OnFindUseEntity(int iClient, Handle hReturn, Handle hParams)
 			char sEntClassname[64],sClientName[128];
 			GetClientName(iClient, sClientName, sizeof(sClientName));
 			GetEntityClassname(iScavengeItem, sEntClassname, sizeof(sEntClassname));
-			PrintToServer("DTR_OnFindUseEntity: Preventing %s from grabbing %s, distance %.2f", sClientName, sEntClassname, SquareRoot(fDistance));
+			LogDebugMessage("DTR_OnFindUseEntity: Preventing %s from grabbing %s, distance %.2f", sClientName, sEntClassname, SquareRoot(fDistance));
 		}
 		return MRES_Ignored;
 	}

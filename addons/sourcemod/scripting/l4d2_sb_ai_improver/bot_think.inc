@@ -22,10 +22,15 @@ void SurvivorBotThinkImpl(int iClient, int &iButtons, int iWpnSlots[6])
 	if (!g_bBotProcessing_IsProcessed[iClient] && GetGameTime() > g_fBotProcessing_NextProcessTime)
 	{
 		g_iSurvivorBot_NearbyFriends[iClient] = 0;
+		if (g_iBotProcessing_ProcessedCount == 0)
+			RefreshCommonInfectedMeleeTargetMarks();
 		g_iSurvivorBot_TargetInfected[iClient] = GetClosestInfected(iClient, 4000.0);
-		g_iSurvivorBot_ThreatInfectedCount[iClient] = GetInfectedCount(iClient, 125.0);
-		g_iSurvivorBot_NearestInfectedCount[iClient] = GetInfectedCount(iClient, 300.0);
-		g_iSurvivorBot_NearbyInfectedCount[iClient] = GetInfectedCount(iClient, 500.0);
+		float fInfectedCountRanges[3] = {125.0, 300.0, 500.0};
+		int iInfectedCounts[3];
+		GetInfectedCounts(iClient, fInfectedCountRanges, iInfectedCounts);
+		g_iSurvivorBot_ThreatInfectedCount[iClient] = iInfectedCounts[0];
+		g_iSurvivorBot_NearestInfectedCount[iClient] = iInfectedCounts[1];
+		g_iSurvivorBot_NearbyInfectedCount[iClient] = iInfectedCounts[2];
 		if (g_bCvar_GrenadeThrow_Enabled && iWpnSlots[2] != -1)
 		{
 			g_iSurvivorBot_GrenadeInfectedCount[iClient] = GetInfectedCount(iClient, g_fCvar_GrenadeThrow_ThrowRange, CalculateGrenadeThrowInfectedCount(), _, false);
@@ -94,15 +99,7 @@ void SurvivorBotThinkImpl(int iClient, int &iButtons, int iWpnSlots[6])
 				}
 
 				if (!bFriendIsNearBoomer)
-				{
-					for (int j = 1; j <= MaxClients; j++)
-					{
-						bFriendIsNearBoomer = (j != iClient && j != i && IsClientInGame(j) && GetClientTeam(j) == 3 && IsPlayerAlive(j) && !L4D_IsPlayerGhost(j) &&
-							GetClientDistance(i, j, true) <= BOT_BOOMER_AVOID_RADIUS_SQR && L4D2_GetPlayerZombieClass(j) == L4D2ZombieClass_Boomer && IsVisibleEntity(j, i, MASK_VISIBLE_AND_NPCS)
-						);
-						if (bFriendIsNearBoomer)break;
-					}
-				}
+					bFriendIsNearBoomer = IsSurvivorNearBoomer(i);
 
 				if (fCurDist <= 262144.0 && !L4D_IsPlayerIncapacitated(i) && !L4D_IsPlayerPinned(i))
 					g_iSurvivorBot_NearbyFriends[iClient] += 1;
@@ -290,7 +287,7 @@ void SurvivorBotThinkImpl(int iClient, int &iButtons, int iWpnSlots[6])
 	}
 
 	int iInfectedTarget = g_iSurvivorBot_TargetInfected[iClient];
-	if (GetGameTime() > g_fSurvivorBot_PinnedReactTime[iClient] && IsValidClient(iPinnedFriend))
+	if (GetGameTime() > g_fSurvivorBot_PinnedReactTime[iClient] && IsPinnedFriendReactionAllowed(iClient, iPinnedFriend))
 	{
 		int iAttacker = L4D_GetPinnedInfected(iPinnedFriend);
 		if (IsValidClient(iAttacker))
@@ -742,7 +739,7 @@ void SurvivorBotThinkImpl(int iClient, int &iButtons, int iWpnSlots[6])
 
 			if (iCurWeapon == iWpnSlots[2])
 			{
-				int iThrowArea = L4D_GetNearestNavArea(fThrowPosition, _, true, false, _, 3);
+				int iThrowArea = LBI_GetNearestNavAreaCached(fThrowPosition, 300.0, true, false, false, 3);
 				if (iThrowArea)LBI_GetClosestPointOnNavArea(iThrowArea, fThrowPosition, fThrowPosition);
 
 				float fThrowVel[3]; CalculateTrajectory(g_fClientEyePos[iClient], fThrowPosition, 700.0, 0.4, fThrowVel);
@@ -971,8 +968,8 @@ void SurvivorBotThinkImpl(int iClient, int &iButtons, int iWpnSlots[6])
 					fMaxDist = g_fCvar_ItemScavenge_ApproachVisibleRange;
 					if (!bTeamHasHumanPlayer)
 						fMaxDist *= g_fCvar_ItemScavenge_NoHumansRangeMultiplier;
-					iScavengeArea = L4D_GetNearestNavArea(fItemPos, 140.0, true, true, false);
-					iLeaderArea = L4D_GetNearestNavArea(g_fClientAbsOrigin[iTeamLeader], 140.0, true, true, false);
+					iScavengeArea = LBI_GetNearestNavAreaCached(fItemPos, 140.0, true, true, false);
+					iLeaderArea = LBI_GetNearestNavAreaCached(g_fClientAbsOrigin[iTeamLeader], 140.0, true, true, false);
 
 					if (iScavengeArea && iLeaderArea)
 					{
@@ -988,7 +985,7 @@ void SurvivorBotThinkImpl(int iClient, int &iButtons, int iWpnSlots[6])
 							if (fMaxDist > fDist) fMaxDist = fDist;
 						}
 
-						bCanRegroup = L4D2_NavAreaBuildPath(view_as<Address>(iScavengeArea), view_as<Address>(iLeaderArea), fMaxDist, 2, false);
+						bCanRegroup = LBI_NavAreaBuildPathCached(iScavengeArea, iLeaderArea, fMaxDist, 2, false);
 						if (bCanRegroup)
 							fDistanceToRegroup = GetNavDistance(fScavengePos, g_fClientAbsOrigin[iTeamLeader], iScavengeItem, false);
 					}

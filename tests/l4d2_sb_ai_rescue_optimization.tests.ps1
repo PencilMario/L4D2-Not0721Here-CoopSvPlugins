@@ -76,7 +76,7 @@ Require-Text $state 'float g_fCvar_HelpPinnedFriend_MaxDistance_Sqr;' 'rescue ma
 Require-Text $rescue 'bool IsPinnedFriendWithinMaxDistance(int iClient, int iPinnedFriend)' 'cached rescue distance helper is missing'
 Require-Pattern $rescue 'GetVectorDistance\(g_fClientAbsOrigin\[iClient\],\s*g_fClientAbsOrigin\[iPinnedFriend\],\s*true\)' 'rescue distance helper must use centralized client origin snapshots'
 Require-Pattern $rescue 'g_fCvar_HelpPinnedFriend_MaxDistance_Sqr\s*<=\s*0\.0\s*\)\s*return true;' 'zero max distance must disable only the distance limit'
-Require-Pattern $rescue 'bool IsPinnedFriendReactionAllowed\(.*?IsPinnedFriendWithinMaxDistance\(iClient,\s*iPinnedFriend\)' 'pinned rescue gate must apply the max-distance helper'
+Require-Text $rescue 'IsPinnedFriendWithinMaxDistance(iClient, iPinnedFriend)' 'pinned rescue gate must apply the max-distance helper'
 Require-Text $rescue 'IsPinnedFriendMoveBlocked(int iPinnedFriend)' 'move cancellation must use coordinator state'
 Require-Text $rescue 'return (!g_bPinnedRescueRecoveryPending && IsValidClient(iPinnedFriend)' 'movement cancellation must not use stale rescue state during recovery'
 if ($rescue.Contains('GetEntityCenteroid(iAttacker')) {

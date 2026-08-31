@@ -4,6 +4,7 @@
 #pragma newdecls required
 
 #include <sourcemod>
+#include <console>
 #include <logger>
 
 public Plugin myinfo =
@@ -30,8 +31,11 @@ public Plugin myinfo =
 
 const float LOG_MAX_WAITTIME = 60.0;
 const float LOG_CHECK_INTERVAL = 5.0;
+const int VPROF_CAPTURE_MAX_BYTES = 1048576;
 
+char g_sProfilerOutput[VPROF_CAPTURE_MAX_BYTES];
 char 	g_PathPrefix[PLATFORM_MAX_PATH],
+		g_PathProfilerLogger[PLATFORM_MAX_PATH],
 		g_PathOrig[PLATFORM_MAX_PATH],
 		g_PathProfilerLog[PLATFORM_MAX_PATH],
 		g_PathCosole[] = "console.log";
@@ -52,6 +56,7 @@ public void OnPluginStart()
 	CreateConVar("sm_prof_version", PLUGIN_VERSION, "Plugin Version", FCVAR_NOTIFY | FCVAR_DONTRECORD);
 	g_CVarLogFile = FindConVar("con_logfile");
 	g_hProfilerLogger = new Logger("sm_vprofiler", LoggerType_NewLogFile);
+	BuildPath(Path_SM, g_PathProfilerLogger, sizeof(g_PathProfilerLogger), "logs/sm_vprofiler.log");
 	
 	RegAdminCmd("sm_debug", Cmd_Debug, ADMFLAG_ROOT, "Start / stop the valve profiler");
 	
@@ -82,7 +87,7 @@ public Action Cmd_Debug(int client, int args)
 		else {
 			SetCvarSilent(g_CVarLogFile, g_PathProfilerLog);
 		}
-		g_hProfilerLogger.info("VPROF_START client=%d output=%s", client, g_PathProfilerLog);
+		g_hProfilerLogger.info("VPROF_START client=%d logger=%s output=%s", client, g_PathProfilerLogger, g_PathProfilerLog);
 		
 		ReplyToCommand(client, "\x04[START]\x05 Profiler is started...");
 		ServerCommand("vprof_on");
@@ -92,19 +97,31 @@ public Action Cmd_Debug(int client, int args)
 	else
 	{
 		ServerCommand("sm prof stop vprof");
-		ServerCommand("sm prof dump vprof");
+		ServerCommandEx(g_sProfilerOutput, sizeof(g_sProfilerOutput), "sm prof dump vprof");
 		ServerCommand("vprof_off");
-		ReplyToCommand(client, "\x04[STOP]\x05 Saving profiler log to: %s", g_PathProfilerLog);
-		
-		// Profiler needs some time for analysis
-		
-		if( g_bL4D2 )
+		ServerExecute();
+		ReplyToCommand(client, "\x04[STOP]\x05 Profiler result written to: %s", g_PathProfilerLogger);
+
+		// Capture directly first. The file path remains a fallback for engines or
+		// reports that do not fit in ServerCommandEx's output buffer.
+		if( WriteProfilerOutputToLogger(g_sProfilerOutput) )
 		{
-			// L4D2 has bugged con_logfile: https://github.com/ValveSoftware/Source-1-Games/issues/3601
-			g_hTimer = CreateTimer(LOG_CHECK_INTERVAL, Timer_MirrorLog, 1);
+			if( !g_bL4D2 )
+			{
+				SetCvarSilent(g_CVarLogFile, g_PathOrig);
+			}
+			g_hTimer = null;
 		}
 		else {
-			g_hTimer = CreateTimer(LOG_MAX_WAITTIME, Timer_RestoreCvar);
+			// Profiler needs some time for the fallback file to be flushed.
+			if( g_bL4D2 )
+			{
+				// L4D2 has bugged con_logfile: https://github.com/ValveSoftware/Source-1-Games/issues/3601
+				g_hTimer = CreateTimer(LOG_CHECK_INTERVAL, Timer_MirrorLog, 1);
+			}
+			else {
+				g_hTimer = CreateTimer(LOG_MAX_WAITTIME, Timer_RestoreCvar);
+			}
 		}
 	}
 	start = !start;
@@ -122,6 +139,62 @@ void SetCvarSilent(ConVar cvar, char[] value)
 	cvar.Flags &= ~ FCVAR_NOTIFY;
 	cvar.SetString(value);
 	cvar.Flags = flags;
+}
+
+void WriteProfilerChunk(char[] sChunk, int length, int &chunkCount)
+{
+	sChunk[length] = '\0';
+	g_hProfilerLogger.lograw("%s", sChunk);
+	chunkCount++;
+}
+
+bool WriteProfilerOutputToLogger(const char[] output)
+{
+	int outputLength = strlen(output);
+	if( outputLength == 0 )
+	{
+		g_hProfilerLogger.warning("VPROF_RESULT_CAPTURE_EMPTY");
+		return false;
+	}
+
+	bool truncated = (outputLength >= VPROF_CAPTURE_MAX_BYTES - 1);
+	if( truncated )
+	{
+		g_hProfilerLogger.warning("VPROF_RESULT_CAPTURE_TRUNCATED bytes=%d max=%d", outputLength, VPROF_CAPTURE_MAX_BYTES - 1);
+		return false;
+	}
+
+	g_hProfilerLogger.info("VPROF_RESULT_BEGIN source=direct bytes=%d", outputLength);
+	char sChunk[MAX_LOG_LINE];
+	int chunkLength = 0;
+	int chunkCount = 0;
+
+	for( int i = 0; i < outputLength; i++ )
+	{
+		if( output[i] == '\r' )
+		{
+			continue;
+		}
+		if( output[i] == '\n' )
+		{
+			WriteProfilerChunk(sChunk, chunkLength, chunkCount);
+			chunkLength = 0;
+			continue;
+		}
+		if( chunkLength >= MAX_LOG_LINE - 1 )
+		{
+			WriteProfilerChunk(sChunk, chunkLength, chunkCount);
+			chunkLength = 0;
+		}
+		sChunk[chunkLength++] = output[i];
+	}
+	if( chunkLength > 0 )
+	{
+		WriteProfilerChunk(sChunk, chunkLength, chunkCount);
+	}
+
+	g_hProfilerLogger.info("VPROF_RESULT_END source=direct chunks=%d truncated=%d", chunkCount, truncated);
+	return !truncated;
 }
 
 public Action Timer_RestoreCvar(Handle timer)
@@ -187,10 +260,10 @@ void AppendProfilerResultToLogger(const char[] sourcePath)
 	}
 
 	g_hProfilerLogger.info("VPROF_RESULT_BEGIN path=%s", sourcePath);
-	char sLine[MAX_LOG_LINE];
-	while( ReadFileLine(file, sLine, sizeof(sLine)) )
+	char sChunk[MAX_LOG_LINE];
+	while( ReadFileLine(file, sChunk, sizeof(sChunk)) )
 	{
-		g_hProfilerLogger.lograw("%s", sLine);
+		g_hProfilerLogger.lograw("%s", sChunk);
 	}
 	delete file;
 	g_hProfilerLogger.info("VPROF_RESULT_END path=%s", sourcePath);

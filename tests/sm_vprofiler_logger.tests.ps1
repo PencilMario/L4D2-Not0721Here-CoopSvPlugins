@@ -3,6 +3,7 @@ $ErrorActionPreference = 'Stop'
 $repo = Split-Path -Parent $PSScriptRoot
 $source = Get-Content -Raw -LiteralPath (Join-Path $repo 'addons/sourcemod/scripting/sm_vprofiler.sp')
 $sharedPlugins = Get-Content -Raw -LiteralPath (Join-Path $repo 'cfg/cfgogl/coop_base/shared_plugins.cfg')
+$versusSharedPlugins = Get-Content -Raw -LiteralPath (Join-Path $repo 'cfg/cfgogl/versus_isfullshit/shared_plugins.cfg')
 
 function Require-Text([string] $Text, [string] $Needle, [string] $Message) {
     if (-not $Text.Contains($Needle)) { throw $Message }
@@ -18,5 +19,6 @@ Require-Text $source 'FileSize(g_PathCosole)' 'L4D2 console output must retain i
 Require-Text $source 'AppendProfilerResultToLogger(g_PathProfilerLog)' 'L4D2 profiler output must be appended after mirroring'
 Require-Text $source 'AppendProfilerResultToLogger(g_PathProfilerLog' 'non-L4D2 profiler output must be appended to the logger file'
 Require-Text $sharedPlugins 'sm plugins load sm_vprofiler.smx' 'coop_base must load sm_vprofiler'
+Require-Text $versusSharedPlugins 'sm plugins load sm_vprofiler.smx' 'versus_isfullshit must load sm_vprofiler'
 
 'sm_vprofiler logger contract passed'

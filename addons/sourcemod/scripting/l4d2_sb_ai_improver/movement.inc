@@ -1,15 +1,30 @@
+#define TAKE_COVER_PATH_ATTEMPTS 6
+
 bool TakeCoverFromPosition(int iClient, float fPosition[3], float fSearchDist = 384.0)
 {
+	float fNow = GetGameTime();
+	if (fNow < g_fTakeCoverCache_Expiry[iClient]
+		&& FloatAbs(g_fTakeCoverCache_SearchDist[iClient] - fSearchDist) <= 0.01
+		&& GetVectorDistance(g_fTakeCoverCache_ClientPos[iClient], g_fClientAbsOrigin[iClient], true) <= GetNavigationCachePositionTolerance()
+		&& GetVectorDistance(g_fTakeCoverCache_SourcePos[iClient], fPosition, true) <= GetNavigationCachePositionTolerance())
+	{
+		if (!g_bTakeCoverCache_Result[iClient])
+			return false;
+
+		SetMoveToPosition(iClient, g_fTakeCoverCache_ResultPos[iClient], 3, "TakeCover");
+		return true;
+	}
+
 	float fSelfToPos[3]; MakeVectorFromPoints(g_fClientEyePos[iClient], fPosition, fSelfToPos);
 	NormalizeVector(fSelfToPos, fSelfToPos);
 
 	float fDot, fPathPos[3], fPathOffset[3], fSelfToMovePos[3];
-	for (int i = 0; i < 10; i++)
+	for (int i = 0; i < TAKE_COVER_PATH_ATTEMPTS; i++)
 	{
 		VScript_TryGetPathableLocationWithin(iClient, fSearchDist, fPathPos);
 		if (!IsValidVector(fPathPos) || LBI_IsDamagingPosition(fPathPos))continue;
 
-		fPathOffset = fPathPos; fPathOffset[2] + HUMAN_HALF_HEIGHT;
+		fPathOffset = fPathPos; fPathOffset[2] += HUMAN_HALF_HEIGHT;
 
 		MakeVectorFromPoints(g_fClientEyePos[iClient], fPathPos, fSelfToMovePos);
 		NormalizeVector(fSelfToMovePos, fSelfToMovePos);
@@ -17,10 +32,21 @@ bool TakeCoverFromPosition(int iClient, float fPosition[3], float fSearchDist = 
 		fDot = GetVectorDotProduct(fSelfToPos, fSelfToMovePos);
 		if (fDot > 0.2 || GetVectorVisible(fPosition, fPathOffset))continue;
 
+		g_fTakeCoverCache_Expiry[iClient] = GetProcessCacheExpiry();
+		g_fTakeCoverCache_ClientPos[iClient] = g_fClientAbsOrigin[iClient];
+		g_fTakeCoverCache_SourcePos[iClient] = fPosition;
+		g_fTakeCoverCache_ResultPos[iClient] = fPathPos;
+		g_fTakeCoverCache_SearchDist[iClient] = fSearchDist;
+		g_bTakeCoverCache_Result[iClient] = true;
 		SetMoveToPosition(iClient, fPathPos, 3, "TakeCover");
 		return true;
 	}
 
+	g_fTakeCoverCache_Expiry[iClient] = GetProcessCacheExpiry();
+	g_fTakeCoverCache_ClientPos[iClient] = g_fClientAbsOrigin[iClient];
+	g_fTakeCoverCache_SourcePos[iClient] = fPosition;
+	g_fTakeCoverCache_SearchDist[iClient] = fSearchDist;
+	g_bTakeCoverCache_Result[iClient] = false;
 	return false;
 }
 
@@ -64,7 +90,7 @@ void ClearMoveToPosition(int iClient, const char[] sCheckName = "")
 		Format(sBuffer, sizeof(sBuffer), "ClearMoveToPosition %d %s type %s%s%s%s%s", iClient, sClientName,
 			(sCheckName[0] != 0 ? sCheckName : "not specified"), (iAbort != 0 ? ", aborted " : ""),
 			(iAbort & 1 ? "(different move cmd)" : ""),(iAbort & 2 ? "(invalid pos)" : ""),(iAbort & 4 ? "(damaging nav)" : ""));
-		PrintToServer(sBuffer);
+		LogDebugMessage("%s", sBuffer);
 
 		if (iAbort != 0)
 			return;
@@ -124,7 +150,7 @@ void SetMoveToPosition(int iClient, float fMovePos[3], int iPriority, const char
 			fNavDist, fTravelDist, fMaxSpeed, fMoveTime, iAbort,
 			(iAbort & 1 ? "(lower priority)" : ""),(iAbort & 2 ? "(valid pos)" : ""),(iAbort & 4 ? "(close enough)" : ""),
 			(iAbort & 8 ? "(damaging position)" : ""),(iAbort & 16 ? "(outside of checkpoint)" : ""));
-		PrintToServer(sBuffer);
+		LogDebugMessage("%s", sBuffer);
 
 		if (iAbort != 0)
 			return;

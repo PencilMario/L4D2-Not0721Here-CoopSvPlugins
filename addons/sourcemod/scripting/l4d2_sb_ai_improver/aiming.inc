@@ -77,7 +77,7 @@ bool SurvivorBot_CanFreelyFireWeapon(int iClient)
 	{
 		if (i == iClient || !IsClientInGame(i) || !IsPlayerAlive(i))continue;
 
-		fCurDist = GetVectorDistance(g_fClientEyePos[iClient], g_fClientCenteroid[iClient], true);
+		fCurDist = GetVectorDistance(g_fClientEyePos[iClient], g_fClientCenteroid[i], true);
 		if (fLastDist != -1.0 && fCurDist >= fLastDist)continue;
 		fLastDist = fCurDist;
 

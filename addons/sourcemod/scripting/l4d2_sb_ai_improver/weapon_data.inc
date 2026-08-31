@@ -453,14 +453,14 @@ int GetMeleeID(int iEntity, bool bRechecking = false)
 	if( bRechecking && strncmp(sEntClassname, "weapon_melee", 12) != 0 )
 	{
 		if(g_iCvar_Debug & DEBUG_WEP_DATA)
-			PrintToServer("GetMeleeID: ent %d %s is no more a melee weapon", iEntity, sEntClassname);
+			LogDebugMessage("GetMeleeID: ent %d %s is no more a melee weapon", iEntity, sEntClassname);
 		return -1;
 	}
 	GetEntPropString(iEntity, Prop_Data, "m_ModelName", sModelName, sizeof(sModelName));
 	if(sModelName[0] == EOS)
 	{
 		if(g_iCvar_Debug & DEBUG_WEP_DATA)
-			PrintToServer("GetMeleeID: ent %d %s got no model%s", iEntity, sEntClassname, bRechecking ? " when rechecking!" : "");
+			LogDebugMessage("GetMeleeID: ent %d %s got no model%s", iEntity, sEntClassname, bRechecking ? " when rechecking!" : "");
 		RequestFrame(RecheckMelee, iEntity);
 		return -1;
 	}
@@ -469,7 +469,7 @@ int GetMeleeID(int iEntity, bool bRechecking = false)
 	g_hMeleeIDs.GetValue(sBuffer, iMeleeID);
 
 	if(g_iCvar_Debug & DEBUG_WEP_DATA)
-		PrintToServer("GetMeleeID: model %s\nent %d melee #%d %s %s", sModelName, iEntity, iMeleeID, sBuffer, bRechecking ? "(rechecked)" : "");
+		LogDebugMessage("GetMeleeID: model %s\nent %d melee #%d %s %s", sModelName, iEntity, iMeleeID, sBuffer, bRechecking ? "(rechecked)" : "");
 
 	return iMeleeID;
 }

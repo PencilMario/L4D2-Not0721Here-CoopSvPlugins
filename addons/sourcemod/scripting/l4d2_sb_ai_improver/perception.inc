@@ -126,6 +126,54 @@ stock float ClampFloat(float fValue, float fMin, float fMax)
 	return (fValue > fMax) ? fMax : ((fValue < fMin) ? fMin : fValue);
 }
 
+float g_fSurvivorNearBoomerCache_Expiry[MAXPLAYERS+1];
+bool g_bSurvivorNearBoomerCache_Result[MAXPLAYERS+1];
+
+bool IsSurvivorNearBoomer(int iSurvivor)
+{
+	if (!IsClientSurvivor(iSurvivor) || !IsPlayerAlive(iSurvivor))
+		return false;
+
+	float fNow = GetGameTime();
+	if (fNow < g_fSurvivorNearBoomerCache_Expiry[iSurvivor])
+		return g_bSurvivorNearBoomerCache_Result[iSurvivor];
+
+	bool bResult;
+	for (int i = 1; i <= MaxClients; i++)
+	{
+		if (!IsClientInGame(i) || !IsPlayerAlive(i) || GetClientTeam(i) != 3 || L4D_IsPlayerGhost(i)
+			|| L4D2_GetPlayerZombieClass(i) != L4D2ZombieClass_Boomer)
+			continue;
+
+		if (GetClientDistance(iSurvivor, i, true) <= BOT_BOOMER_AVOID_RADIUS_SQR
+			&& IsVisibleEntity(i, iSurvivor, MASK_VISIBLE_AND_NPCS))
+		{
+			bResult = true;
+			break;
+		}
+	}
+
+	g_fSurvivorNearBoomerCache_Expiry[iSurvivor] = GetProcessCacheExpiry();
+	g_bSurvivorNearBoomerCache_Result[iSurvivor] = bResult;
+	return bResult;
+}
+
+void RefreshCommonInfectedMeleeTargetMarks()
+{
+	for (int i = 1; i <= MAXENTITIES; i++)
+		g_iCommonInfectedMeleeTargetMask[i] = 0;
+
+	for (int i = 1; i <= MaxClients; i++)
+	{
+		if (!IsClientSurvivor(i) || !IsFakeClient(i) || !IsWeaponSlotActive(i, 1) || SurvivorHasMeleeWeapon(i) == 0)
+			continue;
+
+		int iTarget = g_iSurvivorBot_TargetInfected[i];
+		if (iTarget > 0 && iTarget <= MAXENTITIES && IsEntityExists(iTarget))
+			g_iCommonInfectedMeleeTargetMask[iTarget] |= (1 << (i - 1));
+	}
+}
+
 int GetClosestInfected(int iClient, float fDistance = -1.0)
 {
 	float fStartedAt = g_bCvar_PerformanceLogging ? GetEngineTime() : 0.0;
@@ -158,11 +206,8 @@ int GetClosestInfectedImpl(int iClient, float fDistance = -1.0)
 		bIsChasingSomething = (fInfectedDist > 25600.0 && (bBileWasThrown || iThrownPipeBomb > 0 && GetEntityDistance(iInfected, iThrownPipeBomb, true) <= 65536.0));
 		if (!bIsChasingSomething && fInfectedDist > 9216.0)
 		{
-			for (int i = 1; i <= MaxClients; i++)
-			{
-				bIsChasingSomething = (iClient != i && IsClientSurvivor(i) && g_iSurvivorBot_TargetInfected[i] == iInfected && IsWeaponSlotActive(i, 1) && IsEntityExists(g_iSurvivorBot_TargetInfected[i]) && SurvivorHasMeleeWeapon(i) != 0);
-				if (bIsChasingSomething)break;
-			}
+			int iOwnTargetBit = (iClient > 0 && iClient <= 32 ? 1 << (iClient - 1) : 0);
+			bIsChasingSomething = ((g_iCommonInfectedMeleeTargetMask[iInfected] & ~iOwnTargetBit) != 0);
 		}
 
 		if (bIsChasingSomething || !IsVisibleEntity(iClient, iInfected))
@@ -188,6 +233,34 @@ int GetClosestInfectedImpl(int iClient, float fDistance = -1.0)
 	}
 
 	return iCloseInfected;
+}
+
+void GetInfectedCounts(int iClient, const float fDistanceLimits[3], int iCounts[3], bool bVisible = true, bool bAttackingOnly = true)
+{
+	iCounts[0] = iCounts[1] = iCounts[2] = 0;
+	float fClientPos[3], fInfectedPos[3];
+	GetEntityCenteroid(iClient, fClientPos);
+
+	float fLimit0 = fDistanceLimits[0] * fDistanceLimits[0];
+	float fLimit1 = fDistanceLimits[1] * fDistanceLimits[1];
+	float fLimit2 = fDistanceLimits[2] * fDistanceLimits[2];
+	int iInfected = INVALID_ENT_REFERENCE;
+	while ((iInfected = FindEntityByClassname(iInfected, "infected")) != INVALID_ENT_REFERENCE)
+	{
+		if (!IsCommonInfectedAlive(iInfected) || bAttackingOnly && !IsCommonInfectedAttacking(iInfected))
+			continue;
+
+		GetEntityCenteroid(iInfected, fInfectedPos);
+		float fDistance = GetVectorDistance(fClientPos, fInfectedPos, true);
+		if (fDistance > fLimit2)
+			continue;
+		if (bVisible && (IsValidClient(iClient) && !IsVisibleVector(iClient, fInfectedPos, MASK_VISIBLE_AND_NPCS) || !GetVectorVisible(fClientPos, fInfectedPos)))
+			continue;
+
+		if (fDistance <= fLimit0)iCounts[0]++;
+		if (fDistance <= fLimit1)iCounts[1]++;
+		if (fDistance <= fLimit2)iCounts[2]++;
+	}
 }
 
 int GetInfectedCount(int iClient, float fDistanceLimit = -1.0, int iMaxLimit = -1, bool bVisible = true, bool bAttackingOnly = true)

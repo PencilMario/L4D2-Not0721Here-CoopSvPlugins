@@ -14,7 +14,8 @@ public Action L4D2_OnFindScavengeItem(int iClient, int &iItem)
 	{
 		float fItemPos[3];
 		GetEntityAbsOrigin(iItem, fItemPos);
-		PrintToServer("OnFindScavengeItem: %d %s wepid %d tier %d\npos %.2f %.2f %.2f", iItem, sWeaponName, g_iWeaponID[iItem], iItemTier, fItemPos[0], fItemPos[1], fItemPos[2]);
+		if (g_iCvar_Debug & DEBUG_SCAVENGE && (g_iCvar_DebugClient == 0 || iClient == g_iCvar_DebugClient))
+			LogDebugMessage("OnFindScavengeItem: %d %s wepid %d tier %d\npos %.2f %.2f %.2f", iItem, sWeaponName, g_iWeaponID[iItem], iItemTier, fItemPos[0], fItemPos[1], fItemPos[2]);
 		CheckEntityForStuff(iItem, sWeaponName);
 		return Plugin_Handled;
 	}
@@ -39,7 +40,7 @@ public Action L4D2_OnFindScavengeItem(int iClient, int &iItem)
 			strcopy( sEntClass, 64, IBWeaponName[g_iWeaponID[iPrimarySlot]] );
 		if (bIsValidScavenge)
 			GetEntityClassname(iScavengeItem, sEntClassname, sizeof(sEntClassname));
-		PrintToServer("OnFindScavengeItem: %s has %s ammo %d, goes for %s weapon ID %d, ScavengeItem %s", sClientName, sEntClass, iPrimaryAmmo, sWeaponName, g_iWeaponID[iItem], sEntClassname);
+		LogDebugMessage("OnFindScavengeItem: %s has %s ammo %d, goes for %s weapon ID %d, ScavengeItem %s", sClientName, sEntClass, iPrimaryAmmo, sWeaponName, g_iWeaponID[iItem], sEntClassname);
 	}
 
 	if (IsEntityExists(iPrimarySlot))
@@ -385,7 +386,7 @@ int CheckForItemsToScavengeImpl(int iClient)
 				char sEntClassname[64], sClientName[128];
 				GetClientName(iClient, sClientName, sizeof(sClientName));
 				GetEntityClassname(iSecondarySlot, sEntClassname, sizeof(sEntClassname));
-				PrintToServer("%s %d %s MeleeID %d", sClientName, iSecondarySlot, sEntClassname, g_iMeleeID[iSecondarySlot]);
+				LogDebugMessage("%s %d %s MeleeID %d", sClientName, iSecondarySlot, sEntClassname, g_iMeleeID[iSecondarySlot]);
 			}
 			iCurrentMeleePref = g_iMeleeID[iSecondarySlot] < 0 ? -1 : GetMeleePreference(iSecondarySlot);
 			if (iMeleeType != 2)
@@ -484,7 +485,7 @@ int CheckForItemsToScavengeImpl(int iClient)
 		GetClientName(iClient, sClientName, sizeof(sClientName));
 		if(iItem != -1)
 			GetEntityClassname(iItem, sEntClassname, sizeof(sEntClassname));
-		PrintToServer( "CheckForItemsToScavenge: %s MinAmmo %d Ammo %d HasTier3 %d iItem %d %s", sClientName,
+		LogDebugMessage( "CheckForItemsToScavenge: %s MinAmmo %d Ammo %d HasTier3 %d iItem %d %s", sClientName,
 		iMinAmmo, GetClientPrimaryAmmo(iClient), iTier3Primary, iItem, sEntClassname );
 	}
 
@@ -570,7 +571,7 @@ int GetItemFromArrayListImpl(ArrayList hArrayList, int iClient, float fDistance 
 			if(g_iCvar_Debug & DEBUG_SCAVENGE)
 			{
 				iEntIndex = EntRefToEntIndex(iEntRef);
-				PrintToServer("Will not allow snatching %s", IBWeaponName[g_iWeaponID[iEntIndex]]);
+				LogDebugMessage("Will not allow snatching %s", IBWeaponName[g_iWeaponID[iEntIndex]]);
 			}
 			continue;
 		}
@@ -641,7 +642,7 @@ int GetItemFromArrayListImpl(ArrayList hArrayList, int iClient, float fDistance 
 
 				if (bCheckIsVisible && fDistance > g_fCvar_ItemScavenge_ApproachRange)
 				{
-					iNavArea = L4D_GetNearestNavArea(fEntityPos, _, true, true, false);
+					iNavArea = LBI_GetNearestNavAreaCached(fEntityPos, 300.0, true, true, false);
 					if (iNavArea && !LBI_IsNavAreaPartiallyVisible(iNavArea, g_fClientEyePos[iClient], iClient))
 					{
 						fCheckDist = g_fCvar_ItemScavenge_ApproachRange;

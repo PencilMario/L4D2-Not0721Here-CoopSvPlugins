@@ -30,6 +30,7 @@ $modules = @(
     'entity_registry.inc',
     'weapon_data.inc',
     'navigation.inc',
+    'navigation_cache.inc',
     'perception.inc',
     'inventory.inc',
     'utilities.inc',

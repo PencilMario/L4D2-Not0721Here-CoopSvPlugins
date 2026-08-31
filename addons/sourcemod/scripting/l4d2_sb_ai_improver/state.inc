@@ -243,7 +243,9 @@ int g_iCvar_FireBash_Chance2;
 ConVar g_hCvar_HelpPinnedFriend_Enabled;
 ConVar g_hCvar_HelpPinnedFriend_ShootRange;
 ConVar g_hCvar_HelpPinnedFriend_ShoveRange;
+ConVar g_hCvar_HelpPinnedFriend_ReactionBots;
 int g_iCvar_HelpPinnedFriend_Enabled;
+int g_iCvar_HelpPinnedFriend_ReactionBots;
 //static float g_fCvar_HelpPinnedFriend_ShootRange;
 float g_fCvar_HelpPinnedFriend_ShootRange_Sqr;
 float g_fCvar_HelpPinnedFriend_ShoveRange_Sqr;
@@ -339,6 +341,11 @@ ConVar g_hCvar_PerformanceThresholdMs;
 bool g_bCvar_PerformanceLogging;
 float g_fCvar_PerformanceThresholdMs;
 Logger g_hPerformanceLogger;
+
+float GetProcessCacheExpiry()
+{
+	return (GetGameTime() + g_fCvar_NextProcessTime);
+}
 
 /*============ MISC CONVARS =========================================================*/
 ConVar g_hCvar_AlwaysCarryProp;
@@ -471,6 +478,8 @@ float g_fClientEyeAng[MAXPLAYERS+1][3];
 float g_fClientAbsOrigin[MAXPLAYERS+1][3];
 float g_fClientCenteroid[MAXPLAYERS+1][3];
 int g_iClientNavArea[MAXPLAYERS+1];
+float g_fClientNavAreaCache_Expiry[MAXPLAYERS+1];
+float g_fClientNavAreaCache_Position[MAXPLAYERS+1][3];
 int g_iClientInventory[MAXPLAYERS+1][6];
 int g_iClientInvFlags[MAXPLAYERS+1];
 //static int g_iClientState[MAXPLAYERS+1];
@@ -555,6 +564,28 @@ ArrayList g_hWitchList;
 // ----------------------------------------------------------------------------------------------------
 ArrayList g_hBadPathEntities;
 Handle g_hClearBadPathTimer;
+
+// ----------------------------------------------------------------------------------------------------
+// SHARED PERFORMANCE SNAPSHOTS
+// ----------------------------------------------------------------------------------------------------
+float g_fTakeCoverCache_Expiry[MAXPLAYERS+1];
+float g_fTakeCoverCache_ClientPos[MAXPLAYERS+1][3];
+float g_fTakeCoverCache_SourcePos[MAXPLAYERS+1][3];
+float g_fTakeCoverCache_ResultPos[MAXPLAYERS+1][3];
+float g_fTakeCoverCache_SearchDist[MAXPLAYERS+1];
+bool g_bTakeCoverCache_Result[MAXPLAYERS+1];
+
+float g_fSurvivorBot_AcidEscapeCache_Expiry[MAXPLAYERS+1];
+int g_iSurvivorBot_AcidEscapeCache_Inflictor[MAXPLAYERS+1];
+float g_fSurvivorBot_AcidEscapeCache_ClientPos[MAXPLAYERS+1][3];
+float g_fSurvivorBot_AcidEscapeCache_ResultPos[MAXPLAYERS+1][3];
+bool g_bSurvivorBot_AcidEscapeCache_Result[MAXPLAYERS+1];
+
+float g_fPinnedReactionCache_Expiry[MAXPLAYERS+1];
+float g_fPinnedReactionCache_Position[MAXPLAYERS+1][3];
+int g_iPinnedReactionRank[MAXPLAYERS+1][MAXPLAYERS+1];
+
+int g_iCommonInfectedMeleeTargetMask[MAXENTITIES+1];
 
 // ----------------------------------------------------------------------------------------------------
 // CHARACTER MODEL BONES

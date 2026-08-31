@@ -99,7 +99,7 @@ void CheckEntityForStuff(int iEntity, const char[] sClassname)
 	if (iWeaponID == L4D2WeaponId_Melee)
 	{
 		if(g_iCvar_Debug & DEBUG_WEP_DATA)
-			PrintToServer("CheckEntityForStuff: %d %s %d %s",iEntity, sClassname, iWeaponID, sWeaponName);
+			LogDebugMessage("CheckEntityForStuff: %d %s %d %s", iEntity, sClassname, iWeaponID, sWeaponName);
 		if(!g_bInitMeleeIDs) InitMeleeIDs();
 		g_iMeleeID[iEntity] = GetMeleeID(iEntity);
 	}
@@ -257,6 +257,8 @@ void CheckArrayListForEntityRemoval(ArrayList hArrayList, int iEntity)
 public void OnMapStart()
 {
 	g_bMapStarted = true;
+	ResetNavigationCaches();
+	ResetTeamInventoryCaches();
 	GetCurrentMap(g_sCurrentMapName, sizeof(g_sCurrentMapName));
 	for (int i = 1; i <= MaxClients; i++)g_fClient_ThinkFunctionDelay[i] = GetGameTime() + (g_bLateLoad ? 1.0 : 10.0);
 	CreateEntityArrayLists();
@@ -324,6 +326,8 @@ public Action CheckWeaponsEvenLater(Handle timer)
 public void OnMapEnd()
 {
 	g_bMapStarted = false;
+	ResetNavigationCaches();
+	ResetTeamInventoryCaches();
 	g_sCurrentMapName[0] = 0;
 	ClearEntityArrayLists();
 	ClearHashMaps();

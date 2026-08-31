@@ -12,8 +12,11 @@ float g_fClient_ThinkFunctionDelay[MAXPLAYERS+1];
 void ResetDataOnRoundChange()
 {
 	g_iBotProcessing_ProcessedCount = 0;
-	g_fBotProcessing_NextProcessTime = GetGameTime() + g_fCvar_NextProcessTime;
+	g_fBotProcessing_NextProcessTime = GetProcessCacheExpiry();
 	g_fSurvivorBot_Grenade_NextThrowTime = g_fSurvivorBot_Grenade_NextThrowTime_Molotov = GetGameTime() + 5.0;
+	ResetNavigationCaches();
+	ResetTeamInventoryCaches();
+	ResetPinnedReactionCaches();
 
 	for (int i = 1; i <= MaxClients; i++)
 	{
@@ -58,6 +61,15 @@ void ResetClientPluginVariables(int iClient)
 	g_fSurvivorBot_ScavengeItemDist[iClient] = -1.0;
 	g_iSurvivorBot_DefibTarget[iClient] = -1;
 	g_iSurvivorBot_Grenade_ThrowTarget[iClient] = -1;
+	g_iClientNavArea[iClient] = 0;
+	g_fClientNavAreaCache_Expiry[iClient] = 0.0;
+	g_fTakeCoverCache_Expiry[iClient] = 0.0;
+	g_fTakeCoverCache_SearchDist[iClient] = -1.0;
+	g_bTakeCoverCache_Result[iClient] = false;
+	g_fSurvivorBot_AcidEscapeCache_Expiry[iClient] = 0.0;
+	g_iSurvivorBot_AcidEscapeCache_Inflictor[iClient] = -1;
+	g_bSurvivorBot_AcidEscapeCache_Result[iClient] = false;
+	g_fPinnedReactionCache_Expiry[iClient] = 0.0;
 	g_iSurvivorBot_MovePos_Priority[iClient] = 0;
 	g_bSurvivorBot_TankRetreatActive[iClient] = false;
 
@@ -90,6 +102,12 @@ void ResetClientPluginVariables(int iClient)
 	SetVectorToZero(g_fSurvivorBot_Grenade_AimPos[iClient]);
 	SetVectorToZero(g_fSurvivorBot_LookPosition[iClient]);
 	SetVectorToZero(g_fSurvivorBot_MovePos_Position[iClient]);
+	SetVectorToZero(g_fClientNavAreaCache_Position[iClient]);
+	SetVectorToZero(g_fTakeCoverCache_ClientPos[iClient]);
+	SetVectorToZero(g_fTakeCoverCache_SourcePos[iClient]);
+	SetVectorToZero(g_fTakeCoverCache_ResultPos[iClient]);
+	SetVectorToZero(g_fSurvivorBot_AcidEscapeCache_ClientPos[iClient]);
+	SetVectorToZero(g_fSurvivorBot_AcidEscapeCache_ResultPos[iClient]);
 
 	for (int i = 0; i < MAXENTITIES; i++)
 	{
@@ -258,7 +276,7 @@ void Event_OnChargeStart(Event hEvent, const char[] sName, bool bBroadcast)
 			fMovePos[1] = g_fClientAbsOrigin[i][1] + (fClientRight[1] * ((k == 1 ? 256.0 : -256.0) - fChargeHitDist));
 			fMovePos[2] = g_fClientAbsOrigin[i][2] + (fClientRight[2] * ((k == 1 ? 256.0 : -256.0) - fChargeHitDist));
 
-			iMoveArea = L4D_GetNearestNavArea(fMovePos);
+			iMoveArea = LBI_GetNearestNavAreaCached(fMovePos);
 			if (iMoveArea)
 			{
 				LBI_GetClosestPointOnNavArea(iMoveArea, fMovePos, fMovePos);

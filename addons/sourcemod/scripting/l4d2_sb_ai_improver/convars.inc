@@ -313,7 +313,6 @@ void UpdateConVarValues()
 	g_hCvar_Ammo_Type_Override.GetString( sArgs, sizeof(sArgs));
 	if (strcmp(sArgs, g_sCvar_Ammo_Type_Override))
 	{
-		//if (g_bCvar_Debug)
 		PrintToServer("UpdateConVarValues: InitMaxAmmo");
 		strcopy(g_sCvar_Ammo_Type_Override, sizeof(g_sCvar_Ammo_Type_Override), sArgs);
 		InitMaxAmmo();
@@ -380,7 +379,6 @@ void UpdateConVarValues()
 	g_iCvar_HelpPinnedFriend_ReactionBots = g_hCvar_HelpPinnedFriend_ReactionBots.IntValue;
 	g_fCvar_HelpPinnedFriend_ReactionInterval = g_hCvar_HelpPinnedFriend_ReactionInterval.FloatValue;
 	g_fCvar_HelpPinnedFriend_MaxDistance_Sqr = (g_hCvar_HelpPinnedFriend_MaxDistance.FloatValue * g_hCvar_HelpPinnedFriend_MaxDistance.FloatValue);
-	//g_fCvar_HelpPinnedFriend_ShootRange 				= g_hCvar_HelpPinnedFriend_ShootRange.FloatValue;
 	g_fCvar_HelpPinnedFriend_ShootRange_Sqr				= (g_hCvar_HelpPinnedFriend_ShootRange.FloatValue * g_hCvar_HelpPinnedFriend_ShootRange.FloatValue);
 	g_fCvar_HelpPinnedFriend_ShoveRange_Sqr 			= (g_hCvar_HelpPinnedFriend_ShoveRange.FloatValue * g_hCvar_HelpPinnedFriend_ShoveRange.FloatValue);
 
@@ -426,13 +424,6 @@ void UpdateConVarValues()
 	g_bCvar_PerformanceLogging = g_hCvar_PerformanceLogging.BoolValue;
 	g_fCvar_PerformanceThresholdMs = g_hCvar_PerformanceThresholdMs.FloatValue;
 	g_iCvar_Debug 										= g_hCvar_Debug.IntValue;
-	//if(L4D_HasMapStarted())
-	//{
-	//	if (g_iCvar_Debug & DEBUG_HUD)
-	//		DebugHUDShow();
-	//	else
-	//		DebugHUDHide();
-	//}
 }
 
 Handle g_hCalcAbsolutePosition;
@@ -448,7 +439,6 @@ Handle g_hIsReachableNavArea;
 Handle g_hIsAvailable;
 
 Handle g_hMarkNavAreaAsBlocked;
-//static Handle g_hSubdivideNavArea;
 
 Handle g_hSurvivorLegsRetreat;
 

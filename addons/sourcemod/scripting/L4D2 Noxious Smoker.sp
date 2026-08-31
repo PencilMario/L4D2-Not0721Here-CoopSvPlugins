@@ -169,6 +169,7 @@ new Handle:cvarTongueWhip;
 new Handle:cvarTongueWhipPower;
 new Handle:cvarTongueWhipDamage;
 new Handle:cvarTongueWhipRange;
+new Handle:cvarAbilityStagger;
 
 //Bools
 new bool:isTongueWhip = false;
@@ -316,6 +317,7 @@ public OnPluginStart()
 	cvarVoidPocketCooldown = CreateConVar("l4d_nsm_voidpocketcooldown", "5.0", "Amount of time between Void Pocket abilities. (Def 5.0)", FCVAR_NOTIFY);
 	cvarVoidPocketPower = CreateConVar("l4d_nsm_voidpocketpower", "200.0", "Power of the pull from the Void Pocket. (Def 200.0)", FCVAR_NOTIFY);
 	cvarVoidPocketRange = CreateConVar("l4d_nsm_voidpocketrange", "200.0", "Range the Void Pocket will pull Survivors from.(Def 200.0)", FCVAR_NOTIFY);
+	cvarAbilityStagger = CreateConVar("l4d_nsm_ability_stagger", "1", "Enables hard-stagger effects from Noxious Smoker abilities. (Def 1)", FCVAR_NOTIFY, true, 0.0, true, 1.0);
 
 	// ======================================
 	// Hook Events
@@ -810,7 +812,10 @@ public Action:SmokerAbility_MethaneBlast(smoker)
 					DamageHook(victim, smoker, damage);
 
 					new Float:incaptime = 3.0;
-					SDKCall(sdkCallFling, victim, resultingVec, 76, smoker, incaptime); //76 is the 'got bounced' animation in L4D2
+					if (GetConVarBool(cvarAbilityStagger))
+					{
+						SDKCall(sdkCallFling, victim, resultingVec, 76, smoker, incaptime); //76 is the 'got bounced' animation in L4D2
+					}
 				}
 					
 				if (distance < range2 && distance > range1)
@@ -849,7 +854,10 @@ public Action:SmokerAbility_MethaneBlast(smoker)
 					DamageHook(victim, smoker, damage);
 
 					new Float:incaptime = 3.0;
-					SDKCall(sdkCallFling, victim, resultingVec, 76, smoker, incaptime); //76 is the 'got bounced' animation in L4D2
+					if (GetConVarBool(cvarAbilityStagger))
+					{
+						SDKCall(sdkCallFling, victim, resultingVec, 76, smoker, incaptime); //76 is the 'got bounced' animation in L4D2
+					}
 				}
 			}
 		}
@@ -962,7 +970,10 @@ public Action:SmokerAbility_MethaneStrike(smoker, survivor)
 		GetEntPropVector(smoker, Prop_Send, "m_vecOrigin", smokerPos);
 		new Float:vecOrigin[3];
 		GetClientAbsOrigin(survivor, vecOrigin);
-		SDKCall(sdkOnStaggered, survivor, smoker, smokerPos);
+		if (GetConVarBool(cvarAbilityStagger))
+		{
+			SDKCall(sdkOnStaggered, survivor, smoker, smokerPos);
+		}
 	}
 }
 
@@ -1229,7 +1240,10 @@ public SmokerAbility_TongueWhip(victim, smoker)
 					DamageHook(target, smoker, damage);
 
 					new Float:incaptime = 3.0;
-					SDKCall(sdkCallFling, target, resultingVec, 76, smoker, incaptime); //76 is the 'got bounced' animation in L4D2
+					if (GetConVarBool(cvarAbilityStagger))
+					{
+						SDKCall(sdkCallFling, target, resultingVec, 76, smoker, incaptime); //76 is the 'got bounced' animation in L4D2
+					}
 				}
 			}
 		}
@@ -1295,7 +1309,10 @@ public Action:SmokerAbility_VoidPocket(smoker)
     				resultingVec[1] = resultingVec[1]*-1;
     				
     				new Float:incaptime = 3.0;
-    				SDKCall(sdkCallFling, victim, resultingVec, 76, smoker, incaptime); //76 is the 'got bounced' animation in L4D2
+				if (GetConVarBool(cvarAbilityStagger))
+				{
+					SDKCall(sdkCallFling, victim, resultingVec, 76, smoker, incaptime); //76 is the 'got bounced' animation in L4D2
+				}
     			}
     		}
 		}

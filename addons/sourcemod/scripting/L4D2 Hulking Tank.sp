@@ -54,6 +54,7 @@ ConVar cvarTitanicBellowPower;
 ConVar cvarTitanicBellowDamage;
 ConVar cvarTitanicBellowRange;
 ConVar cvarTitanicBellowType;
+ConVar cvarAbilityStagger;
 
 Handle PluginStartTimer = INVALID_HANDLE;
 Handle cvarResetDelayTimer[MAXPLAYERS+1];
@@ -129,6 +130,7 @@ public void OnPluginStart()
 	cvarTitanicBellowDamage = CreateConVar("l4d_htm_titanicbellowdamage", "10", "Damage the force of the roar causes to nearby survivors. (Def 10)", 0, true, 0.0, false, _);
 	cvarTitanicBellowRange = CreateConVar("l4d_htm_titanicbellowrange", "700.0", "Area around the Tank the bellow will reach. (Def 700.0)", 0, true, 0.0, false, _);
 	cvarTitanicBellowType = CreateConVar("l4d_htm_titanicbellowtype", "1", "Type of roar, 1 = Survivors are pushed away from Tank, 2 = Survivors are pulled towards Tank.", 0, true, 1.0, true, 2.0);
+	cvarAbilityStagger = CreateConVar("l4d_htm_ability_stagger", "1", "Enables hard-stagger effects from Hulking Tank abilities. (Def 1)", 0, true, 0.0, true, 1.0);
 
 	HookEvent("player_incapacitated", Event_PlayerIncap);
 	HookEvent("tank_spawn", Event_TankSpawned);
@@ -464,7 +466,10 @@ stock void Fling_TitanFist(int victim, float vector[3], int attacker, float inca
 		LogError("Could not prep the Fling function");
 	}
 	
-	SDKCall(MySDKCall, victim, vector, 76, attacker, incaptime); //76 is the 'got bounced' animation in L4D2
+	if (GetConVarBool(cvarAbilityStagger))
+	{
+		SDKCall(MySDKCall, victim, vector, 76, attacker, incaptime); //76 is the 'got bounced' animation in L4D2
+	}
 	Damage_TitanFist(attacker, victim);
 }
 void HurtEntity(int victim, int client, float damage)
@@ -713,7 +718,10 @@ stock void Fling_TitanicBellow(int target, float vector[3], int attacker, float 
 		LogError("Could not prep the Fling function");
 	}
 	
-	SDKCall(MySDKCall, target, vector, 76, attacker, incaptime); //76 is the 'got bounced' animation in L4D2 // 96 95 98 80 81 back  82 84  jump 86 roll 87 88 91 92 jump 93 
+	if (GetConVarBool(cvarAbilityStagger))
+	{
+		SDKCall(MySDKCall, target, vector, 76, attacker, incaptime); //76 is the 'got bounced' animation in L4D2 // 96 95 98 80 81 back  82 84  jump 86 roll 87 88 91 92 jump 93
+	}
 	Damage_TitanicBellow(attacker, target);
 }
 
@@ -868,7 +876,10 @@ stock void Fling_SmoulderingEarth(int victim, float vector[3], int attacker, flo
 		LogError("Could not prep the Fling function");
 	}
 	
-	SDKCall(MySDKCall, victim, vector, 76, attacker, incaptime); //76 is the 'got bounced' animation in L4D2
+	if (GetConVarBool(cvarAbilityStagger))
+	{
+		SDKCall(MySDKCall, victim, vector, 76, attacker, incaptime); //76 is the 'got bounced' animation in L4D2
+	}
 	Damage_SmoulderingEarth(attacker, victim);
 }
 

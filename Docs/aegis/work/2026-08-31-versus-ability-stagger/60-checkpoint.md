@@ -2,9 +2,9 @@
 
 ## TodoCheckpointDraft
 
-- Completed: baseline exploration, approved design, task plan, contract test written, RED run verified, source/config implementation, GREEN contract run, independent review, strengthened contract assertions.
-- Active slice: incorporate the latest main commit without overwriting user work, then run the final verification bundle.
-- Next: review the final diff and prepare integration handoff.
+- Completed: baseline exploration, approved design, task plan, contract test written, RED run verified, source/config implementation, GREEN contract run, independent review, strengthened contract assertions, latest main commit reconciliation, final compilation and hygiene checks.
+- Active slice: final diff review and integration handoff.
+- Next: present the four finishing options; runtime smoke test remains external.
 
 ## Evidence refs
 
@@ -17,7 +17,7 @@
 - Scope: still limited to custom Hulking Tank/Noxious Smoker ability stagger in `versus_isfullshit`.
 - Compatibility: defaults remain enabled; ordinary Tank attacks and unrelated hooks are untouched.
 - Retirement: no fallback blocker or duplicate path introduced.
-- Decision: continue after branch-baseline reconciliation.
+- Decision: ready for integration handoff; runtime verification remains external.
 
 ## Risk / Unknown
 

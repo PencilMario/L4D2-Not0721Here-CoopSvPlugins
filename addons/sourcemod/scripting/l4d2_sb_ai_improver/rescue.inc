@@ -306,12 +306,21 @@ void InvalidatePinnedRescueClient(int iClient)
 		RebuildPinnedRescueCoordinator();
 }
 
+bool IsPinnedFriendWithinMaxDistance(int iClient, int iPinnedFriend)
+{
+	if (g_fCvar_HelpPinnedFriend_MaxDistance_Sqr <= 0.0)
+		return true;
+
+	return (GetVectorDistance(g_fClientAbsOrigin[iClient], g_fClientAbsOrigin[iPinnedFriend], true) <= g_fCvar_HelpPinnedFriend_MaxDistance_Sqr);
+}
+
 bool IsPinnedFriendReactionAllowed(int iClient, int iPinnedFriend)
 {
 	if (g_bPinnedRescueRecoveryPending || g_iCvar_HelpPinnedFriend_ReactionBots <= 0 || !IsClientSurvivor(iClient) || !IsFakeClient(iClient) || !IsValidClient(iPinnedFriend)
 		|| !g_bPinnedRescueActive[iPinnedFriend] || g_iSurvivorBot_RescueVictim[iClient] != iPinnedFriend
 		|| g_iSurvivorBot_RescueAttacker[iClient] != g_iPinnedRescueAttacker[iPinnedFriend]
-		|| !IsValidClient(g_iPinnedRescueAttacker[iPinnedFriend]) || !IsPlayerAlive(g_iPinnedRescueAttacker[iPinnedFriend]))
+		|| !IsValidClient(g_iPinnedRescueAttacker[iPinnedFriend]) || !IsPlayerAlive(g_iPinnedRescueAttacker[iPinnedFriend])
+		|| !IsPinnedFriendWithinMaxDistance(iClient, iPinnedFriend))
 		return false;
 
 	int iRank = g_iPinnedReactionRank[iPinnedFriend][iClient];

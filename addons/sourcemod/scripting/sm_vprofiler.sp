@@ -96,36 +96,42 @@ public Action Cmd_Debug(int client, int args)
 	}
 	else
 	{
-		ServerCommand("sm prof stop vprof");
-		ServerCommandEx(g_sProfilerOutput, sizeof(g_sProfilerOutput), "sm prof dump vprof");
-		ServerCommand("vprof_off");
-		ServerExecute();
 		ReplyToCommand(client, "\x04[STOP]\x05 Profiler result written to: %s", g_PathProfilerLogger);
-
-		// Capture directly first. The file path remains a fallback for engines or
-		// reports that do not fit in ServerCommandEx's output buffer.
-		if( WriteProfilerOutputToLogger(g_sProfilerOutput) )
-		{
-			if( !g_bL4D2 )
-			{
-				SetCvarSilent(g_CVarLogFile, g_PathOrig);
-			}
-			g_hTimer = null;
-		}
-		else {
-			// Profiler needs some time for the fallback file to be flushed.
-			if( g_bL4D2 )
-			{
-				// L4D2 has bugged con_logfile: https://github.com/ValveSoftware/Source-1-Games/issues/3601
-				g_hTimer = CreateTimer(LOG_CHECK_INTERVAL, Timer_MirrorLog, 1);
-			}
-			else {
-				g_hTimer = CreateTimer(LOG_MAX_WAITTIME, Timer_RestoreCvar);
-			}
-		}
+		RequestFrame(OnFrameDump);
 	}
 	start = !start;
 	return Plugin_Handled;
+}
+
+public void OnFrameDump()
+{
+	// sm prof stop clears SourceMod's active profiler, so dump while it is active.
+	ServerCommandEx(g_sProfilerOutput, sizeof(g_sProfilerOutput), "sm prof dump vprof");
+	ServerCommand("sm prof stop vprof");
+	ServerCommand("vprof_off");
+	ServerExecute();
+
+	// Capture directly first. The file path remains a fallback for engines or
+	// reports that do not fit in ServerCommandEx's output buffer.
+	if( WriteProfilerOutputToLogger(g_sProfilerOutput) )
+	{
+		if( !g_bL4D2 )
+		{
+			SetCvarSilent(g_CVarLogFile, g_PathOrig);
+		}
+		g_hTimer = null;
+	}
+	else {
+		// Profiler needs some time for the fallback file to be flushed.
+		if( g_bL4D2 )
+		{
+			// L4D2 has bugged con_logfile: https://github.com/ValveSoftware/Source-1-Games/issues/3601
+			g_hTimer = CreateTimer(LOG_CHECK_INTERVAL, Timer_MirrorLog, 1);
+		}
+		else {
+			g_hTimer = CreateTimer(LOG_MAX_WAITTIME, Timer_RestoreCvar);
+		}
+	}
 }
 
 public void OnFrameDelay()

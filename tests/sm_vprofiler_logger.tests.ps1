@@ -24,6 +24,8 @@ Require-Text $source 'WriteProfilerOutputToLogger(g_sProfilerOutput)' 'direct vp
 Require-Text $source 'VPROF_RESULT_CAPTURE_TRUNCATED' 'truncated direct output must be reported'
 Require-Text $source 'VPROF_RESULT_CAPTURE_EMPTY' 'empty direct output must be reported'
 Require-Text $source 'MAX_LOG_LINE - 1' 'logger writes must be split below the logger line limit'
+Require-Text $source 'RequestFrame(OnFrameDump);' 'vprof dump must run on a later frame before stop'
+Require-Text $source 'public void OnFrameDump()' 'vprof dump must have a deferred callback'
 Require-Text $source 'void AppendProfilerResultToLogger' 'vprof results must have a logger append helper'
 Require-Text $source 'g_hProfilerLogger.lograw("%s", sChunk)' 'vprof result chunks must be written through logger.inc'
 Require-Text $source 'FileSize(g_PathCosole)' 'L4D2 console output must retain its existing mirror source'
@@ -37,10 +39,13 @@ if ([int]$captureBytes -lt (512 * 128)) {
     throw 'direct vprof capture buffer must cover at least 512 lines at 128 bytes per line'
 }
 
-$stopPos = $source.IndexOf('ServerCommand("sm prof stop vprof")')
-$dumpPos = $source.IndexOf('ServerCommandEx(g_sProfilerOutput')
-if ($stopPos -lt 0 -or $dumpPos -lt 0 -or $stopPos -ge $dumpPos) {
-    throw 'vprof stop must be queued before direct dump capture'
+$dumpCallbackPos = $source.IndexOf('public void OnFrameDump()')
+$dumpCallbackEnd = $source.IndexOf('void SetCvarSilent', $dumpCallbackPos)
+$dumpPos = $source.IndexOf('ServerCommandEx(g_sProfilerOutput', $dumpCallbackPos)
+$stopPos = $source.IndexOf('ServerCommand("sm prof stop vprof")', $dumpCallbackPos)
+if ($dumpCallbackPos -lt 0 -or $dumpCallbackEnd -lt 0 -or $dumpPos -lt 0 -or $stopPos -lt 0 -or
+    $dumpPos -ge $dumpCallbackEnd -or $stopPos -ge $dumpCallbackEnd -or $dumpPos -ge $stopPos) {
+    throw 'vprof dump must run in a later-frame callback before vprof stop'
 }
 
 'sm_vprofiler logger contract passed'

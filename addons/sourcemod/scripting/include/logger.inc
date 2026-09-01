@@ -24,7 +24,7 @@
 
 #define MAX_LOGGER 32
 #define MAX_LOGGERNAME_LENGTH 64
-#define MAX_LOG_LINE 512
+#define MAX_LOG_LINE 8192
 
 
 enum LoggerType{
@@ -267,7 +267,7 @@ methodmap Logger __nullable__
         char logpath[PLATFORM_MAX_PATH];
         //char buffer[MAX_LOG_LINE];
         BuildPath(Path_SM, logpath, sizeof(logpath), "logs/%s.log", LoggerData[this.index].LogName);
-        Handle file = OpenFile(logpath, "at");
+        File file = OpenFile(logpath, "at");
 
         if (file == null) {
             PrintToServer("[logger] 无法打开文件：%s", logpath);
@@ -276,24 +276,52 @@ methodmap Logger __nullable__
         }
 
         char time[64];
+        char line[MAX_LOG_LINE + 128];
         FormatTime(time, sizeof(time), "%Y-%m-%d %H:%M:%S", GetTime());
-        WriteFileLine(file, "[%s] [%s]: %s%s", time, LogTypeStr[logtype], LoggerData[this.index].PreFix, message);
-        CloseHandle(file);
+        FormatEx(line, sizeof(line), "[%s] [%s]: %s%s\n", time, LogTypeStr[logtype], LoggerData[this.index].PreFix, message);
+        file.WriteString(line, false);
+        delete file;
     }
 
-    public void WritetoLogFileRaw(const char[] message)
+    /**
+     * 打开当前Logger的原始追加文件。
+     *
+     * @note 调用方负责使用完毕后 delete 返回的 File。
+     *       适合需要分多帧写入的大型结果，避免每行重复打开文件。
+     */
+    public File OpenRawFile()
     {
+        if (this.LogObjectType != LoggerType_NewLogFile) return null;
+
         char logpath[PLATFORM_MAX_PATH];
         BuildPath(Path_SM, logpath, sizeof(logpath), "logs/%s.log", LoggerData[this.index].LogName);
-        Handle file = OpenFile(logpath, "at");
+        File file = OpenFile(logpath, "at");
 
         if (file == null) {
             PrintToServer("[logger] 无法打开文件：%s", logpath);
             LogError("[logger] 无法打开文件：%s", logpath);
+        }
+        return file;
+    }
+
+    /**
+     * 向已打开的Logger原始文件写入字符串，不自动增加换行。
+     */
+    public bool WriteRawString(File file, const char[] message)
+    {
+        if (file == null) return false;
+        return file.WriteString(message, false);
+    }
+
+    public void WritetoLogFileRaw(const char[] message)
+    {
+        File file = this.OpenRawFile();
+        if (file == null) {
             return;
         }
 
-        WriteFileLine(file, "%s", message);
-        CloseHandle(file);
+        file.WriteString(message, false);
+        file.WriteString("\n", false);
+        delete file;
     }
 }

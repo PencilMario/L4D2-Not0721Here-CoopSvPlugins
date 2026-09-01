@@ -31,7 +31,9 @@ public Plugin myinfo =
 
 const float LOG_MAX_WAITTIME = 60.0;
 const float LOG_CHECK_INTERVAL = 5.0;
-const int VPROF_CAPTURE_MAX_BYTES = 1048576;
+const int VPROF_CAPTURE_MAX_BYTES = 8388608;
+const int VPROF_CHUNKS_PER_FRAME = 8;
+const int VPROF_MIRROR_BYTES_PER_FRAME = 8192;
 
 char g_sProfilerOutput[VPROF_CAPTURE_MAX_BYTES];
 char 	g_PathPrefix[PLATFORM_MAX_PATH],
@@ -42,6 +44,20 @@ char 	g_PathPrefix[PLATFORM_MAX_PATH],
 ConVar 	g_CVarLogFile;
 Handle 	g_hTimer;
 Logger g_hProfilerLogger;
+File 	g_hProfilerLogFile;
+File 	g_hProfilerSourceFile;
+char 	g_sProfilerSourcePath[PLATFORM_MAX_PATH];
+int 	g_iProfilerOutputLength;
+int 	g_iProfilerOutputOffset;
+int 	g_iProfilerChunkCount;
+bool 	g_bProfilerResultWriting;
+bool 	g_bProfilerDirectOutput;
+bool 	g_bProfilerSourceHasBytes;
+bool 	g_bProfilerSourceEndsWithNewline;
+File 	g_hMirrorSourceFile;
+File 	g_hMirrorTargetFile;
+int 	g_iMirrorOffset;
+bool 	g_bMirrorCopying;
 bool 	g_bL4D2;
 int 	g_ptrFile;
 
@@ -63,6 +79,15 @@ public void OnPluginStart()
 	BuildPath(Path_SM, g_PathPrefix, sizeof(g_PathPrefix), "logs/profiler_");
 }
 
+public void OnPluginEnd()
+{
+	delete g_hTimer;
+	delete g_hProfilerSourceFile;
+	delete g_hProfilerLogFile;
+	delete g_hMirrorSourceFile;
+	delete g_hMirrorTargetFile;
+}
+
 public void OnConfigsExecuted()
 {
 	g_CVarLogFile.GetString(g_PathOrig, sizeof(g_PathOrig));
@@ -73,6 +98,12 @@ public Action Cmd_Debug(int client, int args)
 	static bool start;
 	char sTime[32];
 	
+	if( !start && (g_bProfilerResultWriting || g_bMirrorCopying || g_hTimer != null) )
+	{
+		ReplyToCommand(client, "[WAIT] Previous profiler result is still being written.");
+		return Plugin_Handled;
+	}
+
 	if( !start )
 	{
 		delete g_hTimer;
@@ -115,11 +146,8 @@ public void OnFrameDump()
 	// reports that do not fit in ServerCommandEx's output buffer.
 	if( WriteProfilerOutputToLogger(g_sProfilerOutput) )
 	{
-		if( !g_bL4D2 )
-		{
-			SetCvarSilent(g_CVarLogFile, g_PathOrig);
-		}
-		g_hTimer = null;
+		// The result is written incrementally by OnFrameWriteProfilerOutput.
+		return;
 	}
 	else {
 		// Profiler needs some time for the fallback file to be flushed.
@@ -147,11 +175,98 @@ void SetCvarSilent(ConVar cvar, char[] value)
 	cvar.Flags = flags;
 }
 
-void WriteProfilerChunk(char[] sChunk, int length, int &chunkCount)
+bool WriteProfilerChunk(char[] sChunk, int length)
 {
 	sChunk[length] = '\0';
-	g_hProfilerLogger.lograw("%s", sChunk);
-	chunkCount++;
+	if( g_hProfilerLogFile == null || !g_hProfilerLogger.WriteRawString(g_hProfilerLogFile, sChunk) )
+	{
+		return false;
+	}
+	g_iProfilerChunkCount++;
+	return true;
+}
+
+void FinishProfilerResult(bool success)
+{
+	bool direct = g_bProfilerDirectOutput;
+	char sourcePath[PLATFORM_MAX_PATH];
+	strcopy(sourcePath, sizeof(sourcePath), g_sProfilerSourcePath);
+
+	delete g_hProfilerSourceFile;
+	delete g_hProfilerLogFile;
+	g_bProfilerResultWriting = false;
+
+	if( direct )
+	{
+		if( success )
+		{
+			g_hProfilerLogger.info("VPROF_RESULT_END source=direct chunks=%d truncated=0", g_iProfilerChunkCount);
+		}
+		else {
+			g_hProfilerLogger.warning("VPROF_RESULT_END source=direct chunks=%d failed=1", g_iProfilerChunkCount);
+		}
+	}
+	else {
+		if( success )
+		{
+			g_hProfilerLogger.info("VPROF_RESULT_END path=%s chunks=%d", sourcePath, g_iProfilerChunkCount);
+		}
+		else {
+			g_hProfilerLogger.warning("VPROF_RESULT_END path=%s chunks=%d failed=1", sourcePath, g_iProfilerChunkCount);
+		}
+	}
+
+	if( !g_bL4D2 )
+	{
+		SetCvarSilent(g_CVarLogFile, g_PathOrig);
+	}
+	g_hTimer = null;
+	g_bProfilerDirectOutput = false;
+	g_sProfilerSourcePath[0] = '\0';
+}
+
+public void OnFrameWriteProfilerOutput()
+{
+	if( !g_bProfilerResultWriting || !g_bProfilerDirectOutput ) return;
+
+	char sChunk[MAX_LOG_LINE];
+	int chunksThisFrame;
+	while( g_iProfilerOutputOffset < g_iProfilerOutputLength && chunksThisFrame < VPROF_CHUNKS_PER_FRAME )
+	{
+		int chunkLength = g_iProfilerOutputLength - g_iProfilerOutputOffset;
+		if( chunkLength > MAX_LOG_LINE - 1 )
+		{
+			chunkLength = MAX_LOG_LINE - 1;
+		}
+
+		for( int i = 0; i < chunkLength; i++ )
+		{
+			sChunk[i] = g_sProfilerOutput[g_iProfilerOutputOffset + i];
+		}
+		if( !WriteProfilerChunk(sChunk, chunkLength) )
+		{
+			FinishProfilerResult(false);
+			return;
+		}
+		g_iProfilerOutputOffset += chunkLength;
+		chunksThisFrame++;
+	}
+
+	if( g_iProfilerOutputOffset < g_iProfilerOutputLength )
+	{
+		RequestFrame(OnFrameWriteProfilerOutput);
+		return;
+	}
+
+	if( g_iProfilerOutputLength > 0 && g_sProfilerOutput[g_iProfilerOutputLength - 1] != '\n' )
+	{
+		if( !g_hProfilerLogger.WriteRawString(g_hProfilerLogFile, "\n") )
+		{
+			FinishProfilerResult(false);
+			return;
+		}
+	}
+	FinishProfilerResult(true);
 }
 
 bool WriteProfilerOutputToLogger(const char[] output)
@@ -171,42 +286,28 @@ bool WriteProfilerOutputToLogger(const char[] output)
 	}
 
 	g_hProfilerLogger.info("VPROF_RESULT_BEGIN source=direct bytes=%d", outputLength);
-	char sChunk[MAX_LOG_LINE];
-	int chunkLength = 0;
-	int chunkCount = 0;
-
-	for( int i = 0; i < outputLength; i++ )
+	g_hProfilerLogFile = g_hProfilerLogger.OpenRawFile();
+	if( g_hProfilerLogFile == null )
 	{
-		if( output[i] == '\r' )
-		{
-			continue;
-		}
-		if( output[i] == '\n' )
-		{
-			WriteProfilerChunk(sChunk, chunkLength, chunkCount);
-			chunkLength = 0;
-			continue;
-		}
-		if( chunkLength >= MAX_LOG_LINE - 1 )
-		{
-			WriteProfilerChunk(sChunk, chunkLength, chunkCount);
-			chunkLength = 0;
-		}
-		sChunk[chunkLength++] = output[i];
-	}
-	if( chunkLength > 0 )
-	{
-		WriteProfilerChunk(sChunk, chunkLength, chunkCount);
+		g_hProfilerLogger.error("VPROF_RESULT_OPEN_FAIL");
+		return false;
 	}
 
-	g_hProfilerLogger.info("VPROF_RESULT_END source=direct chunks=%d truncated=%d", chunkCount, truncated);
-	return !truncated;
+	g_iProfilerOutputLength = outputLength;
+	g_iProfilerOutputOffset = 0;
+	g_iProfilerChunkCount = 0;
+	g_bProfilerResultWriting = true;
+	g_bProfilerDirectOutput = true;
+	g_bProfilerSourceHasBytes = false;
+	g_bProfilerSourceEndsWithNewline = true;
+	g_sProfilerSourcePath[0] = '\0';
+	RequestFrame(OnFrameWriteProfilerOutput);
+	return true;
 }
 
 public Action Timer_RestoreCvar(Handle timer)
 {
 	AppendProfilerResultToLogger(g_PathProfilerLog);
-	SetCvarSilent(g_CVarLogFile, g_PathOrig);
 	g_hTimer = null;
 	return Plugin_Stop;
 }
@@ -220,57 +321,201 @@ public Action Timer_MirrorLog(Handle timer, int init)
 	
 	if( sec > LOG_MAX_WAITTIME )
 	{
-		AppendProfilerResultToLogger(g_PathProfilerLog);
 		g_hTimer = null;
+		if( FileSize(g_PathCosole) != g_ptrFile )
+		{
+			StartMirrorCopy();
+		}
+		else {
+			StartMirrorProfilerLog();
+		}
 		return Plugin_Stop;
 	}
 	if( FileSize(g_PathCosole) != g_ptrFile )
 	{
-		File hr = OpenFile(g_PathCosole, "rb");
-		if( !hr )
-		{
-			LogError("Cannot open file: %s", g_PathCosole);
-			g_hTimer = null;
-			return Plugin_Stop;
-		}
-		if( g_ptrFile != -1 )
-		{
-			hr.Seek(g_ptrFile, SEEK_SET);
-		}
-		File hw = OpenFile(g_PathProfilerLog, "ab");	
-		if( hw )
-		{
-			static int bytesRead, buff[1024];
-			
-			while( !hr.EndOfFile() )
-			{
-				bytesRead = hr.Read(buff, sizeof(buff), 1);
-				hw.Write(buff, bytesRead, 1);
-			}
-			delete hw;
-		}
-		g_ptrFile = hr.Position;
-		delete hr;
+		g_hTimer = null;
+		StartMirrorCopy();
+		return Plugin_Stop;
 	}
 	g_hTimer = CreateTimer(LOG_CHECK_INTERVAL, Timer_MirrorLog, 0);
 	return Plugin_Continue;
 }
 
+void StartMirrorCopy()
+{
+	if( g_bMirrorCopying ) return;
+
+	delete g_hMirrorSourceFile;
+	delete g_hMirrorTargetFile;
+	g_hMirrorSourceFile = OpenFile(g_PathCosole, "rb");
+	if( !g_hMirrorSourceFile )
+	{
+		LogError("Cannot open file: %s", g_PathCosole);
+		StartMirrorProfilerLog();
+		return;
+	}
+	if( g_ptrFile != -1 )
+	{
+		g_hMirrorSourceFile.Seek(g_ptrFile, SEEK_SET);
+	}
+	g_iMirrorOffset = g_hMirrorSourceFile.Position;
+	g_hMirrorTargetFile = OpenFile(g_PathProfilerLog, "ab");
+	if( !g_hMirrorTargetFile )
+	{
+		LogError("Cannot open file: %s", g_PathProfilerLog);
+		delete g_hMirrorSourceFile;
+		StartMirrorProfilerLog();
+		return;
+	}
+	g_bMirrorCopying = true;
+	RequestFrame(OnFrameMirrorLog);
+}
+
+public void OnFrameMirrorLog()
+{
+	if( !g_bMirrorCopying ) return;
+
+	int copied;
+	int bytesRead;
+	int buff[1024];
+	while( copied < VPROF_MIRROR_BYTES_PER_FRAME && !g_hMirrorSourceFile.EndOfFile() )
+	{
+		int requested = sizeof(buff);
+		if( requested > VPROF_MIRROR_BYTES_PER_FRAME - copied )
+		{
+			requested = VPROF_MIRROR_BYTES_PER_FRAME - copied;
+		}
+		bytesRead = g_hMirrorSourceFile.Read(buff, requested, 1);
+		if( bytesRead < 0 )
+		{
+			delete g_hMirrorSourceFile;
+			delete g_hMirrorTargetFile;
+			g_bMirrorCopying = false;
+			StartMirrorProfilerLog();
+			return;
+		}
+		if( bytesRead == 0 )
+		{
+			if( !g_hMirrorSourceFile.EndOfFile() )
+			{
+				delete g_hMirrorSourceFile;
+				delete g_hMirrorTargetFile;
+				g_bMirrorCopying = false;
+				g_hProfilerLogger.error("VPROF_MIRROR_READ_FAIL path=%s", g_PathCosole);
+				StartMirrorProfilerLog();
+				return;
+			}
+			break;
+		}
+		if( !g_hMirrorTargetFile.Write(buff, bytesRead, 1) )
+		{
+			delete g_hMirrorSourceFile;
+			delete g_hMirrorTargetFile;
+			g_bMirrorCopying = false;
+			StartMirrorProfilerLog();
+			return;
+		}
+		copied += bytesRead;
+		g_iMirrorOffset += bytesRead;
+	}
+
+	if( !g_hMirrorSourceFile.EndOfFile() )
+	{
+		RequestFrame(OnFrameMirrorLog);
+		return;
+	}
+
+	g_ptrFile = g_iMirrorOffset;
+	delete g_hMirrorSourceFile;
+	delete g_hMirrorTargetFile;
+	g_bMirrorCopying = false;
+	StartMirrorProfilerLog();
+}
+
+void StartMirrorProfilerLog()
+{
+	AppendProfilerResultToLogger(g_PathProfilerLog);
+}
+
+public void OnFrameAppendProfilerResult()
+{
+	if( !g_bProfilerResultWriting || g_bProfilerDirectOutput ) return;
+
+	char sChunk[MAX_LOG_LINE];
+	int chunksThisFrame;
+	bool atEnd;
+	while( chunksThisFrame < VPROF_CHUNKS_PER_FRAME )
+	{
+		int bytesRead = g_hProfilerSourceFile.ReadString(sChunk, MAX_LOG_LINE, MAX_LOG_LINE - 1);
+		if( bytesRead < 0 )
+		{
+			FinishProfilerResult(false);
+			return;
+		}
+		if( bytesRead == 0 )
+		{
+			atEnd = true;
+			break;
+		}
+
+		sChunk[bytesRead] = '\0';
+		if( !WriteProfilerChunk(sChunk, bytesRead) )
+		{
+			FinishProfilerResult(false);
+			return;
+		}
+		g_bProfilerSourceHasBytes = true;
+		g_bProfilerSourceEndsWithNewline = (sChunk[bytesRead - 1] == '\n');
+		chunksThisFrame++;
+	}
+
+	if( !atEnd )
+	{
+		RequestFrame(OnFrameAppendProfilerResult);
+		return;
+	}
+
+	if( g_bProfilerSourceHasBytes && !g_bProfilerSourceEndsWithNewline )
+	{
+		if( !g_hProfilerLogger.WriteRawString(g_hProfilerLogFile, "\n") )
+		{
+			FinishProfilerResult(false);
+			return;
+		}
+	}
+	FinishProfilerResult(true);
+}
+
 void AppendProfilerResultToLogger(const char[] sourcePath)
 {
-	File file = OpenFile(sourcePath, "rt");
-	if( !file )
+	g_hProfilerSourceFile = OpenFile(sourcePath, "rb");
+	if( !g_hProfilerSourceFile )
 	{
 		g_hProfilerLogger.error("VPROF_RESULT_READ_FAIL path=%s", sourcePath);
+		if( !g_bL4D2 )
+		{
+			SetCvarSilent(g_CVarLogFile, g_PathOrig);
+		}
 		return;
 	}
 
 	g_hProfilerLogger.info("VPROF_RESULT_BEGIN path=%s", sourcePath);
-	char sChunk[MAX_LOG_LINE];
-	while( ReadFileLine(file, sChunk, sizeof(sChunk)) )
+	g_hProfilerLogFile = g_hProfilerLogger.OpenRawFile();
+	if( g_hProfilerLogFile == null )
 	{
-		g_hProfilerLogger.lograw("%s", sChunk);
+		delete g_hProfilerSourceFile;
+		if( !g_bL4D2 )
+		{
+			SetCvarSilent(g_CVarLogFile, g_PathOrig);
+		}
+		return;
 	}
-	delete file;
-	g_hProfilerLogger.info("VPROF_RESULT_END path=%s", sourcePath);
+
+	strcopy(g_sProfilerSourcePath, sizeof(g_sProfilerSourcePath), sourcePath);
+	g_iProfilerChunkCount = 0;
+	g_bProfilerResultWriting = true;
+	g_bProfilerDirectOutput = false;
+	g_bProfilerSourceHasBytes = false;
+	g_bProfilerSourceEndsWithNewline = true;
+	RequestFrame(OnFrameAppendProfilerResult);
 }

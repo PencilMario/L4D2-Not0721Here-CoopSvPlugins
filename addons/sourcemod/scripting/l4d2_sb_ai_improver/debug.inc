@@ -43,6 +43,121 @@ void ResetPerformanceBudgetCounters()
 	g_iPerformanceBudget_RunCmdCalls = 0;
 	g_iPerformanceBudget_EnteredBotThink = 0;
 	g_iPerformanceBudget_StageDepth = 0;
+	for (int i = 0; i < TRACE_METRIC_COUNT; i++)
+	{
+		g_iTraceMetrics_Attempts[i] = 0;
+		g_iTraceMetrics_CacheHits[i] = 0;
+		g_iTraceMetrics_CacheMisses[i] = 0;
+		g_iTraceMetrics_TraceCalls[i] = 0;
+		g_iTraceMetrics_Fallback2[i] = 0;
+		g_iTraceMetrics_Fallback3[i] = 0;
+		g_iTraceMetrics_FilterCallbacks[i] = 0;
+	}
+	g_fTraceMetrics_NextSummaryExpiry = 0.0;
+	g_iTraceMetrics_ActiveCategory = -1;
+}
+
+void TraceMetricsRecordAttempt(int iCategory)
+{
+	if (!g_bPerformanceBudgetEnabled)
+		return;
+
+	if (iCategory >= 0 && iCategory < TRACE_METRIC_COUNT)
+		g_iTraceMetrics_Attempts[iCategory]++;
+}
+
+void TraceMetricsRecordCacheHit(int iCategory)
+{
+	if (!g_bPerformanceBudgetEnabled)
+		return;
+
+	if (iCategory >= 0 && iCategory < TRACE_METRIC_COUNT)
+		g_iTraceMetrics_CacheHits[iCategory]++;
+}
+
+void TraceMetricsRecordCacheMiss(int iCategory)
+{
+	if (!g_bPerformanceBudgetEnabled)
+		return;
+
+	if (iCategory >= 0 && iCategory < TRACE_METRIC_COUNT)
+		g_iTraceMetrics_CacheMisses[iCategory]++;
+}
+
+void TraceMetricsRecordTraceCall(int iCategory)
+{
+	if (!g_bPerformanceBudgetEnabled)
+		return;
+
+	if (iCategory >= 0 && iCategory < TRACE_METRIC_COUNT)
+	{
+		g_iTraceMetrics_TraceCalls[iCategory]++;
+		g_iTraceMetrics_ActiveCategory = iCategory;
+	}
+}
+
+void TraceMetricsEndTrace()
+{
+	if (!g_bPerformanceBudgetEnabled)
+		return;
+
+	g_iTraceMetrics_ActiveCategory = -1;
+}
+
+void TraceMetricsRecordFallback(int iCategory, int iFallback)
+{
+	if (!g_bPerformanceBudgetEnabled)
+		return;
+
+	if (iCategory < 0 || iCategory >= TRACE_METRIC_COUNT)
+		return;
+
+	if (iFallback == 2)
+		g_iTraceMetrics_Fallback2[iCategory]++;
+	else if (iFallback == 3)
+		g_iTraceMetrics_Fallback3[iCategory]++;
+}
+
+void TraceMetricsRecordFilterCallback()
+{
+	if (!g_bPerformanceBudgetEnabled)
+		return;
+
+	if (g_iTraceMetrics_ActiveCategory >= 0 && g_iTraceMetrics_ActiveCategory < TRACE_METRIC_COUNT)
+		g_iTraceMetrics_FilterCallbacks[g_iTraceMetrics_ActiveCategory]++;
+}
+
+void TraceMetricsMaybeLogSummary()
+{
+	if (!g_bPerformanceBudgetEnabled)
+		return;
+
+	float fNow = GetGameTime();
+	if (fNow < g_fTraceMetrics_NextSummaryExpiry)
+		return;
+
+	g_fTraceMetrics_NextSummaryExpiry = GetProcessCacheExpiry();
+	if (g_hPerformanceLogger == null)
+		return;
+
+	for (int i = 0; i < TRACE_METRIC_COUNT; i++)
+	{
+		g_hPerformanceLogger.lograw("[TraceMetrics] category=%s attempts=%d cache_hit=%d cache_miss=%d trace_call=%d fallback_2=%d fallback_3=%d filter_callback=%d",
+			g_sTraceMetricCategoryNames[i], g_iTraceMetrics_Attempts[i], g_iTraceMetrics_CacheHits[i], g_iTraceMetrics_CacheMisses[i],
+			g_iTraceMetrics_TraceCalls[i], g_iTraceMetrics_Fallback2[i], g_iTraceMetrics_Fallback3[i], g_iTraceMetrics_FilterCallbacks[i]);
+	}
+
+	for (int i = 0; i < TRACE_METRIC_COUNT; i++)
+	{
+		g_iTraceMetrics_Attempts[i] = 0;
+		g_iTraceMetrics_CacheHits[i] = 0;
+		g_iTraceMetrics_CacheMisses[i] = 0;
+		g_iTraceMetrics_TraceCalls[i] = 0;
+		g_iTraceMetrics_Fallback2[i] = 0;
+		g_iTraceMetrics_Fallback3[i] = 0;
+		g_iTraceMetrics_FilterCallbacks[i] = 0;
+	}
+	g_iTraceMetrics_ActiveCategory = -1;
 }
 
 void LogDebugMessage(const char[] sMessage, any ...)

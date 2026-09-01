@@ -208,7 +208,11 @@ bool LBI_IsNavAreaPartiallyVisibleImpl(int iNavArea, const float fEyePos[3], int
 	float fCenter[3]; LBI_GetNavAreaCenter(iNavArea, fCenter);
 	fCenter[2] += fOffset;
 
+	TraceMetricsRecordAttempt(TRACE_METRIC_NAV_VISIBLE);
+	TraceMetricsRecordCacheMiss(TRACE_METRIC_NAV_VISIBLE);
+	TraceMetricsRecordTraceCall(TRACE_METRIC_NAV_VISIBLE);
 	Handle hResult = TR_TraceRayFilterEx(fEyePos, fCenter, MASK_VISIBLE_AND_NPCS, RayType_EndPoint, CTraceFilterNoNPCsOrPlayer, iIgnoreEntity);
+	TraceMetricsEndTrace();
 	float fFraction = TR_GetFraction(hResult); delete hResult;
 	if (fFraction == 1.0)return true;
 
@@ -228,7 +232,9 @@ bool LBI_IsNavAreaPartiallyVisibleImpl(int iNavArea, const float fEyePos[3], int
 			continue;
 
 		fCorner[2] += fOffset;
+		TraceMetricsRecordTraceCall(TRACE_METRIC_NAV_VISIBLE);
 		hResult = TR_TraceRayFilterEx(fEyePos, fCorner, MASK_VISIBLE_AND_NPCS, RayType_EndPoint, CTraceFilterNoNPCsOrPlayer, iIgnoreEntity);
+		TraceMetricsEndTrace();
 		fFraction = TR_GetFraction(hResult); delete hResult;
 		if (fFraction == 1.0)return true;
 	}

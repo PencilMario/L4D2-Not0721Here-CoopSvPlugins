@@ -355,6 +355,37 @@ int g_iPerformanceBudget_StageDepth;
 float g_fPerformanceBudget_StageStartedAt[8];
 char g_sPerformanceBudget_Stage[8][32];
 
+enum TraceMetricCategory
+{
+	TRACE_METRIC_ENTITY_LOS,
+	TRACE_METRIC_VECTOR_LOS,
+	TRACE_METRIC_AIM,
+	TRACE_METRIC_GRENADE_GROUND,
+	TRACE_METRIC_GRENADE_CEILING,
+	TRACE_METRIC_NAV_VISIBLE,
+	TRACE_METRIC_COUNT
+}
+
+char g_sTraceMetricCategoryNames[TRACE_METRIC_COUNT][] =
+{
+	"entity_los",
+	"vector_los",
+	"aim",
+	"grenade_ground",
+	"grenade_ceiling",
+	"nav_visible"
+};
+
+int g_iTraceMetrics_Attempts[TRACE_METRIC_COUNT];
+int g_iTraceMetrics_CacheHits[TRACE_METRIC_COUNT];
+int g_iTraceMetrics_CacheMisses[TRACE_METRIC_COUNT];
+int g_iTraceMetrics_TraceCalls[TRACE_METRIC_COUNT];
+int g_iTraceMetrics_Fallback2[TRACE_METRIC_COUNT];
+int g_iTraceMetrics_Fallback3[TRACE_METRIC_COUNT];
+int g_iTraceMetrics_FilterCallbacks[TRACE_METRIC_COUNT];
+int g_iTraceMetrics_ActiveCategory = -1;
+float g_fTraceMetrics_NextSummaryExpiry;
+
 float GetProcessCacheExpiry()
 {
 	return (GetGameTime() + g_fCvar_NextProcessTime);

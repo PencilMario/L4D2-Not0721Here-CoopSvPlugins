@@ -118,6 +118,7 @@ public Action OnPlayerRunCmd(int iClient, int &iButtons, int &iImpulse, float fV
 		g_fBotProcessing_NextProcessTime = GetProcessCacheExpiry();
 		for (int i = 1; i <= MaxClients; i++)g_bBotProcessing_IsProcessed[i] = false;
 	}
+	TraceMetricsMaybeLogSummary();
 
 	return Plugin_Continue;
 }

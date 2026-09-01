@@ -271,6 +271,7 @@ public void OnConfigsExecuted()
 void OnConVarChanged(Handle convar, const char[] oldValue, const char[] newValue)
 {
 	UpdateConVarValues();
+	if (convar == g_hCvar_PerformanceLogging) ResetPerformanceBudgetCounters();
 	if (convar == g_hCvar_NextProcessTime)
 	{
 		for (int i = 1; i <= MaxClients; i++)

@@ -129,7 +129,9 @@ stock bool IsEntityWeapon(int iEntity, bool bNoSpawn = false)
 int CheckForItemsToScavenge(int iClient)
 {
 	float fStartedAt = g_bCvar_PerformanceLogging ? GetEngineTime() : 0.0;
+	PerformanceBudgetBeginStage("scavenge");
 	int iResult = CheckForItemsToScavengeImpl(iClient);
+	PerformanceBudgetEndStage(iClient);
 	LogSlowCalculation("CheckForItemsToScavenge", fStartedAt, iClient, iResult);
 	return iResult;
 }
@@ -536,7 +538,9 @@ bool IsWeaponNearAmmoPile(int iWeapon, int iOwner = -1)
 int GetItemFromArrayList(ArrayList hArrayList, int iClient, float fDistance = -1.0, int iWeaponID = 0, const char[] sModelName = "", bool bCheckIsReachable = true, bool bCheckIsVisible = true)
 {
 	float fStartedAt = g_bCvar_PerformanceLogging ? GetEngineTime() : 0.0;
+	PerformanceBudgetBeginStage("scavenge");
 	int iResult = GetItemFromArrayListImpl(hArrayList, iClient, fDistance, iWeaponID, sModelName, bCheckIsReachable, bCheckIsVisible);
+	PerformanceBudgetEndStage(iClient);
 	LogSlowCalculation("GetItemFromArrayList", fStartedAt, iClient, iResult);
 	return iResult;
 }
@@ -566,21 +570,30 @@ int GetItemFromArrayListImpl(ArrayList hArrayList, int iClient, float fDistance 
 	{
 		iEntRef = hArrayList.Get(i);
 
-		if (g_hForbiddenItemList.FindValue(iEntRef) != -1)
+		iEntIndex = EntRefToEntIndex(iEntRef);
+		if (iEntIndex == INVALID_ENT_REFERENCE || !IsEntityExists(iEntIndex))
+		{
+			// Keep the registry compact when an entity outlives its EntRef entry.
+			hArrayList.Erase(i);
+			UnregisterEntityListMaskFromEntRef(iEntRef, GetEntityListMask(hArrayList));
+			i--;
+			continue;
+		}
+		if (IsValidClient(GetEntityOwner(iEntIndex)))
+			continue;
+		if (g_iEntityListMask[iEntIndex] & ENTITY_LIST_FORBIDDEN)
 		{
 			if(g_iCvar_Debug & DEBUG_SCAVENGE)
-			{
-				iEntIndex = EntRefToEntIndex(iEntRef);
 				LogDebugMessage("Will not allow snatching %s", IBWeaponName[g_iWeaponID[iEntIndex]]);
-			}
 			continue;
 		}
 
-		iEntIndex = EntRefToEntIndex(iEntRef);
-		if (iEntIndex == INVALID_ENT_REFERENCE || IsValidClient(GetEntityOwner(iEntIndex)))
-			continue;
-
 		iItemFlags = g_iItemFlags[iEntIndex];
+		// Weapon id and item flags are O(1) filters; defer expensive nav/trace work.
+		if (iWeaponID < 0 && g_iWeaponID[iEntIndex] == -iWeaponID)
+			continue;
+		if (iWeaponID > 0 && g_iWeaponID[iEntIndex] != iWeaponID)
+			continue;
 		if (g_bCvar_SwitchOffCSSWeapons && iItemFlags & FLAG_CSS)
 			continue;
 
@@ -601,14 +614,6 @@ int GetItemFromArrayListImpl(ArrayList hArrayList, int iClient, float fDistance 
 
 		//skip if ammo upgrade is already used
 		if ( g_iItem_Used[iEntIndex] & (1 << (iClient - 1)) && iItemFlags & FLAG_AMMO && iItemFlags & FLAG_UPGRADE )
-			continue;
-
-		//skip if weapon ID is avoided
-		if ( iWeaponID < 0 && g_iWeaponID[iEntIndex] == -iWeaponID )
-			continue;
-
-		//skip if WRONG weapon ID
-		if ( iWeaponID > 0 && g_iWeaponID[iEntIndex] != iWeaponID )
 			continue;
 
 		fCheckDist = fDistance;

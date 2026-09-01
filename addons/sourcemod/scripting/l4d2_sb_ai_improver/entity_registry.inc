@@ -17,10 +17,12 @@ public void OnEntityCreated(int iEntity, const char[] sClassname)
 	if (iEntity <= 0 || iEntity > MAXENTITIES)
 		return;
 
+	InvalidateVisibilityCacheEntity(iEntity);
 	g_iItem_Used[iEntity] = 0; // Clear used item bitfield
 	g_iWeaponID[iEntity] = 0;
 	g_iMeleeID[iEntity] = -1;
 	g_iItemFlags[iEntity] = 0;
+	g_iEntityListMask[iEntity] = 0;
 	CheckEntityForStuff(iEntity, sClassname);
 }
 
@@ -202,12 +204,122 @@ bool ShouldUseFlowDistance()
 	return false;
 }
 
+enum
+{
+	ENTITY_LIST_MELEE = (1 << 0),
+	ENTITY_LIST_PISTOL = (1 << 1),
+	ENTITY_LIST_SMG = (1 << 2),
+	ENTITY_LIST_SHOTGUN_T1 = (1 << 3),
+	ENTITY_LIST_SHOTGUN_T2 = (1 << 4),
+	ENTITY_LIST_ASSAULT = (1 << 5),
+	ENTITY_LIST_SNIPER = (1 << 6),
+	ENTITY_LIST_TIER3 = (1 << 7),
+	ENTITY_LIST_GRENADE = (1 << 8),
+	ENTITY_LIST_MEDKIT = (1 << 9),
+	ENTITY_LIST_DEFIB = (1 << 10),
+	ENTITY_LIST_PILLS = (1 << 11),
+	ENTITY_LIST_ADRENALINE = (1 << 12),
+	ENTITY_LIST_UPGRADE = (1 << 13),
+	ENTITY_LIST_AMMO = (1 << 14),
+	ENTITY_LIST_LASER = (1 << 15),
+	ENTITY_LIST_DEPLOYED_AMMO = (1 << 16),
+	ENTITY_LIST_FORBIDDEN = (1 << 17),
+	ENTITY_LIST_BAD_PATH = (1 << 18),
+	ENTITY_LIST_WEAPONS_LATER = (1 << 19)
+};
+
+void RegisterEntityListMask(int iEntity, int iMask)
+{
+	if (iEntity > 0 && iEntity <= MAXENTITIES)
+	{
+		g_iEntityListMask[iEntity] |= iMask;
+		g_iEntityListEntRef[iEntity] = EntIndexToEntRef(iEntity);
+	}
+}
+void UnregisterEntityListMask(int iEntity, int iMask)
+{
+	if (iEntity > 0 && iEntity <= MAXENTITIES)
+	{
+		g_iEntityListMask[iEntity] &= ~iMask;
+		if (!g_iEntityListMask[iEntity])
+			g_iEntityListEntRef[iEntity] = 0;
+	}
+}
+void UnregisterEntityListMaskFromEntRef(int iEntRef, int iMask)
+{
+	for (int iEntity = 1; iEntity <= MAXENTITIES; iEntity++)
+	{
+		if (g_iEntityListEntRef[iEntity] != iEntRef)
+			continue;
+
+		UnregisterEntityListMask(iEntity, iMask);
+		return;
+	}
+}
+
+int GetEntityListMask(ArrayList hArrayList)
+{
+	if (hArrayList == g_hMeleeList) return ENTITY_LIST_MELEE;
+	if (hArrayList == g_hPistolList) return ENTITY_LIST_PISTOL;
+	if (hArrayList == g_hSMGList) return ENTITY_LIST_SMG;
+	if (hArrayList == g_hShotgunT1List) return ENTITY_LIST_SHOTGUN_T1;
+	if (hArrayList == g_hShotgunT2List) return ENTITY_LIST_SHOTGUN_T2;
+	if (hArrayList == g_hAssaultRifleList) return ENTITY_LIST_ASSAULT;
+	if (hArrayList == g_hSniperRifleList) return ENTITY_LIST_SNIPER;
+	if (hArrayList == g_hTier3List) return ENTITY_LIST_TIER3;
+	if (hArrayList == g_hGrenadeList) return ENTITY_LIST_GRENADE;
+	if (hArrayList == g_hFirstAidKitList) return ENTITY_LIST_MEDKIT;
+	if (hArrayList == g_hDefibrillatorList) return ENTITY_LIST_DEFIB;
+	if (hArrayList == g_hPainPillsList) return ENTITY_LIST_PILLS;
+	if (hArrayList == g_hAdrenalineList) return ENTITY_LIST_ADRENALINE;
+	if (hArrayList == g_hUpgradePackList) return ENTITY_LIST_UPGRADE;
+	if (hArrayList == g_hAmmopileList) return ENTITY_LIST_AMMO;
+	if (hArrayList == g_hLaserSightList) return ENTITY_LIST_LASER;
+	if (hArrayList == g_hDeployedAmmoPacks) return ENTITY_LIST_DEPLOYED_AMMO;
+	if (hArrayList == g_hForbiddenItemList) return ENTITY_LIST_FORBIDDEN;
+	if (hArrayList == g_hBadPathEntities) return ENTITY_LIST_BAD_PATH;
+	if (hArrayList == g_hWeaponsToCheckLater) return ENTITY_LIST_WEAPONS_LATER;
+	return 0;
+}
+
 void PushEntityIntoArrayList(ArrayList hArrayList, int iEntity)
 {
-	if (!hArrayList)return;
+	if (!hArrayList || iEntity <= 0 || iEntity > MAXENTITIES)return;
+	int iListMask = GetEntityListMask(hArrayList);
+	if (iListMask && g_iEntityListMask[iEntity] & iListMask)
+		return;
 	int iEntRef = EntIndexToEntRef(iEntity);
-	int iArrayEnt = hArrayList.FindValue(iEntRef);
-	if (iArrayEnt == -1)hArrayList.Push(iEntRef);
+	if (hArrayList.FindValue(iEntRef) == -1)
+		hArrayList.Push(iEntRef);
+	if (iListMask)
+		RegisterEntityListMask(iEntity, iListMask);
+}
+
+void RemoveEntityFromRegisteredLists(int iEntity)
+{
+	int iMask = g_iEntityListMask[iEntity];
+	if (iMask & ENTITY_LIST_MELEE) CheckArrayListForEntityRemoval(g_hMeleeList, iEntity);
+	if (iMask & ENTITY_LIST_PISTOL) CheckArrayListForEntityRemoval(g_hPistolList, iEntity);
+	if (iMask & ENTITY_LIST_SMG) CheckArrayListForEntityRemoval(g_hSMGList, iEntity);
+	if (iMask & ENTITY_LIST_SHOTGUN_T1) CheckArrayListForEntityRemoval(g_hShotgunT1List, iEntity);
+	if (iMask & ENTITY_LIST_SHOTGUN_T2) CheckArrayListForEntityRemoval(g_hShotgunT2List, iEntity);
+	if (iMask & ENTITY_LIST_ASSAULT) CheckArrayListForEntityRemoval(g_hAssaultRifleList, iEntity);
+	if (iMask & ENTITY_LIST_SNIPER) CheckArrayListForEntityRemoval(g_hSniperRifleList, iEntity);
+	if (iMask & ENTITY_LIST_TIER3) CheckArrayListForEntityRemoval(g_hTier3List, iEntity);
+	if (iMask & ENTITY_LIST_GRENADE) CheckArrayListForEntityRemoval(g_hGrenadeList, iEntity);
+	if (iMask & ENTITY_LIST_MEDKIT) CheckArrayListForEntityRemoval(g_hFirstAidKitList, iEntity);
+	if (iMask & ENTITY_LIST_DEFIB) CheckArrayListForEntityRemoval(g_hDefibrillatorList, iEntity);
+	if (iMask & ENTITY_LIST_PILLS) CheckArrayListForEntityRemoval(g_hPainPillsList, iEntity);
+	if (iMask & ENTITY_LIST_ADRENALINE) CheckArrayListForEntityRemoval(g_hAdrenalineList, iEntity);
+	if (iMask & ENTITY_LIST_UPGRADE) CheckArrayListForEntityRemoval(g_hUpgradePackList, iEntity);
+	if (iMask & ENTITY_LIST_AMMO) CheckArrayListForEntityRemoval(g_hAmmopileList, iEntity);
+	if (iMask & ENTITY_LIST_LASER) CheckArrayListForEntityRemoval(g_hLaserSightList, iEntity);
+	if (iMask & ENTITY_LIST_DEPLOYED_AMMO) CheckArrayListForEntityRemoval(g_hDeployedAmmoPacks, iEntity);
+	if (iMask & ENTITY_LIST_FORBIDDEN) CheckArrayListForEntityRemoval(g_hForbiddenItemList, iEntity);
+	if (iMask & ENTITY_LIST_BAD_PATH) CheckArrayListForEntityRemoval(g_hBadPathEntities, iEntity);
+	if (iMask & ENTITY_LIST_WEAPONS_LATER) CheckArrayListForEntityRemoval(g_hWeaponsToCheckLater, iEntity);
+	g_iEntityListMask[iEntity] = 0;
+	g_iEntityListEntRef[iEntity] = 0;
 }
 
 public void OnEntityDestroyed(int iEntity)
@@ -215,35 +327,43 @@ public void OnEntityDestroyed(int iEntity)
 	if (iEntity <= 0 || iEntity > MAXENTITIES)
 		return;
 
+	InvalidateVisibilityCacheEntity(iEntity);
 	g_iItem_Used[iEntity] = 0; // Clear used item bitfield
 	g_iWeaponID[iEntity] = 0;
 	g_iMeleeID[iEntity] = -1;
 	g_iItemFlags[iEntity] = 0;
 
-	CheckArrayListForEntityRemoval(g_hMeleeList, iEntity);
-	CheckArrayListForEntityRemoval(g_hPistolList, iEntity);
-	CheckArrayListForEntityRemoval(g_hSMGList, iEntity);
-	CheckArrayListForEntityRemoval(g_hShotgunT1List, iEntity);
-	CheckArrayListForEntityRemoval(g_hShotgunT2List, iEntity);
-	CheckArrayListForEntityRemoval(g_hAssaultRifleList, iEntity);
-	CheckArrayListForEntityRemoval(g_hSniperRifleList, iEntity);
-	CheckArrayListForEntityRemoval(g_hTier3List, iEntity);
-	CheckArrayListForEntityRemoval(g_hFirstAidKitList, iEntity);
-	CheckArrayListForEntityRemoval(g_hDefibrillatorList, iEntity);
-	CheckArrayListForEntityRemoval(g_hPainPillsList, iEntity);
-	CheckArrayListForEntityRemoval(g_hAdrenalineList, iEntity);
-	CheckArrayListForEntityRemoval(g_hGrenadeList, iEntity);
-	CheckArrayListForEntityRemoval(g_hUpgradePackList, iEntity);
-
-	CheckArrayListForEntityRemoval(g_hAmmopileList, iEntity);
-	CheckArrayListForEntityRemoval(g_hLaserSightList, iEntity);
-	CheckArrayListForEntityRemoval(g_hDeployedAmmoPacks, iEntity);
-	CheckArrayListForEntityRemoval(g_hForbiddenItemList, iEntity);
+	RemoveEntityFromRegisteredLists(iEntity);
 
 	for (int i = 1; i <= MaxClients; i++)
 	{
 		g_iSurvivorBot_VisionMemory_State[i][iEntity] = g_iSurvivorBot_VisionMemory_State_FOV[i][iEntity] = 0;
 		g_fSurvivorBot_VisionMemory_Time[i][iEntity] = g_fSurvivorBot_VisionMemory_Time_FOV[i][iEntity] = GetGameTime();
+	}
+}
+
+void InvalidateVisibilityCacheEntity(int iEntity)
+{
+	if (iEntity <= 0 || iEntity > MAXENTITIES)
+		return;
+
+	for (int i = 1; i <= MaxClients; i++)
+	{
+		for (int j = 0; j < VISIBILITY_CACHE_SIZE; j++)
+		{
+			if (g_iSurvivorBot_VisibilityCache_Target[i][j] == iEntity)
+				g_fSurvivorBot_VisibilityCache_Expiry[i][j] = 0.0;
+		}
+	}
+}
+
+void ResetVisibilityCaches()
+{
+	for (int i = 1; i <= MaxClients; i++)
+	{
+		g_iSurvivorBot_VisibilityCache_NextSlot[i] = 0;
+		for (int j = 0; j < VISIBILITY_CACHE_SIZE; j++)
+			g_fSurvivorBot_VisibilityCache_Expiry[i][j] = 0.0;
 	}
 }
 
@@ -254,12 +374,24 @@ void CheckArrayListForEntityRemoval(ArrayList hArrayList, int iEntity)
 	if (iArrayEnt != -1)hArrayList.Erase(iArrayEnt);
 }
 
+void ResetEntityListMasks()
+{
+	for (int i = 0; i <= MAXENTITIES; i++)
+	{
+		g_iEntityListMask[i] = 0;
+		g_iEntityListEntRef[i] = 0;
+	}
+}
+
 public void OnMapStart()
 {
+	ResetEntityListMasks();
+	ResetPerformanceBudgetCounters();
 	g_bMapStarted = true;
 	ResetNavigationCaches();
 	ResetTeamInventoryCaches();
 	ResetPinnedReactionCaches();
+	ResetVisibilityCaches();
 	for (int i = 1; i <= MaxClients; i++)
 	{
 		g_fClientGlobalInfo_Expiry[i] = 0.0;
@@ -304,6 +436,7 @@ void CheckWeaponsLater()
 			if (g_iWeaponID[iEntIndex] != 0)
 			{
 				g_hWeaponsToCheckLater.Erase(i);
+				UnregisterEntityListMask(iEntIndex, ENTITY_LIST_WEAPONS_LATER);
 				count++;
 			}
 			else
@@ -315,6 +448,7 @@ void CheckWeaponsLater()
 		}
 		else
 		{
+			UnregisterEntityListMaskFromEntRef(g_hWeaponsToCheckLater.Get(i), ENTITY_LIST_WEAPONS_LATER);
 			g_hWeaponsToCheckLater.Erase(i);
 			count++;
 		}
@@ -331,10 +465,13 @@ public Action CheckWeaponsEvenLater(Handle timer)
 
 public void OnMapEnd()
 {
+	ResetEntityListMasks();
+	ResetPerformanceBudgetCounters();
 	g_bMapStarted = false;
 	ResetNavigationCaches();
 	ResetTeamInventoryCaches();
 	ResetPinnedReactionCaches();
+	ResetVisibilityCaches();
 	for (int i = 1; i <= MaxClients; i++)
 	{
 		g_fClientGlobalInfo_Expiry[i] = 0.0;
@@ -377,6 +514,7 @@ void CreateEntityArrayLists()
 
 void ClearEntityArrayLists()
 {
+	ResetEntityListMasks();
 	g_hMeleeList.Clear();
 	g_hPistolList.Clear();
 	g_hSMGList.Clear();

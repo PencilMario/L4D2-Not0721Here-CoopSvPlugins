@@ -1,5 +1,8 @@
 Action OnSurvivorSwitchWeapon(int iClient, int iWeapon)
 {
+	if (iClient >= 1 && iClient <= MaxClients)
+		g_fClientInventory_Expiry[iClient] = 0.0;
+
 	if (!IsClientSurvivor(iClient) || !IsFakeClient(iClient) || g_bSurvivorBot_ForceSwitchWeapon[iClient] || !IsEntityExists(iWeapon) || L4D_IsPlayerIncapacitated(iClient))
 	{
 		g_bSurvivorBot_ForceSwitchWeapon[iClient] = false;

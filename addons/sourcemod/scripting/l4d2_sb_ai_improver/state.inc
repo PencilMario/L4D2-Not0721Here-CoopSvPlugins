@@ -13,6 +13,8 @@ public Plugin myinfo =
 #define BOT_BOOMER_AVOID_RADIUS_SQR		40000.0
 #define BOT_GRENADE_CHECK_RADIUS_SQR	90000.0
 #define BOT_CMD_MOVE_INTERVAL 		0.8
+#define VISIBILITY_CACHE_POSITION_TOLERANCE_SQR 1024.0
+#define VISIBILITY_CACHE_SIZE 8
 
 #define HUMAN_HEIGHT				71.0
 #define HUMAN_HALF_HEIGHT			35.5
@@ -346,6 +348,13 @@ bool g_bCvar_PerformanceLogging;
 float g_fCvar_PerformanceThresholdMs;
 Logger g_hPerformanceLogger;
 
+bool g_bPerformanceBudgetEnabled;
+int g_iPerformanceBudget_RunCmdCalls;
+int g_iPerformanceBudget_EnteredBotThink;
+int g_iPerformanceBudget_StageDepth;
+float g_fPerformanceBudget_StageStartedAt[8];
+char g_sPerformanceBudget_Stage[8][32];
+
 float GetProcessCacheExpiry()
 {
 	return (GetGameTime() + g_fCvar_NextProcessTime);
@@ -442,6 +451,15 @@ int g_iSurvivorBot_VisionMemory_State_FOV[MAXPLAYERS+1][MAXENTITIES+1];
 float g_fSurvivorBot_VisionMemory_Time[MAXPLAYERS+1][MAXENTITIES+1];
 float g_fSurvivorBot_VisionMemory_Time_FOV[MAXPLAYERS+1][MAXENTITIES+1];
 
+float g_fSurvivorBot_VisibilityCache_Expiry[MAXPLAYERS+1][VISIBILITY_CACHE_SIZE];
+int g_iSurvivorBot_VisibilityCache_Target[MAXPLAYERS+1][VISIBILITY_CACHE_SIZE];
+int g_iSurvivorBot_VisibilityCache_Mask[MAXPLAYERS+1][VISIBILITY_CACHE_SIZE];
+bool g_bSurvivorBot_VisibilityCache_FOV[MAXPLAYERS+1][VISIBILITY_CACHE_SIZE];
+bool g_bSurvivorBot_VisibilityCache_Result[MAXPLAYERS+1][VISIBILITY_CACHE_SIZE];
+float g_fSurvivorBot_VisibilityCache_EyePos[MAXPLAYERS+1][VISIBILITY_CACHE_SIZE][3];
+float g_fSurvivorBot_VisibilityCache_TargetPos[MAXPLAYERS+1][VISIBILITY_CACHE_SIZE][3];
+int g_iSurvivorBot_VisibilityCache_NextSlot[MAXPLAYERS+1];
+
 float g_fSurvivorBot_NextWeaponRangeSwitchTime[MAXPLAYERS+1];
 
 bool g_bSurvivorBot_ForceWeaponReload[MAXPLAYERS+1];
@@ -489,6 +507,7 @@ float g_fClientNavAreaCache_Expiry[MAXPLAYERS+1];
 float g_fClientNavAreaCache_Position[MAXPLAYERS+1][3];
 int g_iClientInventory[MAXPLAYERS+1][6];
 int g_iClientInvFlags[MAXPLAYERS+1];
+float g_fClientInventory_Expiry[MAXPLAYERS+1];
 //static int g_iClientState[MAXPLAYERS+1];
 
 // ----------------------------------------------------------------------------------------------------
@@ -571,6 +590,10 @@ ArrayList g_hWitchList;
 // ----------------------------------------------------------------------------------------------------
 ArrayList g_hBadPathEntities;
 Handle g_hClearBadPathTimer;
+
+// Bitmask of the registered entity lists; used to avoid probing every list on destroy.
+int g_iEntityListMask[MAXENTITIES + 1];
+int g_iEntityListEntRef[MAXENTITIES + 1];
 
 // ----------------------------------------------------------------------------------------------------
 // SHARED PERFORMANCE SNAPSHOTS

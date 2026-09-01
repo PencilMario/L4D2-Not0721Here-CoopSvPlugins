@@ -359,6 +359,7 @@ int LBI_GetNearestNavAreaCached(const float fPos[3], float fMaxDist = 300.0, boo
 float GetClientTravelDistance(int iClient, float fGoalPos[3], bool bSquared = false)
 {
 	float fStartedAt = g_bCvar_PerformanceLogging ? GetEngineTime() : 0.0;
+	PerformanceBudgetBeginStage("trace_navigation");
 	float fResult;
 	float fNow = GetGameTime();
 	int iStartArea = (IsValidClient(iClient) ? g_iClientNavArea[iClient] : 0);
@@ -381,6 +382,7 @@ float GetClientTravelDistance(int iClient, float fGoalPos[3], bool bSquared = fa
 			g_bNavigationTravelCache_Squared[iClient] = bSquared;
 		}
 	}
+	PerformanceBudgetEndStage(iClient);
 	LogSlowCalculation("GetClientTravelDistance", fStartedAt, iClient);
 	return fResult;
 }
@@ -434,6 +436,7 @@ float GetClientTravelDistanceImpl(int iClient, float fGoalPos[3], bool bSquared 
 float GetClientDistanceToItem(int iClient, int iEntity, bool bIgnoreNavBlockers = true)
 {
 	float fStartedAt = g_bCvar_PerformanceLogging ? GetEngineTime() : 0.0;
+	PerformanceBudgetBeginStage("trace_navigation");
 	float fResult;
 	float fNow = GetGameTime();
 	float fEntityPos[3];
@@ -464,6 +467,7 @@ float GetClientDistanceToItem(int iClient, int iEntity, bool bIgnoreNavBlockers 
 			g_bNavigationCache_IgnoreNavBlockers[iClient][iEntity] = bIgnoreNavBlockers;
 		}
 	}
+	PerformanceBudgetEndStage(iClient);
 	LogSlowCalculation("GetClientDistanceToItem", fStartedAt, iClient, iEntity);
 	return fResult;
 }
@@ -512,9 +516,10 @@ float GetClientDistanceToItemImpl(int iClient, int iEntity, bool bIgnoreNavBlock
 float GetNavDistance(float fStartPos[3], float fGoalPos[3], int iEntity = -1, bool bCheckLOS = true)
 {
 	float fStartedAt = g_bCvar_PerformanceLogging ? GetEngineTime() : 0.0;
+	PerformanceBudgetBeginStage("trace_navigation");
 	float fResult;
 	float fNow = GetGameTime();
-	bool bEntityHasBadPath = (iEntity != -1 && g_hBadPathEntities != null && g_hBadPathEntities.FindValue(EntIndexToEntRef(iEntity)) != -1);
+	bool bEntityHasBadPath = (iEntity > 0 && iEntity <= MAXENTITIES && (g_iEntityListMask[iEntity] & ENTITY_LIST_BAD_PATH) != 0);
 	bool bCacheHit = false;
 
 	if (!bEntityHasBadPath)
@@ -549,6 +554,7 @@ float GetNavDistance(float fStartPos[3], float fGoalPos[3], int iEntity = -1, bo
 			g_bNavigationDistanceCache_CheckLOS[iCacheSlot] = bCheckLOS;
 		}
 	}
+	PerformanceBudgetEndStage();
 	LogSlowCalculation("GetNavDistance", fStartedAt, -1, iEntity);
 	return fResult;
 }
@@ -565,7 +571,7 @@ float GetNavDistanceImpl(float fStartPos[3], float fGoalPos[3], int iEntity = -1
 	if (iEntity != -1)
 		GetEntityClassname(iEntity, sEntClassname, sizeof(sEntClassname));
 
-	if (iEntity != -1 && g_hBadPathEntities.FindValue(EntIndexToEntRef(iEntity)) != -1)
+	if (iEntity > 0 && iEntity <= MAXENTITIES && (g_iEntityListMask[iEntity] & ENTITY_LIST_BAD_PATH) != 0)
 	{
 		if(g_iCvar_Debug & DEBUG_NAV)
 			LogDebugMessage("GetNavDistance: entity %d %s is in bad pathing table", iEntity, sEntClassname);
@@ -639,6 +645,7 @@ bool LBI_NavAreaBuildPathCached(int iStartArea, int iGoalArea, float fMaxDist, i
 public Action ClearBadPathEntsTable(Handle timer)
 {
 	g_hBadPathEntities.Clear();
+	for (int i = 1; i <= MAXENTITIES; i++) UnregisterEntityListMask(i, ENTITY_LIST_BAD_PATH);
 	g_hClearBadPathTimer = INVALID_HANDLE;
 	return Plugin_Handled;
 }
@@ -792,6 +799,7 @@ bool LBI_IsReachableEntityImpl(int iClient, int iEntity)
 int LBI_IsPathToPositionDangerous(int iClient, float fGoalPos[3])
 {
 	float fStartedAt = g_bCvar_PerformanceLogging ? GetEngineTime() : 0.0;
+	PerformanceBudgetBeginStage("trace_navigation");
 	int iResult;
 	float fNow = GetGameTime();
 	int iStartArea = (IsValidClient(iClient) ? g_iClientNavArea[iClient] : 0);
@@ -812,6 +820,7 @@ int LBI_IsPathToPositionDangerous(int iClient, float fGoalPos[3])
 			g_iNavigationDangerCache_StartArea[iClient] = iStartArea;
 		}
 	}
+	PerformanceBudgetEndStage(iClient);
 	LogSlowCalculation("LBI_IsPathToPositionDangerous", fStartedAt, iClient);
 	return iResult;
 }

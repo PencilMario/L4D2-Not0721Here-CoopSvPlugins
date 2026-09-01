@@ -177,7 +177,9 @@ void RefreshCommonInfectedMeleeTargetMarks()
 int GetClosestInfected(int iClient, float fDistance = -1.0)
 {
 	float fStartedAt = g_bCvar_PerformanceLogging ? GetEngineTime() : 0.0;
+	PerformanceBudgetBeginStage("perception");
 	int iResult = GetClosestInfectedImpl(iClient, fDistance);
+	PerformanceBudgetEndStage(iClient);
 	LogSlowCalculation("GetClosestInfected", fStartedAt, iClient, iResult);
 	return iResult;
 }
@@ -266,7 +268,9 @@ void GetInfectedCounts(int iClient, const float fDistanceLimits[3], int iCounts[
 int GetInfectedCount(int iClient, float fDistanceLimit = -1.0, int iMaxLimit = -1, bool bVisible = true, bool bAttackingOnly = true)
 {
 	float fStartedAt = g_bCvar_PerformanceLogging ? GetEngineTime() : 0.0;
+	PerformanceBudgetBeginStage("perception");
 	int iResult = GetInfectedCountImpl(iClient, fDistanceLimit, iMaxLimit, bVisible, bAttackingOnly);
+	PerformanceBudgetEndStage(iClient);
 	LogSlowCalculation("GetInfectedCount", fStartedAt, iClient, iResult);
 	return iResult;
 }
@@ -334,7 +338,7 @@ bool IsVisibleVector(int iClient, float fPos[3], int iMask = MASK_SHOT)
 	return (fFraction == 1.0);
 }
 
-bool IsVisibleEntity(int iClient, int iTarget, int iMask = MASK_SHOT)
+bool TraceVisibleEntity(int iClient, int iTarget, int iMask)
 {
 	if (IsFakeClient(iClient) && GetClientTeam(iClient) == 2 && IsSurvivorBotBlindedByVomit(iClient))
 		return false;
@@ -361,6 +365,53 @@ bool IsVisibleEntity(int iClient, int iTarget, int iMask = MASK_SHOT)
 		}
 	}
 	return (bDidHit);
+}
+
+bool GetCachedVisibleEntity(int iClient, int iTarget, int iMask, bool bFOVState = false)
+{
+	if (iClient < 1 || iClient > MaxClients || iTarget <= 0)
+		return false;
+
+	// Non-survivor callers retain the original trace semantics; only survivor bots share cached traces.
+	if (!IsFakeClient(iClient) || GetClientTeam(iClient) != 2)
+		return TraceVisibleEntity(iClient, iTarget, iMask);
+	if (iTarget > MAXENTITIES || !IsEntityExists(iTarget))
+		return false;
+
+	float fTargetPos[3];
+	if (IsValidClient(iTarget) && g_bClientGlobalInfo_Ready[iTarget])
+		fTargetPos = g_fClientAbsOrigin[iTarget];
+	else if (!GetEntityAbsOrigin(iTarget, fTargetPos))
+		return false;
+
+	float fNow = GetGameTime();
+	for (int i = 0; i < VISIBILITY_CACHE_SIZE; i++)
+	{
+		if (fNow < g_fSurvivorBot_VisibilityCache_Expiry[iClient][i]
+			&& g_iSurvivorBot_VisibilityCache_Target[iClient][i] == iTarget
+			&& g_iSurvivorBot_VisibilityCache_Mask[iClient][i] == iMask
+			&& g_bSurvivorBot_VisibilityCache_FOV[iClient][i] == bFOVState
+			&& GetVectorDistance(g_fSurvivorBot_VisibilityCache_EyePos[iClient][i], g_fClientEyePos[iClient], true) <= VISIBILITY_CACHE_POSITION_TOLERANCE_SQR
+			&& GetVectorDistance(g_fSurvivorBot_VisibilityCache_TargetPos[iClient][i], fTargetPos, true) <= VISIBILITY_CACHE_POSITION_TOLERANCE_SQR)
+			return g_bSurvivorBot_VisibilityCache_Result[iClient][i];
+	}
+
+	bool bResult = TraceVisibleEntity(iClient, iTarget, iMask);
+	int iSlot = g_iSurvivorBot_VisibilityCache_NextSlot[iClient];
+	g_iSurvivorBot_VisibilityCache_NextSlot[iClient] = (iSlot + 1) % VISIBILITY_CACHE_SIZE;
+	g_fSurvivorBot_VisibilityCache_Expiry[iClient][iSlot] = GetProcessCacheExpiry();
+	g_iSurvivorBot_VisibilityCache_Target[iClient][iSlot] = iTarget;
+	g_iSurvivorBot_VisibilityCache_Mask[iClient][iSlot] = iMask;
+	g_bSurvivorBot_VisibilityCache_FOV[iClient][iSlot] = bFOVState;
+	g_bSurvivorBot_VisibilityCache_Result[iClient][iSlot] = bResult;
+	g_fSurvivorBot_VisibilityCache_EyePos[iClient][iSlot] = g_fClientEyePos[iClient];
+	g_fSurvivorBot_VisibilityCache_TargetPos[iClient][iSlot] = fTargetPos;
+	return bResult;
+}
+
+bool IsVisibleEntity(int iClient, int iTarget, int iMask = MASK_SHOT)
+{
+	return GetCachedVisibleEntity(iClient, iTarget, iMask);
 }
 
 float GetLineOfSightDotProduct(int iClient, const float fVecSpot[3])

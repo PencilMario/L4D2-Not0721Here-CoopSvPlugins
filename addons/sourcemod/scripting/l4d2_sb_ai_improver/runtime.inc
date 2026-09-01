@@ -7,12 +7,16 @@ void InvalidateClientGlobalInfo(int iClient)
 	g_bClientGlobalInfo_Ready[iClient] = false;
 }
 
-void UpdateClientGlobalInfo(int iClient, const float fAngles[3])
+stock void UpdateClientGlobalInfo(int iClient, const float fAngles[3])
+{
+	UpdateClientGlobalInfoAt(iClient, fAngles, GetGameTime());
+}
+
+void UpdateClientGlobalInfoAt(int iClient, const float fAngles[3], float fNow)
 {
 	if (!IsValidClient(iClient))
 		return;
 
-	float fNow = GetGameTime();
 	if (fNow < g_fClientGlobalInfo_Expiry[iClient])
 		return;
 
@@ -24,11 +28,8 @@ void UpdateClientGlobalInfo(int iClient, const float fAngles[3])
 	g_bClientGlobalInfo_Ready[iClient] = true;
 }
 
-void UpdateClientNavArea(int iClient)
+void UpdateClientNavArea(int iClient, float fNow)
 {
-	static float fNow;
-	fNow = GetGameTime();
-
 	if (!g_iClientNavArea[iClient]
 		|| fNow >= g_fClientNavAreaCache_Expiry[iClient]
 		|| GetVectorDistance(g_fClientNavAreaCache_Position[iClient], g_fClientAbsOrigin[iClient], true) > 1024.0)
@@ -39,36 +40,22 @@ void UpdateClientNavArea(int iClient)
 	}
 }
 
-public Action OnPlayerRunCmd(int iClient, int &iButtons, int &iImpulse, float fVel[3], float fAngles[3])
+void UpdateClientInventory(int iClient, float fNow)
 {
-	UpdateClientGlobalInfo(iClient, fAngles);
-	if (g_bPinnedRescueRecoveryPending && ArePinnedRescueSnapshotsReady())
-	{
-		g_bPinnedRescueRecoveryPending = false;
-		RecoverPinnedRescueCoordinator();
-	}
-	UpdateClientNavArea(iClient);
+	if (fNow < g_fClientInventory_Expiry[iClient])
+		return;
 
-	if (!IsClientSurvivor(iClient))
-		return Plugin_Continue;
-
-	g_bClient_IsFiringWeapon[iClient] = false;
-	g_bClient_IsLookingAtPosition[iClient] = false;
 	g_iClientInvFlags[iClient] = 0;
-
 	static int iWpnSlot, iWpnSlots[6];
-
-	// instead of comparing strings
-	// we represent survivors’ inventory as bit flags
 	for (int i = 0; i <= 5; i++)
 	{
 		iWpnSlot = GetPlayerWeaponSlot(iClient, i);
-		if ( iWpnSlot > 0 && iWpnSlot <= MAXENTITIES && IsValidEdict(iWpnSlot) )
+		if (iWpnSlot > 0 && iWpnSlot <= MAXENTITIES && IsValidEdict(iWpnSlot))
 		{
 			iWpnSlots[i] = iWpnSlot;
 			g_iClientInvFlags[iClient] |= g_iItemFlags[iWpnSlot];
 
-			if( g_iWeaponID[iWpnSlot] == 1 && (GetEntProp(iWpnSlot, Prop_Send, "m_isDualWielding") != 0 || GetEntProp(iWpnSlot, Prop_Send, "m_hasDualWeapons") != 0) )
+			if (g_iWeaponID[iWpnSlot] == 1 && (GetEntProp(iWpnSlot, Prop_Send, "m_isDualWielding") != 0 || GetEntProp(iWpnSlot, Prop_Send, "m_hasDualWeapons") != 0))
 				g_iClientInvFlags[iClient] |= FLAG_PISTOL_EXTRA;
 		}
 		else
@@ -83,16 +70,49 @@ public Action OnPlayerRunCmd(int iClient, int &iButtons, int &iImpulse, float fV
 		g_iWeapon_AmmoLeft[iWpnSlots[0]] = GetClientPrimaryAmmo(iClient);
 	}
 	if (iWpnSlots[1] != -1)
-	{
 		g_iWeapon_Clip1[iWpnSlots[1]] = GetWeaponClip1(iWpnSlots[1]);
-	}
 
-	if (g_bCvar_BotsDisabled || g_bCutsceneIsPlaying || !g_iClientNavArea[iClient] || GetGameTime() <= g_fClient_ThinkFunctionDelay[iClient] || !IsFakeClient(iClient))
+	g_fClientInventory_Expiry[iClient] = GetProcessCacheExpiry();
+}
+
+public Action OnPlayerRunCmd(int iClient, int &iButtons, int &iImpulse, float fVel[3], float fAngles[3])
+{
+	if (iClient < 1 || iClient > MaxClients || !IsClientInGame(iClient))
 		return Plugin_Continue;
 
-	SurvivorBotThink(iClient, iButtons, iWpnSlots);
+	float fNow = GetGameTime();
+	if (g_bPerformanceBudgetEnabled)
+		g_iPerformanceBudget_RunCmdCalls++;
 
-	if (GetGameTime() > g_fBotProcessing_NextProcessTime && g_iBotProcessing_ProcessedCount >= GetTeamPlayerCount(2, true, true))
+	PerformanceBudgetBeginStage("snapshot");
+	UpdateClientGlobalInfoAt(iClient, fAngles, fNow);
+	if (g_bPinnedRescueRecoveryPending && ArePinnedRescueSnapshotsReady())
+	{
+		g_bPinnedRescueRecoveryPending = false;
+		RecoverPinnedRescueCoordinator();
+	}
+	UpdateClientNavArea(iClient, fNow);
+
+	if (!IsClientSurvivor(iClient))
+	{
+		PerformanceBudgetEndStage(iClient);
+		return Plugin_Continue;
+	}
+
+	g_bClient_IsFiringWeapon[iClient] = false;
+	g_bClient_IsLookingAtPosition[iClient] = false;
+	UpdateClientInventory(iClient, fNow);
+	PerformanceBudgetEndStage(iClient);
+
+	if (g_bCvar_BotsDisabled || g_bCutsceneIsPlaying || !g_iClientNavArea[iClient] || fNow <= g_fClient_ThinkFunctionDelay[iClient] || !IsFakeClient(iClient))
+		return Plugin_Continue;
+
+	if (g_bPerformanceBudgetEnabled)
+		g_iPerformanceBudget_EnteredBotThink++;
+	SurvivorBotThink(iClient, iButtons, g_iClientInventory[iClient]);
+
+	fNow = GetGameTime();
+	if (fNow > g_fBotProcessing_NextProcessTime && g_iBotProcessing_ProcessedCount >= GetTeamPlayerCount(2, true, true))
 	{
 		g_iBotProcessing_ProcessedCount = 0;
 		g_fBotProcessing_NextProcessTime = GetProcessCacheExpiry();

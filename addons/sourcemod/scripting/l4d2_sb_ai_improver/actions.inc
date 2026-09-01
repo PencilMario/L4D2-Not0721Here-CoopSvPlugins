@@ -38,22 +38,32 @@ Action OnRegroupWithTeamAction(BehaviorAction hAction, int iActor, float fInterv
 
 Action OnMoveToIncapacitatedFriendAction(BehaviorAction hAction, int iActor, float fInterval, ActionResult hResult)
 {
+	PerformanceBudgetBeginStage("rescue");
 	int iFriend = (hAction.Get(0x34) & 0xFFF);
 	if (!IsValidClient(iFriend) || L4D_GetPlayerReviveTarget(iActor) == iFriend || GetClientDistance(iActor, iFriend, true) <= 15625.0 && IsVisibleEntity(iActor, iFriend))
+	{
+		PerformanceBudgetEndStage(iActor);
 		return Plugin_Continue;
+	}
 
 	int iPathDangerous = LBI_IsPathToPositionDangerous(iActor, g_fClientAbsOrigin[iFriend]);
-	if (iPathDangerous == -1)return Plugin_Continue;
+	if (iPathDangerous == -1)
+	{
+		PerformanceBudgetEndStage(iActor);
+		return Plugin_Continue;
+	}
 
 	if (iPathDangerous != 0)
 	{
 		hResult.type = CHANGE_TO;
 		hResult.action = CreateSurvivorLegsRetreatAction(iPathDangerous);
+		PerformanceBudgetEndStage(iActor);
 		return Plugin_Handled;
 	}
 
 	hResult.type = DONE;
 	hResult.action = INVALID_ACTION;
+	PerformanceBudgetEndStage(iActor);
 	return Plugin_Changed;
 }
 

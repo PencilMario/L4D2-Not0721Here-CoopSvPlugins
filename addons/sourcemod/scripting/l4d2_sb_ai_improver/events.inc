@@ -11,6 +11,7 @@ void Event_OnRoundEnd(Event hEvent, const char[] sName, bool bBroadcast)
 float g_fClient_ThinkFunctionDelay[MAXPLAYERS+1];
 void ResetDataOnRoundChange()
 {
+	ResetPerformanceBudgetCounters();
 	g_iBotProcessing_ProcessedCount = 0;
 	g_fBotProcessing_NextProcessTime = GetProcessCacheExpiry();
 	g_fSurvivorBot_Grenade_NextThrowTime = g_fSurvivorBot_Grenade_NextThrowTime_Molotov = GetGameTime() + 5.0;
@@ -66,6 +67,7 @@ void ResetClientPluginVariables(int iClient)
 	g_iSurvivorBot_DefibTarget[iClient] = -1;
 	g_iSurvivorBot_Grenade_ThrowTarget[iClient] = -1;
 	g_iClientNavArea[iClient] = 0;
+	g_fClientInventory_Expiry[iClient] = 0.0;
 	InvalidateClientGlobalInfo(iClient);
 	g_fClientNavAreaCache_Expiry[iClient] = 0.0;
 	g_fTakeCoverCache_Expiry[iClient] = 0.0;
@@ -109,6 +111,9 @@ void ResetClientPluginVariables(int iClient)
 	SetVectorToZero(g_fSurvivorBot_LookPosition[iClient]);
 	SetVectorToZero(g_fSurvivorBot_MovePos_Position[iClient]);
 	SetVectorToZero(g_fClientNavAreaCache_Position[iClient]);
+	g_iSurvivorBot_VisibilityCache_NextSlot[iClient] = 0;
+	for (int i = 0; i < VISIBILITY_CACHE_SIZE; i++)
+		g_fSurvivorBot_VisibilityCache_Expiry[iClient][i] = 0.0;
 	SetVectorToZero(g_fTakeCoverCache_ClientPos[iClient]);
 	SetVectorToZero(g_fTakeCoverCache_SourcePos[iClient]);
 	SetVectorToZero(g_fTakeCoverCache_ResultPos[iClient]);
@@ -135,6 +140,7 @@ void Event_OnWeaponFire(Event hEvent, const char[] sName, bool bBroadcast)
 	//iWeaponID = hEvent.GetInt("weaponid");
 	iClient = GetClientOfUserId(iUserID);
 	if (!IsFakeClient(iClient))return;
+	g_fClientInventory_Expiry[iClient] = 0.0;
 
 	hEvent.GetString("weapon", sWeaponName, sizeof(sWeaponName));
 
@@ -197,24 +203,29 @@ void Event_OnIncap(Event hEvent, const char[] sName, bool bBroadcast)
 	if (iSecondarySlot != -1)
 	{
 		iEntRef = EntIndexToEntRef(iSecondarySlot);
-		iIndex = g_hForbiddenItemList.Push(iEntRef);
+		iIndex = g_hForbiddenItemList.FindValue(iEntRef);
+		if (iIndex == -1)
+			iIndex = g_hForbiddenItemList.Push(iEntRef);
+		RegisterEntityListMask(iSecondarySlot, ENTITY_LIST_FORBIDDEN);
 		g_hForbiddenItemList.Set(iIndex, iClient, 1);
 	}
 }
 
 void Event_OnRevive(Event hEvent, const char[] sName, bool bBroadcast)
 {
-	static int iClient, iUserID, iOwner, iEntIndex;
+	static int iClient, iUserID, iOwner, iEntRef, iEntIndex;
 	iUserID = hEvent.GetInt("subject");
 	iClient = GetClientOfUserId(iUserID);
 	InvalidatePinnedRescueClient(iClient);
 
 	for (int i = 0; i < g_hForbiddenItemList.Length; i++)
 	{
-		iEntIndex = EntRefToEntIndex(g_hForbiddenItemList.Get(i));
+		iEntRef = g_hForbiddenItemList.Get(i);
+		iEntIndex = EntRefToEntIndex(iEntRef);
 		iOwner = g_hForbiddenItemList.Get(i, 1);
 		if (iEntIndex == INVALID_ENT_REFERENCE || !IsEntityExists(iEntIndex) || iClient == iOwner)
 		{
+			UnregisterEntityListMaskFromEntRef(iEntRef, ENTITY_LIST_FORBIDDEN);
 			g_hForbiddenItemList.Erase(i);
 			continue;
 		}
@@ -229,6 +240,8 @@ void Event_OnPlayerUse(Event hEvent, const char[] sName, bool bBroadcast)
 	iEntity = hEvent.GetInt("targetid");
 
 	g_iItem_Used[iEntity] |= (1 << (iClient - 1));
+	if (iClient >= 1 && iClient <= MaxClients)
+		g_fClientInventory_Expiry[iClient] = 0.0;
 	if (IsFakeClient(iClient) && iEntity == g_iSurvivorBot_ScavengeItem[iClient] && g_iWeaponID[iEntity])
 	{
 		ClearMoveToPosition(iClient, "ScavengeItem");

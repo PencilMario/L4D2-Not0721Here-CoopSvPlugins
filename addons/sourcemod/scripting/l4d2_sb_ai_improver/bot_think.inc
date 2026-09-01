@@ -1,7 +1,9 @@
 void SurvivorBotThink(int iClient, int &iButtons, int iWpnSlots[6])
 {
 	float fStartedAt = g_bCvar_PerformanceLogging ? GetEngineTime() : 0.0;
+	PerformanceBudgetBeginStage("decision");
 	SurvivorBotThinkImpl(iClient, iButtons, iWpnSlots);
+	PerformanceBudgetEndStage(iClient);
 	LogSlowCalculation("SurvivorBotThink", fStartedAt, iClient);
 }
 

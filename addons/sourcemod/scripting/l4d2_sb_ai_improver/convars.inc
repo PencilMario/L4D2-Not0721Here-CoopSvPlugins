@@ -423,6 +423,7 @@ void UpdateConVarValues()
 	g_fCvar_NextProcessTime 							= g_hCvar_NextProcessTime.FloatValue;
 	g_bCvar_PerformanceLogging = g_hCvar_PerformanceLogging.BoolValue;
 	g_fCvar_PerformanceThresholdMs = g_hCvar_PerformanceThresholdMs.FloatValue;
+	g_bPerformanceBudgetEnabled = g_bCvar_PerformanceLogging;
 	g_iCvar_Debug 										= g_hCvar_Debug.IntValue;
 }
 

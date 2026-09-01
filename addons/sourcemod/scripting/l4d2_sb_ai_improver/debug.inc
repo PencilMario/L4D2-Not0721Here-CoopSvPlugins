@@ -8,7 +8,41 @@ void LogSlowCalculation(const char[] sName, float fStartedAt, int iClient = -1, 
 		return;
 
 	if (g_hPerformanceLogger != null)
-		g_hPerformanceLogger.lograw("[SlowCalculation] name=%s elapsed_ms=%.3f client=%d entity=%d", sName, fElapsed * 1000.0, iClient, iEntity);
+	g_hPerformanceLogger.lograw("[SlowCalculation] name=%s elapsed_ms=%.3f client=%d entity=%d", sName, fElapsed * 1000.0, iClient, iEntity);
+}
+
+void PerformanceBudgetBeginStage(const char[] sStage)
+{
+	if (!g_bPerformanceBudgetEnabled)
+		return;
+
+	if (g_iPerformanceBudget_StageDepth >= sizeof(g_sPerformanceBudget_Stage))
+		return;
+
+	int iDepth = g_iPerformanceBudget_StageDepth++;
+	strcopy(g_sPerformanceBudget_Stage[iDepth], sizeof(g_sPerformanceBudget_Stage[]), sStage);
+	g_fPerformanceBudget_StageStartedAt[iDepth] = GetEngineTime();
+}
+
+void PerformanceBudgetEndStage(int iClient = -1)
+{
+	if (!g_bPerformanceBudgetEnabled || g_iPerformanceBudget_StageDepth <= 0)
+		return;
+
+	int iDepth = --g_iPerformanceBudget_StageDepth;
+	float fElapsed = GetEngineTime() - g_fPerformanceBudget_StageStartedAt[iDepth];
+	if (fElapsed < g_fCvar_PerformanceThresholdMs / 1000.0)
+		return;
+
+	if (g_hPerformanceLogger != null)
+		g_hPerformanceLogger.lograw("[PerformanceBudget] stage=%s elapsed_ms=%.3f client=%d runcmd=%d entered_bot_think=%d", g_sPerformanceBudget_Stage[iDepth], fElapsed * 1000.0, iClient, g_iPerformanceBudget_RunCmdCalls, g_iPerformanceBudget_EnteredBotThink);
+}
+
+void ResetPerformanceBudgetCounters()
+{
+	g_iPerformanceBudget_RunCmdCalls = 0;
+	g_iPerformanceBudget_EnteredBotThink = 0;
+	g_iPerformanceBudget_StageDepth = 0;
 }
 
 void LogDebugMessage(const char[] sMessage, any ...)

@@ -252,7 +252,7 @@ void CreateAndHookConVars()
 	g_hCvar_WitchBehavior_AllowCrowning.AddChangeHook(OnConVarChanged);
 
 	g_hCvar_NextProcessTime.AddChangeHook(OnConVarChanged);
-	g_hCvar_PerformanceLogging.AddChangeHook(OnConVarChanged);
+	g_hCvar_PerformanceLogging.AddChangeHook(OnPerformanceLoggingChanged);
 	g_hCvar_PerformanceThresholdMs.AddChangeHook(OnConVarChanged);
 	g_hCvar_Debug.AddChangeHook(OnConVarChanged);
 }
@@ -271,7 +271,6 @@ public void OnConfigsExecuted()
 void OnConVarChanged(Handle convar, const char[] oldValue, const char[] newValue)
 {
 	UpdateConVarValues();
-	if (convar == g_hCvar_PerformanceLogging) ResetPerformanceBudgetCounters();
 	if (convar == g_hCvar_NextProcessTime)
 	{
 		for (int i = 1; i <= MaxClients; i++)

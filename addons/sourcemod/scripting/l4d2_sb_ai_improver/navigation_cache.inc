@@ -85,3 +85,81 @@ float g_fNavigationDangerCache_Expiry[MAXPLAYERS+1];
 float g_fNavigationDangerCache_GoalPos[MAXPLAYERS+1][3];
 int g_iNavigationDangerCache_Result[MAXPLAYERS+1];
 int g_iNavigationDangerCache_StartArea[MAXPLAYERS+1];
+
+bool LBI_IsNavAreaPartiallyVisible(int iNavArea, const float fEyePos[3], int iIgnoreEntity = -1)
+{
+	if (!iNavArea)
+		return false;
+
+	if (g_bPerformanceBudgetEnabled)
+		TraceMetricsRecordAttempt(TRACE_METRIC_NAV_VISIBLE);
+
+	float fNow = GetGameTime();
+	for (int i = 0; i < NAV_VISIBLE_CACHE_SIZE; i++)
+	{
+		if (fNow < g_fNavigationVisibleCache_Expiry[i]
+			&& g_iNavigationVisibleCache_NavArea[i] == iNavArea
+			&& g_iNavigationVisibleCache_IgnoreEntity[i] == iIgnoreEntity
+			&& GetVectorDistance(g_fNavigationVisibleCache_EyePos[i], fEyePos, true) <= GetNavigationCachePositionTolerance())
+		{
+			if (g_bPerformanceBudgetEnabled)
+				TraceMetricsRecordCacheHit(TRACE_METRIC_NAV_VISIBLE);
+			return g_bNavigationVisibleCache_Result[i];
+		}
+	}
+
+	if (g_bPerformanceBudgetEnabled)
+		TraceMetricsRecordCacheMiss(TRACE_METRIC_NAV_VISIBLE);
+	bool bResult = LBI_IsNavAreaPartiallyVisibleImpl(iNavArea, fEyePos, iIgnoreEntity);
+	int iCacheSlot = g_iNavigationVisibleCache_NextSlot;
+	g_iNavigationVisibleCache_NextSlot = (g_iNavigationVisibleCache_NextSlot + 1) % NAV_VISIBLE_CACHE_SIZE;
+	g_fNavigationVisibleCache_Expiry[iCacheSlot] = GetProcessCacheExpiry();
+	g_iNavigationVisibleCache_NavArea[iCacheSlot] = iNavArea;
+	g_iNavigationVisibleCache_IgnoreEntity[iCacheSlot] = iIgnoreEntity;
+	g_fNavigationVisibleCache_EyePos[iCacheSlot] = fEyePos;
+	g_bNavigationVisibleCache_Result[iCacheSlot] = bResult;
+	return bResult;
+}
+
+bool LBI_IsNavAreaPartiallyVisibleImpl(int iNavArea, const float fEyePos[3], int iIgnoreEntity = -1)
+{
+	float fOffset = (0.75 * HUMAN_HEIGHT);
+
+	float fCenter[3]; LBI_GetNavAreaCenter(iNavArea, fCenter);
+	fCenter[2] += fOffset;
+
+	if (g_bPerformanceBudgetEnabled)
+		TraceMetricsRecordTraceCall(TRACE_METRIC_NAV_VISIBLE);
+	Handle hResult = TR_TraceRayFilterEx(fEyePos, fCenter, MASK_VISIBLE_AND_NPCS, RayType_EndPoint, CTraceFilterNoNPCsOrPlayer, iIgnoreEntity);
+	if (g_bPerformanceBudgetEnabled)
+		TraceMetricsEndTrace();
+	float fFraction = TR_GetFraction(hResult); delete hResult;
+	if (fFraction == 1.0)return true;
+
+	float fEyeToCenter[3];
+	MakeVectorFromPoints(fEyePos, fCenter, fEyeToCenter);
+	NormalizeVector(fEyeToCenter, fEyeToCenter);
+
+	float fCorner[3], fEyeToCorner[3];
+	for (int i = 0; i < 4; ++i)
+	{
+		LBI_GetNavAreaCorner(iNavArea, i, fCorner);
+		fCorner[2] += fOffset;
+
+		MakeVectorFromPoints(fEyePos, fCorner, fEyeToCorner);
+		NormalizeVector(fEyeToCorner, fEyeToCorner);
+		if (GetVectorDotProduct(fEyeToCorner, fEyeToCenter) >= 0.98)
+			continue;
+
+		fCorner[2] += fOffset;
+		if (g_bPerformanceBudgetEnabled)
+			TraceMetricsRecordTraceCall(TRACE_METRIC_NAV_VISIBLE);
+		hResult = TR_TraceRayFilterEx(fEyePos, fCorner, MASK_VISIBLE_AND_NPCS, RayType_EndPoint, CTraceFilterNoNPCsOrPlayer, iIgnoreEntity);
+		if (g_bPerformanceBudgetEnabled)
+			TraceMetricsEndTrace();
+		fFraction = TR_GetFraction(hResult); delete hResult;
+		if (fFraction == 1.0)return true;
+	}
+
+	return false;
+}

@@ -80,6 +80,10 @@ public Action OnPlayerRunCmd(int iClient, int &iButtons, int &iImpulse, float fV
 	if (iClient < 1 || iClient > MaxClients || !IsClientInGame(iClient))
 		return Plugin_Continue;
 
+	// Aim traces are valid only for this client command; never carry them into the next one.
+	g_iClientCommandGeneration[iClient]++;
+	g_bClientAimCacheValid[iClient] = false;
+
 	float fNow = GetGameTime();
 	if (g_bPerformanceBudgetEnabled)
 		g_iPerformanceBudget_RunCmdCalls++;
@@ -93,16 +97,19 @@ public Action OnPlayerRunCmd(int iClient, int &iButtons, int &iImpulse, float fV
 	}
 	UpdateClientNavArea(iClient, fNow);
 
-	if (!IsClientSurvivor(iClient))
+	bool bIsSurvivor = IsClientSurvivor(iClient);
+	if (bIsSurvivor)
 	{
-		PerformanceBudgetEndStage(iClient);
-		return Plugin_Continue;
+		g_bClient_IsFiringWeapon[iClient] = false;
+		g_bClient_IsLookingAtPosition[iClient] = false;
+		UpdateClientInventory(iClient, fNow);
 	}
-
-	g_bClient_IsFiringWeapon[iClient] = false;
-	g_bClient_IsLookingAtPosition[iClient] = false;
-	UpdateClientInventory(iClient, fNow);
 	PerformanceBudgetEndStage(iClient);
+	if (g_bPerformanceBudgetEnabled)
+		TraceMetricsMaybeLogSummary();
+
+	if (!bIsSurvivor)
+		return Plugin_Continue;
 
 	if (g_bCvar_BotsDisabled || g_bCutsceneIsPlaying || !g_iClientNavArea[iClient] || fNow <= g_fClient_ThinkFunctionDelay[iClient] || !IsFakeClient(iClient))
 		return Plugin_Continue;
@@ -118,8 +125,6 @@ public Action OnPlayerRunCmd(int iClient, int &iButtons, int &iImpulse, float fV
 		g_fBotProcessing_NextProcessTime = GetProcessCacheExpiry();
 		for (int i = 1; i <= MaxClients; i++)g_bBotProcessing_IsProcessed[i] = false;
 	}
-	TraceMetricsMaybeLogSummary();
-
 	return Plugin_Continue;
 }
 

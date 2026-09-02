@@ -732,11 +732,15 @@ void SurvivorBotThinkImpl(int iClient, int &iButtons, int iWpnSlots[6])
 				{
 					float fTraceStart[3]; fTraceStart = fMidPos; fTraceStart[2] + HUMAN_HALF_HEIGHT;
 					float fAngleDown[3] = {90.0, 0.0, 0.0};
-					TraceMetricsRecordAttempt(TRACE_METRIC_GRENADE_GROUND);
-					TraceMetricsRecordCacheMiss(TRACE_METRIC_GRENADE_GROUND);
-					TraceMetricsRecordTraceCall(TRACE_METRIC_GRENADE_GROUND);
+					if (g_bPerformanceBudgetEnabled)
+					{
+						TraceMetricsRecordAttempt(TRACE_METRIC_GRENADE_GROUND);
+						TraceMetricsRecordCacheMiss(TRACE_METRIC_GRENADE_GROUND);
+						TraceMetricsRecordTraceCall(TRACE_METRIC_GRENADE_GROUND);
+					}
 					Handle hGroundCheck = TR_TraceRayFilterEx(fTraceStart, fAngleDown, MASK_PLAYERSOLID, RayType_Infinite, Base_TraceFilter);
-					TraceMetricsEndTrace();
+					if (g_bPerformanceBudgetEnabled)
+						TraceMetricsEndTrace();
 					float fTrHitPos[3]; TR_GetEndPosition(fTrHitPos, hGroundCheck); delete hGroundCheck;
 
 					float fHeightDiff = FloatAbs(fTrHitPos[2] - fThrowPosition[2]);
@@ -759,11 +763,15 @@ void SurvivorBotThinkImpl(int iClient, int &iButtons, int iWpnSlots[6])
 				fThrowTrajectory = fThrowPosition;
 				fThrowTrajectory[2] += (g_fSurvivorBot_Grenade_AimPos[iClient][2] - g_fClientEyePos[iClient][2]);
 
-				TraceMetricsRecordAttempt(TRACE_METRIC_GRENADE_CEILING);
-				TraceMetricsRecordCacheMiss(TRACE_METRIC_GRENADE_CEILING);
-				TraceMetricsRecordTraceCall(TRACE_METRIC_GRENADE_CEILING);
+				if (g_bPerformanceBudgetEnabled)
+				{
+					TraceMetricsRecordAttempt(TRACE_METRIC_GRENADE_CEILING);
+					TraceMetricsRecordCacheMiss(TRACE_METRIC_GRENADE_CEILING);
+					TraceMetricsRecordTraceCall(TRACE_METRIC_GRENADE_CEILING);
+				}
 				Handle hCeilingCheck = TR_TraceRayFilterEx(g_fClientEyePos[iClient], fThrowTrajectory, MASK_SOLID, RayType_EndPoint, Base_TraceFilter);
-				TraceMetricsEndTrace();
+				if (g_bPerformanceBudgetEnabled)
+					TraceMetricsEndTrace();
 				g_fSurvivorBot_Grenade_AimPos[iClient][2] *= TR_GetFraction(hCeilingCheck); delete hCeilingCheck;
 
 				g_fSurvivorBot_Grenade_ThrowPos[iClient] = fThrowPosition;

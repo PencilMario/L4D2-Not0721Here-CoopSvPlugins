@@ -41,8 +41,8 @@ if ($combat -notmatch 'g_fClientInventory_Expiry\[iClient\] = 0\.0;') {
     throw 'weapon-switch changes must invalidate the inventory snapshot'
 }
 
-if ($runtime -notmatch 'if \(!IsClientSurvivor\(iClient\)\)\s*\{\s*PerformanceBudgetEndStage\(iClient\);\s*return Plugin_Continue;\s*\}') {
-    throw 'non-survivor RunCmd path must close the performance stage before returning'
+if ($runtime -notmatch '(?s)bool bIsSurvivor = IsClientSurvivor\(iClient\);.*?PerformanceBudgetEndStage\(iClient\);.*?TraceMetricsMaybeLogSummary\(\);.*?if \(!bIsSurvivor\)\s*return Plugin_Continue;') {
+    throw 'non-survivor RunCmd path must close the performance stage and emit the shared summary before returning'
 }
 
 if ($runtime -notmatch 'if \(g_bCvar_BotsDisabled \|\| g_bCutsceneIsPlaying \|\| !g_iClientNavArea\[iClient\] \|\| fNow <= g_fClient_ThinkFunctionDelay\[iClient\] \|\| !IsFakeClient\(iClient\)\)') {

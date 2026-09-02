@@ -14,7 +14,18 @@ public Plugin myinfo =
 #define BOT_GRENADE_CHECK_RADIUS_SQR	90000.0
 #define BOT_CMD_MOVE_INTERVAL 		0.8
 #define VISIBILITY_CACHE_POSITION_TOLERANCE_SQR 1024.0
-#define VISIBILITY_CACHE_SIZE 8
+#define VISIBILITY_CACHE_SIZE 64
+#define VISIBILITY_CACHE_WAYS 4
+#define VISIBILITY_CACHE_SET_COUNT 16
+#define TRACE_ENTITY_UNKNOWN 0
+#define TRACE_ENTITY_DOOR 1
+#define TRACE_ENTITY_OTHER 2
+#define VECTOR_TRACE_CACHE_SIZE 64
+#define VECTOR_TRACE_CACHE_WAYS 4
+#define VECTOR_TRACE_CACHE_SET_COUNT 16
+#define VECTOR_TRACE_CACHE_QUANTIZATION 8.0
+#define VECTOR_TRACE_CACHE_POSITION_TOLERANCE_SQR 64.0
+#define AIM_TRACE_CACHE_POSITION_TOLERANCE_SQR 0.01
 
 #define HUMAN_HEIGHT				71.0
 #define HUMAN_HALF_HEIGHT			35.5
@@ -357,6 +368,7 @@ char g_sPerformanceBudget_Stage[8][32];
 
 enum TraceMetricCategory
 {
+	TRACE_METRIC_NONE = -1,
 	TRACE_METRIC_ENTITY_LOS,
 	TRACE_METRIC_VECTOR_LOS,
 	TRACE_METRIC_AIM,
@@ -383,7 +395,7 @@ int g_iTraceMetrics_TraceCalls[TRACE_METRIC_COUNT];
 int g_iTraceMetrics_Fallback2[TRACE_METRIC_COUNT];
 int g_iTraceMetrics_Fallback3[TRACE_METRIC_COUNT];
 int g_iTraceMetrics_FilterCallbacks[TRACE_METRIC_COUNT];
-int g_iTraceMetrics_ActiveCategory = -1;
+int g_iTraceMetrics_ActiveCategory = TRACE_METRIC_NONE;
 float g_fTraceMetrics_NextSummaryExpiry;
 
 float GetProcessCacheExpiry()
@@ -483,13 +495,30 @@ float g_fSurvivorBot_VisionMemory_Time[MAXPLAYERS+1][MAXENTITIES+1];
 float g_fSurvivorBot_VisionMemory_Time_FOV[MAXPLAYERS+1][MAXENTITIES+1];
 
 float g_fSurvivorBot_VisibilityCache_Expiry[MAXPLAYERS+1][VISIBILITY_CACHE_SIZE];
-int g_iSurvivorBot_VisibilityCache_Target[MAXPLAYERS+1][VISIBILITY_CACHE_SIZE];
+int g_iSurvivorBot_VisibilityCache_EntRef[MAXPLAYERS+1][VISIBILITY_CACHE_SIZE];
 int g_iSurvivorBot_VisibilityCache_Mask[MAXPLAYERS+1][VISIBILITY_CACHE_SIZE];
-bool g_bSurvivorBot_VisibilityCache_FOV[MAXPLAYERS+1][VISIBILITY_CACHE_SIZE];
+int g_iSurvivorBot_VisibilityCache_Mode[MAXPLAYERS+1][VISIBILITY_CACHE_SIZE];
+int g_iSurvivorBot_VisibilityCache_ObserverGeneration[MAXPLAYERS+1][VISIBILITY_CACHE_SIZE];
 bool g_bSurvivorBot_VisibilityCache_Result[MAXPLAYERS+1][VISIBILITY_CACHE_SIZE];
 float g_fSurvivorBot_VisibilityCache_EyePos[MAXPLAYERS+1][VISIBILITY_CACHE_SIZE][3];
 float g_fSurvivorBot_VisibilityCache_TargetPos[MAXPLAYERS+1][VISIBILITY_CACHE_SIZE][3];
-int g_iSurvivorBot_VisibilityCache_NextSlot[MAXPLAYERS+1];
+int g_iSurvivorBot_VisibilityObserverGeneration[MAXPLAYERS+1];
+
+float g_fVectorTraceCache_Expiry[VECTOR_TRACE_CACHE_SIZE];
+float g_fVectorTraceCache_LastQueryTime;
+int g_iVectorTraceCache_Hash[VECTOR_TRACE_CACHE_SIZE];
+int g_iVectorTraceCache_Mask[VECTOR_TRACE_CACHE_SIZE];
+int g_iVectorTraceCache_RayType[VECTOR_TRACE_CACHE_SIZE];
+bool g_bVectorTraceCache_Result[VECTOR_TRACE_CACHE_SIZE];
+float g_fVectorTraceCache_Start[VECTOR_TRACE_CACHE_SIZE][3];
+float g_fVectorTraceCache_End[VECTOR_TRACE_CACHE_SIZE][3];
+
+int g_iClientCommandGeneration[MAXPLAYERS+1];
+int g_iClientAimCacheGeneration[MAXPLAYERS+1];
+bool g_bClientAimCacheValid[MAXPLAYERS+1];
+float g_fClientAimCacheEyePos[MAXPLAYERS+1][3];
+float g_fClientAimCacheAngles[MAXPLAYERS+1][3];
+float g_fClientAimCachePos[MAXPLAYERS+1][3];
 
 float g_fSurvivorBot_NextWeaponRangeSwitchTime[MAXPLAYERS+1];
 
@@ -625,6 +654,10 @@ Handle g_hClearBadPathTimer;
 // Bitmask of the registered entity lists; used to avoid probing every list on destroy.
 int g_iEntityListMask[MAXENTITIES + 1];
 int g_iEntityListEntRef[MAXENTITIES + 1];
+int g_iTraceEntityClass[MAXENTITIES + 1];
+int g_iTraceEntityEntRef[MAXENTITIES + 1];
+int g_iTraceDoorState[MAXENTITIES + 1];
+float g_fTraceDoorStateExpiry[MAXENTITIES + 1];
 
 // ----------------------------------------------------------------------------------------------------
 // SHARED PERFORMANCE SNAPSHOTS

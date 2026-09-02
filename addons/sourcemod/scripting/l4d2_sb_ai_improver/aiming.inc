@@ -98,6 +98,8 @@ void GetClosestToEyePosEntityBonePos(int iClient, int iTarget, float fAimPos[3])
 	float fBoneDist, fBonePos[3], fAimPartPos[3], fLastDist = -1.0;
 	fAimPos[0] = fAimPos[1] = fAimPos[2] = 0.0;
 	GetEntityAbsOrigin(iTarget, fAimPos);
+	if (IsAiDegraded())
+		return;
 	if (!LBI_IsBoneQueryReady(iTarget))return;
 
 	if (LBI_LookupBone(iTarget, "ValveBiped.Bip01_Pelvis") != -1)
@@ -139,6 +141,8 @@ void GetTargetAimPart(int iClient, int iTarget, float fAimPos[3])
 	if (IsWeaponSlotActive(iClient, 0) && g_iClientInvFlags[iClient] & FLAG_GL && (!IsValidClient(iTarget) || L4D2_GetPlayerZombieClass(iTarget) != L4D2ZombieClass_Jockey))
 		return;
 
+	if (IsAiDegraded(2))
+		return;
 	if (!LBI_IsBoneQueryReady(iTarget))return;
 
 	static char sAimBone[64];
@@ -159,6 +163,7 @@ void GetTargetAimPart(int iClient, int iTarget, float fAimPos[3])
 
 	if (!IsVisibleVector(iClient, fAimPartPos))
 	{
+		if (IsAiDegraded())return;
 		bool bVisibleOther = false;
 		if (bIsUsingOldSkeleton)
 		{

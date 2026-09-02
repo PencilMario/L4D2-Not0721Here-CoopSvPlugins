@@ -86,3 +86,47 @@ stock bool GetEntityCenteroid(int iEntity, float fResult[3])
 
 	return true;
 }
+
+stock bool GetAiEntityCenteroidCached(int iEntity, float fResult[3])
+{
+	if (!IsAiDegraded())
+		return GetEntityCenteroid(iEntity, fResult);
+
+	if (iEntity <= 0 || iEntity > MAXENTITIES || !IsEntityExists(iEntity))
+		return false;
+
+	int iEntRef = EntIndexToEntRef(iEntity);
+	float fNow = GetGameTime();
+	if (fNow < g_fAiEntityCenteroidCache_Expiry[iEntity]
+		&& g_iAiEntityCenteroidCache_EntRef[iEntity] == iEntRef)
+	{
+		fResult = g_fAiEntityCenteroidCache_Position[iEntity];
+		return true;
+	}
+
+	if (!GetEntityCenteroid(iEntity, fResult))
+		return false;
+
+	g_iAiEntityCenteroidCache_EntRef[iEntity] = iEntRef;
+	g_fAiEntityCenteroidCache_Position[iEntity] = fResult;
+	g_fAiEntityCenteroidCache_Expiry[iEntity] = GetProcessCacheExpiry();
+	return true;
+}
+
+void InvalidateAiEntityCenteroidCacheEntity(int iEntity)
+{
+	if (iEntity <= 0 || iEntity > MAXENTITIES)
+		return;
+
+	g_iAiEntityCenteroidCache_EntRef[iEntity] = 0;
+	g_fAiEntityCenteroidCache_Expiry[iEntity] = 0.0;
+}
+
+void ResetAiEntityCenteroidCache()
+{
+	for (int i = 0; i <= MAXENTITIES; i++)
+	{
+		g_iAiEntityCenteroidCache_EntRef[i] = 0;
+		g_fAiEntityCenteroidCache_Expiry[i] = 0.0;
+	}
+}

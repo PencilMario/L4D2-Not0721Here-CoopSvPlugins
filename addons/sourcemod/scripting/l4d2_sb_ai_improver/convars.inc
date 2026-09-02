@@ -118,14 +118,13 @@ void CreateAndHookConVars()
 	g_hCvar_TakeCoverFromRocks						= CreateConVar("ib_takecoverfromtankrocks", "1", "If bots should take cover from tank's thrown rocks.", FCVAR_NOTIFY, true, 0.0, true, 1.0);
 	g_hCvar_AvoidTanksWithProp						= CreateConVar("ib_avoidtanksnearpunchableprops", "1", "If bots should avoid and retreat from tanks that are nearby punchable props like cars.", FCVAR_NOTIFY, true, 0.0, true, 1.0);
 	g_hCvar_NoFallDmgOnLadderFail					= CreateConVar("ib_nofalldmgonladderfail", "0", "If enabled, survivor bots won't take fall damage if they were climbing a ladder just before that.", FCVAR_NOTIFY, true, 0.0, true, 1.0);
-
 	g_hCvar_WitchBehavior_WalkWhenNearby			= CreateConVar("ib_witchbehavior_walkwhennearby", "0", "Survivor bots will start walking near witch if they're this range near her and she's not disturbed. <0: Disabled>", FCVAR_NOTIFY, true, 0.0);
-	g_hCvar_WitchBehavior_AllowCrowning				= CreateConVar("ib_witchbehavior_allowcrowning", "1", "Allows survivor bots to crown witch on their path if they're holding any shotgun type weapon. <0: Disabled; 1: Only if survivor team doesn't have any human players; 2:Enabled>", FCVAR_NOTIFY, true, 0.0, true, 2.0);
-
-	g_hCvar_NextProcessTime 						= CreateConVar("ib_process_time", "0.2", "Bots' data computing time delay (infected count, nearby friends, etc). Increasing the value might help increasing the game performance, but slow down bots.", FCVAR_NOTIFY, true, 0.033);
+	g_hCvar_WitchBehavior_AllowCrowning = CreateConVar("ib_witchbehavior_allowcrowning", "1", "Allows survivor bots to crown witch on their path if they're holding any shotgun type weapon. <0: Disabled; 1: Only if survivor team doesn't have any human players; 2:Enabled>", FCVAR_NOTIFY, true, 0.0, true, 2.0);
+	g_hCvar_NextProcessTime = CreateConVar("ib_process_time", "0.2", "Bots' data computing time delay (infected count, nearby friends, etc). Increasing the value might help increasing the game performance, but slow down bots.", FCVAR_NOTIFY, true, 0.033);
+	CreateDegradedConVars();
 	g_hCvar_PerformanceLogging = CreateConVar("ib_performance_logging", "0", "Log calculations exceeding the configured threshold.", FCVAR_NOTIFY, true, 0.0, true, 1.0);
 	g_hCvar_PerformanceThresholdMs = CreateConVar("ib_performance_threshold_ms", "1.0", "Slow calculation logging threshold in milliseconds.", FCVAR_NOTIFY, true, 0.1);
-	g_hCvar_Debug 									= CreateConVar("ib_debug", "0", "Spam console/chat in hopes of finding a a clue for your problems. Prints WILL LAG on Windows GUI!", FCVAR_NOTIFY, true, 0.0, true, 1024.0);
+	g_hCvar_Debug									= CreateConVar("ib_debug", "0", "Spam console/chat in hopes of finding a a clue for your problems. Prints WILL LAG on Windows GUI!", FCVAR_NOTIFY, true, 0.0, true, 1024.0);
 
 	g_hCvar_GameDifficulty.AddChangeHook(OnConVarChanged);
 	g_hCvar_SurvivorLimpHealth.AddChangeHook(OnConVarChanged);
@@ -417,14 +416,15 @@ void UpdateConVarValues()
 		L4D2_ExecVScriptCode(sShouldHurryCode);
 	}
 
-	g_fCvar_WitchBehavior_WalkWhenNearby 				= g_hCvar_WitchBehavior_WalkWhenNearby.FloatValue;
+	g_fCvar_WitchBehavior_WalkWhenNearby = g_hCvar_WitchBehavior_WalkWhenNearby.FloatValue;
 	g_iCvar_WitchBehavior_AllowCrowning 				= g_hCvar_WitchBehavior_AllowCrowning.IntValue;
 
-	g_fCvar_NextProcessTime 							= g_hCvar_NextProcessTime.FloatValue;
+	g_fCvar_NextProcessTime = g_hCvar_NextProcessTime.FloatValue;
+	UpdateDegradedConVarValues();
 	g_bCvar_PerformanceLogging = g_hCvar_PerformanceLogging.BoolValue;
 	g_fCvar_PerformanceThresholdMs = g_hCvar_PerformanceThresholdMs.FloatValue;
 	g_bPerformanceBudgetEnabled = g_bCvar_PerformanceLogging;
-	g_iCvar_Debug 										= g_hCvar_Debug.IntValue;
+	g_iCvar_Debug = g_hCvar_Debug.IntValue;
 }
 
 Handle g_hCalcAbsolutePosition;

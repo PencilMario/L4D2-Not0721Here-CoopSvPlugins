@@ -12,7 +12,7 @@ int GetFarthestInfected(int iClient, float fDistance = -1.0)
 		if (!IsCommonInfectedAlive(i))
 			continue;
 
-		GetEntityCenteroid(i, fInfectedPos);
+		GetAiEntityCenteroidCached(i, fInfectedPos);
 		fInfectedDist = GetVectorDistance(g_fClientEyePos[iClient], fInfectedPos, true);
 		if (fDistance > 0.0 && fInfectedDist > (fDistance*fDistance) || fLastDist != -1.0 && fInfectedDist <= fLastDist || !IsVisibleVector(iClient, fInfectedPos))
 			continue;
@@ -30,7 +30,7 @@ void CheckEntityForVisibility(int iClient, int iEntity, bool bFOVOnly = false, f
 	if (GetGameTime() < fVisionTime)return;
 
 	float fCheckPos[3];
-	if (IsNullVector(fOverridePos))GetEntityCenteroid(iEntity, fCheckPos);
+	if (IsNullVector(fOverridePos))GetAiEntityCenteroidCached(iEntity, fCheckPos);
 	else fCheckPos = fOverridePos;
 	if (bFOVOnly && !FVectorInViewCone(iClient, fCheckPos))return;
 
@@ -241,7 +241,7 @@ void GetInfectedCounts(int iClient, const float fDistanceLimits[3], int iCounts[
 {
 	iCounts[0] = iCounts[1] = iCounts[2] = 0;
 	float fClientPos[3], fInfectedPos[3];
-	GetEntityCenteroid(iClient, fClientPos);
+	GetAiEntityCenteroidCached(iClient, fClientPos);
 
 	float fLimit0 = fDistanceLimits[0] * fDistanceLimits[0];
 	float fLimit1 = fDistanceLimits[1] * fDistanceLimits[1];
@@ -252,12 +252,17 @@ void GetInfectedCounts(int iClient, const float fDistanceLimits[3], int iCounts[
 		if (!IsCommonInfectedAlive(iInfected) || bAttackingOnly && !IsCommonInfectedAttacking(iInfected))
 			continue;
 
-		GetEntityCenteroid(iInfected, fInfectedPos);
+		GetAiEntityCenteroidCached(iInfected, fInfectedPos);
 		float fDistance = GetVectorDistance(fClientPos, fInfectedPos, true);
 		if (fDistance > fLimit2)
 			continue;
-		if (bVisible && (IsValidClient(iClient) && !IsVisibleVector(iClient, fInfectedPos, MASK_VISIBLE_AND_NPCS) || !GetVectorVisible(fClientPos, fInfectedPos)))
-			continue;
+		if (bVisible)
+		{
+			if (IsValidClient(iClient) && !IsVisibleVector(iClient, fInfectedPos, MASK_VISIBLE_AND_NPCS))
+				continue;
+			if ((!IsValidClient(iClient) || !IsAiDegraded()) && !GetVectorVisible(fClientPos, fInfectedPos))
+				continue;
+		}
 
 		if (fDistance <= fLimit0)iCounts[0]++;
 		if (fDistance <= fLimit1)iCounts[1]++;
@@ -279,7 +284,7 @@ int GetInfectedCountImpl(int iClient, float fDistanceLimit = -1.0, int iMaxLimit
 {
 	static int i, iCount;
 	static float fClientPos[3], fInfectedPos[3];
-	GetEntityCenteroid(iClient, fClientPos);
+	GetAiEntityCenteroidCached(iClient, fClientPos);
 
 	i = INVALID_ENT_REFERENCE;
 	iCount = 0;
@@ -288,9 +293,16 @@ int GetInfectedCountImpl(int iClient, float fDistanceLimit = -1.0, int iMaxLimit
 		if (!IsCommonInfectedAlive(i) || bAttackingOnly && !IsCommonInfectedAttacking(i))
 			continue;
 
-		GetEntityCenteroid(i, fInfectedPos);
-		if (fDistanceLimit > 0.0 && GetVectorDistance(fClientPos, fInfectedPos, true) > (fDistanceLimit*fDistanceLimit) || bVisible && (IsValidClient(iClient) && !IsVisibleVector(iClient, fInfectedPos, MASK_VISIBLE_AND_NPCS) || !GetVectorVisible(fClientPos, fInfectedPos)))
+		GetAiEntityCenteroidCached(i, fInfectedPos);
+		if (fDistanceLimit > 0.0 && GetVectorDistance(fClientPos, fInfectedPos, true) > (fDistanceLimit*fDistanceLimit))
 			continue;
+		if (bVisible)
+		{
+			if (IsValidClient(iClient) && !IsVisibleVector(iClient, fInfectedPos, MASK_VISIBLE_AND_NPCS))
+				continue;
+			if ((!IsValidClient(iClient) || !IsAiDegraded()) && !GetVectorVisible(fClientPos, fInfectedPos))
+				continue;
+		}
 
 		iCount++;
 		if (iMaxLimit > 0 && iCount >= iMaxLimit)return iCount;
@@ -350,6 +362,8 @@ bool TraceVisibleEntity(int iClient, int iTarget, int iMask)
 	if (g_bPerformanceBudgetEnabled)
 		TraceMetricsEndTrace();
 	bool bDidHit = (TR_GetFraction(hResult) == 1.0 && !TR_StartSolid(hResult) || TR_GetEntityIndex(hResult) == iTarget); delete hResult;
+	if (bDidHit || IsAiDegraded())
+		return bDidHit;
 	if (!bDidHit)
 	{
 		float fViewOffset[3];
@@ -515,7 +529,7 @@ bool FVectorInViewAngle(int iClient, const float fVecSpot[3], float fAngle = -1.
 bool FEntityInViewAngle(int iClient, int iEntity, float fAngle = -1.0)
 {
 	if (fAngle == -1.0)fAngle = g_fCvar_Vision_FieldOfView;
-	float fEntityAbsOrigin[3]; GetEntityCenteroid(iEntity, fEntityAbsOrigin);
+	float fEntityAbsOrigin[3]; GetAiEntityCenteroidCached(iEntity, fEntityAbsOrigin);
 	return (RadToDeg(ArcCosine(GetViewAnglesDotProduct(iClient, fEntityAbsOrigin))) <= fAngle);
 }
 

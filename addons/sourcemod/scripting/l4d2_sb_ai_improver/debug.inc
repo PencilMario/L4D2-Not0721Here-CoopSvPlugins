@@ -145,6 +145,8 @@ void TraceMetricsMaybeLogSummary()
 	g_fTraceMetrics_NextSummaryExpiry = GetProcessCacheExpiry();
 	if (g_hPerformanceLogger == null)
 		return;
+	g_hPerformanceLogger.lograw("[DegradedAI] level=%d avg_frame_ms=%.3f force=%d step_ms=%.3f",
+		g_iDegradedLoadLevel, g_fDegradedFrameAverageMs, g_iCvar_DegradedForce, g_fCvar_DegradedFrameStepMs);
 
 	for (int i = 0; i < view_as<int>(TRACE_METRIC_COUNT); i++)
 	{

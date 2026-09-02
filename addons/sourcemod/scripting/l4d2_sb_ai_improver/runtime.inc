@@ -85,6 +85,7 @@ public Action OnPlayerRunCmd(int iClient, int &iButtons, int &iImpulse, float fV
 	g_bClientAimCacheValid[iClient] = false;
 
 	float fNow = GetGameTime();
+	UpdateDegradedLoadLevel(fNow);
 	if (g_bPerformanceBudgetEnabled)
 		g_iPerformanceBudget_RunCmdCalls++;
 
@@ -126,6 +127,49 @@ public Action OnPlayerRunCmd(int iClient, int &iButtons, int &iImpulse, float fV
 		for (int i = 1; i <= MaxClients; i++)g_bBotProcessing_IsProcessed[i] = false;
 	}
 	return Plugin_Continue;
+}
+
+void UpdateDegradedLoadLevel(float fNow)
+{
+	if (fNow == g_fDegradedLastSampleTime)
+		return;
+	g_fDegradedLastSampleTime = fNow;
+
+	float fFrameMs = GetGameFrameTime() * 1000.0;
+	if (g_fDegradedFrameAverageMs <= 0.0)
+		g_fDegradedFrameAverageMs = fFrameMs;
+	else
+		g_fDegradedFrameAverageMs = g_fDegradedFrameAverageMs * 0.875 + fFrameMs * 0.125;
+
+	if (g_iCvar_DegradedForce > 0)
+	{
+		g_iDegradedLoadLevel = g_iCvar_DegradedForce;
+		return;
+	}
+
+	if (g_fCvar_DegradedFrameStepMs <= 0.0)
+	{
+		g_iDegradedLoadLevel = 0;
+		return;
+	}
+
+	float fBaselineMs = GetTickInterval() * 1000.0;
+	int iLevel = RoundToFloor((g_fDegradedFrameAverageMs - fBaselineMs) / g_fCvar_DegradedFrameStepMs);
+	if (iLevel < 0)iLevel = 0;
+	if (iLevel > 3)iLevel = 3;
+	g_iDegradedLoadLevel = iLevel;
+}
+
+void ResetDegradedLoadState()
+{
+	g_fDegradedFrameAverageMs = 0.0;
+	g_fDegradedLastSampleTime = 0.0;
+	g_iDegradedLoadLevel = g_iCvar_DegradedForce;
+}
+
+bool IsAiDegraded(int iLevel = 1)
+{
+	return (g_iDegradedLoadLevel >= iLevel);
 }
 
 public void L4D_OnForceSurvivorPositions()

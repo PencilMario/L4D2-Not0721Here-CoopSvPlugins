@@ -18,6 +18,7 @@ public void OnEntityCreated(int iEntity, const char[] sClassname)
 		return;
 
 	InvalidateVisibilityCacheEntity(iEntity);
+	InvalidateAiEntityCenteroidCacheEntity(iEntity);
 	ClassifyTraceEntity(iEntity, sClassname);
 	g_iItem_Used[iEntity] = 0; // Clear used item bitfield
 	g_iWeaponID[iEntity] = 0;
@@ -329,6 +330,7 @@ public void OnEntityDestroyed(int iEntity)
 		return;
 
 	InvalidateVisibilityCacheEntity(iEntity);
+	InvalidateAiEntityCenteroidCacheEntity(iEntity);
 	InvalidateTraceFilterEntity(iEntity);
 	g_iItem_Used[iEntity] = 0; // Clear used item bitfield
 	g_iWeaponID[iEntity] = 0;
@@ -450,12 +452,14 @@ void ResetEntityListMasks()
 public void OnMapStart()
 {
 	ResetEntityListMasks();
+	ResetDegradedLoadState();
 	ResetPerformanceBudgetCounters();
 	g_bMapStarted = true;
 	ResetNavigationCaches();
 	ResetTeamInventoryCaches();
 	ResetPinnedReactionCaches();
 	ResetVisibilityCaches();
+	ResetAiEntityCenteroidCache();
 	ResetVectorTraceCache();
 	ResetTraceFilterCache();
 	for (int i = 1; i <= MaxClients; i++)
@@ -534,12 +538,14 @@ public Action CheckWeaponsEvenLater(Handle timer)
 public void OnMapEnd()
 {
 	ResetEntityListMasks();
+	ResetDegradedLoadState();
 	ResetPerformanceBudgetCounters();
 	g_bMapStarted = false;
 	ResetNavigationCaches();
 	ResetTeamInventoryCaches();
 	ResetPinnedReactionCaches();
 	ResetVisibilityCaches();
+	ResetAiEntityCenteroidCache();
 	ResetVectorTraceCache();
 	ResetTraceFilterCache();
 	for (int i = 1; i <= MaxClients; i++)

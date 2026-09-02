@@ -17,6 +17,8 @@ void Event_OnRoundEnd(Event hEvent, const char[] sName, bool bBroadcast)
 float g_fClient_ThinkFunctionDelay[MAXPLAYERS+1];
 void ResetDataOnRoundChange()
 {
+	ResetDegradedLoadState();
+	ResetAiEntityCenteroidCache();
 	ResetPerformanceBudgetCounters();
 	g_iBotProcessing_ProcessedCount = 0;
 	g_fBotProcessing_NextProcessTime = GetProcessCacheExpiry();
@@ -61,6 +63,7 @@ public void OnClientDisconnect(int iClient)
 void ResetClientPluginVariables(int iClient)
 {
 	g_bBotProcessing_IsProcessed[iClient] = false;
+	InvalidateAiEntityCenteroidCacheEntity(iClient);
 	InvalidateVisibilityCacheClient(iClient);
 	g_bClientAimCacheValid[iClient] = false;
 	g_iClientAimCacheGeneration[iClient] = 0;

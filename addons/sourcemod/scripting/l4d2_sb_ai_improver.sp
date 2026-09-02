@@ -60,6 +60,8 @@
 
 #include "l4d2_sb_ai_improver/runtime.inc"
 
+#include "l4d2_sb_ai_improver/degraded.inc"
+
 #include "l4d2_sb_ai_improver/bot_think.inc"
 
 #include "l4d2_sb_ai_improver/combat.inc"

@@ -135,6 +135,7 @@ bool LBI_IsNavAreaPartiallyVisibleImpl(int iNavArea, const float fEyePos[3], int
 		TraceMetricsEndTrace();
 	float fFraction = TR_GetFraction(hResult); delete hResult;
 	if (fFraction == 1.0)return true;
+	if (IsAiDegraded())return false;
 
 	float fEyeToCenter[3];
 	MakeVectorFromPoints(fEyePos, fCenter, fEyeToCenter);

@@ -353,6 +353,14 @@ int g_iCvar_WitchBehavior_AllowCrowning;
 ConVar g_hCvar_NextProcessTime;
 float g_fCvar_NextProcessTime;
 
+ConVar g_hCvar_DegradedForce;
+ConVar g_hCvar_DegradedFrameStepMs;
+int g_iCvar_DegradedForce;
+float g_fCvar_DegradedFrameStepMs;
+float g_fDegradedFrameAverageMs;
+float g_fDegradedLastSampleTime;
+int g_iDegradedLoadLevel;
+
 ConVar g_hCvar_PerformanceLogging;
 ConVar g_hCvar_PerformanceThresholdMs;
 bool g_bCvar_PerformanceLogging;
@@ -686,6 +694,12 @@ int g_iSurvivorBot_RescueAttacker[MAXPLAYERS+1];
 bool g_bPinnedRescueRecoveryPending;
 
 int g_iCommonInfectedMeleeTargetMask[MAXENTITIES+1];
+
+// Only populated while an AI degradation level is active.  Position data is
+// shared by all survivor bots for one ib_process_time window.
+float g_fAiEntityCenteroidCache_Expiry[MAXENTITIES+1];
+int g_iAiEntityCenteroidCache_EntRef[MAXENTITIES+1];
+float g_fAiEntityCenteroidCache_Position[MAXENTITIES+1][3];
 
 // ----------------------------------------------------------------------------------------------------
 // CHARACTER MODEL BONES

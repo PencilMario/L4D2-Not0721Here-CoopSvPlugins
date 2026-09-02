@@ -14,6 +14,7 @@
 ## Bot execution
 
 - `runtime.inc`: `OnPlayerRunCmd` snapshots and lightweight runtime forwards.
+- `degraded.inc`: heavy-load level ConVars and cached-value refresh helpers.
 - `bot_think.inc`: the existing central bot decision routine.
 - `combat.inc`: damage hooks and Witch/Tank combat reactions.
 - `movement.inc`: cover, move-position commands, and pathable-location VScript calls.

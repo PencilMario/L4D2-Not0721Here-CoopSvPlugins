@@ -288,3 +288,24 @@ Get-ChildItem tests/*.tests.ps1 | Sort-Object Name | ForEach-Object {
 - **事实置信度 A：** VProf 中 RunCmd、filter、Trace 引擎和导航的调用/耗时数据；源码中的 8 槽缓存、三点 fallback、未缓存向量 Trace、filter 属性/native 查询。
 - **根因置信度 B：** “缓存抖动 + 未共享 Trace”由源码和归一化回调增长强烈支持，但缺少按调用用途拆分的 runtime counter。
 - **优化收益置信度 B/C：** filter 分类快路径收益方向明确；具体 Trace 减少比例必须由 Task 1 和固定场景复测确认。
+
+## 8. 11 Bot 重载降级扩展（2026-09-02）
+
+报告 `(4)` 已确认就是 11 个生还者 Bot，因此本节的降级等级直接以该场景为目标，不再做 Bot 数量倍率外推。降级只在等级大于 0 时改变精度；等级 0 保持原行为。
+
+新增两个 ConVar：
+
+- `ib_ai_degraded_force`：`0` 为自动，`1` 到 `3` 强制对应降级等级。
+- `ib_ai_degraded_frame_step_ms`：自动模式下，平均帧时长相对 `GetTickInterval()` 每增加该毫秒数，等级提高一级，最高三级；平均值使用 EMA 平滑。
+
+等级语义：
+
+| 等级 | 降级行为 |
+|---|---|
+| 1 | 实体 LOS 失败后不再执行 view-offset/centroid fallback；感染者计数只做 survivor eye → infected；近战骨骼扫描改为实体原点；普通目标瞄准保留首选骨骼但取消骨骼可见性 fallback；实体中心在一个 `ib_process_time` 周期内共享。 |
+| 2 | 所有通用目标瞄准跳过骨骼，直接使用实体世界原点；Tank rock/car/physics 可见性候选限制为最多 2 个。 |
+| 3 | NavArea 部分可见性只检查中心射线；Tank 道具候选限制为最多 1 个；跳过手雷 ground Trace，保留 ceiling Trace。 |
+
+特殊感染者也遵循同一等级，不再拥有永远保留骨骼的例外；Jockey/Smoker 的既有专用救援瞄准路径仍由救援模块负责。实体位置缓存使用 `GetProcessCacheExpiry()`，并在实体生命周期、回合和换图时失效。动作级瞄准缓存仍按 command generation，不跨 command 复用。
+
+自动等级在每个游戏帧只采样一次，避免 11 个 Bot 的 `OnPlayerRunCmd` 重复更新。性能日志的 `[DegradedAI]` 行会记录当前等级、EMA 帧时长、强制值和步长，便于与 TraceMetrics/VProf 对齐。

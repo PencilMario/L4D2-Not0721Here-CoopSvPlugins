@@ -142,10 +142,16 @@ void SurvivorBotThinkImpl(int iClient, int &iButtons, int iWpnSlots[6])
 		{
 			fLastDist = -1.0;
 			int iPropRock = INVALID_ENT_REFERENCE;
+			int iRockVisibilityChecks;
 			while ((iPropRock = FindEntityByClassname(iPropRock, "tank_rock")) != INVALID_ENT_REFERENCE)
 			{
 				fCurDist = GetEntityDistance(iClient, iPropRock, true);
-				if (fLastDist != -1.0 && fCurDist >= fLastDist || !IsVisibleEntity(iClient, iPropRock))
+				if (fLastDist != -1.0 && fCurDist >= fLastDist)
+					continue;
+				if (IsAiDegraded(2) && iRockVisibilityChecks >= (IsAiDegraded(3) ? 1 : 2))
+					break;
+				iRockVisibilityChecks++;
+				if (!IsVisibleEntity(iClient, iPropRock))
 					continue;
 
 				iTankRock = iPropRock;
@@ -154,20 +160,32 @@ void SurvivorBotThinkImpl(int iClient, int &iButtons, int iWpnSlots[6])
 
 			fLastDist = -1.0;
 			iPropRock = INVALID_ENT_REFERENCE;
+			int iCarVisibilityChecks;
 			while ((iPropRock = FindEntityByClassname(iPropRock, "prop_car_alarm")) != INVALID_ENT_REFERENCE)
 			{
 				fCurDist = GetEntityDistance(iTankTarget, iPropRock, true);
-				if (fCurDist > 250000.0 || fLastDist != -1.0 && fCurDist >= fLastDist || !IsVisibleEntity(iTankTarget, iPropRock) || !IsVisibleEntity(iClient, iPropRock))
+				if (fCurDist > 250000.0 || fLastDist != -1.0 && fCurDist >= fLastDist)
+					continue;
+				if (IsAiDegraded(2) && iCarVisibilityChecks >= (IsAiDegraded(3) ? 1 : 2))
+					break;
+				iCarVisibilityChecks++;
+				if (!IsVisibleEntity(iTankTarget, iPropRock) || !IsVisibleEntity(iClient, iPropRock))
 					continue;
 
 				iTankProp = iPropRock;
 				fLastDist = fCurDist;
 			}
 			iPropRock = INVALID_ENT_REFERENCE;
+			iCarVisibilityChecks = 0;
 			while ((iPropRock = FindEntityByClassname(iPropRock, "prop_physics")) != INVALID_ENT_REFERENCE)
 			{
 				fCurDist = GetEntityDistance(iTankTarget, iPropRock, true);
-				if (fCurDist > 250000.0 || fLastDist != -1.0 && fCurDist >= fLastDist || !GetEntProp(iPropRock, Prop_Send, "m_hasTankGlow") || !IsVisibleEntity(iTankTarget, iPropRock) || !IsVisibleEntity(iClient, iPropRock))
+				if (fCurDist > 250000.0 || fLastDist != -1.0 && fCurDist >= fLastDist || !GetEntProp(iPropRock, Prop_Send, "m_hasTankGlow"))
+					continue;
+				if (IsAiDegraded(2) && iCarVisibilityChecks >= (IsAiDegraded(3) ? 1 : 2))
+					break;
+				iCarVisibilityChecks++;
+				if (!IsVisibleEntity(iTankTarget, iPropRock) || !IsVisibleEntity(iClient, iPropRock))
 					continue;
 
 				iTankProp = iPropRock;
@@ -511,7 +529,7 @@ void SurvivorBotThinkImpl(int iClient, int &iButtons, int iWpnSlots[6])
 	float fInfectedDist = -1.0;
 	if (IsEntityExists(iInfectedTarget))
 	{
-		float fInfectedPos[3]; GetEntityCenteroid(iInfectedTarget, fInfectedPos);
+		float fInfectedPos[3]; GetAiEntityCenteroidCached(iInfectedTarget, fInfectedPos);
 		float fInfectedOrigin[3]; GetEntityAbsOrigin(iInfectedTarget, fInfectedOrigin);
 		fInfectedDist = GetVectorDistance(g_fClientAbsOrigin[iClient], fInfectedOrigin, true);
 
@@ -730,23 +748,30 @@ void SurvivorBotThinkImpl(int iClient, int &iButtons, int iWpnSlots[6])
 
 				if (GetVectorDistance(g_fClientAbsOrigin[iClient], fMidPos, true) > BOT_GRENADE_CHECK_RADIUS_SQR)
 				{
-					float fTraceStart[3]; fTraceStart = fMidPos; fTraceStart[2] + HUMAN_HALF_HEIGHT;
+					float fTraceStart[3]; fTraceStart = fMidPos; fTraceStart[2] += HUMAN_HALF_HEIGHT;
 					float fAngleDown[3] = {90.0, 0.0, 0.0};
-					if (g_bPerformanceBudgetEnabled)
-					{
-						TraceMetricsRecordAttempt(TRACE_METRIC_GRENADE_GROUND);
-						TraceMetricsRecordCacheMiss(TRACE_METRIC_GRENADE_GROUND);
-						TraceMetricsRecordTraceCall(TRACE_METRIC_GRENADE_GROUND);
-					}
-					Handle hGroundCheck = TR_TraceRayFilterEx(fTraceStart, fAngleDown, MASK_PLAYERSOLID, RayType_Infinite, Base_TraceFilter);
-					if (g_bPerformanceBudgetEnabled)
-						TraceMetricsEndTrace();
-					float fTrHitPos[3]; TR_GetEndPosition(fTrHitPos, hGroundCheck); delete hGroundCheck;
-
-					float fHeightDiff = FloatAbs(fTrHitPos[2] - fThrowPosition[2]);
-					if (fHeightDiff < 96.0)
+					if (IsAiDegraded(3))
 					{
 						fThrowPosition = fMidPos;
+					}
+					else
+					{
+						if (g_bPerformanceBudgetEnabled)
+						{
+							TraceMetricsRecordAttempt(TRACE_METRIC_GRENADE_GROUND);
+							TraceMetricsRecordCacheMiss(TRACE_METRIC_GRENADE_GROUND);
+							TraceMetricsRecordTraceCall(TRACE_METRIC_GRENADE_GROUND);
+						}
+						Handle hGroundCheck = TR_TraceRayFilterEx(fTraceStart, fAngleDown, MASK_PLAYERSOLID, RayType_Infinite, Base_TraceFilter);
+						if (g_bPerformanceBudgetEnabled)
+							TraceMetricsEndTrace();
+						float fTrHitPos[3]; TR_GetEndPosition(fTrHitPos, hGroundCheck); delete hGroundCheck;
+
+						float fHeightDiff = FloatAbs(fTrHitPos[2] - fThrowPosition[2]);
+						if (fHeightDiff < 96.0)
+						{
+							fThrowPosition = fMidPos;
+						}
 					}
 				}
 			}

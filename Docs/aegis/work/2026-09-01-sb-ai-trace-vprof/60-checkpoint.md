@@ -2,10 +2,10 @@
 
 ## Current state
 
-- Current task: finish Task 6 verification and package the Trace/cache implementation.
+- Current task: close the implementation with verified static/build evidence.
 - Completed: VProf analysis and plan; Task 1 instrumentation; Task 2 64-slot/4-way entity LOS cache; Task 3 vector LOS cache; Task 4 entity classification/door-state cache; Task 5 command-local aim deduplication; focused contracts and prior SourcePawn 1.12 compiles.
-- Active slice: package the verified Trace/cache implementation and merge it into `main`.
-- Next: verify the merged result and retain the live-server sampling item as an explicit residual risk.
+- Active slice: none; the implementation is merged into `main`.
+- Next: deploy to a fixed L4D2 test server for the planned 1000-frame VProf and behavior replay.
 - Blockers: no local L4D2 server for runtime VProf or behavior sampling.
 
 ## Evidence
@@ -22,4 +22,4 @@
 - Scope: Trace observability and cache reduction in `l4d2_sb_ai_improver`; no public ConVar/native/forward changes.
 - Compatibility: preserve Bot decision order, three-point entity LOS fallback, door blocking semantics, and lifecycle invalidation API names.
 - Retirement: detailed metrics remain diagnostic-only and gated by `ib_performance_logging`; the old 8-slot ring and per-callback `HasEntProp` path are retired, while the three-point LOS fallback remains for behavior compatibility.
-- Decision: merge after fresh static/build verification; real-server VProf, behavior replay, and quantitative acceptance thresholds remain `needs-verification`.
+- Decision: static/build verification is complete; real-server VProf, behavior replay, and quantitative acceptance thresholds remain `needs-verification` and are explicitly deferred to deployment.

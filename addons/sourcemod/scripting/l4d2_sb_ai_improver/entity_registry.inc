@@ -18,6 +18,7 @@ public void OnEntityCreated(int iEntity, const char[] sClassname)
 		return;
 
 	InvalidateVisibilityCacheEntity(iEntity);
+	ClassifyTraceEntity(iEntity, sClassname);
 	g_iItem_Used[iEntity] = 0; // Clear used item bitfield
 	g_iWeaponID[iEntity] = 0;
 	g_iMeleeID[iEntity] = -1;
@@ -328,6 +329,7 @@ public void OnEntityDestroyed(int iEntity)
 		return;
 
 	InvalidateVisibilityCacheEntity(iEntity);
+	InvalidateTraceFilterEntity(iEntity);
 	g_iItem_Used[iEntity] = 0; // Clear used item bitfield
 	g_iWeaponID[iEntity] = 0;
 	g_iMeleeID[iEntity] = -1;
@@ -342,26 +344,88 @@ public void OnEntityDestroyed(int iEntity)
 	}
 }
 
+void ClassifyTraceEntity(int iEntity, const char[] sClassname = "")
+{
+	if (iEntity <= 0 || iEntity > MAXENTITIES) return;
+	char sClass[64];
+	bool bHadClassname = (sClassname[0] != '\0');
+	if (bHadClassname)
+		strcopy(sClass, sizeof(sClass), sClassname);
+	else if (!GetEntityClassname(iEntity, sClass, sizeof(sClass)))
+	{
+		// Do not leave an entity permanently UNKNOWN: otherwise every filter
+		// callback would repeat the classname/property slow path.
+		g_iTraceEntityClass[iEntity] = TRACE_ENTITY_OTHER;
+		g_iTraceEntityEntRef[iEntity] = EntIndexToEntRef(iEntity);
+		g_fTraceDoorStateExpiry[iEntity] = 0.0;
+		return;
+	}
+
+	bool bIsDoor = (strncmp(sClass, "func_door", 9) == 0 || strncmp(sClass, "prop_door", 9) == 0);
+	// A non-standard classname is still an uncertain entity: probe the door
+	// property once during registration so custom doors keep the old blocking
+	// semantics without paying HasEntProp from every trace callback.
+	if (!bIsDoor)
+		bIsDoor = HasEntProp(iEntity, Prop_Data, "m_eDoorState");
+
+	g_iTraceEntityClass[iEntity] = bIsDoor ? TRACE_ENTITY_DOOR : TRACE_ENTITY_OTHER;
+	g_iTraceEntityEntRef[iEntity] = EntIndexToEntRef(iEntity);
+	g_fTraceDoorStateExpiry[iEntity] = 0.0;
+}
+
+void InvalidateTraceFilterEntity(int iEntity)
+{
+	if (iEntity <= 0 || iEntity > MAXENTITIES) return;
+	g_iTraceEntityClass[iEntity] = TRACE_ENTITY_UNKNOWN;
+	g_iTraceEntityEntRef[iEntity] = 0;
+	g_iTraceDoorState[iEntity] = 0;
+	g_fTraceDoorStateExpiry[iEntity] = 0.0;
+}
+
+void ResetTraceFilterCache()
+{
+	for (int i = 0; i <= MAXENTITIES; i++)
+	{
+		g_iTraceEntityClass[i] = TRACE_ENTITY_UNKNOWN;
+		g_iTraceEntityEntRef[i] = 0;
+		g_iTraceDoorState[i] = 0;
+		g_fTraceDoorStateExpiry[i] = 0.0;
+	}
+}
+
 void InvalidateVisibilityCacheEntity(int iEntity)
 {
 	if (iEntity <= 0 || iEntity > MAXENTITIES)
 		return;
+	int iTargetEntRef = EntIndexToEntRef(iEntity);
 
 	for (int i = 1; i <= MaxClients; i++)
 	{
 		for (int j = 0; j < VISIBILITY_CACHE_SIZE; j++)
 		{
-			if (g_iSurvivorBot_VisibilityCache_Target[i][j] == iEntity)
+			int iCachedEntity = EntRefToEntIndex(g_iSurvivorBot_VisibilityCache_EntRef[i][j]);
+			if (g_iSurvivorBot_VisibilityCache_EntRef[i][j] == iTargetEntRef
+				|| iCachedEntity == INVALID_ENT_REFERENCE || iCachedEntity == iEntity)
 				g_fSurvivorBot_VisibilityCache_Expiry[i][j] = 0.0;
 		}
 	}
+}
+
+void InvalidateVisibilityCacheClient(int iClient)
+{
+	if (iClient < 1 || iClient > MaxClients)
+		return;
+
+	g_iSurvivorBot_VisibilityObserverGeneration[iClient]++;
+	for (int i = 0; i < VISIBILITY_CACHE_SIZE; i++)
+		g_fSurvivorBot_VisibilityCache_Expiry[iClient][i] = 0.0;
 }
 
 void ResetVisibilityCaches()
 {
 	for (int i = 1; i <= MaxClients; i++)
 	{
-		g_iSurvivorBot_VisibilityCache_NextSlot[i] = 0;
+		g_iSurvivorBot_VisibilityObserverGeneration[i]++;
 		for (int j = 0; j < VISIBILITY_CACHE_SIZE; j++)
 			g_fSurvivorBot_VisibilityCache_Expiry[i][j] = 0.0;
 	}
@@ -392,6 +456,8 @@ public void OnMapStart()
 	ResetTeamInventoryCaches();
 	ResetPinnedReactionCaches();
 	ResetVisibilityCaches();
+	ResetVectorTraceCache();
+	ResetTraceFilterCache();
 	for (int i = 1; i <= MaxClients; i++)
 	{
 		g_fClientGlobalInfo_Expiry[i] = 0.0;
@@ -407,14 +473,16 @@ public void OnMapStart()
 	InitMeleeIDs();
 
 	static char sEntClassname[64];
-	for (int i = 0; i < MAXENTITIES; i++)
+	for (int i = 0; i <= MAXENTITIES; i++)
 	{
 		g_iItem_Used[i] = 0;
 		g_iWeaponID[i] = 0;
 		g_iMeleeID[i] = -1;
 		g_iItemFlags[i] = 0;
 		if (!IsEntityExists(i))continue;
+		sEntClassname[0] = '\0';
 		GetEntityClassname(i, sEntClassname, sizeof(sEntClassname));
+		ClassifyTraceEntity(i, sEntClassname);
 		CheckEntityForStuff(i, sEntClassname);
 	}
 }
@@ -472,6 +540,8 @@ public void OnMapEnd()
 	ResetTeamInventoryCaches();
 	ResetPinnedReactionCaches();
 	ResetVisibilityCaches();
+	ResetVectorTraceCache();
+	ResetTraceFilterCache();
 	for (int i = 1; i <= MaxClients; i++)
 	{
 		g_fClientGlobalInfo_Expiry[i] = 0.0;

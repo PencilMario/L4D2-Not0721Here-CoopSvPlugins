@@ -1,0 +1,43 @@
+# Trace/VProf 优化验证证据
+
+## 静态合同
+
+在 `codex/sb-ai-trace-vprof` worktree 运行全部 `tests/*.tests.ps1`：34/34 通过。新增/修改的 Trace、缓存和运行时合同均通过：
+
+- `l4d2_sb_ai_trace_metrics.tests.ps1`
+- `l4d2_sb_ai_visibility_cache.tests.ps1`
+- `l4d2_sb_ai_vector_trace_cache.tests.ps1`
+- `l4d2_sb_ai_trace_filter_cache.tests.ps1`
+- `l4d2_sb_ai_aim_trace_cache.tests.ps1`
+- `l4d2_sb_ai_runtime_budget.tests.ps1`
+
+本次完整运行命令为：
+
+```powershell
+Get-ChildItem tests/*.tests.ps1 | Sort-Object Name | ForEach-Object {
+    pwsh -NoProfile -File $_.FullName
+}
+```
+
+结果汇总：`SUMMARY total=34 passed=34 failed=0`。
+
+## 编译
+
+使用项目 SourcePawn 1.12 编译器编译 `l4d2_sb_ai_improver.sp`，退出码为 0，生成 `addons/sourcemod/plugins/l4d2_sb_ai_improver.smx`（代码大小 301372 bytes）。输出只有已有的 `CreateDialog` 弃用警告。
+
+## 实现证据
+
+- 实体 LOS：每 observer 64 槽、16 组、4-way，key 含 entref/mask/mode，并校验 observer/target 位置；过期统一为 `GetProcessCacheExpiry()`。
+- 向量 LOS：64 槽、4-way，8-unit 量化 hash 后复核原坐标、mask 和 RayType；只缓存 boolean，地图/时钟回退显式清空。
+- `Base_TraceFilter`：目标实体先命中；普通实体 O(1) 返回 false；门分类在注册/未知慢路径只探测一次，动态门状态按 `GetProcessCacheExpiry()` 缓存并由门输出主动失效。
+- Aim Trace：以 client command generation 为边界，同一 command 且眼位/角度未变时复用；不跨 command 使用 process TTL。
+
+## 未验证项
+
+当前没有本地 L4D2 实时服务器，因此尚未取得固定地图/人数/tickrate 下的新 VProf 采样，也未完成 common infected 压力、开火选择和三点 LOS 行为回放。部署前应按分析计划采样至少 1000 帧，并报告每帧归一化指标。
+
+## 证据边界
+
+- 静态合同和编译是本次已验证范围；它们不能替代真实服务器上的 VProf 或行为回放。
+- 未加载两份 VProf 原始全文，仅使用分析计划中已归一化的指标摘要；原始文件仍保留在用户指定的下载目录，可按需复查。
+- 置信度：B。核心代码路径有直接静态/编译证据，性能收益和行为等价性仍需真实服务器采样确认。

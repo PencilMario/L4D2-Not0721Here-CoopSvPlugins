@@ -3,6 +3,12 @@ void Event_OnRoundStart(Event hEvent, const char[] sName, bool bBroadcast)
 	ResetDataOnRoundChange();
 }
 
+public void Event_OnTraceDoorStateChanged(const char[] sOutput, int iCaller, int iActivator, float fDelay)
+{
+	if (iCaller > 0 && iCaller <= MAXENTITIES)
+		g_fTraceDoorStateExpiry[iCaller] = 0.0;
+}
+
 void Event_OnRoundEnd(Event hEvent, const char[] sName, bool bBroadcast)
 {
 	ResetDataOnRoundChange();
@@ -55,6 +61,10 @@ public void OnClientDisconnect(int iClient)
 void ResetClientPluginVariables(int iClient)
 {
 	g_bBotProcessing_IsProcessed[iClient] = false;
+	InvalidateVisibilityCacheClient(iClient);
+	g_bClientAimCacheValid[iClient] = false;
+	g_iClientAimCacheGeneration[iClient] = 0;
+	g_iClientCommandGeneration[iClient] = 0;
 
 	g_iSurvivorBot_TargetInfected[iClient] = -1;
 	g_iSurvivorBot_WitchTarget[iClient] = -1;
@@ -111,9 +121,6 @@ void ResetClientPluginVariables(int iClient)
 	SetVectorToZero(g_fSurvivorBot_LookPosition[iClient]);
 	SetVectorToZero(g_fSurvivorBot_MovePos_Position[iClient]);
 	SetVectorToZero(g_fClientNavAreaCache_Position[iClient]);
-	g_iSurvivorBot_VisibilityCache_NextSlot[iClient] = 0;
-	for (int i = 0; i < VISIBILITY_CACHE_SIZE; i++)
-		g_fSurvivorBot_VisibilityCache_Expiry[iClient][i] = 0.0;
 	SetVectorToZero(g_fTakeCoverCache_ClientPos[iClient]);
 	SetVectorToZero(g_fTakeCoverCache_SourcePos[iClient]);
 	SetVectorToZero(g_fTakeCoverCache_ResultPos[iClient]);
@@ -272,6 +279,7 @@ void Event_OnPlayerSpawn(Event hEvent, const char[] sName, bool bBroadcast)
 {
 	int iClient = GetClientOfUserId(hEvent.GetInt("userid"));
 	InvalidatePinnedRescueClient(iClient);
+	InvalidateVisibilityCacheClient(iClient);
 	InvalidateClientGlobalInfo(iClient);
 	RequestPinnedRescueCoordinatorRecovery();
 }
@@ -280,6 +288,7 @@ void Event_OnPlayerTeam(Event hEvent, const char[] sName, bool bBroadcast)
 {
 	int iClient = GetClientOfUserId(hEvent.GetInt("userid"));
 	InvalidatePinnedRescueClient(iClient);
+	InvalidateVisibilityCacheClient(iClient);
 	InvalidateClientGlobalInfo(iClient);
 	RequestPinnedRescueCoordinatorRecovery();
 }
@@ -290,6 +299,8 @@ void Event_OnPlayerReplacement(Event hEvent, const char[] sName, bool bBroadcast
 	int iBot = GetClientOfUserId(hEvent.GetInt("bot"));
 	InvalidatePinnedRescueClient(iPlayer);
 	InvalidatePinnedRescueClient(iBot);
+	InvalidateVisibilityCacheClient(iPlayer);
+	InvalidateVisibilityCacheClient(iBot);
 	InvalidateClientGlobalInfo(iPlayer);
 	InvalidateClientGlobalInfo(iBot);
 	RequestPinnedRescueCoordinatorRecovery();

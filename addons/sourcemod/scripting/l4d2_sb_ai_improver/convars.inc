@@ -252,7 +252,7 @@ void CreateAndHookConVars()
 	g_hCvar_WitchBehavior_AllowCrowning.AddChangeHook(OnConVarChanged);
 
 	g_hCvar_NextProcessTime.AddChangeHook(OnConVarChanged);
-	g_hCvar_PerformanceLogging.AddChangeHook(OnConVarChanged);
+	g_hCvar_PerformanceLogging.AddChangeHook(OnPerformanceLoggingChanged);
 	g_hCvar_PerformanceThresholdMs.AddChangeHook(OnConVarChanged);
 	g_hCvar_Debug.AddChangeHook(OnConVarChanged);
 }

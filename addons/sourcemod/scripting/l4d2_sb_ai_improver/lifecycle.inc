@@ -35,6 +35,22 @@ public void OnPluginStart()
 	// ----------------------------------------------------------------------------------------------------
 	HookEvent("round_start", 			Event_OnRoundStart);
 	HookEvent("round_end", 				Event_OnRoundEnd);
+	HookEntityOutput("func_door", "OnOpen", Event_OnTraceDoorStateChanged);
+	HookEntityOutput("func_door", "OnClose", Event_OnTraceDoorStateChanged);
+	HookEntityOutput("func_door", "OnFullyOpen", Event_OnTraceDoorStateChanged);
+	HookEntityOutput("func_door", "OnFullyClosed", Event_OnTraceDoorStateChanged);
+	HookEntityOutput("prop_door", "OnOpen", Event_OnTraceDoorStateChanged);
+	HookEntityOutput("prop_door", "OnClose", Event_OnTraceDoorStateChanged);
+	HookEntityOutput("prop_door", "OnFullyOpen", Event_OnTraceDoorStateChanged);
+	HookEntityOutput("prop_door", "OnFullyClosed", Event_OnTraceDoorStateChanged);
+	HookEntityOutput("func_door_rotating", "OnOpen", Event_OnTraceDoorStateChanged);
+	HookEntityOutput("func_door_rotating", "OnClose", Event_OnTraceDoorStateChanged);
+	HookEntityOutput("func_door_rotating", "OnFullyOpen", Event_OnTraceDoorStateChanged);
+	HookEntityOutput("func_door_rotating", "OnFullyClosed", Event_OnTraceDoorStateChanged);
+	HookEntityOutput("prop_door_rotating", "OnOpen", Event_OnTraceDoorStateChanged);
+	HookEntityOutput("prop_door_rotating", "OnClose", Event_OnTraceDoorStateChanged);
+	HookEntityOutput("prop_door_rotating", "OnFullyOpen", Event_OnTraceDoorStateChanged);
+	HookEntityOutput("prop_door_rotating", "OnFullyClosed", Event_OnTraceDoorStateChanged);
 
 	HookEvent("weapon_fire", 			Event_OnWeaponFire);
 	HookEvent("player_death", 			Event_OnPlayerDeath);

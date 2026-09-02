@@ -333,9 +333,7 @@ bool IsVisibleVector(int iClient, float fPos[3], int iMask = MASK_SHOT)
 	if (IsFakeClient(iClient) && GetClientTeam(iClient) == 2 && IsSurvivorBotBlindedByVomit(iClient))
 		return false;
 
-	Handle hResult = TR_TraceRayFilterEx(g_fClientEyePos[iClient], fPos, iMask, RayType_EndPoint, Base_TraceFilter);
-	float fFraction = TR_GetFraction(hResult); delete hResult;
-	return (fFraction == 1.0);
+	return GetCachedVectorVisible(g_fClientEyePos[iClient], fPos, iMask, RayType_EndPoint);
 }
 
 bool TraceVisibleEntity(int iClient, int iTarget, int iMask)
@@ -346,7 +344,11 @@ bool TraceVisibleEntity(int iClient, int iTarget, int iMask)
 	float fTargetPos[3];
 	GetEntityAbsOrigin(iTarget, fTargetPos);
 
+	if (g_bPerformanceBudgetEnabled)
+		TraceMetricsRecordTraceCall(TRACE_METRIC_ENTITY_LOS);
 	Handle hResult = TR_TraceRayFilterEx(g_fClientEyePos[iClient], fTargetPos, iMask, RayType_EndPoint, Base_TraceFilter, iTarget);
+	if (g_bPerformanceBudgetEnabled)
+		TraceMetricsEndTrace();
 	bool bDidHit = (TR_GetFraction(hResult) == 1.0 && !TR_StartSolid(hResult) || TR_GetEntityIndex(hResult) == iTarget); delete hResult;
 	if (!bDidHit)
 	{
@@ -354,17 +356,37 @@ bool TraceVisibleEntity(int iClient, int iTarget, int iMask)
 		GetEntPropVector(iTarget, Prop_Data, "m_vecViewOffset", fViewOffset);
 		AddVectors(fTargetPos, fViewOffset, fTargetPos);
 
+		if (g_bPerformanceBudgetEnabled)
+		{
+			TraceMetricsRecordFallback(TRACE_METRIC_ENTITY_LOS, 2);
+			TraceMetricsRecordTraceCall(TRACE_METRIC_ENTITY_LOS);
+		}
 		hResult = TR_TraceRayFilterEx(g_fClientEyePos[iClient], fTargetPos, iMask, RayType_EndPoint, Base_TraceFilter, iTarget);
+		if (g_bPerformanceBudgetEnabled)
+			TraceMetricsEndTrace();
 		bDidHit = (TR_GetFraction(hResult) == 1.0 && !TR_StartSolid(hResult) || TR_GetEntityIndex(hResult) == iTarget); delete hResult;
 		if (!bDidHit)
 		{
 			GetEntityCenteroid(iTarget, fTargetPos);
 
+			if (g_bPerformanceBudgetEnabled)
+			{
+				TraceMetricsRecordFallback(TRACE_METRIC_ENTITY_LOS, 3);
+				TraceMetricsRecordTraceCall(TRACE_METRIC_ENTITY_LOS);
+			}
 			hResult = TR_TraceRayFilterEx(g_fClientEyePos[iClient], fTargetPos, iMask, RayType_EndPoint, Base_TraceFilter, iTarget);
+			if (g_bPerformanceBudgetEnabled)
+				TraceMetricsEndTrace();
 			bDidHit = (TR_GetFraction(hResult) == 1.0 && !TR_StartSolid(hResult) || TR_GetEntityIndex(hResult) == iTarget); delete hResult;
 		}
 	}
 	return (bDidHit);
+}
+
+int GetVisibilityCacheSet(int iTargetEntRef, int iMask, int iMode)
+{
+	int iHash = iTargetEntRef ^ (iMask * 31) ^ (iMode * 17);
+	return (iHash & 0x7FFFFFFF) % VISIBILITY_CACHE_SET_COUNT;
 }
 
 bool GetCachedVisibleEntity(int iClient, int iTarget, int iMask, bool bFOVState = false)
@@ -372,11 +394,26 @@ bool GetCachedVisibleEntity(int iClient, int iTarget, int iMask, bool bFOVState 
 	if (iClient < 1 || iClient > MaxClients || iTarget <= 0)
 		return false;
 
+	if (g_bPerformanceBudgetEnabled)
+	{
+		TraceMetricsRecordAttempt(TRACE_METRIC_ENTITY_LOS);
+	}
+
 	// Non-survivor callers retain the original trace semantics; only survivor bots share cached traces.
 	if (!IsFakeClient(iClient) || GetClientTeam(iClient) != 2)
+	{
+		if (g_bPerformanceBudgetEnabled)
+			TraceMetricsRecordCacheMiss(TRACE_METRIC_ENTITY_LOS);
 		return TraceVisibleEntity(iClient, iTarget, iMask);
+	}
 	if (iTarget > MAXENTITIES || !IsEntityExists(iTarget))
 		return false;
+	int iTargetEntRef = EntIndexToEntRef(iTarget);
+	if (iTargetEntRef == INVALID_ENT_REFERENCE)
+		return false;
+	int iMode = bFOVState ? 1 : 0;
+	int iSet = GetVisibilityCacheSet(iTargetEntRef, iMask, iMode);
+	int iBaseSlot = iSet * VISIBILITY_CACHE_WAYS;
 
 	float fTargetPos[3];
 	if (IsValidClient(iTarget) && g_bClientGlobalInfo_Ready[iTarget])
@@ -385,24 +422,45 @@ bool GetCachedVisibleEntity(int iClient, int iTarget, int iMask, bool bFOVState 
 		return false;
 
 	float fNow = GetGameTime();
-	for (int i = 0; i < VISIBILITY_CACHE_SIZE; i++)
+	int iReplacementSlot = -1;
+	bool bFoundExpiredSlot = false;
+	float fOldestExpiry = 0.0;
+	for (int iWay = 0; iWay < VISIBILITY_CACHE_WAYS; iWay++)
 	{
+		int i = iBaseSlot + iWay;
+		if (fNow >= g_fSurvivorBot_VisibilityCache_Expiry[iClient][i] && !bFoundExpiredSlot)
+		{
+			iReplacementSlot = i;
+			bFoundExpiredSlot = true;
+		}
+		else if (!bFoundExpiredSlot && (iWay == 0 || g_fSurvivorBot_VisibilityCache_Expiry[iClient][i] < fOldestExpiry))
+		{
+			iReplacementSlot = i;
+			fOldestExpiry = g_fSurvivorBot_VisibilityCache_Expiry[iClient][i];
+		}
 		if (fNow < g_fSurvivorBot_VisibilityCache_Expiry[iClient][i]
-			&& g_iSurvivorBot_VisibilityCache_Target[iClient][i] == iTarget
+			&& g_iSurvivorBot_VisibilityCache_ObserverGeneration[iClient][i] == g_iSurvivorBot_VisibilityObserverGeneration[iClient]
+			&& g_iSurvivorBot_VisibilityCache_EntRef[iClient][i] == iTargetEntRef
 			&& g_iSurvivorBot_VisibilityCache_Mask[iClient][i] == iMask
-			&& g_bSurvivorBot_VisibilityCache_FOV[iClient][i] == bFOVState
+			&& g_iSurvivorBot_VisibilityCache_Mode[iClient][i] == iMode
 			&& GetVectorDistance(g_fSurvivorBot_VisibilityCache_EyePos[iClient][i], g_fClientEyePos[iClient], true) <= VISIBILITY_CACHE_POSITION_TOLERANCE_SQR
 			&& GetVectorDistance(g_fSurvivorBot_VisibilityCache_TargetPos[iClient][i], fTargetPos, true) <= VISIBILITY_CACHE_POSITION_TOLERANCE_SQR)
+		{
+			if (g_bPerformanceBudgetEnabled)
+				TraceMetricsRecordCacheHit(TRACE_METRIC_ENTITY_LOS);
 			return g_bSurvivorBot_VisibilityCache_Result[iClient][i];
+		}
 	}
 
+	if (g_bPerformanceBudgetEnabled)
+		TraceMetricsRecordCacheMiss(TRACE_METRIC_ENTITY_LOS);
 	bool bResult = TraceVisibleEntity(iClient, iTarget, iMask);
-	int iSlot = g_iSurvivorBot_VisibilityCache_NextSlot[iClient];
-	g_iSurvivorBot_VisibilityCache_NextSlot[iClient] = (iSlot + 1) % VISIBILITY_CACHE_SIZE;
+	int iSlot = iReplacementSlot;
 	g_fSurvivorBot_VisibilityCache_Expiry[iClient][iSlot] = GetProcessCacheExpiry();
-	g_iSurvivorBot_VisibilityCache_Target[iClient][iSlot] = iTarget;
+	g_iSurvivorBot_VisibilityCache_EntRef[iClient][iSlot] = iTargetEntRef;
 	g_iSurvivorBot_VisibilityCache_Mask[iClient][iSlot] = iMask;
-	g_bSurvivorBot_VisibilityCache_FOV[iClient][iSlot] = bFOVState;
+	g_iSurvivorBot_VisibilityCache_Mode[iClient][iSlot] = iMode;
+	g_iSurvivorBot_VisibilityCache_ObserverGeneration[iClient][iSlot] = g_iSurvivorBot_VisibilityObserverGeneration[iClient];
 	g_bSurvivorBot_VisibilityCache_Result[iClient][iSlot] = bResult;
 	g_fSurvivorBot_VisibilityCache_EyePos[iClient][iSlot] = g_fClientEyePos[iClient];
 	g_fSurvivorBot_VisibilityCache_TargetPos[iClient][iSlot] = fTargetPos;
@@ -489,17 +547,140 @@ float NormalizeAngle(float fAngle)
 
 void GetClientAimPosition(int iClient, float fAimPos[3])
 {
+	if (g_bClientAimCacheValid[iClient]
+		&& g_iClientAimCacheGeneration[iClient] == g_iClientCommandGeneration[iClient]
+		&& GetVectorDistance(g_fClientAimCacheEyePos[iClient], g_fClientEyePos[iClient], true) <= AIM_TRACE_CACHE_POSITION_TOLERANCE_SQR
+		&& GetVectorDistance(g_fClientAimCacheAngles[iClient], g_fClientEyeAng[iClient], true) <= AIM_TRACE_CACHE_POSITION_TOLERANCE_SQR)
+	{
+		if (g_bPerformanceBudgetEnabled)
+		{
+			TraceMetricsRecordAttempt(TRACE_METRIC_AIM);
+			TraceMetricsRecordCacheHit(TRACE_METRIC_AIM);
+		}
+		fAimPos = g_fClientAimCachePos[iClient];
+		return;
+	}
+
+	if (g_bPerformanceBudgetEnabled)
+	{
+		TraceMetricsRecordAttempt(TRACE_METRIC_AIM);
+		TraceMetricsRecordCacheMiss(TRACE_METRIC_AIM);
+		TraceMetricsRecordTraceCall(TRACE_METRIC_AIM);
+	}
 	Handle hResult = TR_TraceRayFilterEx(g_fClientEyePos[iClient], g_fClientEyeAng[iClient], MASK_SHOT, RayType_Infinite, Base_TraceFilter);
-	TR_GetEndPosition(fAimPos, hResult); delete hResult;
+	if (g_bPerformanceBudgetEnabled)
+		TraceMetricsEndTrace();
+	TR_GetEndPosition(g_fClientAimCachePos[iClient], hResult); delete hResult;
+	g_fClientAimCacheEyePos[iClient] = g_fClientEyePos[iClient];
+	g_fClientAimCacheAngles[iClient] = g_fClientEyeAng[iClient];
+	g_iClientAimCacheGeneration[iClient] = g_iClientCommandGeneration[iClient];
+	g_bClientAimCacheValid[iClient] = true;
+	fAimPos = g_fClientAimCachePos[iClient];
+}
+
+int GetVectorTraceCacheHash(const float fStart[3], const float fEnd[3], int iMask, RayType iRayType)
+{
+	int iHash = 17;
+	for (int i = 0; i < 3; i++)
+	{
+		iHash = (iHash * 31) ^ RoundToFloor(fStart[i] / VECTOR_TRACE_CACHE_QUANTIZATION);
+		iHash = (iHash * 31) ^ RoundToFloor(fEnd[i] / VECTOR_TRACE_CACHE_QUANTIZATION);
+	}
+	iHash = (iHash * 31) ^ iMask;
+	iHash = (iHash * 31) ^ view_as<int>(iRayType);
+	return iHash;
+}
+
+void ResetVectorTraceCache()
+{
+	for (int i = 0; i < VECTOR_TRACE_CACHE_SIZE; i++)
+		g_fVectorTraceCache_Expiry[i] = 0.0;
+	g_fVectorTraceCache_LastQueryTime = 0.0;
+}
+
+bool GetCachedVectorVisible(const float fStart[3], const float fEnd[3], int iMask, RayType iRayType)
+{
+	if (g_bPerformanceBudgetEnabled)
+		TraceMetricsRecordAttempt(TRACE_METRIC_VECTOR_LOS);
+
+	int iHash = GetVectorTraceCacheHash(fStart, fEnd, iMask, iRayType);
+	int iSet = (iHash & 0x7FFFFFFF) % VECTOR_TRACE_CACHE_SET_COUNT;
+	int iBaseSlot = iSet * VECTOR_TRACE_CACHE_WAYS;
+	int iReplacementSlot = -1;
+	bool bFoundExpiredSlot = false;
+	float fOldestExpiry = 0.0;
+	float fNow = GetGameTime();
+	if (fNow < g_fVectorTraceCache_LastQueryTime)
+		ResetVectorTraceCache();
+	g_fVectorTraceCache_LastQueryTime = fNow;
+	for (int iWay = 0; iWay < VECTOR_TRACE_CACHE_WAYS; iWay++)
+	{
+		int i = iBaseSlot + iWay;
+		if (fNow >= g_fVectorTraceCache_Expiry[i] && !bFoundExpiredSlot)
+		{
+			iReplacementSlot = i;
+			bFoundExpiredSlot = true;
+		}
+		else if (!bFoundExpiredSlot && (iWay == 0 || g_fVectorTraceCache_Expiry[i] < fOldestExpiry))
+		{
+			iReplacementSlot = i;
+			fOldestExpiry = g_fVectorTraceCache_Expiry[i];
+		}
+
+		if (fNow < g_fVectorTraceCache_Expiry[i]
+			&& g_iVectorTraceCache_Hash[i] == iHash
+			&& g_iVectorTraceCache_Mask[i] == iMask
+			&& g_iVectorTraceCache_RayType[i] == view_as<int>(iRayType)
+			&& GetVectorDistance(g_fVectorTraceCache_Start[i], fStart, true) <= VECTOR_TRACE_CACHE_POSITION_TOLERANCE_SQR
+			&& GetVectorDistance(g_fVectorTraceCache_End[i], fEnd, true) <= VECTOR_TRACE_CACHE_POSITION_TOLERANCE_SQR)
+		{
+			if (g_bPerformanceBudgetEnabled)
+				TraceMetricsRecordCacheHit(TRACE_METRIC_VECTOR_LOS);
+			return g_bVectorTraceCache_Result[i];
+		}
+	}
+
+	if (g_bPerformanceBudgetEnabled)
+	{
+		TraceMetricsRecordCacheMiss(TRACE_METRIC_VECTOR_LOS);
+		TraceMetricsRecordTraceCall(TRACE_METRIC_VECTOR_LOS);
+	}
+	Handle hResult = TR_TraceRayFilterEx(fStart, fEnd, iMask, iRayType, Base_TraceFilter);
+	if (g_bPerformanceBudgetEnabled)
+		TraceMetricsEndTrace();
+	bool bResult = (TR_GetFraction(hResult) == 1.0);
+	delete hResult;
+
+	int iSlot = iReplacementSlot;
+	g_fVectorTraceCache_Expiry[iSlot] = GetProcessCacheExpiry();
+	g_iVectorTraceCache_Hash[iSlot] = iHash;
+	g_iVectorTraceCache_Mask[iSlot] = iMask;
+	g_iVectorTraceCache_RayType[iSlot] = view_as<int>(iRayType);
+	g_bVectorTraceCache_Result[iSlot] = bResult;
+	g_fVectorTraceCache_Start[iSlot] = fStart;
+	g_fVectorTraceCache_End[iSlot] = fEnd;
+	return bResult;
 }
 
 bool GetVectorVisible(float fStart[3], float fEnd[3], int iMask = MASK_VISIBLE_AND_NPCS)
 {
-	Handle hResult = TR_TraceRayFilterEx(fStart, fEnd, iMask, RayType_EndPoint, Base_TraceFilter);
-	float fFraction = TR_GetFraction(hResult); delete hResult; return (fFraction == 1.0);
+	return GetCachedVectorVisible(fStart, fEnd, iMask, RayType_EndPoint);
 }
 
 bool Base_TraceFilter(int iEntity, int iContentsMask, int iData)
 {
-	return (iEntity == iData || HasEntProp(iEntity, Prop_Data, "m_eDoorState") && L4D_GetDoorState(iEntity) != DOOR_STATE_OPENED);
+	if (g_bPerformanceBudgetEnabled)
+		TraceMetricsRecordFilterCallback();
+	if (iEntity == iData) return true;
+	if (iEntity <= 0 || iEntity > MAXENTITIES) return false;
+	if (g_iTraceEntityClass[iEntity] == TRACE_ENTITY_UNKNOWN
+		|| g_iTraceEntityEntRef[iEntity] != EntIndexToEntRef(iEntity))
+		ClassifyTraceEntity(iEntity);
+	if (g_iTraceEntityClass[iEntity] != TRACE_ENTITY_DOOR) return false;
+	if (GetGameTime() >= g_fTraceDoorStateExpiry[iEntity])
+	{
+		g_iTraceDoorState[iEntity] = L4D_GetDoorState(iEntity);
+		g_fTraceDoorStateExpiry[iEntity] = GetProcessCacheExpiry();
+	}
+	return g_iTraceDoorState[iEntity] != DOOR_STATE_OPENED;
 }

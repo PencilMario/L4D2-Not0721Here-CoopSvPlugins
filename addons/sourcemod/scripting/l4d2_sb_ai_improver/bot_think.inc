@@ -142,15 +142,15 @@ void SurvivorBotThinkImpl(int iClient, int &iButtons, int iWpnSlots[6])
 		{
 			fLastDist = -1.0;
 			int iPropRock = INVALID_ENT_REFERENCE;
-			int iRockVisibilityChecks;
+			int iTankPropVisibilityChecks = 0;
 			while ((iPropRock = FindEntityByClassname(iPropRock, "tank_rock")) != INVALID_ENT_REFERENCE)
 			{
 				fCurDist = GetEntityDistance(iClient, iPropRock, true);
 				if (fLastDist != -1.0 && fCurDist >= fLastDist)
 					continue;
-				if (IsAiDegraded(2) && iRockVisibilityChecks >= (IsAiDegraded(3) ? 1 : 2))
+				if (IsAiDegraded(2) && iTankPropVisibilityChecks >= (IsAiDegraded(3) ? 1 : 2))
 					break;
-				iRockVisibilityChecks++;
+				iTankPropVisibilityChecks++;
 				if (!IsVisibleEntity(iClient, iPropRock))
 					continue;
 
@@ -160,15 +160,14 @@ void SurvivorBotThinkImpl(int iClient, int &iButtons, int iWpnSlots[6])
 
 			fLastDist = -1.0;
 			iPropRock = INVALID_ENT_REFERENCE;
-			int iCarVisibilityChecks;
 			while ((iPropRock = FindEntityByClassname(iPropRock, "prop_car_alarm")) != INVALID_ENT_REFERENCE)
 			{
 				fCurDist = GetEntityDistance(iTankTarget, iPropRock, true);
 				if (fCurDist > 250000.0 || fLastDist != -1.0 && fCurDist >= fLastDist)
 					continue;
-				if (IsAiDegraded(2) && iCarVisibilityChecks >= (IsAiDegraded(3) ? 1 : 2))
+				if (IsAiDegraded(2) && iTankPropVisibilityChecks >= (IsAiDegraded(3) ? 1 : 2))
 					break;
-				iCarVisibilityChecks++;
+				iTankPropVisibilityChecks++;
 				if (!IsVisibleEntity(iTankTarget, iPropRock) || !IsVisibleEntity(iClient, iPropRock))
 					continue;
 
@@ -176,15 +175,14 @@ void SurvivorBotThinkImpl(int iClient, int &iButtons, int iWpnSlots[6])
 				fLastDist = fCurDist;
 			}
 			iPropRock = INVALID_ENT_REFERENCE;
-			iCarVisibilityChecks = 0;
 			while ((iPropRock = FindEntityByClassname(iPropRock, "prop_physics")) != INVALID_ENT_REFERENCE)
 			{
 				fCurDist = GetEntityDistance(iTankTarget, iPropRock, true);
 				if (fCurDist > 250000.0 || fLastDist != -1.0 && fCurDist >= fLastDist || !GetEntProp(iPropRock, Prop_Send, "m_hasTankGlow"))
 					continue;
-				if (IsAiDegraded(2) && iCarVisibilityChecks >= (IsAiDegraded(3) ? 1 : 2))
+				if (IsAiDegraded(2) && iTankPropVisibilityChecks >= (IsAiDegraded(3) ? 1 : 2))
 					break;
-				iCarVisibilityChecks++;
+				iTankPropVisibilityChecks++;
 				if (!IsVisibleEntity(iTankTarget, iPropRock) || !IsVisibleEntity(iClient, iPropRock))
 					continue;
 
@@ -427,7 +425,7 @@ void SurvivorBotThinkImpl(int iClient, int &iButtons, int iWpnSlots[6])
 
 		if (g_bCvar_TankRock_ShootEnabled && g_iCvar_TankRockHealth > 0 && IsEntityExists(iTankRock))
 		{
-			float fRockPos[3]; GetEntityCenteroid(iTankRock, fRockPos);
+			float fRockPos[3]; GetAiEntityCenteroidCached(iTankRock, fRockPos);
 
 			if (GetVectorDistance(g_fClientEyePos[iClient], fRockPos, true) <= g_fCvar_TankRock_ShootRange && SurvivorBot_AbleToShootWeapon(iClient) &&
 				(iCurWeapon != iWpnSlots[1] || !SurvivorHasMeleeWeapon(iClient)) && !IsSurvivorBusy(iClient) && HasVisualContactWithEntity(iClient, iTankRock, false, fRockPos))
@@ -748,7 +746,7 @@ void SurvivorBotThinkImpl(int iClient, int &iButtons, int iWpnSlots[6])
 
 				if (GetVectorDistance(g_fClientAbsOrigin[iClient], fMidPos, true) > BOT_GRENADE_CHECK_RADIUS_SQR)
 				{
-					float fTraceStart[3]; fTraceStart = fMidPos; fTraceStart[2] += HUMAN_HALF_HEIGHT;
+					float fTraceStart[3]; fTraceStart = fMidPos; fTraceStart[2] + HUMAN_HALF_HEIGHT;
 					float fAngleDown[3] = {90.0, 0.0, 0.0};
 					if (IsAiDegraded(3))
 					{
@@ -966,7 +964,7 @@ void SurvivorBotThinkImpl(int iClient, int &iButtons, int iWpnSlots[6])
 
 			if (!IsSurvivorBotBlindedByVomit(iClient) && (bHoldKey || !IsSurvivorBusy(iClient, true, true, true)))
 			{
-				float fItemPos[3]; GetEntityCenteroid(iScavengeItem, fItemPos);
+				float fItemPos[3]; GetAiEntityCenteroidCached(iScavengeItem, fItemPos);
 				if (GetVectorDistance(g_fClientEyePos[iClient], fItemPos, true) <= (fUseRange*fUseRange) && IsVisibleEntity(iClient, iScavengeItem))
 				{
 					if (GetGameTime() > g_fSurvivorBot_NextUsePressTime[iClient])

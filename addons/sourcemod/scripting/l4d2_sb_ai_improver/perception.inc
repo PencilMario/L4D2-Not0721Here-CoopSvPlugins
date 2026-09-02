@@ -413,7 +413,8 @@ bool GetCachedVisibleEntity(int iClient, int iTarget, int iMask, bool bFOVState 
 		TraceMetricsRecordAttempt(TRACE_METRIC_ENTITY_LOS);
 	}
 
-	// Non-survivor callers retain the original trace semantics; only survivor bots share cached traces.
+	// Non-survivor callers do not share the survivor cache, but still use the
+	// global degradation policy so special-infected AI sheds the same fallback cost.
 	if (!IsFakeClient(iClient) || GetClientTeam(iClient) != 2)
 	{
 		if (g_bPerformanceBudgetEnabled)

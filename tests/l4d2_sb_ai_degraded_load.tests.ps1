@@ -35,6 +35,14 @@ if ($runtime -notmatch '(?s)float fFrameMs = GetGameFrameTime\(\) \* 1000\.0;.*?
     throw 'automatic degradation must use an average frame duration and configurable step'
 }
 
+if ($runtime -notmatch '(?s)void ApplyDegradedLoadLevel.*?ResetVisibilityCaches\(\).*?ResetNavigationCaches\(\).*?ResetAiEntityCenteroidCache\(\)') {
+    throw 'degraded level transitions must invalidate mode-sensitive caches'
+}
+
+if ($degraded -notmatch '(?s)void ResetProcessCaches.*?ResetAiEntityCenteroidCache\(\).*?ResetVisibilityCaches\(\).*?ResetNavigationCaches\(\).*?ResetVectorTraceCache\(\).*?g_fClientGlobalInfo_Expiry') {
+    throw 'ib_process_time changes must invalidate every process-window cache'
+}
+
 if ($perception -notmatch '(?s)bool TraceVisibleEntity.*?if (bDidHit || IsAiDegraded())') {
     throw 'degraded entity visibility must stop after the first LOS trace'
 }
@@ -55,7 +63,7 @@ if ($navigationCache -notmatch '(?s)float fFraction = TR_GetFraction\(hResult\);
     throw 'degraded nav visibility must use the center trace only'
 }
 
-if ($botThink -notmatch 'IsAiDegraded\(2\).*?iRockVisibilityChecks' -or $botThink -notmatch 'IsAiDegraded\(3\) \? 1 : 2') {
+if ($botThink -notmatch 'iTankPropVisibilityChecks = 0' -or $botThink -notmatch 'IsAiDegraded\(2\).*?iTankPropVisibilityChecks' -or $botThink -notmatch 'IsAiDegraded\(3\) \? 1 : 2') {
     throw 'degraded tank-rock selection must cap visibility candidates'
 }
 

@@ -24,7 +24,7 @@ Get-ChildItem tests/*.tests.ps1 | Sort-Object Name | ForEach-Object {
 
 ## 编译
 
-使用项目 SourcePawn 1.12 编译器编译 `l4d2_sb_ai_improver.sp`，退出码为 0，生成 `addons/sourcemod/plugins/l4d2_sb_ai_improver.smx`（代码大小 305680 bytes）。本次编译未报告错误或警告。
+使用项目 SourcePawn 1.12 编译器编译 `l4d2_sb_ai_improver.sp`，退出码为 0，生成 `addons/sourcemod/plugins/l4d2_sb_ai_improver.smx`（代码大小 306224 bytes）。本次编译未报告错误或警告。
 
 ## 实现证据
 

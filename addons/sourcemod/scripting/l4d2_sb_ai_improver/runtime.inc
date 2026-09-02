@@ -143,13 +143,13 @@ void UpdateDegradedLoadLevel(float fNow)
 
 	if (g_iCvar_DegradedForce > 0)
 	{
-		g_iDegradedLoadLevel = g_iCvar_DegradedForce;
+		ApplyDegradedLoadLevel(g_iCvar_DegradedForce);
 		return;
 	}
 
 	if (g_fCvar_DegradedFrameStepMs <= 0.0)
 	{
-		g_iDegradedLoadLevel = 0;
+		ApplyDegradedLoadLevel(0);
 		return;
 	}
 
@@ -157,14 +157,29 @@ void UpdateDegradedLoadLevel(float fNow)
 	int iLevel = RoundToFloor((g_fDegradedFrameAverageMs - fBaselineMs) / g_fCvar_DegradedFrameStepMs);
 	if (iLevel < 0)iLevel = 0;
 	if (iLevel > 3)iLevel = 3;
+	ApplyDegradedLoadLevel(iLevel);
+}
+
+void ApplyDegradedLoadLevel(int iLevel)
+{
+	if (iLevel < 0)iLevel = 0;
+	if (iLevel > 3)iLevel = 3;
+	if (iLevel == g_iDegradedLoadLevel)
+		return;
+
 	g_iDegradedLoadLevel = iLevel;
+	// Cached visibility results depend on the active fallback policy.  Flush
+	// them at a level transition so an origin-only result never crosses modes.
+	ResetVisibilityCaches();
+	ResetNavigationCaches();
+	ResetAiEntityCenteroidCache();
 }
 
 void ResetDegradedLoadState()
 {
 	g_fDegradedFrameAverageMs = 0.0;
 	g_fDegradedLastSampleTime = 0.0;
-	g_iDegradedLoadLevel = g_iCvar_DegradedForce;
+	ApplyDegradedLoadLevel(g_iCvar_DegradedForce);
 }
 
 bool IsAiDegraded(int iLevel = 1)

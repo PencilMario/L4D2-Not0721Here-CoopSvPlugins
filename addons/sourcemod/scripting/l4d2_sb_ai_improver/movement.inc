@@ -54,7 +54,7 @@ bool TakeCoverFromEntity(int iClient, int iEntity, float fSearchDist = 384.0)
 {
 	float fEntityPos[3];
 	if (IsValidClient(iEntity))GetClientEyePosition(iEntity, fEntityPos);
-	else GetEntityCenteroid(iEntity, fEntityPos);
+	else GetAiEntityCenteroidCached(iEntity, fEntityPos);
 	return (TakeCoverFromPosition(iClient, fEntityPos, fSearchDist));
 }
 

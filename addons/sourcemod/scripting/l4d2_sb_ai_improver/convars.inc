@@ -271,10 +271,7 @@ void OnConVarChanged(Handle convar, const char[] oldValue, const char[] newValue
 {
 	UpdateConVarValues();
 	if (convar == g_hCvar_NextProcessTime)
-	{
-		for (int i = 1; i <= MaxClients; i++)
-			g_fClientGlobalInfo_Expiry[i] = 0.0;
-	}
+		ResetProcessCaches();
 	if (convar == g_hCvar_HelpPinnedFriend_ReactionBots)
 		RebuildPinnedRescueCoordinator();
 }

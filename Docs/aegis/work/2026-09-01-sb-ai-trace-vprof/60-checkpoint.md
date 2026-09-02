@@ -12,7 +12,7 @@
 
 - Initial commits: `f4c0071f`, `4fc19841`; cache commits `60ce1eca`, `200a4aee`, `5eb024e1`.
 - Full PowerShell contract suite: `SUMMARY passed=35 failed=0`.
-- SourcePawn 1.12 compile: exit code 0; code size 305680 bytes; no errors or warnings reported.
+- SourcePawn 1.12 compile: exit code 0; code size 306224 bytes; no errors or warnings reported.
 - Heavy-load controls: `ib_ai_degraded_force` (`0=auto`, `1-3=force`) and `ib_ai_degraded_frame_step_ms` (EMA frame-ms step).
 - Entity classification now uses classname fast paths, probes `m_eDoorState` once only for non-standard/unknown classes, and marks failed lookups as `TRACE_ENTITY_OTHER` to prevent repeated probing.
 - On-map entity scanning pre-classifies trace entities; door `OnOpen`/`OnClose`/`OnFullyOpen`/`OnFullyClosed` outputs invalidate dynamic state.

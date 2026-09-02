@@ -105,7 +105,7 @@ Action OnSurvivorTakeDamage(int iClient, int &iAttacker, int &iInflictor, float 
 
 	if (IsSurvivorBotBlindedByVomit(iClient) && (IsValidClient(iAttacker) && GetClientTeam(iAttacker) == 3 || IsCommonInfected(iAttacker)))
 	{
-		float fLookPos[3]; GetEntityCenteroid(iAttacker, fLookPos);
+	float fLookPos[3]; GetAiEntityCenteroidCached(iAttacker, fLookPos);
 		BotLookAtPosition(iClient, fLookPos, 1.0);
 		g_bSurvivorBot_ForceBash[iClient] = true;
 	}

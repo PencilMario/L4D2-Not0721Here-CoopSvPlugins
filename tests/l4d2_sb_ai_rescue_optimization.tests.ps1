@@ -5,6 +5,7 @@ $root = Join-Path $repo 'addons/sourcemod/scripting/l4d2_sb_ai_improver'
 $state = Get-Content -Raw -LiteralPath (Join-Path $root 'state.inc')
 $convars = Get-Content -Raw -LiteralPath (Join-Path $root 'convars.inc')
 $runtime = Get-Content -Raw -LiteralPath (Join-Path $root 'runtime.inc')
+$degraded = Get-Content -Raw -LiteralPath (Join-Path $root 'degraded.inc')
 $rescue = Get-Content -Raw -LiteralPath (Join-Path $root 'rescue.inc')
 $events = Get-Content -Raw -LiteralPath (Join-Path $root 'events.inc')
 $lifecycle = Get-Content -Raw -LiteralPath (Join-Path $root 'lifecycle.inc')
@@ -52,7 +53,7 @@ Require-Text $convars 'g_hCvar_HelpPinnedFriend_MaxDistance.AddChangeHook(OnConV
 Require-Pattern $convars 'g_fCvar_HelpPinnedFriend_ReactionInterval\s*=\s*g_hCvar_HelpPinnedFriend_ReactionInterval\.FloatValue;' 'the rescue interval cache assignment is missing'
 Require-Pattern $convars 'g_fCvar_HelpPinnedFriend_MaxDistance_Sqr\s*=\s*\(g_hCvar_HelpPinnedFriend_MaxDistance\.FloatValue\s*\*\s*g_hCvar_HelpPinnedFriend_MaxDistance\.FloatValue\);' 'the rescue max-distance squared cache assignment is missing'
 Require-Pattern $convars 'if\s*\(convar == g_hCvar_HelpPinnedFriend_ReactionBots\)\s*\{?\s*RebuildPinnedRescueCoordinator\(\);' 'reaction-bot cvar changes must rebuild coordinator assignments'
-Require-Text $convars 'g_fClientGlobalInfo_Expiry[i] = 0.0;' 'ib_process_time changes must invalidate global snapshots'
+Require-Text ($convars + $degraded) 'g_fClientGlobalInfo_Expiry[i] = 0.0;' 'ib_process_time changes must invalidate global snapshots'
 Require-Text $rescue 'void RecoverPinnedRescueCoordinator()' 'late-load rescue state recovery is missing'
 Require-Text $convars 'g_bPinnedRescueRecoveryPending = g_bLateLoad;' 'configuration load must defer rescue recovery until snapshots are ready'
 

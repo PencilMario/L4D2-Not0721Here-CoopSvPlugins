@@ -7,6 +7,7 @@ on:
       - master
     paths:
       - 'addons/sourcemod/scripting/**'
+      - 'cfg/**'
   workflow_dispatch:
 
 permissions:
@@ -140,12 +141,13 @@ jobs:
       - name: Check for changes
         id: check_changes
         run: |
-          if git diff --quiet addons/sourcemod/plugins/; then
-            echo "changes=false" >> $GITHUB_OUTPUT
-            echo "No changes detected in compiled plugins."
-          else
+          if ! git diff --quiet addons/sourcemod/plugins/ || \
+             { [ "${{ github.event_name }}" = "push" ] && ! git diff --quiet "${{ github.event.before }}" "${{ github.sha }}" -- cfg/; }; then
             echo "changes=true" >> $GITHUB_OUTPUT
-            echo "Changes detected in compiled plugins."
+            echo "Changes detected in compiled plugins or configuration."
+          else
+            echo "changes=false" >> $GITHUB_OUTPUT
+            echo "No changes detected in compiled plugins or configuration."
           fi
 
       - name: Prepare release package

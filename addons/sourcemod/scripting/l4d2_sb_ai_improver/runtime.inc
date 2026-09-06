@@ -115,6 +115,13 @@ public Action OnPlayerRunCmd(int iClient, int &iButtons, int &iImpulse, float fV
 	if (g_bCvar_BotsDisabled || g_bCutsceneIsPlaying || !g_iClientNavArea[iClient] || fNow <= g_fClient_ThinkFunctionDelay[iClient] || !IsFakeClient(iClient))
 		return Plugin_Continue;
 
+	float fThinkInterval = g_fCvar_ThinkInterval;
+	if (fThinkInterval <= 0.0 && g_hCvar_NextBotUpdateFrequency != null)
+		fThinkInterval = g_hCvar_NextBotUpdateFrequency.FloatValue;
+	if (fThinkInterval > 0.0 && fNow < g_fSurvivorBot_NextThinkTime[iClient])
+		return Plugin_Continue;
+	g_fSurvivorBot_NextThinkTime[iClient] = fNow + fThinkInterval;
+
 	if (g_bPerformanceBudgetEnabled)
 		g_iPerformanceBudget_EnteredBotThink++;
 	SurvivorBotThink(iClient, iButtons, g_iClientInventory[iClient]);

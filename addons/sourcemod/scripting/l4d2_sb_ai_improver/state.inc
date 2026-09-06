@@ -351,7 +351,10 @@ int g_iCvar_WitchBehavior_AllowCrowning;
 
 /*============ PERFOMANCE RELATED CONVARS =========================================================*/
 ConVar g_hCvar_NextProcessTime;
+ConVar g_hCvar_ThinkInterval;
+ConVar g_hCvar_NextBotUpdateFrequency;
 float g_fCvar_NextProcessTime;
+float g_fCvar_ThinkInterval;
 
 ConVar g_hCvar_DegradedForce;
 ConVar g_hCvar_DegradedFrameStepMs;
@@ -537,6 +540,7 @@ int g_iSurvivorBot_NearbyFriends[MAXPLAYERS+1];
 int g_iBotProcessing_ProcessedCount;
 bool g_bBotProcessing_IsProcessed[MAXPLAYERS+1];
 float g_fBotProcessing_NextProcessTime;
+float g_fSurvivorBot_NextThinkTime[MAXPLAYERS+1];
 
 int g_iInfectedBot_CurrentVictim[MAXPLAYERS+1];
 bool g_bInfectedBot_IsThrowing[MAXPLAYERS+1];

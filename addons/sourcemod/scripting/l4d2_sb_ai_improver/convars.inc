@@ -121,6 +121,8 @@ void CreateAndHookConVars()
 	g_hCvar_WitchBehavior_WalkWhenNearby			= CreateConVar("ib_witchbehavior_walkwhennearby", "0", "Survivor bots will start walking near witch if they're this range near her and she's not disturbed. <0: Disabled>", FCVAR_NOTIFY, true, 0.0);
 	g_hCvar_WitchBehavior_AllowCrowning = CreateConVar("ib_witchbehavior_allowcrowning", "1", "Allows survivor bots to crown witch on their path if they're holding any shotgun type weapon. <0: Disabled; 1: Only if survivor team doesn't have any human players; 2:Enabled>", FCVAR_NOTIFY, true, 0.0, true, 2.0);
 	g_hCvar_NextProcessTime = CreateConVar("ib_process_time", "0.2", "Bots' data computing time delay (infected count, nearby friends, etc). Increasing the value might help increasing the game performance, but slow down bots.", FCVAR_NOTIFY, true, 0.033);
+	g_hCvar_ThinkInterval = CreateConVar("ib_think_interval", "0.0", "Minimum interval between survivor bot AI improver Think calls. 0 follows nb_update_frequency.", FCVAR_NOTIFY, true, 0.0);
+	g_hCvar_NextBotUpdateFrequency = FindConVar("nb_update_frequency");
 	CreateDegradedConVars();
 	g_hCvar_PerformanceLogging = CreateConVar("ib_performance_logging", "0", "Log calculations exceeding the configured threshold.", FCVAR_NOTIFY, true, 0.0, true, 1.0);
 	g_hCvar_PerformanceThresholdMs = CreateConVar("ib_performance_threshold_ms", "1.0", "Slow calculation logging threshold in milliseconds.", FCVAR_NOTIFY, true, 0.1);
@@ -251,6 +253,7 @@ void CreateAndHookConVars()
 	g_hCvar_WitchBehavior_AllowCrowning.AddChangeHook(OnConVarChanged);
 
 	g_hCvar_NextProcessTime.AddChangeHook(OnConVarChanged);
+	g_hCvar_ThinkInterval.AddChangeHook(OnConVarChanged);
 	g_hCvar_PerformanceLogging.AddChangeHook(OnPerformanceLoggingChanged);
 	g_hCvar_PerformanceThresholdMs.AddChangeHook(OnConVarChanged);
 	g_hCvar_Debug.AddChangeHook(OnConVarChanged);
@@ -417,6 +420,7 @@ void UpdateConVarValues()
 	g_iCvar_WitchBehavior_AllowCrowning 				= g_hCvar_WitchBehavior_AllowCrowning.IntValue;
 
 	g_fCvar_NextProcessTime = g_hCvar_NextProcessTime.FloatValue;
+	g_fCvar_ThinkInterval = g_hCvar_ThinkInterval.FloatValue;
 	UpdateDegradedConVarValues();
 	g_bCvar_PerformanceLogging = g_hCvar_PerformanceLogging.BoolValue;
 	g_fCvar_PerformanceThresholdMs = g_hCvar_PerformanceThresholdMs.FloatValue;

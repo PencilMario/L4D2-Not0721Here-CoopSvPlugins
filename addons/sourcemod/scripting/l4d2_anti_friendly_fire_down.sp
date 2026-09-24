@@ -14,13 +14,13 @@ public Plugin myinfo =
     url = ""
 };
 
-bool g_bDamageExhausted[MAXPLAYERS + 1][MAXPLAYERS + 1];
-float damageByPair[MAXPLAYERS + 1][MAXPLAYERS + 1];
+bool g_bDownedByPair[MAXPLAYERS + 1][MAXPLAYERS + 1];
 
 public void OnPluginStart()
 {
     HookEvent("player_spawn", Event_PlayerSpawn, EventHookMode_Post);
     HookEvent("player_incapacitated", Event_PlayerIncapped, EventHookMode_Post);
+    HookEvent("player_death", Event_PlayerIncapped, EventHookMode_Post);
     HookEvent("revive_success", Event_PlayerRevived, EventHookMode_Post);
     HookEvent("round_start", Event_ResetState, EventHookMode_PostNoCopy);
     HookEvent("mission_lost", Event_ResetState, EventHookMode_PostNoCopy);
@@ -57,20 +57,13 @@ public void Event_PlayerSpawn(Event event, const char[] name, bool dontBroadcast
 public void Event_PlayerIncapped(Event event, const char[] name, bool dontBroadcast)
 {
     int victim = GetClientOfUserId(event.GetInt("userid"));
-    if (!IsValidSurvivor(victim))
+    int attacker = GetClientOfUserId(event.GetInt("attacker"));
+    if (!IsValidSurvivor(victim) || !IsValidSurvivor(attacker) || attacker == victim)
     {
         return;
     }
 
-    // The damage hook normally prevents this event. This fallback records the
-    // pair if another plugin caused the incap before we saw the damage.
-    for (int attacker = 1; attacker <= MaxClients; attacker++)
-    {
-        if (IsValidSurvivor(attacker) && attacker != victim && damageByPair[attacker][victim] > 0.0)
-        {
-            g_bDamageExhausted[attacker][victim] = true;
-        }
-    }
+    g_bDownedByPair[attacker][victim] = true;
 }
 
 public void Event_PlayerRevived(Event event, const char[] name, bool dontBroadcast)
@@ -91,31 +84,19 @@ public Action OnTakeDamage(int victim, int &attacker, int &inflictor, float &dam
         return Plugin_Continue;
     }
 
-    if (!g_bDamageExhausted[attacker][victim])
+    if (!g_bDownedByPair[attacker][victim] || damage <= 0.0 || !IsPlayerAlive(victim)
+        || GetEntProp(victim, Prop_Send, "m_isIncapacitated") != 0)
     {
-        float health = float(GetClientHealth(victim));
-        if (health <= 1.0 || damage <= 0.0)
-        {
-            return Plugin_Continue;
-        }
+        return Plugin_Continue;
+    }
 
-        damageByPair[attacker][victim] += damage;
-        if (damageByPair[attacker][victim] >= health || damage >= health)
-        {
-            g_bDamageExhausted[attacker][victim] = true;
-            damage = health - 1.0;
-            if (damage < 0.0)
-            {
-                damage = 0.0;
-            }
-            return Plugin_Changed;
-        }
-
+    float victimHealth = float(GetClientHealth(victim));
+    if (damage < victimHealth)
+    {
         return Plugin_Continue;
     }
 
     float reflectedDamage = damage;
-    float victimHealth = float(GetClientHealth(victim));
     damage = 0.0;
 
     if (reflectedDamage > 0.0 && IsPlayerAlive(attacker))
@@ -134,7 +115,7 @@ public Action OnTakeDamage(int victim, int &attacker, int &inflictor, float &dam
         }
     }
 
-    if (IsClientInGame(attacker) && victimHealth >= 1.0)
+    if (IsClientInGame(attacker))
     {
         PrintToChat(attacker, "\x04[!]\x01 你对 \x03%N\x01 玩家黑枪太多了。", victim);
     }
@@ -153,8 +134,7 @@ void ResetAllPairs()
     {
         for (int victim = 1; victim <= MaxClients; victim++)
         {
-            g_bDamageExhausted[attacker][victim] = false;
-            damageByPair[attacker][victim] = 0.0;
+            g_bDownedByPair[attacker][victim] = false;
         }
     }
 }
@@ -163,9 +143,7 @@ void ClearClientPairs(int client)
 {
     for (int other = 1; other <= MaxClients; other++)
     {
-        g_bDamageExhausted[client][other] = false;
-        g_bDamageExhausted[other][client] = false;
-        damageByPair[client][other] = 0.0;
-        damageByPair[other][client] = 0.0;
+        g_bDownedByPair[client][other] = false;
+        g_bDownedByPair[other][client] = false;
     }
 }

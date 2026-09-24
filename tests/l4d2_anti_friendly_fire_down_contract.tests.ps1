@@ -5,11 +5,12 @@ $source = Get-Content -Raw $path
 @(
   'SDKHook_OnTakeDamage',
   'player_incapacitated',
+  'player_death',
   'revive_success',
   'mission_lost',
   'map_transition',
   'PrintToChat',
-  'damageByPair'
+  'g_bDownedByPair'
 ) | ForEach-Object {
   if ($source -notmatch [regex]::Escape($_)) { throw "missing contract: $_" }
 }

@@ -29,10 +29,6 @@
     {
         "chat"      "[{green}!{default}]当前模式：{lightgreen}{l4d_ready_cfg_name}\n这模式太难了？使用!rmatch卸载当前配置，然后用!match选个新的逛街吧"
     }
-    "4"
-    {
-        "chat"      "{green}服务器群159923320，别忘记按H加入服务器组\n"
-    }
     "5"
     {
         "chat"      "{green}使用 !s 旁观摸鱼一会"
@@ -56,21 +52,5 @@
     "10"
     {
         "chat"      "{green}如何标点：\n1. z-看 自动标记准星物品\n2. z-等等 建议你的队友"
-    }
-    "11"
-    {
-        "chat"      "{green}使用!panel成为意识糕手"
-    }
-    "12"
-    {
-        "chat"      "{green}狠狠的锻炼！"
-    }
-    "13"
-    {
-        "chat"      "{green}本服务器提供专门的三方图服务器，内有200+张三方图\n使用!servers进入带有三方图标识的服务器\n{green}地图文件加群159923320获取"
-    }
-    "14"
-    {
-        "chat"      "{green}也可以使用脚本 https://github.com/PencilMario/L4D2-Not0721Here-CoopSvPlugins/blob/main/Docs/clientgetmap.ps1 自动下载所有三方图\n预估占用80g，请注意腾出空间"
     }
 }

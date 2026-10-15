@@ -364,13 +364,20 @@ void ClassifyTraceEntity(int iEntity, const char[] sClassname = "")
 	}
 
 	bool bIsDoor = (strncmp(sClass, "func_door", 9) == 0 || strncmp(sClass, "prop_door", 9) == 0);
-	// A non-standard classname is still an uncertain entity: probe the door
-	// property once during registration so custom doors keep the old blocking
-	// semantics without paying HasEntProp from every trace callback.
-	if (!bIsDoor)
-		bIsDoor = HasEntProp(iEntity, Prop_Data, "m_eDoorState");
+	bool bHasDoorProp = HasEntProp(iEntity, Prop_Data, "m_eDoorState");
 
-	g_iTraceEntityClass[iEntity] = bIsDoor ? TRACE_ENTITY_DOOR : TRACE_ENTITY_OTHER;
+	if (bHasDoorProp)
+	{
+		g_iTraceEntityClass[iEntity] = TRACE_ENTITY_DOOR;
+	}
+	else if (bIsDoor)
+	{
+		g_iTraceEntityClass[iEntity] = TRACE_ENTITY_BLOCKING;
+	}
+	else
+	{
+		g_iTraceEntityClass[iEntity] = TRACE_ENTITY_OTHER;
+	}
 	g_iTraceEntityEntRef[iEntity] = EntIndexToEntRef(iEntity);
 	g_fTraceDoorStateExpiry[iEntity] = 0.0;
 }

@@ -691,9 +691,18 @@ bool Base_TraceFilter(int iEntity, int iContentsMask, int iData)
 	if (g_iTraceEntityClass[iEntity] == TRACE_ENTITY_UNKNOWN
 		|| g_iTraceEntityEntRef[iEntity] != EntIndexToEntRef(iEntity))
 		ClassifyTraceEntity(iEntity);
+	if (g_iTraceEntityClass[iEntity] == TRACE_ENTITY_BLOCKING) return true;
 	if (g_iTraceEntityClass[iEntity] != TRACE_ENTITY_DOOR) return false;
 	if (GetGameTime() >= g_fTraceDoorStateExpiry[iEntity])
 	{
+		if (!HasEntProp(iEntity, Prop_Data, "m_eDoorState"))
+		{
+			g_iTraceEntityClass[iEntity] = TRACE_ENTITY_BLOCKING;
+			g_iTraceDoorState[iEntity] = DOOR_STATE_CLOSED;
+			g_fTraceDoorStateExpiry[iEntity] = 0.0;
+			return true;
+		}
+
 		g_iTraceDoorState[iEntity] = L4D_GetDoorState(iEntity);
 		g_fTraceDoorStateExpiry[iEntity] = GetProcessCacheExpiry();
 	}

@@ -26,13 +26,18 @@ Action OnRegroupWithTeamAction(BehaviorAction hAction, int iActor, float fInterv
 
 	if (iPathDangerous != 0)
 	{
-		hResult.type = CHANGE_TO;
-		hResult.action = CreateSurvivorLegsRetreatAction(iPathDangerous);
-		return Plugin_Handled;
+		BehaviorAction hRetreatAction = CreateSurvivorLegsRetreatAction(iPathDangerous);
+		if (hRetreatAction != INVALID_ACTION)
+		{
+			hResult.type = CHANGE_TO;
+			hResult.action = hRetreatAction;
+			return Plugin_Changed;
+		}
+
+		return Plugin_Continue;
 	}
 
 	hResult.type = DONE;
-	hResult.action = INVALID_ACTION;
 	return Plugin_Changed;
 }
 
@@ -55,14 +60,20 @@ Action OnMoveToIncapacitatedFriendAction(BehaviorAction hAction, int iActor, flo
 
 	if (iPathDangerous != 0)
 	{
-		hResult.type = CHANGE_TO;
-		hResult.action = CreateSurvivorLegsRetreatAction(iPathDangerous);
+		BehaviorAction hRetreatAction = CreateSurvivorLegsRetreatAction(iPathDangerous);
+		if (hRetreatAction != INVALID_ACTION)
+		{
+			hResult.type = CHANGE_TO;
+			hResult.action = hRetreatAction;
+			PerformanceBudgetEndStage(iActor);
+			return Plugin_Changed;
+		}
+
 		PerformanceBudgetEndStage(iActor);
-		return Plugin_Handled;
+		return Plugin_Continue;
 	}
 
 	hResult.type = DONE;
-	hResult.action = INVALID_ACTION;
 	PerformanceBudgetEndStage(iActor);
 	return Plugin_Changed;
 }
@@ -70,6 +81,11 @@ Action OnMoveToIncapacitatedFriendAction(BehaviorAction hAction, int iActor, flo
 BehaviorAction CreateSurvivorLegsRetreatAction(int iThreat)
 {
 	BehaviorAction hAction = ActionsManager.Allocate(0x745A);
+	if (hAction == INVALID_ACTION)
+	{
+		return INVALID_ACTION;
+	}
+
 	SDKCall(g_hSurvivorLegsRetreat, hAction, iThreat);
 	return hAction;
 }
